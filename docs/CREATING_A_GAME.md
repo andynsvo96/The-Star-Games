@@ -695,8 +695,11 @@ an accessible `h1.sr-only`. For a larger title, pass `true` as the third argumen
 of `add_title_art(texture, height, prominent)` and add `.game-title-prominent` on
 the browser image. This shared variant reserves more heading space on wide
 screens and caps its height by the artwork's fitted width on narrow ones. Other
-headings retain their existing sizing. Spyfall uses compact offline SVG stencil
-lettering through this hook. `add_score_card(parent, icon, accent)` optionally makes
+headings retain their existing sizing. Fitted `game-board-controller` pages also
+honor `game-title-prominent`, reserving the larger measured title above the board
+and reducing it on short screens. Short landscape places the logo, connection
+and turn status beside each other to retain board space. Spyfall uses compact
+offline SVG stencil lettering through this hook. `add_score_card(parent, icon, accent)` optionally makes
 a hanging colored score plate; omitting accent preserves the original style.
 The browser equivalent is `.game-score-card.game-hanging` with `--score-color`.
 Hanging plates include a highlighted suspension cord up to the screen edge on
@@ -1098,7 +1101,8 @@ finish. Duplicate syncs preserve movement, while reconnect restores settled art.
 The chooser has its own blue-and-brass games library background; Chinese Checkers
 keeps a lantern-lit garden. Each uses its module's extensionless `art/background`
 stem and the shared player. Chinese Checkers uses a generated transparent title
-PNG through `add_title_art` and `img.game-title-art`. Original images and exact
+PNG at the same host title setting as Regular Checkers, with `game-title-prominent`
+on phones for a larger responsive heading. Original images and exact
 prompts remain in `asset/checkers-collection/` and `asset/chinese-checkers/`.
 
 Local checks: `tests/chinese_checkers.gd`, `tests/chinese_checkers_motion.gd`,
