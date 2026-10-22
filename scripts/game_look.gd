@@ -489,7 +489,7 @@ static func asset_action(button: Button, kind := "secondary") -> void:
 	if not button.has_meta("asset_action_fitted"):
 		button.set_meta("asset_action_fitted", true)
 		button.resized.connect(func() -> void: center_button_contents(button))
-	center_button_contents.call_deferred(button)
+	center_button_contents(button)
 
 
 static func rules_sheet() -> StyleBoxFlat:
