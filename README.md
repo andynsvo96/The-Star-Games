@@ -14,12 +14,13 @@ This public repository contains the launcher, shared host UI, browser controller
 
 ## Current local game catalog
 
-The development installation currently has 12 menu entries covering the 14 games and variants below. This list describes that local installation; these modules are not distributed in this repository.
+The development installation currently has 12 menu entries covering the 15 games and variants below. This list describes that local installation; these modules are not distributed in this repository.
 
 | Game | Description |
 | --- | --- |
 | Battleship | Place a secret fleet and sink your opponent's ships. |
 | Checkers | Jump opposing pieces, crown kings, and control the board. |
+| Chinese Checkers | Race ten marbles across a star with 2-6 human/computer seats. |
 | Chess | Classic chess with computer opponents and optional clocks. |
 | Four in a Row | Drop discs and connect four before your opponent. |
 | Mafia | Use discussion, secret roles, and votes to uncover the Mafia. |
@@ -33,7 +34,7 @@ The development installation currently has 12 menu entries covering the 14 games
 | Tic Tac Toe | Get three in a row against a friend or computer. |
 | UNO | Match cards and empty your hand in Classic, Flip, or No Mercy. |
 
-Player limits and solo options vary by game. Monopoly and Poker each have a chooser for their two variants.
+Player limits and solo options vary by game. Checkers, Monopoly, and Poker each have a chooser for their two games or variants.
 
 Game-specific menu icons and their source artwork also remain local.
 

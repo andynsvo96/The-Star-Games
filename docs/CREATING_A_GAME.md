@@ -1038,6 +1038,46 @@ modules. The existing `next` action remains a replay alias for older controllers
 Title subtitles are omitted on hosts and controllers. Do not introduce a
 first-to-two format in these games or new modules unless explicitly requested.
 
+### Checkers collection and Chinese Checkers
+
+The local `Games/checkers-collection` module groups regular `checkers` and
+`chinese-checkers` under one Checkers menu entry using the existing collection
+contract. Regular Checkers keeps its original ID, settings, scores and two-player
+limit. Chinese Checkers admits up to six phones; unavailable choices remain
+visible and disabled. Child Back opens the chooser, whose Back opens Games.
+An offline admitted member must reconnect before either choice can launch.
+
+`Games/chinese-checkers` separates its 121-hole star rules, board presentation
+and session/controller integration. It supports 2-6 seats, ten marbles each,
+one adjacent step or a host-validated chain of jumps without captures. Choosing
+a highlighted endpoint completes the whole route. Two/three/four/six-seat
+arrangements follow the [Winning Moves rules](https://winning-moves.com/images/ChineseCheckers_Rules.pdf).
+The optional five-seat arrangement leaves one point empty, giving the player
+opposite it an advantage. A blocked seat passes; three repeated positions draw.
+One full target is one immediate win. Replay rotates starters and preserves
+session wins/history. Only an all-phone table changes saved standings.
+
+Host preferences stage total seats, computer count, host participation and
+bounded AI difficulty until Apply. Accepted preferences use the existing settings
+API. Applying abandons the board and starts a fresh session; replay keeps the
+lineup. Disconnects pause seated humans without substituting computers; extra
+phones are spectators. Snapshots omit profile metadata and reconnect tokens.
+
+Both views inherit shared royal controls, selection rings and celebrations.
+Hosts use shared centered board fitting and compact score cards. Phones use
+shared session scores in a separately scrolling public roster, plus the SDK's
+board fitter. The shared scrolling dialog opens an enlarged board with 58px
+hole spacing and reachable Close; keyboard selection also works. Reduced motion
+settles marbles immediately; other moves lock input until host and local motion
+finish. Duplicate syncs preserve movement, while reconnect restores settled art.
+Backgrounds use the extensionless `art/background` stem and the shared player.
+
+Local checks: `tests/chinese_checkers.gd`, `tests/chinese_checkers_motion.gd`,
+`tests/chinese_checkers_network.gd`, rendered `tests/chinese_checkers_visual.gd`,
+and `node tests/chinese_checkers_controller.mjs` (after the rendered fixtures).
+Regular Checkers remains covered by `tests/checkers.gd` and
+`tests/checkers_motion.gd`. No playable module or dependent test is published.
+
 ### Chess example
 
 `Games/chess` follows the shared template and session modes, keeping rules in
