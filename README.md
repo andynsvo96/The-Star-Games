@@ -52,6 +52,7 @@ Install FFmpeg on the host for desktop media that needs conversion. Original med
 - [Creating a Game](docs/CREATING_A_GAME.md): module structure, shared UI, and controller APIs.
 - [New Game Prompt](docs/NEW_GAME_PROMPT.md): a starting outline for new modules.
 - [Contributor Instructions](AGENTS.md): coding conventions and verification requirements.
+- [Automatic GitHub Sync](docs/GITHUB_SYNC.md): background publishing, status, and pause controls.
 - `Games/` contains modules, `scripts/` shared host code, and `web/` shared browser assets.
 
 With Godot available as `godot` on your PATH, run these checks from the repository root:

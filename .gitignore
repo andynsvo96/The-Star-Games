@@ -13,3 +13,15 @@ desktop.ini
 # Local Godot settings, saved games, and runtime media caches.
 /Godot/
 /%SystemDrive%/
+
+# Local credentials and signing material.
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+/.aws/
+/.codex/

@@ -8,6 +8,14 @@
 - `Games/` contains game modules and `Games/_Template`; `docs/CREATING_A_GAME.md` defines the module contract. `tests/` contains headless tests, smoke tests, and fixtures.
 - Match the surrounding code style, including tab indentation and existing type annotations in GDScript. Keep changes focused on the requested behavior.
 
+## GitHub publishing
+
+- The user has authorized ongoing publication of Star Games and all game-module updates to `https://github.com/andynsvo96/The-Star-Games.git` on `main`.
+- Before editing, run `python tools/github_sync.py pause` so the background watcher does not publish an incomplete update. After completing the requested work and required checks, run `python tools/github_sync.py resume`, then `python tools/github_sync.py once`. A meaningful manual commit before `once` is welcome; the sync pushes existing local commits too.
+- Do not ask again for routine commit/push permission within this project. Report the published revision or any sync failure. Keep publishing paused if required checks fail or work is incomplete, and explain the reason.
+- Use the environment's Git/network permission mechanism if a sandbox blocks publishing; the ongoing publication authorization still applies. Changes to the sync tools also require `python tests/github_sync_test.py`.
+- Respect `.gitignore`. Never force-push or overwrite remote changes; integrate an advanced remote branch deliberately before publishing. See `docs/GITHUB_SYNC.md` for status, setup, and controls.
+
 ## Game modules and controllers
 
 - Read `docs/CREATING_A_GAME.md` completely before adding or changing a game module. Use `docs/NEW_GAME_PROMPT.md` when outlining a new game.
