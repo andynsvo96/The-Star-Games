@@ -37,7 +37,9 @@ func _run() -> void:
 		return _finish(false, "Profile store did not initialize")
 	server = LanServer.new()
 	root.add_child(server)
-	server.configure(store, GameCatalog.new())
+	var catalog := GameCatalog.new("res://tests/fixtures/Games")
+	catalog.scan()
+	server.configure(store, catalog)
 	if not server.start_server():
 		return _finish(false, "LAN server did not start")
 	# Ordinary HTTP probes during solo play must never reach the WS parser.
@@ -86,6 +88,17 @@ func _run() -> void:
 	var paper_response: Array = await artwork.request_completed
 	if paper_response[1] != 200 or paper_response[3].size() < 1000:
 		return _finish(false, "Shared paper texture was not served offline")
+	if artwork.request("http://127.0.0.1:%d/game/valid-game/" % server.http_port) != OK:
+		return _finish(false, "Public game controller request failed")
+	var controller_response: Array = await artwork.request_completed
+	if controller_response[1] != 200:
+		return _finish(false, "Private paths hid the public controller entry")
+	for private_path in ["host/private.json", "host/main.tscn", "HOST/private.json", "./host/private.json", "controller/private/secret.json", "controller/./private/secret.json", "private/secret.json"]:
+		if artwork.request("http://127.0.0.1:%d/game/valid-game/%s" % [server.http_port, private_path]) != OK:
+			return _finish(false, "Private path probe could not start")
+		var private_response: Array = await artwork.request_completed
+		if private_response[1] != 404 or private_response[3].get_string_from_utf8() != "Not found":
+			return _finish(false, "Host-only content was exposed through a game asset URL")
 	artwork.queue_free()
 
 	# Leave room for the bounded backpressure batch on every host platform.

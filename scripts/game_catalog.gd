@@ -114,7 +114,12 @@ func _read_game(folder_name: String) -> Dictionary:
 		var relative := str(parsed[path_field])
 		if not _is_safe_relative_path(relative):
 			return {"ok": false, "error": "%s must be a safe relative path." % path_field}
-		if not FileAccess.file_exists(folder.path_join(relative)):
+		var resource := folder.path_join(relative)
+		# Exported scenes/textures may have only a resource remap in the PCK.
+		# Browser files still require their original bytes.
+		var exists := FileAccess.file_exists(resource)
+		if not exists and path_field in ["host_scene", "thumbnail"]: exists = ResourceLoader.exists(resource)
+		if not exists:
 			return {"ok": false, "error": "%s does not exist: %s" % [path_field, relative]}
 	if parsed.has("background"):
 		if not parsed["background"] is String or not _is_safe_relative_path(parsed["background"]) or not str(parsed["background"]).get_extension().is_empty():
@@ -126,6 +131,26 @@ func _read_game(folder_name: String) -> Dictionary:
 			var stem: Variant = parsed.background_variants[variant]
 			if not _is_valid_id(str(variant)) or not stem is String or not _is_safe_relative_path(stem) or not str(stem).get_extension().is_empty():
 				return {"ok": false, "error": "background_variants must use stable names and safe extensionless paths."}
+	if parsed.has("private_paths"):
+		if not parsed.private_paths is Array or parsed.private_paths.size() > 32:
+			return {"ok": false, "error": "private_paths must be an array of at most 32 safe relative files or folders."}
+		var protected: Array = []
+		var public_paths: Array = [parsed.controller_entry, parsed.thumbnail]
+		var public_backgrounds: Array = parsed.get("background_variants", {}).values()
+		if parsed.has("background"): public_backgrounds.append(parsed.background)
+		for stem in public_backgrounds:
+			public_paths.append(stem)
+			for extension in BackgroundMedia.IMAGE_EXTENSIONS + BackgroundMedia.VIDEO_EXTENSIONS:
+				public_paths.append(str(stem) + "." + extension)
+		for path in parsed.private_paths:
+			if not path is String or not _is_safe_relative_path(path) or protected.has(path.to_lower()):
+				return {"ok": false, "error": "private_paths must contain distinct safe relative files or folders."}
+			var prefix: String = path.to_lower()
+			for public_path in public_paths:
+				var public_name := str(public_path).to_lower()
+				if public_name == prefix or public_name.begins_with(prefix + "/"):
+					return {"ok": false, "error": "private_paths must not hide the controller entry, thumbnail, or background."}
+			protected.append(prefix)
 	var game: Dictionary = parsed.duplicate(true)
 	game["folder"] = folder
 	game["host_scene_path"] = folder.path_join(str(parsed["host_scene"]))

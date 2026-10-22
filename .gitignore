@@ -75,6 +75,8 @@ desktop.ini
 !/tests/render_qr.gd.uid
 !/tests/run_tests.gd
 !/tests/run_tests.gd.uid
+!/tests/session_media.gd
+!/tests/session_media.gd.uid
 !/tests/title_intro.gd
 !/tests/title_intro.gd.uid
 !/tests/ui_smoke.gd

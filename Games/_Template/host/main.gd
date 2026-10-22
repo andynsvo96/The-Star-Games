@@ -1,5 +1,8 @@
 extends BaseGame
 
+# game.json protects host/ with private_paths. Store host-only rule data and
+# hidden answer banks here, and send only each player's permitted snapshot.
+
 var screen: GameScreen
 var phase_dialog: Dictionary
 var example_choice: OptionButton
@@ -61,6 +64,20 @@ func _ready() -> void:
 	# set_score_card_compact(card, true, true) trims decoration in dense host stacks.
 	# Optional shared layout for games with session scores and history.
 	var layout := screen.add_centered_layout()
+	# Optional question/reference media uses shared contain-fit artwork and explicit
+	# Play/Pause/Sound controls. It never autoplays. Pass native local paths:
+	# media.show_media({"sources":[image_or_video], "poster":"", "alt":"Description"}).
+	# Connect playback_changed to the game's clock/input pause policy; call
+	# set_suspended(true) for settings/disconnects and clear() on exit.
+	# BackgroundPreparer also prepares clip videos with audio on desktop hosts;
+	# bundle .ogv plus optional MP4/WebM for Android hosts/browser controllers.
+	var media_example := GameMediaView.new()
+	layout.playfield.add_child(media_example)
+	media_example.hide()
+	# Host-only media under private_paths can be exposed phase by phase through
+	# BaseGame.set_controller_media([native_path]), which returns path -> opaque
+	# URL. Send only authorized URLs through send_state/broadcast_state. Replace
+	# the set when clues change and clear it with set_controller_media([]) on exit.
 	# Optional collection choices retain each child's stable ID and SDK route.
 	# Read session.game_choices; the launcher validates game_selected requests.
 	var choice_example := GameChoiceCard.new()

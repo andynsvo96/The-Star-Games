@@ -613,11 +613,12 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 	active_game.game_selected.connect(_on_collection_choice)
 	active_game.controller_state_updated.connect(lan_server.broadcast_game_message)
 	active_game.controller_private_state_updated.connect(lan_server.send_game_message_to_player)
+	active_game.controller_media_updated.connect(func(resources: Dictionary) -> void: lan_server.set_game_media(str(game.id), resources))
+	lan_server.set_active_game(active_game_id if is_party else "")
 	active_game.initialize_session(context)
 	var connected_ids := lan_server.get_players().map(func(player: Dictionary) -> String: return str(player.id))
 	for player in context.players:
 		if not connected_ids.has(str(player.id)): active_game.player_disconnected(str(player.id))
-	lan_server.set_active_game(active_game_id if is_party else "")
 	active_game.start_game()
 
 

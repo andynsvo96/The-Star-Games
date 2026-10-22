@@ -1566,3 +1566,6 @@ body.playful-game { isolation: isolate; }
 @media (max-width: 400px) and (orientation: portrait) {
   .game-board-stats .game-score-card.game-ledger { grid-template-columns: minmax(0,1fr); }
 }
+/* Shared question/reference media preserves aspect ratio and semantic captions. */
+.game-media-view img, .game-media-view video { display: block; width: 100%; max-height: min(50vh, 28rem); object-fit: contain; }
+.game-media-view p { overflow-wrap: anywhere; }

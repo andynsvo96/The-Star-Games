@@ -7,6 +7,7 @@
   "thumbnail": "thumbnail.svg",
   "background": "art/background",
   "host_scene": "host/main.tscn",
+  "private_paths": ["host"],
   "controller_entry": "controller/index.html",
   "min_players": 1,
   "max_players": 16,

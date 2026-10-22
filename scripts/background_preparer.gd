@@ -41,6 +41,8 @@ func _process(_delta: float) -> void:
 		var args := PackedStringArray(["-hide_banner", "-loglevel", "error", "-y", "-i", ProjectSettings.globalize_path(current.source)])
 		if current.kind == "audio":
 			args.append_array(PackedStringArray(["-vn", "-c:a", "libvorbis", "-q:a", "5"]))
+		elif current.kind == "clip":
+			args.append_array(PackedStringArray(["-map", "0:v:0", "-map", "0:a?", "-c:v", "libtheora", "-q:v", "7", "-c:a", "libvorbis", "-q:a", "5", "-pix_fmt", "yuv420p"]))
 		else:
 			args.append_array(PackedStringArray(["-map", "0:v:0", "-an", "-c:v", "libtheora", "-q:v", "7", "-pix_fmt", "yuv420p"]))
 		args.append(ProjectSettings.globalize_path(str(current.temporary)))

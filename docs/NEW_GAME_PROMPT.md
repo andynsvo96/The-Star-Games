@@ -25,6 +25,9 @@ Browser controller:
 Public and private information:
 [Define host/phone roles and what each player may see in every phase, including previews, history, motion, and reconnect snapshots.]
 
+Editable content and media:
+[Define JSON schemas, catalog/category selection, values/difficulty, validation, reload/editor behavior, writable storage, and revision pinning. Put hidden banks/media behind private_paths; use shared media surfaces and phase-scoped controller capabilities for optional image/video clues.]
+
 Settings and help:
 [List host preferences, instant versus staged Apply behavior, persistence, pause/reset behavior, and reachable help/history.]
 

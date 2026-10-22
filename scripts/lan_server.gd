@@ -33,6 +33,7 @@ var running := false
 var active_game_id := ""
 var lobby_open := true
 var admitted_players := {}
+var session_media: Dictionary = {}
 const PLAYER_COLORS := ["#202020", "#ffffff", "#e53935", "#228b22", "#2463eb", "#ffdf00", "#ff8c00", "#8b35c9", "#ff91af", "#8b4513", "#808080", "#00ced1", "#00a080", "#a4de02", "#000080", "#800020"]
 const COLOR_NAMES := ["Black", "White", "Red", "Green", "Blue", "Yellow", "Orange", "Purple", "Pink", "Brown", "Gray", "Cyan", "Teal", "Lime", "Navy", "Maroon"]
 
@@ -79,6 +80,7 @@ func stop_server() -> void:
 	admitted_players.clear()
 	lobby_open = true
 	active_game_id = ""
+	session_media.clear()
 	http_server.stop()
 	websocket_server.stop()
 	running = false
@@ -168,8 +170,25 @@ func set_lobby_open(value: bool) -> void:
 
 
 func set_active_game(game_id: String) -> void:
+	if active_game_id != game_id: session_media.clear()
 	active_game_id = game_id
 	_broadcast({"type": "screen", "game_id": active_game_id, "path": "/" if active_game_id.is_empty() else "/game/%s/" % active_game_id})
+
+
+func set_game_media(game_id: String, resources: Dictionary) -> void:
+	if game_id != active_game_id or game_catalog.find_game(game_id).is_empty(): return
+	var next: Dictionary = {}
+	if resources.size() > 64: return
+	for token in resources:
+		var source: Variant = resources[token]
+		if not token is String or token.length() != 48 or not token.is_valid_hex_number() or not source is String: continue
+		if source != source.simplify_path() or source.contains("\\"): continue
+		var roots := ["res://Games/%s/" % game_id, "user://%s/content/" % game_id, RuntimeAssets.root_folder().path_join("Games/%s/" % game_id)]
+		if not roots.any(func(folder: String) -> bool: return source.begins_with(folder)): continue
+		if not source.get_extension().to_lower() in ["png", "jpg", "jpeg", "webp", "bmp", "ogv", "mp4", "webm"]: continue
+		if not FileAccess.file_exists(source): continue
+		next[token] = source
+	session_media = next
 
 
 func send_to_player(player_id: String, message: Dictionary) -> void:
@@ -232,6 +251,15 @@ func _serve_http(peer: StreamPeerTCP, request: String) -> void:
 		_write_http(peer, 405, "text/plain; charset=utf-8", "Method not allowed".to_utf8_buffer())
 		return
 	var path := str(parts[1]).get_slice("?", 0)
+	if path.begins_with("/session-media/"):
+		var token := path.trim_prefix("/session-media/")
+		var source: String = session_media.get(token, "")
+		var media := FileAccess.open(source, FileAccess.READ) if not source.is_empty() else null
+		if media == null:
+			_write_http(peer, 404, "text/plain; charset=utf-8", "Not found".to_utf8_buffer())
+		else:
+			_stream_http_file(peer, media, _mime_type(source), request)
+		return
 	if path.begins_with("/game/") and path.ends_with("/background.json"):
 		var game_id := path.trim_prefix("/game/").trim_suffix("/background.json")
 		_write_http(peer, 200, "application/json; charset=utf-8", JSON.stringify(_background_sources(game_id)).to_utf8_buffer())
@@ -298,6 +326,7 @@ func _serve_http(peer: StreamPeerTCP, request: String) -> void:
 		"/controller-sdk.js": resource_path = "res://web/controller-sdk.js"
 		"/game-celebration.js": resource_path = "res://web/game-celebration.js"
 		"/card-ui.js": resource_path = "res://web/card-ui.js"
+		"/media-view.js": resource_path = "res://web/media-view.js"
 		"/manifest.webmanifest": resource_path = "res://web/manifest.webmanifest"
 		_:
 			resource_path = _resolve_game_web_path(path)
@@ -351,6 +380,9 @@ func _resolve_game_web_path(path: String) -> String:
 			var relative := "/".join(parts.slice(1))
 			if relative.is_empty():
 				relative = str(game["controller_entry"])
+			relative = relative.simplify_path()
+			if _game_path_is_private(game, relative):
+				return ""
 			# External exported backgrounds use the same restricted asset paths.
 			if game.has("background"):
 				var stems: Array = [game.background]
@@ -367,8 +399,22 @@ func _resolve_game_web_path(path: String) -> String:
 			if FileAccess.file_exists(direct):
 				return direct
 			# The entry is served at /game/<id>/, so sibling URLs need its directory.
-			return str(game["folder"]).path_join(str(game["controller_entry"]).get_base_dir()).path_join(relative)
+			var sibling := str(game["controller_entry"]).get_base_dir().path_join(relative)
+			if _game_path_is_private(game, sibling):
+				return ""
+			return str(game["folder"]).path_join(sibling)
 	return ""
+
+
+func _game_path_is_private(game: Dictionary, relative: String) -> bool:
+	# Windows source folders are case insensitive; keep the same boundary on all
+	# hosts and on both direct URLs and controller-relative asset aliases.
+	var candidate := relative.simplify_path().to_lower()
+	for path in game.get("private_paths", []):
+		var prefix := str(path).to_lower()
+		if candidate == prefix or candidate.begins_with(prefix + "/"):
+			return true
+	return false
 
 
 func _write_http(peer: StreamPeerTCP, status: int, content_type: String, body: PackedByteArray) -> void:

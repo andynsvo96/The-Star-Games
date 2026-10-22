@@ -6,10 +6,12 @@ signal result_reported(profile_id: String, won: bool)
 signal return_to_lobby_requested
 signal controller_state_updated(payload: Dictionary)
 signal controller_private_state_updated(player_id: String, payload: Dictionary)
+signal controller_media_updated(resources: Dictionary)
 signal game_selected(game_id: String)
 
 var session: GameSessionContext
 var settings_store := GameSettingsStore.new()
+var _controller_media: Dictionary = {}
 
 
 func initialize_session(context: GameSessionContext) -> void:
@@ -40,6 +42,25 @@ func broadcast_state(payload: Dictionary) -> void:
 # Hidden-information games send each admitted player only their own view.
 func send_state(player_id: String, payload: Dictionary) -> void:
 	controller_private_state_updated.emit(player_id, payload)
+
+
+# Expose only the files currently permitted by the game. URLs are unguessable
+# capabilities, not filenames; replacing this set revokes earlier URLs. Send a
+# capability only in the public/private snapshot authorized to receive it.
+func set_controller_media(paths: Array) -> Dictionary:
+	var next: Dictionary = {}
+	var urls: Dictionary = {}
+	for path in paths.slice(0, 64):
+		if not path is String or next.has(path): continue
+		var token: String = _controller_media.get(path, Crypto.new().generate_random_bytes(24).hex_encode())
+		next[path] = token
+		urls[path] = "/session-media/" + token
+	if next != _controller_media:
+		_controller_media = next
+		var resources: Dictionary = {}
+		for path in next: resources[next[path]] = path
+		controller_media_updated.emit(resources)
+	return urls
 
 
 func shutdown_game() -> void:

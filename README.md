@@ -14,7 +14,7 @@ This public repository contains the launcher, shared host UI, browser controller
 
 ## Current local game catalog
 
-The development installation currently has 12 menu entries covering the 15 games and variants below. This list describes that local installation; these modules are not distributed in this repository.
+The development installation currently has 13 menu entries covering the 16 games and variants below. This list describes that local installation; these modules are not distributed in this repository.
 
 | Game | Description |
 | --- | --- |
@@ -23,6 +23,7 @@ The development installation currently has 12 menu entries covering the 15 games
 | Chinese Checkers | Race ten marbles across a star with 2-6 human/computer seats. |
 | Chess | Classic chess with computer opponents and optional clocks. |
 | Four in a Row | Drop discs and connect four before your opponent. |
+| Jeopardy | Buzz from your phone, answer aloud or type, and play editable trivia boards. |
 | Mafia | Use discussion, secret roles, and votes to uncover the Mafia. |
 | Monopoly Classic | Buy, trade, and develop properties on the original US board. |
 | Monopoly Deal | Bank, trade, and steal cards to complete three property sets. |
@@ -71,6 +72,7 @@ godot --headless --editor --path . --quit
 godot --headless --path . --script res://tests/run_tests.gd
 godot --headless --path . --script res://tests/network_smoke.gd
 godot --headless --path . --script res://tests/ui_smoke.gd
+godot --headless --path . --script res://tests/session_media.gd
 ```
 
 Export presets are included for Windows, macOS, and Android. Install the matching Godot export templates to build them; keep generated builds in `builds/`.

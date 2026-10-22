@@ -87,6 +87,11 @@
   <!-- Hidden composition for game-board-controller: enable on main when adopting.
      Use the game's actual #board/#replay in the playfield; example IDs are omitted
      here so this optional illustration cannot interfere with the live template. -->
+<!-- Optional offline reference/clue media: load /media-view.js and call
+     new StarGamesMediaView(element).render({sources:[{url,type}],poster:'',alt:''},
+     {sequence,playing,position}, suspended). URLs come from host capabilities;
+     keep unrevealed answers out of snapshots. Phones remain muted. -->
+<div id="example-media" class="game-media-view" hidden></div>
 <section hidden aria-label="Board with bottom stats example">
   <div class="game-playfield"><div aria-label="Example fitted board"></div></div>
   <div class="game-board-stats" data-game-stats-columns="3">

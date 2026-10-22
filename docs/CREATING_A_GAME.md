@@ -56,6 +56,16 @@ Required rules:
   for interchangeable image/video scenery; older manifests without it still load.
   For example, `art/background` accepts `art/background.png` or
   `art/background.mp4`. A missing background uses the shared fallback color.
+- Optional `private_paths` lists up to 32 safe module-relative files or folders
+  that must never be served to browsers, for example `"private_paths": ["host"]`.
+  The template protects its complete `host/` folder. Keep unrevealed answer banks,
+  rule secrets and other host-only JSON there; the host can still read those files
+  normally. Matching includes complete directory descendants, normalized dot
+  segments, case variants and controller-relative asset aliases. Protected paths must not hide the controller
+  entry, thumbnail or background. Existing manifests without this field retain
+  their previous asset routing. This controls LAN delivery, not access to files on
+  the host machine or inside its exported package. Do not send secret contents in
+  public snapshots even when their source files are protected.
 - Optional `background_variants` maps stable names to safe extensionless stems,
   for example `{"day": "art/day-background"}`. It requires `background` and uses
   the same resolver, offline raw assets and video-format rules.
@@ -1480,6 +1490,42 @@ Host input buttons retain their visibility across drawing frames; do not hide
 and re-show click targets every frame, which cancels held presses before release.
 Browser updates likewise keep focused decision buttons in their existing parent.
 Tests exercise real mouse/touch presses held across multiple frames.
+
+### Question and reference media
+
+Use shared `GameMediaView` for contain-fit images and user-controlled video clips,
+with a literal description, Play/Pause and Sound controls. Its native descriptor is
+`{"sources":[local_path],"poster":"","alt":"Description"}`. Alternate video
+formats can share one descriptor. Clips begin paused and do not loop. The shared
+`BackgroundPreparer.prepare(source, cache, "clip")` preserves clip audio when
+preparing desktop Theora copies; Android hosts need a supplied `.ogv`. Original
+media stays in the module/source collection and conversions stay in user caches.
+
+`playback_changed(playing, position_seconds, muted)` lets the module implement its
+own authoritative timer/input policy. `set_suspended(true)` pauses clips for a
+settings/disconnect policy; resuming requires explicit Play. Call `clear()` on
+exit. Keep a text alternative so unavailable video does not strand the question.
+Background scenery continues to use the separate shared background stem API.
+
+For hidden clue/answer files, put originals below a manifest `private_paths`
+prefix. Call `BaseGame.set_controller_media([native_path, ...])` with only the
+currently permitted files (up to 64); it returns native path to opaque URL.
+The launcher delivers these through its existing LAN HTTP server with byte ranges
+and `no-store`. Sources must belong to that module or `user://<game-id>/content/`,
+and use supported raster image/OGV/MP4/WebM extensions. The route never accepts a
+client filesystem path. Replacing the set revokes omitted URLs; navigation and
+server shutdown clear the registry. A URL is a bearer capability: anyone given
+one can fetch it, and revocation cannot erase bytes already received. Send private
+URLs only through the appropriate `send_state`; never reveal answer URLs early.
+
+Browsers use `/media-view.js` and `StarGamesMediaView` with shared
+`.game-media-view` styles. Its descriptor uses `sources:[{url,type}]`, optional
+`poster`, and `alt`; `render(descriptor, {sequence,playing,position}, suspended)`
+restores host playback snapshots without duplicating elements on clock ticks.
+Phones remain muted so host-controlled audio is heard once. Clear surfaces on
+disconnect, hiding, and exit. The template includes hidden native/browser examples.
+`tests/session_media.gd` checks capability lifetime, allowed roots, HTTP/ranges and
+host rendering without depending on a local playable game.
 
 ### Editable media references
 

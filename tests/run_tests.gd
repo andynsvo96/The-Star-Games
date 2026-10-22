@@ -7,6 +7,7 @@ var assertions := 0
 func _init() -> void:
 	_test_profile_store()
 	_test_game_catalog()
+	_test_private_game_paths()
 	_test_qr_generation()
 	_test_readable_names()
 	if failures.is_empty():
@@ -63,6 +64,50 @@ func _test_game_catalog() -> void:
 	_expect(games[0]["id"] == "valid-game", "Catalog returns the expected game")
 	_expect(games[0]["modes"] == ["singleplayer", "multiplayer"], "Catalog accepts singleplayer and multiplayer modes")
 	_expect(catalog.diagnostics.size() == 1, "Catalog reports invalid fixture without crashing")
+
+
+func _test_private_game_paths() -> void:
+	var root_path := "res://.test_data/private-paths-%d" % OS.get_process_id()
+	var folder := root_path.path_join("module")
+	DirAccess.make_dir_recursive_absolute(folder.path_join("host"))
+	DirAccess.make_dir_recursive_absolute(folder.path_join("controller"))
+	for relative in ["thumbnail.svg", "host/main.tscn", "controller/index.html"]:
+		DirAccess.copy_absolute("res://tests/fixtures/Games/valid-game/" + relative, folder.path_join(relative))
+	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/Games/valid-game/game.json"))
+	var catalog := GameCatalog.new(root_path)
+	for paths in [[], ["host"], ["host/main.tscn"], ["host", "controller/private"]]:
+		manifest.private_paths = paths
+		var file := FileAccess.open(folder.path_join("game.json"), FileAccess.WRITE)
+		file.store_string(JSON.stringify(manifest))
+		file.close()
+		_expect(catalog._read_game("module").ok, "Accepts safe optional host-only paths")
+	for paths in [null, "host", [1], [""], ["../host"], ["/host"], ["host\\data"], ["host/"], ["host//data"], ["host", "HOST"], ["controller"], ["thumbnail.svg"]]:
+		manifest.private_paths = paths
+		var file := FileAccess.open(folder.path_join("game.json"), FileAccess.WRITE)
+		file.store_string(JSON.stringify(manifest))
+		file.close()
+		_expect(not catalog._read_game("module").ok, "Rejects unsafe, duplicate or public-resource-hiding private paths")
+	manifest.erase("private_paths")
+	var file := FileAccess.open(folder.path_join("game.json"), FileAccess.WRITE)
+	file.store_string(JSON.stringify(manifest))
+	file.close()
+	var legacy := catalog._read_game("module")
+	_expect(legacy.ok, "Manifests without private_paths remain compatible")
+	catalog.games = [legacy.game]
+	var server := LanServer.new()
+	server.game_catalog = catalog
+	_expect(server._resolve_game_web_path("/game/valid-game/host/main.tscn") == folder.path_join("host/main.tscn"), "Legacy module asset routing is unchanged")
+	_expect(not server._game_path_is_private({"private_paths": ["host"]}, "host-art/icon.svg"), "A protected folder does not hide similarly named public artwork")
+	catalog.games[0]["private_paths"] = ["host", "controller/private"]
+	for private_path in ["./host/main.tscn", "host/./main.tscn", "controller/./private/secret.json", "./private/secret.json"]:
+		_expect(server._resolve_game_web_path("/game/valid-game/" + private_path).is_empty(), "Normalized dot segments cannot bypass protected files or sibling aliases")
+	manifest.background = "art/background"
+	manifest.private_paths = ["art/background.png"]
+	file = FileAccess.open(folder.path_join("game.json"), FileAccess.WRITE)
+	file.store_string(JSON.stringify(manifest))
+	file.close()
+	_expect(not catalog._read_game("module").ok, "Protecting an individual background extension cannot hide public scenery")
+	server.free()
 
 
 func _test_qr_generation() -> void:
