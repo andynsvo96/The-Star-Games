@@ -1886,6 +1886,26 @@ The template includes a hidden example. Modules provide geometry only through
 Reuse `StarGamesCard`, `StarGamesCardReader`, grids and shared action rows.
 Monopoly Classic deliberately shows its board only on the host.
 
+For richer asset counters, `screen.add_asset_score(parent, token_texture,
+identity_color)` returns a shared navy plaque with `player`, `score`, `wealth`,
+`token`, `icon`, `content`, `row`, `panel` and `underline`. Append a public
+collection to `content`; the game still owns its data and height budget.
+`fit_asset_score(card, compact, roomy=false)` supplies short-screen sizing,
+and `set_score_card_active` restores the identity border and static turn glow.
+`GameLook.money_text(amount)` formats a whole-dollar balance with separators.
+Browser sections opt into `game-asset-score` with `--score-color`, `is-current`,
+`game-asset-identity`, `game-asset-token`, `game-asset-stats` and
+`game-asset-balance`. The template includes hidden host and phone examples.
+
+`GameLook.asset_action(button, "primary" | "secondary" | "end")` provides raised
+cyan, slate and red controls, with grey disabled states and keyboard focus.
+Browser buttons use `game-asset-action` plus `game-asset-primary` or
+`game-asset-end`; `game-icon-control` groups an empty-alt image and live label.
+Shared dice, trade and flag icons are served at `/ui/playful/table-*.svg`.
+`GameTurnStrip.portraits` optionally accepts offline textures to frame each
+literal name with its piece; the default name-only and tracked strips retain
+their layout. All these accents are static, including under reduced motion.
+
 Public cash feedback uses `GameMoneyEffect` (native) or `StarGamesMoneyEffect`
 in `/card-ui.js`. Supply `update(motion, paused, reduced)` natively or
 `update(motion, {paused,reduced})` in browsers. The motion has a monotonic

@@ -724,6 +724,52 @@ func add_session_score(parent: Control, formatted_name := false, stacked := fals
 	return {"player": player, "score": score, "content": content_column, "underline": underline, "row": row}
 
 
+# Optional public asset plaque. Rules, collections and allotted height stay local.
+func add_asset_score(parent: Control, artwork: Texture2D, identity: Color) -> Dictionary:
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", GameLook.asset_player_sheet(identity))
+	parent.add_child(panel)
+	panel.draw.connect(func() -> void: panel.draw_style_box(GameLook.party_sheen(), Rect2(Vector2.ZERO, panel.size).grow(-2)))
+	var content := VBoxContainer.new(); content.add_theme_constant_override("separation", 5); panel.add_child(content)
+	var row := HBoxContainer.new(); row.add_theme_constant_override("separation", 10); content.add_child(row)
+	var token := TextureRect.new(); token.texture = artwork
+	token.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; token.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	token.custom_minimum_size = Vector2(52, 52); token.mouse_filter = Control.MOUSE_FILTER_IGNORE; row.add_child(token)
+	var values := VBoxContainer.new(); values.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	values.add_theme_constant_override("separation", 0); row.add_child(values)
+	var card := add_session_score(values, false, true)
+	card.player.autowrap_mode = TextServer.AUTOWRAP_OFF; card.player.clip_text = true
+	card.player.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	card.player.add_theme_color_override("font_color", GameLook.readable_text_color(identity, Color("061d30")))
+	card.player.add_theme_font_override("font", GameLook.party_font(get_theme_default_font()))
+	var balance := HBoxContainer.new(); balance.add_theme_constant_override("separation", 6); values.add_child(balance)
+	var cash := TextureRect.new(); cash.texture = RuntimeAssets.texture("res://ui/playful/table-cash.svg")
+	cash.custom_minimum_size = Vector2(24, 24); cash.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	cash.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; cash.mouse_filter = Control.MOUSE_FILTER_IGNORE; balance.add_child(cash)
+	card.score.reparent(balance)
+	card.score.add_theme_color_override("font_color", Color("ffe7a3"))
+	card.score.add_theme_font_override("font", GameLook.party_font(get_theme_default_font()))
+	var wealth := Label.new(); wealth.clip_text = true; wealth.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	wealth.add_theme_color_override("font_color", Color("b6d6e8")); content.add_child(wealth)
+	card.merge({"panel":panel, "content":content, "row":row, "values":values, "balance":balance, "token":token, "icon":cash, "wealth":wealth, "identity":identity, "presentation":"asset", "active":false, "compact":false}, true)
+	fit_asset_score(card, false)
+	return card
+
+
+func fit_asset_score(card: Dictionary, compact: bool, roomy := false) -> void:
+	card.compact = compact
+	card.panel.add_theme_stylebox_override("panel", GameLook.asset_player_sheet(card.identity, card.active, compact))
+	card.content.add_theme_constant_override("separation", 2 if compact else 3)
+	var balance_parent: Control = card.row if compact else card.values
+	if card.balance.get_parent() != balance_parent: card.balance.reparent(balance_parent)
+	card.token.visible = not compact
+	card.token.custom_minimum_size = Vector2(60, 60) if roomy else Vector2(44, 44)
+	card.icon.custom_minimum_size = Vector2(16, 14) if compact else Vector2(24, 24)
+	card.player.add_theme_font_size_override("font_size", 11 if compact else 18 if roomy else 15)
+	card.score.add_theme_font_size_override("font_size", 12 if compact else 28 if roomy else 24)
+	card.wealth.visible = not compact; card.wealth.add_theme_font_size_override("font_size", 11)
+
+
 # Place next to a player's name. The module owns expiry and authoritative text.
 func add_speech_bubble(parent: Control) -> Dictionary:
 	var panel := PanelContainer.new()
@@ -1231,6 +1277,9 @@ func set_score_card_identity(card: Dictionary, identity: Color) -> void:
 func set_score_card_active(card: Dictionary, active: bool) -> void:
 	card.underline.active = active
 	card.underline.queue_redraw()
+	if card.get("presentation", "") == "asset":
+		card.active = active
+		card.panel.add_theme_stylebox_override("panel", GameLook.asset_player_sheet(card.identity, active, card.compact))
 
 
 # Optional illustrated heading keeps shared navigation above the artwork.

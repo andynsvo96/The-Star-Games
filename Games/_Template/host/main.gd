@@ -91,6 +91,18 @@ func _ready() -> void:
 	# the modern palette, circular profile avatars and draw_table_stats counters.
 	# Their complete composition still uses screen.center_board(...).
 	var party_example := PanelContainer.new()
+	# Asset games can opt into token/cash plaques without changing other scores.
+	var asset_example := screen.add_asset_score(layout.playfield, RuntimeAssets.texture("res://ui/playful/table-house.svg"), Color("2463eb"))
+	asset_example.panel.name = "AssetScoreExample"; asset_example.panel.hide()
+	asset_example.player.text = "Example player"; asset_example.score.text = GameLook.money_text(1500)
+	asset_example.wealth.text = "Public wealth and collection summary"
+	screen.fit_asset_score(asset_example, false, true)
+	screen.set_score_card_active(asset_example, true)
+	var asset_action := Button.new(); asset_action.text = "ROLL DICE"
+	asset_action.icon = RuntimeAssets.texture("res://ui/playful/table-dice.svg")
+	GameLook.asset_action(asset_action, "primary"); asset_example.content.add_child(asset_action)
+	# Compact short-host plaques hide the token and summary; callers bound their
+	# collection's height to the remaining panel space. No board fitting changes.
 	party_example.add_theme_stylebox_override("panel", GameLook.party_player_sheet(Color("2463eb"), true))
 	party_example.draw.connect(func() -> void: GameLook.draw_party_player(party_example, Rect2(Vector2.ZERO, party_example.size), Color("2463eb"), true))
 	var party_face := Control.new()
@@ -144,6 +156,10 @@ func _ready() -> void:
 	var turn_example := GameTurnStrip.new(); turn_example.tracked = true; layout.playfield.add_child(turn_example); turn_example.hide()
 	# tracked opts into neutral names with a gold current-step dot/line, like Poker.
 	turn_example.set_players([{"display_name":"Example player", "color":"#2463eb"}], 0)
+	# Alternatively, keep literal names below framed piece portraits (not tracked).
+	var portrait_example := GameTurnStrip.new(); portrait_example.portraits = [RuntimeAssets.texture("res://ui/playful/table-house.svg")]
+	layout.playfield.add_child(portrait_example); portrait_example.hide()
+	portrait_example.set_players([{"display_name":"Example player", "color":"#2463eb"}], 0)
 	# GameActionRow retains one line of buttons without changing the board's width.
 	# A seventh true center_board argument gives an auxiliary toolbar viewport width
 	# while keeping its replay/footer height reserved by the shared board fitter.

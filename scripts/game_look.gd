@@ -448,6 +448,50 @@ static func modern_table_sheet(active := false) -> StyleBoxFlat:
 	return style
 
 
+# Optional asset-game plaques keep identity, cash and collections on one surface.
+static func asset_player_sheet(identity: Color, active := false, compact := false) -> StyleBoxFlat:
+	var style := modern_table_sheet()
+	style.bg_color = Color("061d30").lerp(identity, .08)
+	style.border_color = identity.lightened(.35 if active else .16)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(14)
+	style.set_content_margin_all(6 if compact else 8)
+	style.shadow_color = Color(identity, .42 if active else .16)
+	style.shadow_size = 12 if active else 5
+	style.shadow_offset = Vector2(0, 2)
+	return style
+
+
+static func money_text(amount: int) -> String:
+	var digits := str(absi(amount))
+	for index in range(digits.length() - 3, 0, -3): digits = digits.insert(index, ",")
+	return ("−" if amount < 0 else "") + "$" + digits
+
+
+# Raised blue/slate/red actions for asset tables; dimensions and focus stay shared.
+static func asset_action(button: Button, kind := "secondary") -> void:
+	table_action(button, "play" if kind == "primary" else "bank")
+	var fill := Color("067cbd") if kind == "primary" else Color("a32536") if kind == "end" else Color("163e58")
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		var tint := fill.lightened(.14) if state == "hover" else fill.darkened(.16) if state == "pressed" else fill
+		if state == "disabled": tint = Color("344a5c")
+		var style := box(tint, tint.lightened(.48), 12, 2)
+		style.set_content_margin_all(10)
+		style.shadow_color = Color("35cfff66") if kind == "primary" and state != "disabled" else Color("00081988")
+		style.shadow_size = 8 if kind == "primary" and state != "disabled" else 3
+		style.shadow_offset = Vector2(0, 3)
+		button.add_theme_stylebox_override(state, style)
+	button.add_theme_stylebox_override("focus", box(Color.TRANSPARENT, Color("ffe58a"), 12, 3))
+	button.add_theme_font_override("font", party_font(button.get_theme_default_font()))
+	button.add_theme_constant_override("icon_max_width", 24)
+	button.add_theme_constant_override("h_separation", 8)
+	button.expand_icon = true
+	if not button.has_meta("asset_action_fitted"):
+		button.set_meta("asset_action_fitted", true)
+		button.resized.connect(func() -> void: center_button_contents(button))
+	center_button_contents.call_deferred(button)
+
+
 static func rules_sheet() -> StyleBoxFlat:
 	var style := box(Color("152139f2"), Color("368eb9"), 20, 1)
 	style.set_content_margin_all(12)

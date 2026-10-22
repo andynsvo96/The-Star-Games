@@ -5,6 +5,7 @@ extends HBoxContainer
 var players: Array = []
 var active := -1
 var tracked := false
+var portraits: Array[Texture2D] = []
 
 
 func _ready() -> void:
@@ -17,6 +18,7 @@ func _ready() -> void:
 
 func set_players(roster: Array, turn: int) -> void:
 	players = roster; active = turn
+	custom_minimum_size.y = 48 if not portraits.is_empty() else 34 if tracked else 0
 	while get_child_count() > players.size():
 		var child := get_child(get_child_count() - 1); remove_child(child); child.queue_free()
 	while get_child_count() < players.size():
@@ -28,7 +30,7 @@ func set_players(roster: Array, turn: int) -> void:
 	for index in players.size():
 		var label: Label = get_child(index)
 		label.text = str(players[index].display_name)
-		label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM if tracked else VERTICAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM if tracked or not portraits.is_empty() else VERTICAL_ALIGNMENT_CENTER
 		label.add_theme_color_override("font_color", Color("ffe18b") if tracked and index == active else Color(str(players[index].color)) if not tracked and index == active else Color.WHITE)
 		label.accessibility_name = label.text + (", current turn" if index == active else "")
 		var emphasis := FontVariation.new(); emphasis.base_font = get_theme_font("font", "Label"); emphasis.variation_embolden = .8 if index == active else 0
@@ -39,6 +41,14 @@ func set_players(roster: Array, turn: int) -> void:
 
 
 func _draw() -> void:
+	if not portraits.is_empty():
+		for index in mini(get_child_count(), portraits.size()):
+			var label: Control = get_child(index)
+			var bounds := Rect2(Vector2(label.position.x, 0), Vector2(label.size.x, size.y))
+			draw_style_box(GameLook.asset_player_sheet(Color(str(players[index].color)), index == active, true), bounds.grow(-2))
+			var edge := minf(28, size.y * .53)
+			if portraits[index] != null: draw_texture_rect(portraits[index], Rect2(Vector2(bounds.get_center().x - edge / 2, 2), Vector2.ONE * edge), false)
+		return
 	if not tracked or get_child_count() == 0: return
 	var first: Control = get_child(0); var last: Control = get_child(get_child_count() - 1)
 	draw_line(Vector2(first.position.x + first.size.x / 2, 6), Vector2(last.position.x + last.size.x / 2, 6), Color("9ca9af"), 1)
@@ -50,7 +60,7 @@ func _draw() -> void:
 
 
 func _fit() -> void:
-	var font_size := 17
+	var font_size := 14 if not portraits.is_empty() else 17
 	var available := maxf(1, (size.x - maxi(0, players.size() - 1) * 8) / maxi(1, players.size()))
 	for label: Label in get_children():
 		while font_size > 11 and label.get_theme_font("font").get_string_size(label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > available: font_size -= 1

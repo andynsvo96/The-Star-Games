@@ -75,7 +75,7 @@ func _run() -> void:
 	var preview_response: Array = await artwork.request_completed
 	if preview_response[1] != 200 or not preview_response[3].get_string_from_utf8().contains("Phone controller preview"):
 		return _finish(false, "Debug phone preview was not served offline")
-	for asset in ["score-wood", "iron-chain", "scroll-closed", "assembly-avatar", "assembly-avatar-detail", "clipboard-board"]:
+	for asset in ["score-wood", "iron-chain", "scroll-closed", "assembly-avatar", "assembly-avatar-detail", "clipboard-board", "table-dice", "table-trade", "table-flag"]:
 		if artwork.request("http://127.0.0.1:%d/ui/playful/%s.svg" % [server.http_port, asset]) != OK:
 			return _finish(false, "Shared game artwork request failed")
 		var response: Array = await artwork.request_completed

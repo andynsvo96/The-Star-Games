@@ -119,6 +119,10 @@
        StarGamesTableUI (card-ui.js) supplies avatar badges and compact groups;
        rules, legal choices, inspector values and public/private state stay local. -->
   <section id="example-modern-table" hidden aria-label="Modern public-card group example"></section>
+  <!-- Optional asset plaques share token/cash hierarchy and static identity glow.
+       Use is-current for the authoritative active player and --score-color for
+       identity. Module artwork remains an ordinary offline image. -->
+  <section class="game-modern-table" hidden aria-label="Asset score example"><div class="game-controller game-asset-controller"><section class="surface game-asset-surface game-asset-score is-current" style="--score-color:#2463eb"><div class="game-asset-identity"><img class="game-asset-token" src="/ui/playful/table-house.svg" alt=""><strong>Example player</strong></div><div class="game-asset-stats"><span class="game-asset-balance">$1,500</span><span>Public asset summary</span></div></section><button class="game-asset-action game-asset-primary game-icon-control" type="button"><img src="/ui/playful/table-dice.svg" alt=""><span>ROLL DICE</span></button></div></section>
   <!-- game-casino on body provides engraved frames, static action glows and a
        metallic range thumb. Update range progress after snapshots and edits. -->
   <section class="game-casino" hidden aria-label="Casino controls example"><div class="surface"><button type="button" class="game-success">BET</button><input id="example-casino-range" type="range" min="0" max="100" value="40" aria-label="Example bet amount"></div></section>
