@@ -56,6 +56,9 @@ func _ready() -> void:
 	# An optional third true argument keeps smaller text/icons inside larger buttons:
 	# GameLook.fit_illustrated_control(button, compact, true).
 	screen.exit_requested.connect(return_to_lobby)
+	# set_score_card_active(card, active, true) adds a static gold name highlight
+	# to shared ledger/ornate cards; other calls retain their usual underline.
+	# set_score_card_compact(card, true, true) trims decoration in dense host stacks.
 	# Optional shared layout for games with session scores and history.
 	var layout := screen.add_centered_layout()
 	# Optional collection choices retain each child's stable ID and SDK route.
@@ -274,7 +277,8 @@ func _ready() -> void:
 	ornate_example.player.text = "PLAYER"
 	screen.add_score_stat(ornate_example, RuntimeAssets.texture("res://ui/playful/stat-walls.svg"), "10 WALLS")
 	# Optional compact multi-seat stats, applied after adding the counters.
-	screen.set_score_card_compact(ornate_example, true)
+	screen.set_score_card_compact(ornate_example, true, true)
+	screen.set_score_card_active(ornate_example, true, true)
 	var roomy_example := Button.new()
 	roomy_example.text = "PLACE"
 	ornate_example.content.add_child(roomy_example)

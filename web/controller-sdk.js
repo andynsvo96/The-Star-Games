@@ -134,6 +134,7 @@
       this.stopped = false;
       const container = board?.closest(".game-controller");
       if (!board || !replay || !container) return;
+      this.stats = container.querySelector(".game-board-stats");
       board.dataset.gameBoard = "";
       replay.classList.add("game-board-replay");
       this.refresh = () => {
@@ -147,6 +148,7 @@
       const header = container.querySelector("header");
       if (header) this.observer.observe(header);
       if (this.controls) this.observer.observe(this.controls);
+      if (this.stats) this.observer.observe(this.stats);
       window.addEventListener("resize", this.refresh);
       document.fonts.ready.then(this.refresh);
       window.addEventListener("pagehide", () => {
@@ -164,7 +166,8 @@
       const destination = beside ? this.controlsSide : this.controlsHome;
       if (this.controlsSide && this.controls && destination && this.controls.parentElement !== destination) destination.append(this.controls);
       const room = Math.max(footerReserve, this.controls && !beside ? this.controls.getBoundingClientRect().height + 16 : 0);
-      this.board.closest(".game-playfield")?.style.setProperty("--game-board-bottom-room", (room - 12) + "px");
+      const fullFooter = this.board.closest(".game-controller").classList.contains("game-board-controller");
+      this.board.closest(".game-playfield")?.style.setProperty("--game-board-bottom-room", (fullFooter ? room : room - 12) + "px");
       const aspect = getComputedStyle(this.board).aspectRatio.match(/^([\d.]+)(?:\s*\/\s*([\d.]+))?$/);
       const ratio = aspect ? Number(aspect[1]) / Number(aspect[2] || 1) : 1;
       let changed = false;
@@ -174,13 +177,17 @@
         const container = this.board.closest(".game-controller");
         const centered = container.classList.contains("game-centered-controller");
         const style = getComputedStyle(container);
+        const boardController = container.classList.contains("game-board-controller");
+        const footer = boardController && this.stats && !this.stats.hidden
+          ? this.stats.getBoundingClientRect().height + parseFloat(style.rowGap || 0) + 8
+          : 0;
         const availableHeight = centered
           ? innerHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom) - room
-          : innerHeight - this.board.getBoundingClientRect().top - room;
-        const limit = Math.floor(Math.min(this.board.parentElement.clientWidth, Math.max(160, availableHeight * ratio)));
+          : innerHeight - this.board.getBoundingClientRect().top - room - footer - (boardController ? parseFloat(style.paddingBottom) : 0);
+        const limit = Math.floor(Math.min(this.board.parentElement.clientWidth, Math.max(boardController ? 44 : 160, availableHeight * ratio)));
         if (this.board.style.maxWidth === limit + "px") break;
         this.board.style.maxWidth = limit + "px";
-        this.replay.style.maxWidth = limit + "px";
+        this.replay.style.maxWidth = boardController && this.replay.hasAttribute("data-game-inline-action") ? "" : limit + "px";
         changed = true;
       }
       if (changed) window.dispatchEvent(new Event("gameboardresize"));

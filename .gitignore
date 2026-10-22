@@ -79,3 +79,6 @@ desktop.ini
 !/tests/title_intro.gd.uid
 !/tests/ui_smoke.gd
 !/tests/ui_smoke.gd.uid
+
+# Synthetic shared board/controller layout regression (no local games required).
+!/tests/shared_board_controller.mjs

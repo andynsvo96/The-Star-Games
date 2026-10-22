@@ -797,6 +797,30 @@ this event. The template and all board games inherit the sizing automatically.
 Shared hanging scores scale text to the card width rather than splitting words.
 
 
+### Compact board phones with bottom stats
+
+Opt into `game-board-controller` on the shared `.game-controller` main element
+for a compact heading, narrow safe-area gutters and a board followed by player
+stats. Keep `#board` and `#replay` in `.game-playfield`, then add
+`.game-board-stats` after it (nesting inside a stage wrapper is supported).
+`StarGamesBoardLayout` measures and observes the footer, reserving its height,
+the bottom safe area and stable action/replay space before fitting the board.
+Do not add a module-owned viewport fitter or hide overflow to conceal bad sizing.
+An optional `data-game-stats-columns="3"` fits three-to-six shared session-score
+rows into three portrait columns or six columns in short landscape. Ordinary
+two-player footers use two columns. Long names wrap while counters remain compact.
+Both Checkers games use the hook; the template includes a hidden composition.
+Other games keep their existing layout and fitter minimums.
+
+Native `set_score_card_active(card, active, true)` adds a static gold name-panel
+highlight to ledger and ornate cards, with identical insets for both states.
+The optional third argument defaults false, preserving existing callers. Use it
+when removing an ordinary host turn plaque; keep disconnect/result feedback
+reachable in player cards or explicit result UI. The ornate frame source keeps
+its complete crest inside the image. `set_score_card_compact(card, compact, true)`
+opts into fewer decorative elements and smaller safe insets for dense six-seat
+host stacks; ordinary compact cards keep their existing decoration.
+
 ### Centered party card tables
 
 `game-centered-controller` is an opt-in on the browser main surface. It centers
@@ -1064,13 +1088,15 @@ lineup. Disconnects pause seated humans without substituting computers; extra
 phones are spectators. Snapshots omit profile metadata and reconnect tokens.
 
 Both views inherit shared royal controls, selection rings and celebrations.
-Hosts use shared centered board fitting and compact score cards. Phones use
-shared session scores in a separately scrolling public roster, plus the SDK's
-board fitter. The shared scrolling dialog opens an enlarged board with 58px
+Hosts use a larger shared centered board, compact score cards and a static gold
+name highlight for the current seat; ordinary host turn plaques are omitted.
+Phones keep a compact top turn status and shared session scores below the board
+through the SDK's measured footer. Help stays in host Settings; phones retain Zoom. The shared scrolling dialog opens an enlarged board with 58px
 hole spacing and reachable Close; keyboard selection also works. Reduced motion
 settles marbles immediately; other moves lock input until host and local motion
 finish. Duplicate syncs preserve movement, while reconnect restores settled art.
-Backgrounds use the extensionless `art/background` stem and the shared player.
+The lantern-lit garden artwork uses the extensionless `art/background` stem and
+the shared player; its original and prompt remain in `asset/chinese-checkers/`.
 
 Local checks: `tests/chinese_checkers.gd`, `tests/chinese_checkers_motion.gd`,
 `tests/chinese_checkers_network.gd`, rendered `tests/chinese_checkers_visual.gd`,

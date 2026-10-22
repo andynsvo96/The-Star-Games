@@ -44,6 +44,11 @@
      game-avatar-bust to each living avatar. Keep tombstones for eliminated seats.
      To keep eliminated seats visible, add game-team-eliminated to their figures;
      the shared avatar becomes a tombstone. Include OUT in the accessible caption. -->
+<!-- A board with stats below uses main.game-controller.game-board-controller.
+     Place .game-playfield (with #board and #replay) before .game-board-stats.
+     The SDK measures/observes the stats, retaining room for actions/replay.
+     data-game-stats-columns="3" supports six compact shared session scores.
+     This opt-in supplies compact heading/gutters; keep viewport fitting shared. -->
 <!-- Optional game.json background_variants maps names to extensionless stems.
      controller.setBackgroundVariant("day", true, hostReducedMotion) crossfades;
      an empty name restores the default. Sync/reconnect should not replay a fade. -->
@@ -77,7 +82,17 @@
            counters. Hide unused cards with hidden; the width stays fitted. -->
       <div class="game-score-stack"><aside class="game-score-card game-ledger game-text-score"><p class="is-active-player">PLAYER</p><output aria-label="Example score">0</output></aside></div>
     </div>
-  </main>
+  <!-- Hidden composition for game-board-controller: enable on main when adopting.
+     Use the game's actual #board/#replay in the playfield; example IDs are omitted
+     here so this optional illustration cannot interfere with the live template. -->
+<section hidden aria-label="Board with bottom stats example">
+  <div class="game-playfield"><div aria-label="Example fitted board"></div></div>
+  <div class="game-board-stats" data-game-stats-columns="3">
+    <aside class="game-session-score"><p>Example player</p><output>0 WINS</output><p>0 / 10 HOME</p></aside>
+    <aside class="game-session-score"><p>Second player</p><output>0 WINS</output><p>0 / 10 HOME</p></aside>
+  </div>
+</section>
+</main>
   <!-- Optional responsive tools: place a game-board-side-controls element with
        data-game-side-controls inside main. At a side layout set the playfield's
        --game-board-controls-side:1 and --game-board-footer-reserve:16.

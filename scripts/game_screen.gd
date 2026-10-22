@@ -1175,8 +1175,10 @@ func add_score_card(parent: Control, icon: Texture2D, accent := Color.TRANSPAREN
 	var score_panel := PanelContainer.new()
 	if ornate:
 		var divider := HSeparator.new()
+		divider.set_meta("score_decoration", true)
 		column.add_child(divider)
 		var laurel := TextureRect.new()
+		laurel.set_meta("score_decoration", true)
 		laurel.texture = RuntimeAssets.texture("res://ui/playful/stat-wins.svg")
 		laurel.custom_minimum_size = Vector2(0, 66)
 		laurel.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -1239,23 +1241,26 @@ func add_score_stat(card: Dictionary, icon: Texture2D, text: String) -> Label:
 
 # Dense multi-seat boards keep ornate cards inside the shared sidebar geometry.
 # Apply after adding counters; other card presentations retain their usual layout.
-func set_score_card_compact(card: Dictionary, compact: bool) -> void:
-	if card.get("presentation", "") != "ornate" or card.get("compact", false) == compact:
+func set_score_card_compact(card: Dictionary, compact: bool, minimal_decoration := false) -> void:
+	if card.get("presentation", "") != "ornate" or (card.get("compact", false) == compact and card.get("minimal_decoration", false) == minimal_decoration):
 		return
 	card.compact = compact
+	card.minimal_decoration = minimal_decoration
 	var surface: StyleBoxTexture = card.panel.get_theme_stylebox("panel").duplicate()
 	for side in [SIDE_LEFT, SIDE_RIGHT]:
 		surface.set_texture_margin(side, 18 if compact else 32)
 		surface.set_content_margin(side, 24 if compact else 30)
 	for side in [SIDE_TOP, SIDE_BOTTOM]:
 		surface.set_texture_margin(side, 18 if compact else 54)
-		surface.set_content_margin(side, 30 if compact else 60)
+		surface.set_content_margin(side, (16 if minimal_decoration else 30) if compact else 60)
 	card.panel.add_theme_stylebox_override("panel", surface)
 	card.panel.clip_contents = compact
 	card.content.add_theme_constant_override("separation", 3 if compact else 10)
 	card.player.add_theme_font_size_override("font_size", 15 if compact else 21)
 	card.score.add_theme_font_size_override("font_size", 16 if compact else 23)
 	for child in card.content.get_children():
+		if child.has_meta("score_decoration"):
+			child.visible = not (compact and minimal_decoration)
 		if child is TextureRect and child.visible:
 			if not child.has_meta("score_original_height"):
 				child.set_meta("score_original_height", child.custom_minimum_size.y)
@@ -1274,7 +1279,11 @@ func set_score_card_identity(card: Dictionary, identity: Color) -> void:
 	card.name_panel.add_theme_stylebox_override("panel", surface)
 
 
-func set_score_card_active(card: Dictionary, active: bool) -> void:
+func set_score_card_active(card: Dictionary, active: bool, prominent := false) -> void:
+	if prominent and card.get("presentation", "") in ["ornate", "ledger"]:
+		var highlight := GameLook.box(Color("ffe49a") if active else Color.TRANSPARENT, Color("b78330") if active else Color.TRANSPARENT, 6, 2)
+		highlight.set_content_margin_all(4)
+		card.name_panel.add_theme_stylebox_override("panel", highlight)
 	card.underline.active = active
 	card.underline.queue_redraw()
 	if card.get("presentation", "") == "asset":
