@@ -1,0 +1,14 @@
+/* Module geometry only; modern table colors and components live in /styles.css. */
+.deal-controller #hand .game-playing-card { flex-shrink:0; }
+.deal-controller #players > .player-zone { min-width:0; }
+.deal-controller .opponents .player-zone { width:100%; }
+.deal-controller #mine .group-grid { justify-content:flex-start; }
+.deal-controller #decision-body { overflow:auto; }
+.deal-controller #decision-body label { margin-bottom:0; }
+.deal-controller #decision-actions { flex-wrap:wrap; }
+.deal-controller #decision-actions button { flex:1 1 130px; }
+.deal-controller #public-body .public-player + .public-player { margin-top:20px; }
+.deal-controller #public-body .player-heading { margin-bottom:12px; }
+.deal-controller #rotate-selected { flex-shrink:0; width:44px; justify-content:center; }
+.deal-controller #result { margin-bottom:8px; }
+.game-modern-table .deal-controller[data-view="phone"] .phone-status #status { flex:1 1 0; min-width:0; }

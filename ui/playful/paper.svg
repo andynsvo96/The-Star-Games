@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs><linearGradient id="paper" x2=".3" y2="1"><stop stop-color="#f8e9cc"/><stop offset=".5" stop-color="#f3dfb8"/><stop offset="1" stop-color="#e7cda1"/></linearGradient><pattern id="grain" width="17" height="19" patternUnits="userSpaceOnUse"><path d="m2 4 3-1m5 10 2 1M5 16l2-2" stroke="#b99464" opacity=".12" fill="none"/></pattern></defs>
+  <path d="m8 10 31-3 36 2 36-2 43 2 41-2 52 3 3 39-2 40 2 38-2 42 2 39-4 42-38-2-40 2-39-2-44 2-35-2-43 2-3-40 2-41-2-39 2-39-2-42z" fill="#24160c" opacity=".3"/>
+  <path d="m5 6 33-3 36 2 36-2 43 2 41-2 52 3 3 39-2 40 2 38-2 42 2 39-4 42-38-2-40 2-39-2-44 2-35-2-43 2-3-40 2-41-2-39 2-39-2-42z" fill="url(#paper)" stroke="#aa8050" stroke-width="1.5"/>
+  <path d="M12 13H243V243H12Z" fill="url(#grain)"/><path d="m16 20 14-5m206 216-9 9m-215-31 4 7m220-191 7 9" stroke="#b38a54" stroke-opacity=".25" fill="none"/>
+</svg>

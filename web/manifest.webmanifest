@@ -1,0 +1,8 @@
+{
+  "name": "The Star Games Controller",
+  "short_name": "Star Games",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07102b",
+  "theme_color": "#07102b"
+}

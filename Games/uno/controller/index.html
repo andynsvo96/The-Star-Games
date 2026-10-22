@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="style.css">
+  <title>UNO Controller</title>
+</head>
+<body class="playful-game game-party-table">
+  <main class="game-controller game-centered-controller">
+    <header>
+      <h1 class="sr-only">UNO</h1>
+      <p id="connection" role="status">Connecting…</p>
+      <p id="status" class="sr-only" role="status">Waiting for the host…</p>
+    </header>
+    <section class="game-playfield">
+      <div id="board" aria-label="UNO table">
+        <div id="players" aria-label="Players and card counts"></div>
+        <div id="turn-arrow" hidden aria-hidden="true"></div>
+        <div id="local-player" class="uno-player-box game-seat-badge" aria-label="Your player and card count"><p id="your-turn" class="uno-turn-caption" hidden>YOUR TURN</p><p id="waiting-turn" class="game-table-waiting" role="status" hidden></p></div>
+        <div id="piles">
+          <svg id="table-direction" viewBox="0 0 200 200" preserveAspectRatio="none" role="img" aria-label="Clockwise turn order">
+            <g class="uno-orbit-arrows"><g id="orbit-shape"><path/><path/></g></g>
+          </svg>
+          <button id="deck" class="uno-card game-table-card game-table-card-tabletop game-table-card-stack" aria-label="Draw one card"><img src="art/cards/wild-back.svg" alt=""></button>
+          <img id="discard" class="uno-card game-table-card game-table-card-tabletop game-table-card-stack" alt="Top discard" role="button" tabindex="-1" aria-disabled="true">
+          <span class="uno-pile-label uno-draw-label">DRAW</span><span class="uno-pile-label uno-discard-label">DISCARD</span>
+          <output id="draw-total" aria-live="polite" hidden></output>
+        </div>
+        <p id="notice" class="game-status" role="status" hidden></p>
+        <div id="hand" aria-label="Your private hand"><div id="hand-cards"></div><button id="hand-left" class="game-compact-control" aria-label="Show previous cards" hidden></button><button id="hand-right" class="game-compact-control" aria-label="Show next cards" hidden></button></div>
+        <div id="hand-actions">
+          <button id="draw" class="game-primary" disabled><span id="draw-label">DRAW</span></button>
+          <button id="uno" class="game-call" aria-label="Declare UNO before playing your penultimate card" disabled><img src="art/uno-logo.webp" alt="UNO!"></button>
+          <button id="sort" class="game-special" aria-label="Sort hand: color, numbers, actions, then Wilds"><span aria-hidden="true">SORT</span><span id="sort-label">COLOR</span></button>
+          <button id="replay" class="game-primary" data-game-inline-action hidden>PLAY AGAIN</button>
+        </div>
+        <div id="draw-preview" role="group" aria-label="Drawn card decision" hidden>
+          <img id="drawn-card" class="uno-card" src="art/cards/wild-back.svg" alt="">
+          <div class="uno-draw-choices"><button id="play-drawn" class="game-primary game-compact-control">PLAY CARD</button><button id="pass" class="game-compact-control">KEEP CARD</button></div>
+        </div>
+        <div id="card-flights" aria-hidden="true"></div>
+        <div id="deal-cards" aria-hidden="true"></div>
+        <div id="player-effects" aria-hidden="true"></div>
+      </div>
+      <div id="actions" class="game-board-controls">
+        <details id="active-rules" class="game-rules-panel is-compact"><summary aria-haspopup="dialog" aria-controls="rules-dialog"><img src="/ui/playful/rules-star.svg" alt="">ACTIVE RULES / EFFECTS</summary></details>
+      </div>
+    </section>
+    <p id="event" class="sr-only" role="status"></p>
+    <dialog id="addon-view" class="game-dialog game-dialog-compact game-scroll-dialog" aria-labelledby="addon-view-heading">
+      <h2 id="addon-view-heading" class="dialog-heading">YOUR CHOICE</h2>
+      <div id="addon-view-body" class="dialog-body game-action-preview"></div>
+      <div id="addon-view-actions" class="dialog-actions"><button id="close-addon-view" class="game-compact-control">BACK TO TABLE</button></div>
+    </dialog>
+    <dialog id="rules-dialog" class="game-dialog game-dialog-compact game-rules-dialog" aria-labelledby="rules-heading">
+      <h2 id="rules-heading">ACTIVE RULES / EFFECTS</h2>
+      <div class="game-rules-panel"><div id="rules-list" class="game-rules-list"></div></div>
+      <button id="close-rules" class="game-compact-control">CLOSE</button>
+    </dialog>
+  </main>
+  <dialog id="colors" class="game-dialog uno-wild-dialog" aria-labelledby="color-heading">
+    <h2 id="color-heading" class="sr-only">Choose a color on the Wild card</h2>
+    <div id="color-card-wrap">
+      <img id="color-card" src="art/cards/wild-wild.svg" alt="Wild card">
+      <svg id="color-sectors" viewBox="0 0 120 180">
+        <g transform="rotate(25 60 90)">
+          <path data-color="red" role="button" tabindex="0" aria-label="Choose Red" d="M60 33A37 57 0 0 0 23 90H60Z"/>
+          <path data-color="blue" role="button" tabindex="0" aria-label="Choose Blue" d="M60 33A37 57 0 0 1 97 90H60Z"/>
+          <path data-color="green" role="button" tabindex="0" aria-label="Choose Green" d="M97 90A37 57 0 0 1 60 147V90Z"/>
+          <path data-color="yellow" role="button" tabindex="0" aria-label="Choose Yellow" d="M60 147A37 57 0 0 1 23 90H60Z"/>
+        </g>
+      </svg>
+    </div>
+    <button id="color-uno" class="game-primary game-compact-control" hidden>UNO!</button>
+    <button id="cancel-color" class="game-compact-control">CANCEL</button>
+  </dialog>
+  <script src="/controller-sdk.js"></script>
+  <script src="/card-ui.js"></script>
+  <script src="/game-celebration.js"></script>
+  <script src="controller.js"></script>
+</body>
+</html>

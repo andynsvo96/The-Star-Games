@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="424" height="456" viewBox="0 0 424 456">
+<defs><linearGradient id="shell" x2="0" y2="1"><stop stop-color="#ff8588"/><stop offset=".18" stop-color="#fa303b"/><stop offset=".7" stop-color="#a60926"/><stop offset="1" stop-color="#fa303b"/></linearGradient><linearGradient id="plate" x2="0" y2="1"><stop stop-color="#1e3d72"/><stop offset="1" stop-color="#081c46"/></linearGradient><linearGradient id="tab" x2="0" y2="1"><stop stop-color="#fa303b"/><stop offset="1" stop-color="#a60926"/></linearGradient></defs>
+<rect x="4" y="7" width="416" height="446" rx="24" fill="#08172c"/>
+<rect x="4" y="3" width="416" height="444" rx="24" fill="url(#shell)" stroke="#082352" stroke-width="6"/>
+<rect x="13" y="10" width="398" height="429" rx="18" fill="none" stroke="#ff8588" stroke-width="3"/>
+<rect x="22" y="60" width="380" height="376" rx="11" fill="url(#plate)" stroke="#061a38" stroke-width="4"/>
+<rect x="27" y="7" width="370" height="45" rx="10" fill="url(#tab)" stroke="#ff8588" stroke-width="3"/>
+<rect x="35" y="13" width="354" height="33" rx="7" fill="#a60926" stroke="#082b59" stroke-width="2"/>
+<path d="M24 62H400" stroke="#ffffff66" stroke-width="3"/>
+<rect x="55" y="93" width="322" height="322" rx="5" fill="#0476b3" stroke="#ff8588" stroke-width="3"/>
+<g fill="#0b2444" stroke="#d8efff77" stroke-width="1.5"><circle cx="17" cy="26" r="4"/><circle cx="407" cy="26" r="4"/><circle cx="17" cy="432" r="4"/><circle cx="407" cy="432" r="4"/></g>
+</svg>

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "tic-tac-toe",
+  "title": "Tic Tac Toe",
+  "description": "Three in a row wins the round. Play against a friend or computer.",
+  "version": "1.0.0",
+  "thumbnail": "thumbnail.svg",
+  "background": "art/garden",
+  "host_scene": "host/main.tscn",
+  "controller_entry": "controller/index.html",
+  "min_players": 1,
+  "max_players": 2,
+  "modes": [
+    "singleplayer",
+    "multiplayer"
+  ]
+}

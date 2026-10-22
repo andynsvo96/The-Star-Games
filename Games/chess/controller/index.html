@@ -1,0 +1,51 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+	<title>Chess</title>
+	<link rel="stylesheet" href="/styles.css">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body class="playful-game game-royal">
+	<main class="game-controller">
+		<header>
+			<h1 class="sr-only">Chess</h1>
+			<img class="game-title-art" src="/game/chess/art/title-v2.png" alt="">
+			<p id="connection" role="status">Connecting...</p>
+			<p id="status" class="game-status" role="status">Waiting for the host...</p>
+		</header>
+		<div class="game-arena">
+			<aside class="game-score-card game-ledger game-compact-stats" style="--score-color:#cf2337">
+				<p id="white-player">White player</p>
+				<output id="white-score" aria-label="White player's wins this session">0 WINS</output>
+				<div id="white-clock" class="game-stat-clock" aria-label="White clock" hidden></div>
+				<div id="white-material" class="game-stat-grid" aria-label="White pieces remaining"></div>
+			</aside>
+			<section class="game-playfield">
+				<div id="board" role="group" aria-label="Chess board"></div>
+				<button id="replay" class="game-primary" hidden>PLAY AGAIN</button>
+			</section>
+			<aside class="game-score-card game-ledger game-compact-stats" style="--score-color:#195fc0">
+				<p id="black-player">Black player</p>
+				<output id="black-score" aria-label="Black player's wins this session">0 WINS</output>
+				<div id="black-clock" class="game-stat-clock" aria-label="Black clock" hidden></div>
+				<div id="black-material" class="game-stat-grid" aria-label="Black pieces remaining"></div>
+			</aside>
+		</div>
+		<dialog id="promotion" class="game-dialog" aria-labelledby="promotion-label">
+			<h2 id="promotion-label">Choose promotion</h2>
+			<div class="chess-promotion">
+				<button data-promotion="5">Queen</button><button data-promotion="4">Rook</button>
+				<button data-promotion="3">Bishop</button><button data-promotion="2">Knight</button>
+			</div>
+			<button id="cancel-promotion">CANCEL</button>
+		</dialog>
+	</main>
+	<script src="/controller-sdk.js"></script>
+	<script src="/game-celebration.js"></script>
+	<script src="board-motion.js"></script>
+	<script src="controller.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="paper" x2="1" y2=".2"><stop stop-color="#d5a45a"/><stop offset=".12" stop-color="#f3d49a"/><stop offset=".48" stop-color="#fff0c4"/><stop offset=".85" stop-color="#efd098"/><stop offset="1" stop-color="#bd8846"/></linearGradient>
+    <linearGradient id="roll" x2="0" y2="1"><stop stop-color="#906034"/><stop offset=".22" stop-color="#f5d89b"/><stop offset=".46" stop-color="#fff0c4"/><stop offset=".76" stop-color="#d5a361"/><stop offset="1" stop-color="#805029"/></linearGradient>
+    <linearGradient id="edge" x2="0" y2="1"><stop stop-color="#fff2c7"/><stop offset="1" stop-color="#bb813f"/></linearGradient>
+  </defs>
+  <path d="M24 22H234V232H22Z" fill="#2c160c" opacity=".25"/>
+  <path d="M19 23H236L231 54L234 96L231 142L234 184L230 231H23L26 185L22 143L26 99L22 54Z" fill="url(#paper)" stroke="#9c6935" stroke-width="2"/>
+  <path d="M33 37V218M222 38V216" fill="none" stroke="#a67135" stroke-opacity=".3" stroke-width="1.5"/>
+  <path d="M41 45L58 41M192 49L209 44M39 203L55 210M191 216L214 206M38 112L45 107M216 161L221 153" fill="none" stroke="#b48446" stroke-opacity=".22" stroke-width="2"/>
+  <path d="M20 8H233Q247 8 247 23Q247 38 233 38H20Q8 38 8 23Q8 8 20 8Z" fill="url(#roll)" stroke="#8c5a2d" stroke-width="2"/>
+  <ellipse cx="20" cy="23" rx="12" ry="15" fill="url(#edge)" stroke="#9b6937" stroke-width="2"/>
+  <ellipse cx="20" cy="23" rx="5" ry="8" fill="#86562e"/><path d="M17 22Q20 17 23 23Q25 30 18 29" fill="none" stroke="#e7bd7e" stroke-width="2"/>
+  <path d="M34 13H230" stroke="#fff2ce" stroke-width="2" opacity=".65"/>
+  <path d="M20 218H233Q247 218 247 233Q247 248 233 248H20Q8 248 8 233Q8 218 20 218Z" fill="url(#roll)" stroke="#8c5a2d" stroke-width="2"/>
+  <ellipse cx="233" cy="233" rx="13" ry="15" fill="url(#edge)" stroke="#9b6937" stroke-width="2"/>
+  <ellipse cx="233" cy="233" rx="5" ry="8" fill="#86562e"/><path d="M230 232Q233 227 236 233Q238 240 231 239" fill="none" stroke="#e7bd7e" stroke-width="2"/>
+  <path d="M23 223H217" stroke="#fff2ce" stroke-width="2" opacity=".65"/>
+</svg>

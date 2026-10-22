@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Monopoly Deal · The Star Games</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="style.css"></head>
+<body class="playful-game game-modern-table"><main class="game-controller game-card-controller deal-controller" data-view="phone" data-table-layout="roster">
+  <header class="game-header"><div class="brand"><h1 class="sr-only">MONOPOLY DEAL</h1><img id="logo" class="game-table-logo" src="/game/monopoly-deal/art/title.svg" alt=""></div><nav class="header-tools" aria-label="Table and rules"><button id="show-table" class="icon-button" aria-label="Public table">▣</button><button id="help" class="icon-button" aria-label="Help">?</button></nav></header>
+  <p id="connection" class="sr-only" role="status">Connecting…</p><div class="game-turn-status phone-status"><div id="status" aria-live="polite"></div><output id="turn-clock" class="game-turn-clock" role="timer" aria-label="Turn time remaining">1:00</output></div>
+  <p id="notice" class="public-event" role="status" aria-live="polite"></p>
+  <section class="table-layout" aria-label="Game table"><div class="public-grid">
+    <nav id="players" class="opponents" aria-label="Opponent public tables"></nav>
+  </div></section>
+  <section id="private" class="hand-dock" aria-label="Your properties, bank and private hand"><section id="mine" class="player-zone own-zone" aria-label="Your properties and bank"></section><p id="identity" class="sr-only"></p><div class="hand-topline"><span class="hand-label">YOUR HAND <b id="hand-count"></b></span></div><div id="hand" class="private-hand"></div><div class="action-bar"><button id="end" class="action-button end-action" hidden>End Turn</button><button id="decision-open" class="action-button game-primary" hidden>Resolve action</button></div></section>
+  <p id="result" class="public-event game-status" hidden></p>
+  <div id="connection-overlay" class="connection-overlay" hidden><h2>Reconnecting…</h2><p>Your hand and current deal are safe.</p></div>
+  <dialog id="decision" class="design-dialog game-dialog game-card-dialog game-dialog-compact" aria-labelledby="decision-heading"><div class="dialog-heading"><h2 id="decision-heading"></h2></div><div id="decision-body" class="dialog-body"></div><div id="decision-actions" class="dialog-actions game-action-row game-action-compact"></div></dialog>
+  <dialog id="public" class="design-dialog game-dialog game-card-dialog"><div class="dialog-heading"><h2 id="public-heading">Public table</h2><button id="close-public" class="icon-button" aria-label="Close public table">×</button></div><div id="public-body" class="dialog-body"></div></dialog>
+</main><script src="/controller-sdk.js"></script><script src="/card-ui.js"></script><script src="/game-celebration.js"></script><script src="controller.js"></script></body></html>

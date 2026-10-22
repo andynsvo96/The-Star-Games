@@ -1,0 +1,781 @@
+{
+  "words": [
+    {
+      "word": "cat",
+      "category": "animals",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "dog",
+      "category": "animals",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "bird",
+      "category": "animals",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "fish",
+      "category": "animals",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "snake",
+      "category": "animals",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "frog",
+      "category": "animals",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "duck",
+      "category": "animals",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "horse",
+      "category": "animals",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "fox",
+      "category": "animals",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "owl",
+      "category": "animals",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "spider",
+      "category": "animals",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "penguin",
+      "category": "animals",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "dolphin",
+      "category": "animals",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "butterfly",
+      "category": "animals",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "turtle",
+      "category": "animals",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "monkey",
+      "category": "animals",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "chameleon",
+      "category": "animals",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "platypus",
+      "category": "animals",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "jellyfish",
+      "category": "animals",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "flamingo",
+      "category": "animals",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "meerkat",
+      "category": "animals",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "woodpecker",
+      "category": "animals",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "hedgehog",
+      "category": "animals",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "octopus",
+      "category": "animals",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "pizza",
+      "category": "food",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "apple",
+      "category": "food",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "banana",
+      "category": "food",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "cake",
+      "category": "food",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "egg",
+      "category": "food",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "carrot",
+      "category": "food",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "burger",
+      "category": "food",
+      "difficulty": "easy",
+      "aliases": [
+        "hamburger"
+      ]
+    },
+    {
+      "word": "ice cream",
+      "category": "food",
+      "difficulty": "easy",
+      "aliases": [
+        "icecream"
+      ]
+    },
+    {
+      "word": "popcorn",
+      "category": "food",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "pancake",
+      "category": "food",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "sandwich",
+      "category": "food",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "cupcake",
+      "category": "food",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "pineapple",
+      "category": "food",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "taco",
+      "category": "food",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "watermelon",
+      "category": "food",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "donut",
+      "category": "food",
+      "difficulty": "medium",
+      "aliases": [
+        "doughnut"
+      ]
+    },
+    {
+      "word": "croissant",
+      "category": "food",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "pretzel",
+      "category": "food",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "dumpling",
+      "category": "food",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "artichoke",
+      "category": "food",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "sushi",
+      "category": "food",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "avocado",
+      "category": "food",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "gingerbread house",
+      "category": "food",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "cotton candy",
+      "category": "food",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "ball",
+      "category": "objects",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "book",
+      "category": "objects",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "chair",
+      "category": "objects",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "key",
+      "category": "objects",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "cup",
+      "category": "objects",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "umbrella",
+      "category": "objects",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "clock",
+      "category": "objects",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "shoe",
+      "category": "objects",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "sailboat",
+      "category": "objects",
+      "difficulty": "medium",
+      "aliases": [
+        "sail boat",
+        "sailing boat"
+      ]
+    },
+    {
+      "word": "bicycle",
+      "category": "objects",
+      "difficulty": "medium",
+      "aliases": [
+        "bike"
+      ]
+    },
+    {
+      "word": "guitar",
+      "category": "objects",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "camera",
+      "category": "objects",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "scissors",
+      "category": "objects",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "rocket",
+      "category": "objects",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "backpack",
+      "category": "objects",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "snowman",
+      "category": "objects",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "telescope",
+      "category": "objects",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "typewriter",
+      "category": "objects",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "compass",
+      "category": "objects",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "hourglass",
+      "category": "objects",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "parachute",
+      "category": "objects",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "windmill",
+      "category": "objects",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "hot air balloon",
+      "category": "objects",
+      "difficulty": "hard",
+      "aliases": [
+        "balloon"
+      ]
+    },
+    {
+      "word": "microscope",
+      "category": "objects",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "house",
+      "category": "places",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "beach",
+      "category": "places",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "mountain",
+      "category": "places",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "park",
+      "category": "places",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "island",
+      "category": "places",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "school",
+      "category": "places",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "farm",
+      "category": "places",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "forest",
+      "category": "places",
+      "difficulty": "easy",
+      "aliases": []
+    },
+    {
+      "word": "castle",
+      "category": "places",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "hospital",
+      "category": "places",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "airport",
+      "category": "places",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "library",
+      "category": "places",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "zoo",
+      "category": "places",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "campsite",
+      "category": "places",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "waterfall",
+      "category": "places",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "bridge",
+      "category": "places",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "lighthouse",
+      "category": "places",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "volcano",
+      "category": "places",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "observatory",
+      "category": "places",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "treehouse",
+      "category": "places",
+      "difficulty": "hard",
+      "aliases": [
+        "tree house"
+      ]
+    },
+    {
+      "word": "skyscraper",
+      "category": "places",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "train station",
+      "category": "places",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "pyramid",
+      "category": "places",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "space station",
+      "category": "places",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "running",
+      "category": "actions",
+      "difficulty": "easy",
+      "aliases": [
+        "run"
+      ]
+    },
+    {
+      "word": "jumping",
+      "category": "actions",
+      "difficulty": "easy",
+      "aliases": [
+        "jump"
+      ]
+    },
+    {
+      "word": "swimming",
+      "category": "actions",
+      "difficulty": "easy",
+      "aliases": [
+        "swim"
+      ]
+    },
+    {
+      "word": "sleeping",
+      "category": "actions",
+      "difficulty": "easy",
+      "aliases": [
+        "sleep"
+      ]
+    },
+    {
+      "word": "eating",
+      "category": "actions",
+      "difficulty": "easy",
+      "aliases": [
+        "eat"
+      ]
+    },
+    {
+      "word": "dancing",
+      "category": "actions",
+      "difficulty": "easy",
+      "aliases": [
+        "dance"
+      ]
+    },
+    {
+      "word": "singing",
+      "category": "actions",
+      "difficulty": "easy",
+      "aliases": [
+        "sing"
+      ]
+    },
+    {
+      "word": "crying",
+      "category": "actions",
+      "difficulty": "easy",
+      "aliases": [
+        "cry"
+      ]
+    },
+    {
+      "word": "fishing",
+      "category": "actions",
+      "difficulty": "medium",
+      "aliases": []
+    },
+    {
+      "word": "cooking",
+      "category": "actions",
+      "difficulty": "medium",
+      "aliases": [
+        "cook"
+      ]
+    },
+    {
+      "word": "painting",
+      "category": "actions",
+      "difficulty": "medium",
+      "aliases": [
+        "paint"
+      ]
+    },
+    {
+      "word": "skiing",
+      "category": "actions",
+      "difficulty": "medium",
+      "aliases": [
+        "ski"
+      ]
+    },
+    {
+      "word": "juggling",
+      "category": "actions",
+      "difficulty": "medium",
+      "aliases": [
+        "juggle"
+      ]
+    },
+    {
+      "word": "surfing",
+      "category": "actions",
+      "difficulty": "medium",
+      "aliases": [
+        "surf"
+      ]
+    },
+    {
+      "word": "reading",
+      "category": "actions",
+      "difficulty": "medium",
+      "aliases": [
+        "read"
+      ]
+    },
+    {
+      "word": "climbing",
+      "category": "actions",
+      "difficulty": "medium",
+      "aliases": [
+        "climb"
+      ]
+    },
+    {
+      "word": "skateboarding",
+      "category": "actions",
+      "difficulty": "hard",
+      "aliases": [
+        "skateboard"
+      ]
+    },
+    {
+      "word": "gardening",
+      "category": "actions",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "ice skating",
+      "category": "actions",
+      "difficulty": "hard",
+      "aliases": [
+        "skating"
+      ]
+    },
+    {
+      "word": "brushing teeth",
+      "category": "actions",
+      "difficulty": "hard",
+      "aliases": [
+        "brush teeth"
+      ]
+    },
+    {
+      "word": "walking a dog",
+      "category": "actions",
+      "difficulty": "hard",
+      "aliases": [
+        "dog walking"
+      ]
+    },
+    {
+      "word": "blowing bubbles",
+      "category": "actions",
+      "difficulty": "hard",
+      "aliases": []
+    },
+    {
+      "word": "playing drums",
+      "category": "actions",
+      "difficulty": "hard",
+      "aliases": [
+        "drumming"
+      ]
+    },
+    {
+      "word": "building a sandcastle",
+      "category": "actions",
+      "difficulty": "hard",
+      "aliases": [
+        "sandcastle"
+      ]
+    }
+  ]
+}

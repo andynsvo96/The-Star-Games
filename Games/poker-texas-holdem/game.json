@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "poker-texas-holdem",
+  "title": "Texas Hold’em",
+  "description": "No-Limit Texas Hold’em tournament for 2–10 total seats, with optional computer opponents.",
+  "version": "1.0.0",
+  "thumbnail": "thumbnail.svg",
+  "background": "art/lounge",
+  "host_scene": "host/main.tscn",
+  "controller_entry": "controller/index.html",
+  "min_players": 1,
+  "max_players": 10,
+  "modes": [
+    "singleplayer",
+    "multiplayer"
+  ]
+}

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="style.css">
+  <title>Spyfall Controller</title>
+</head>
+<body class="playful-game game-covert game-story game-dossier">
+  <main class="game-controller">
+    <header>
+      <h1 class="sr-only">SPYFALL</h1>
+      <img class="game-title-art" src="art/dossier-title.svg" alt="" aria-hidden="true">
+      <p id="connection" role="status">Connecting…</p>
+      <p id="status" class="game-status" role="status" hidden></p>
+      <p id="clock" class="game-status game-clock-dark spy-clock"><span id="round">ROUND 1</span> · <output id="timer" class="game-countdown" aria-label="Round time remaining">08:00</output><small id="clock-status">ROUND TIMER</small></p>
+      <p id="vote-clock" class="game-status game-clock-dark spy-clock" hidden><output id="vote-timer" class="game-countdown" aria-label="Voting time remaining">01:00</output><small id="vote-clock-status">VOTING · AWAITING FIRST VOTE</small></p>
+    </header>
+    <section class="game-playfield spy-playfield">
+      <div id="private-card" class="game-score-card game-paper-stacked spy-card" aria-label="Your private card">
+        <img class="game-card-portrait" src="art/private-agent.png" width="144" height="120" alt="" aria-hidden="true">
+        <p id="secret-label" class="game-section-caption">PRIVATE CARD</p>
+        <h2 id="secret" class="game-card-title">Hidden</h2>
+        <button id="peek" type="button" aria-expanded="false">SHOW CARD</button>
+      </div>
+      <div id="role-actions" class="game-action-row">
+        <button id="accuse" class="game-danger" type="button" hidden>ACCUSE A PLAYER</button>
+        <button id="guess" class="game-primary" type="button" hidden>GUESS LOCATION</button>
+      </div>
+      <section id="vote" class="game-score-card game-text-score" hidden aria-label="Accusation vote">
+        <h2 id="vote-heading">Accusation</h2>
+        <p id="vote-status" role="status"></p>
+        <div class="game-action-row"><button id="agree" class="game-primary" type="button">YES, THEY ARE THE SPY</button><button id="disagree" class="game-danger" type="button">NO</button></div>
+      </section>
+      <section id="final-vote" class="game-action-row" hidden aria-label="Final vote">
+        <button id="choose-final" class="game-primary" type="button">CHOOSE A SUSPECT</button>
+        <p id="final-status" role="status" hidden></p>
+      </section>
+      <section id="result" class="game-score-card game-text-score game-result" hidden aria-label="Round result">
+        <h2 id="winner"></h2><div id="result-team" class="game-team-reveal" aria-label="Winning team"></div><p id="reveal"></p><p id="earned"></p>
+      </section>
+    </section>
+  </main>
+  <dialog id="target-dialog" class="game-dialog game-player-dialog" aria-labelledby="target-heading"><h2 id="target-heading">Choose a suspect</h2><div id="target" aria-label="Choose a player"></div><p id="target-note"></p><div class="game-action-row"><button id="confirm-target" class="game-primary game-compact-control" type="button" disabled>CONFIRM</button><button class="game-compact-control" data-close type="button">CANCEL</button></div></dialog>
+  <dialog id="guess-dialog" class="game-dialog" aria-labelledby="guess-heading"><h2 id="guess-heading">One location guess</h2><label for="location">Location</label><select id="location" class="game-choice"></select><p>A correct guess wins. A wrong guess ends the round with a loss.</p><div class="game-action-row"><button id="confirm-guess" class="game-primary game-compact-control" type="button">MAKE GUESS</button><button class="game-compact-control" data-close type="button">CANCEL</button></div></dialog>
+  <script src="/controller-sdk.js"></script>
+  <script src="controller.js"></script>
+</body>
+</html>

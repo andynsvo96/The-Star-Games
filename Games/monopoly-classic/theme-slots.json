@@ -1,0 +1,1967 @@
+{
+  "schema_version": 1,
+  "presentation": "modern-table",
+  "preview_kind": "portfolio",
+  "slots": [
+    {
+      "id": "mediterranean-avenue",
+      "label": "Mediterranean Avenue",
+      "group": "Properties / brown",
+      "path": "Games/monopoly-classic/art/mediterranean-avenue.svg",
+      "kind": "image",
+      "display_name": "Mediterranean Avenue",
+      "preview": {
+        "id": 1,
+        "key": "mediterranean-avenue",
+        "name": "Mediterranean Avenue",
+        "group": "brown",
+        "color": "#965b37",
+        "price": 60,
+        "mortgage": 30,
+        "building_cost": 50,
+        "rents": [
+          2,
+          10,
+          30,
+          90,
+          160,
+          250
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 60,
+        "colors": [
+          "brown"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "baltic-avenue",
+      "label": "Baltic Avenue",
+      "group": "Properties / brown",
+      "path": "Games/monopoly-classic/art/baltic-avenue.svg",
+      "kind": "image",
+      "display_name": "Baltic Avenue",
+      "preview": {
+        "id": 3,
+        "key": "baltic-avenue",
+        "name": "Baltic Avenue",
+        "group": "brown",
+        "color": "#965b37",
+        "price": 60,
+        "mortgage": 30,
+        "building_cost": 50,
+        "rents": [
+          4,
+          20,
+          60,
+          180,
+          320,
+          450
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 60,
+        "colors": [
+          "brown"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "reading-railroad",
+      "label": "Reading Railroad",
+      "group": "Properties / railroad",
+      "path": "Games/monopoly-classic/art/reading-railroad.svg",
+      "kind": "image",
+      "display_name": "Reading Railroad",
+      "preview": {
+        "id": 5,
+        "key": "reading-railroad",
+        "name": "Reading Railroad",
+        "group": "railroad",
+        "color": "#343c46",
+        "price": 200,
+        "mortgage": 100,
+        "building_cost": 0,
+        "rents": [
+          25,
+          50,
+          100,
+          200
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 200,
+        "colors": [
+          "railroad"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "oriental-avenue",
+      "label": "Oriental Avenue",
+      "group": "Properties / light-blue",
+      "path": "Games/monopoly-classic/art/oriental-avenue.svg",
+      "kind": "image",
+      "display_name": "Oriental Avenue",
+      "preview": {
+        "id": 6,
+        "key": "oriental-avenue",
+        "name": "Oriental Avenue",
+        "group": "light-blue",
+        "color": "#73c6e5",
+        "price": 100,
+        "mortgage": 50,
+        "building_cost": 50,
+        "rents": [
+          6,
+          30,
+          90,
+          270,
+          400,
+          550
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 100,
+        "colors": [
+          "light-blue"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "vermont-avenue",
+      "label": "Vermont Avenue",
+      "group": "Properties / light-blue",
+      "path": "Games/monopoly-classic/art/vermont-avenue.svg",
+      "kind": "image",
+      "display_name": "Vermont Avenue",
+      "preview": {
+        "id": 8,
+        "key": "vermont-avenue",
+        "name": "Vermont Avenue",
+        "group": "light-blue",
+        "color": "#73c6e5",
+        "price": 100,
+        "mortgage": 50,
+        "building_cost": 50,
+        "rents": [
+          6,
+          30,
+          90,
+          270,
+          400,
+          550
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 100,
+        "colors": [
+          "light-blue"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "connecticut-avenue",
+      "label": "Connecticut Avenue",
+      "group": "Properties / light-blue",
+      "path": "Games/monopoly-classic/art/connecticut-avenue.svg",
+      "kind": "image",
+      "display_name": "Connecticut Avenue",
+      "preview": {
+        "id": 9,
+        "key": "connecticut-avenue",
+        "name": "Connecticut Avenue",
+        "group": "light-blue",
+        "color": "#73c6e5",
+        "price": 120,
+        "mortgage": 60,
+        "building_cost": 50,
+        "rents": [
+          8,
+          40,
+          100,
+          300,
+          450,
+          600
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 120,
+        "colors": [
+          "light-blue"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "st-charles-place",
+      "label": "St. Charles Place",
+      "group": "Properties / pink",
+      "path": "Games/monopoly-classic/art/st-charles-place.svg",
+      "kind": "image",
+      "display_name": "St. Charles Place",
+      "preview": {
+        "id": 11,
+        "key": "st-charles-place",
+        "name": "St. Charles Place",
+        "group": "pink",
+        "color": "#d7579e",
+        "price": 140,
+        "mortgage": 70,
+        "building_cost": 100,
+        "rents": [
+          10,
+          50,
+          150,
+          450,
+          625,
+          750
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 140,
+        "colors": [
+          "pink"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "electric-company",
+      "label": "Electric Company",
+      "group": "Properties / utility",
+      "path": "Games/monopoly-classic/art/electric-company.svg",
+      "kind": "image",
+      "display_name": "Electric Company",
+      "preview": {
+        "id": 12,
+        "key": "electric-company",
+        "name": "Electric Company",
+        "group": "utility",
+        "color": "#a9b7a0",
+        "price": 150,
+        "mortgage": 75,
+        "building_cost": 0,
+        "rents": [
+          4,
+          10
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 150,
+        "colors": [
+          "utility"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "states-avenue",
+      "label": "States Avenue",
+      "group": "Properties / pink",
+      "path": "Games/monopoly-classic/art/states-avenue.svg",
+      "kind": "image",
+      "display_name": "States Avenue",
+      "preview": {
+        "id": 13,
+        "key": "states-avenue",
+        "name": "States Avenue",
+        "group": "pink",
+        "color": "#d7579e",
+        "price": 140,
+        "mortgage": 70,
+        "building_cost": 100,
+        "rents": [
+          10,
+          50,
+          150,
+          450,
+          625,
+          750
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 140,
+        "colors": [
+          "pink"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "virginia-avenue",
+      "label": "Virginia Avenue",
+      "group": "Properties / pink",
+      "path": "Games/monopoly-classic/art/virginia-avenue.svg",
+      "kind": "image",
+      "display_name": "Virginia Avenue",
+      "preview": {
+        "id": 14,
+        "key": "virginia-avenue",
+        "name": "Virginia Avenue",
+        "group": "pink",
+        "color": "#d7579e",
+        "price": 160,
+        "mortgage": 80,
+        "building_cost": 100,
+        "rents": [
+          12,
+          60,
+          180,
+          500,
+          700,
+          900
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 160,
+        "colors": [
+          "pink"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "pennsylvania-railroad",
+      "label": "Pennsylvania Railroad",
+      "group": "Properties / railroad",
+      "path": "Games/monopoly-classic/art/pennsylvania-railroad.svg",
+      "kind": "image",
+      "display_name": "Pennsylvania Railroad",
+      "preview": {
+        "id": 15,
+        "key": "pennsylvania-railroad",
+        "name": "Pennsylvania Railroad",
+        "group": "railroad",
+        "color": "#343c46",
+        "price": 200,
+        "mortgage": 100,
+        "building_cost": 0,
+        "rents": [
+          25,
+          50,
+          100,
+          200
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 200,
+        "colors": [
+          "railroad"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "st-james-place",
+      "label": "St. James Place",
+      "group": "Properties / orange",
+      "path": "Games/monopoly-classic/art/st-james-place.svg",
+      "kind": "image",
+      "display_name": "St. James Place",
+      "preview": {
+        "id": 16,
+        "key": "st-james-place",
+        "name": "St. James Place",
+        "group": "orange",
+        "color": "#ed922c",
+        "price": 180,
+        "mortgage": 90,
+        "building_cost": 100,
+        "rents": [
+          14,
+          70,
+          200,
+          550,
+          750,
+          950
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 180,
+        "colors": [
+          "orange"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "tennessee-avenue",
+      "label": "Tennessee Avenue",
+      "group": "Properties / orange",
+      "path": "Games/monopoly-classic/art/tennessee-avenue.svg",
+      "kind": "image",
+      "display_name": "Tennessee Avenue",
+      "preview": {
+        "id": 18,
+        "key": "tennessee-avenue",
+        "name": "Tennessee Avenue",
+        "group": "orange",
+        "color": "#ed922c",
+        "price": 180,
+        "mortgage": 90,
+        "building_cost": 100,
+        "rents": [
+          14,
+          70,
+          200,
+          550,
+          750,
+          950
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 180,
+        "colors": [
+          "orange"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "new-york-avenue",
+      "label": "New York Avenue",
+      "group": "Properties / orange",
+      "path": "Games/monopoly-classic/art/new-york-avenue.svg",
+      "kind": "image",
+      "display_name": "New York Avenue",
+      "preview": {
+        "id": 19,
+        "key": "new-york-avenue",
+        "name": "New York Avenue",
+        "group": "orange",
+        "color": "#ed922c",
+        "price": 200,
+        "mortgage": 100,
+        "building_cost": 100,
+        "rents": [
+          16,
+          80,
+          220,
+          600,
+          800,
+          1000
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 200,
+        "colors": [
+          "orange"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "kentucky-avenue",
+      "label": "Kentucky Avenue",
+      "group": "Properties / red",
+      "path": "Games/monopoly-classic/art/kentucky-avenue.svg",
+      "kind": "image",
+      "display_name": "Kentucky Avenue",
+      "preview": {
+        "id": 21,
+        "key": "kentucky-avenue",
+        "name": "Kentucky Avenue",
+        "group": "red",
+        "color": "#d5393f",
+        "price": 220,
+        "mortgage": 110,
+        "building_cost": 150,
+        "rents": [
+          18,
+          90,
+          250,
+          700,
+          875,
+          1050
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 220,
+        "colors": [
+          "red"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "indiana-avenue",
+      "label": "Indiana Avenue",
+      "group": "Properties / red",
+      "path": "Games/monopoly-classic/art/indiana-avenue.svg",
+      "kind": "image",
+      "display_name": "Indiana Avenue",
+      "preview": {
+        "id": 23,
+        "key": "indiana-avenue",
+        "name": "Indiana Avenue",
+        "group": "red",
+        "color": "#d5393f",
+        "price": 220,
+        "mortgage": 110,
+        "building_cost": 150,
+        "rents": [
+          18,
+          90,
+          250,
+          700,
+          875,
+          1050
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 220,
+        "colors": [
+          "red"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "illinois-avenue",
+      "label": "Illinois Avenue",
+      "group": "Properties / red",
+      "path": "Games/monopoly-classic/art/illinois-avenue.svg",
+      "kind": "image",
+      "display_name": "Illinois Avenue",
+      "preview": {
+        "id": 24,
+        "key": "illinois-avenue",
+        "name": "Illinois Avenue",
+        "group": "red",
+        "color": "#d5393f",
+        "price": 240,
+        "mortgage": 120,
+        "building_cost": 150,
+        "rents": [
+          20,
+          100,
+          300,
+          750,
+          925,
+          1100
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 240,
+        "colors": [
+          "red"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "b-and-o-railroad",
+      "label": "B. & O. Railroad",
+      "group": "Properties / railroad",
+      "path": "Games/monopoly-classic/art/b-and-o-railroad.svg",
+      "kind": "image",
+      "display_name": "B. & O. Railroad",
+      "preview": {
+        "id": 25,
+        "key": "b-and-o-railroad",
+        "name": "B. & O. Railroad",
+        "group": "railroad",
+        "color": "#343c46",
+        "price": 200,
+        "mortgage": 100,
+        "building_cost": 0,
+        "rents": [
+          25,
+          50,
+          100,
+          200
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 200,
+        "colors": [
+          "railroad"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "atlantic-avenue",
+      "label": "Atlantic Avenue",
+      "group": "Properties / yellow",
+      "path": "Games/monopoly-classic/art/atlantic-avenue.svg",
+      "kind": "image",
+      "display_name": "Atlantic Avenue",
+      "preview": {
+        "id": 26,
+        "key": "atlantic-avenue",
+        "name": "Atlantic Avenue",
+        "group": "yellow",
+        "color": "#f2d449",
+        "price": 260,
+        "mortgage": 130,
+        "building_cost": 150,
+        "rents": [
+          22,
+          110,
+          330,
+          800,
+          975,
+          1150
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 260,
+        "colors": [
+          "yellow"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "ventnor-avenue",
+      "label": "Ventnor Avenue",
+      "group": "Properties / yellow",
+      "path": "Games/monopoly-classic/art/ventnor-avenue.svg",
+      "kind": "image",
+      "display_name": "Ventnor Avenue",
+      "preview": {
+        "id": 27,
+        "key": "ventnor-avenue",
+        "name": "Ventnor Avenue",
+        "group": "yellow",
+        "color": "#f2d449",
+        "price": 260,
+        "mortgage": 130,
+        "building_cost": 150,
+        "rents": [
+          22,
+          110,
+          330,
+          800,
+          975,
+          1150
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 260,
+        "colors": [
+          "yellow"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "water-works",
+      "label": "Water Works",
+      "group": "Properties / utility",
+      "path": "Games/monopoly-classic/art/water-works.svg",
+      "kind": "image",
+      "display_name": "Water Works",
+      "preview": {
+        "id": 28,
+        "key": "water-works",
+        "name": "Water Works",
+        "group": "utility",
+        "color": "#a9b7a0",
+        "price": 150,
+        "mortgage": 75,
+        "building_cost": 0,
+        "rents": [
+          4,
+          10
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 150,
+        "colors": [
+          "utility"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "marvin-gardens",
+      "label": "Marvin Gardens",
+      "group": "Properties / yellow",
+      "path": "Games/monopoly-classic/art/marvin-gardens.svg",
+      "kind": "image",
+      "display_name": "Marvin Gardens",
+      "preview": {
+        "id": 29,
+        "key": "marvin-gardens",
+        "name": "Marvin Gardens",
+        "group": "yellow",
+        "color": "#f2d449",
+        "price": 280,
+        "mortgage": 140,
+        "building_cost": 150,
+        "rents": [
+          24,
+          120,
+          360,
+          850,
+          1025,
+          1200
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 280,
+        "colors": [
+          "yellow"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "pacific-avenue",
+      "label": "Pacific Avenue",
+      "group": "Properties / green",
+      "path": "Games/monopoly-classic/art/pacific-avenue.svg",
+      "kind": "image",
+      "display_name": "Pacific Avenue",
+      "preview": {
+        "id": 31,
+        "key": "pacific-avenue",
+        "name": "Pacific Avenue",
+        "group": "green",
+        "color": "#279354",
+        "price": 300,
+        "mortgage": 150,
+        "building_cost": 200,
+        "rents": [
+          26,
+          130,
+          390,
+          900,
+          1100,
+          1275
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 300,
+        "colors": [
+          "green"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "north-carolina-avenue",
+      "label": "North Carolina Avenue",
+      "group": "Properties / green",
+      "path": "Games/monopoly-classic/art/north-carolina-avenue.svg",
+      "kind": "image",
+      "display_name": "North Carolina Avenue",
+      "preview": {
+        "id": 32,
+        "key": "north-carolina-avenue",
+        "name": "North Carolina Avenue",
+        "group": "green",
+        "color": "#279354",
+        "price": 300,
+        "mortgage": 150,
+        "building_cost": 200,
+        "rents": [
+          26,
+          130,
+          390,
+          900,
+          1100,
+          1275
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 300,
+        "colors": [
+          "green"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "pennsylvania-avenue",
+      "label": "Pennsylvania Avenue",
+      "group": "Properties / green",
+      "path": "Games/monopoly-classic/art/pennsylvania-avenue.svg",
+      "kind": "image",
+      "display_name": "Pennsylvania Avenue",
+      "preview": {
+        "id": 34,
+        "key": "pennsylvania-avenue",
+        "name": "Pennsylvania Avenue",
+        "group": "green",
+        "color": "#279354",
+        "price": 320,
+        "mortgage": 160,
+        "building_cost": 200,
+        "rents": [
+          28,
+          150,
+          450,
+          1000,
+          1200,
+          1400
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 320,
+        "colors": [
+          "green"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "short-line",
+      "label": "Short Line",
+      "group": "Properties / railroad",
+      "path": "Games/monopoly-classic/art/short-line.svg",
+      "kind": "image",
+      "display_name": "Short Line",
+      "preview": {
+        "id": 35,
+        "key": "short-line",
+        "name": "Short Line",
+        "group": "railroad",
+        "color": "#343c46",
+        "price": 200,
+        "mortgage": 100,
+        "building_cost": 0,
+        "rents": [
+          25,
+          50,
+          100,
+          200
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 200,
+        "colors": [
+          "railroad"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "park-place",
+      "label": "Park Place",
+      "group": "Properties / dark-blue",
+      "path": "Games/monopoly-classic/art/park-place.svg",
+      "kind": "image",
+      "display_name": "Park Place",
+      "preview": {
+        "id": 37,
+        "key": "park-place",
+        "name": "Park Place",
+        "group": "dark-blue",
+        "color": "#244695",
+        "price": 350,
+        "mortgage": 175,
+        "building_cost": 200,
+        "rents": [
+          35,
+          175,
+          500,
+          1100,
+          1300,
+          1500
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 350,
+        "colors": [
+          "dark-blue"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "boardwalk",
+      "label": "Boardwalk",
+      "group": "Properties / dark-blue",
+      "path": "Games/monopoly-classic/art/boardwalk.svg",
+      "kind": "image",
+      "display_name": "Boardwalk",
+      "preview": {
+        "id": 39,
+        "key": "boardwalk",
+        "name": "Boardwalk",
+        "group": "dark-blue",
+        "color": "#244695",
+        "price": 400,
+        "mortgage": 200,
+        "building_cost": 200,
+        "rents": [
+          50,
+          200,
+          600,
+          1400,
+          1700,
+          2000
+        ],
+        "kind": "property",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 400,
+        "colors": [
+          "dark-blue"
+        ],
+        "detail": "US Classic title deed"
+      }
+    },
+    {
+      "id": "chance-go",
+      "label": "Advance to GO",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-go.svg",
+      "kind": "image",
+      "display_name": "Advance to GO",
+      "preview": {
+        "key": "chance-go",
+        "name": "Advance to GO",
+        "detail": "Move to GO and collect $200.",
+        "effect": "move",
+        "destination": 0,
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-illinois",
+      "label": "Illinois Avenue",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-illinois.svg",
+      "kind": "image",
+      "display_name": "Illinois Avenue",
+      "preview": {
+        "key": "chance-illinois",
+        "name": "Illinois Avenue",
+        "detail": "Advance to Illinois Avenue. Collect $200 if you pass GO.",
+        "effect": "move",
+        "destination": 24,
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-st-charles",
+      "label": "St. Charles Place",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-st-charles.svg",
+      "kind": "image",
+      "display_name": "St. Charles Place",
+      "preview": {
+        "key": "chance-st-charles",
+        "name": "St. Charles Place",
+        "detail": "Advance to St. Charles Place. Collect $200 if you pass GO.",
+        "effect": "move",
+        "destination": 11,
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-utility",
+      "label": "Nearest Utility",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-utility.svg",
+      "kind": "image",
+      "display_name": "Nearest Utility",
+      "preview": {
+        "key": "chance-utility",
+        "name": "Nearest Utility",
+        "detail": "Advance to the next utility. If owned, pay ten times a fresh dice roll.",
+        "effect": "utility",
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-railroad-a",
+      "label": "Nearest Railroad",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-railroad-a.svg",
+      "kind": "image",
+      "display_name": "Nearest Railroad",
+      "preview": {
+        "key": "chance-railroad-a",
+        "name": "Nearest Railroad",
+        "detail": "Advance to the next railroad. If owned, pay twice its normal rent.",
+        "effect": "railroad",
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-railroad-b",
+      "label": "Nearest Railroad",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-railroad-b.svg",
+      "kind": "image",
+      "display_name": "Nearest Railroad",
+      "preview": {
+        "key": "chance-railroad-b",
+        "name": "Nearest Railroad",
+        "detail": "Advance to the next railroad. If owned, pay twice its normal rent.",
+        "effect": "railroad",
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-dividend",
+      "label": "Bank Dividend",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-dividend.svg",
+      "kind": "image",
+      "display_name": "Bank Dividend",
+      "preview": {
+        "key": "chance-dividend",
+        "name": "Bank Dividend",
+        "detail": "Receive a $50 dividend from the Bank.",
+        "effect": "receive",
+        "amount": 50,
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-jail-free",
+      "label": "Get Out of Jail Free",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-jail-free.svg",
+      "kind": "image",
+      "display_name": "Get Out of Jail Free",
+      "preview": {
+        "key": "chance-jail-free",
+        "name": "Get Out of Jail Free",
+        "detail": "Keep this card until used or traded.",
+        "effect": "jail_free",
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-back-three",
+      "label": "Back Three Spaces",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-back-three.svg",
+      "kind": "image",
+      "display_name": "Back Three Spaces",
+      "preview": {
+        "key": "chance-back-three",
+        "name": "Back Three Spaces",
+        "detail": "Move back three spaces and resolve that space.",
+        "effect": "back",
+        "amount": 3,
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-jail",
+      "label": "Go to Jail",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-jail.svg",
+      "kind": "image",
+      "display_name": "Go to Jail",
+      "preview": {
+        "key": "chance-jail",
+        "name": "Go to Jail",
+        "detail": "Go directly to Jail. Do not collect money for passing GO.",
+        "effect": "jail",
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-repairs",
+      "label": "General Repairs",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-repairs.svg",
+      "kind": "image",
+      "display_name": "General Repairs",
+      "preview": {
+        "key": "chance-repairs",
+        "name": "General Repairs",
+        "detail": "Pay $25 per house and $100 per hotel you own.",
+        "effect": "repairs",
+        "house": 25,
+        "hotel": 100,
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-fine",
+      "label": "Speeding Fine",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-fine.svg",
+      "kind": "image",
+      "display_name": "Speeding Fine",
+      "preview": {
+        "key": "chance-fine",
+        "name": "Speeding Fine",
+        "detail": "Pay a $15 fine to the Bank.",
+        "effect": "pay",
+        "amount": 15,
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-reading",
+      "label": "Reading Railroad",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-reading.svg",
+      "kind": "image",
+      "display_name": "Reading Railroad",
+      "preview": {
+        "key": "chance-reading",
+        "name": "Reading Railroad",
+        "detail": "Advance to Reading Railroad. Collect $200 if you pass GO.",
+        "effect": "move",
+        "destination": 5,
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-boardwalk",
+      "label": "Boardwalk",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-boardwalk.svg",
+      "kind": "image",
+      "display_name": "Boardwalk",
+      "preview": {
+        "key": "chance-boardwalk",
+        "name": "Boardwalk",
+        "detail": "Advance to Boardwalk.",
+        "effect": "move",
+        "destination": 39,
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-chairman",
+      "label": "Elected Chairman",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-chairman.svg",
+      "kind": "image",
+      "display_name": "Elected Chairman",
+      "preview": {
+        "key": "chance-chairman",
+        "name": "Elected Chairman",
+        "detail": "Pay every other player $50.",
+        "effect": "pay_each",
+        "amount": 50,
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-loan",
+      "label": "Building Loan",
+      "group": "Chance",
+      "path": "Games/monopoly-classic/art/chance-loan.svg",
+      "kind": "image",
+      "display_name": "Building Loan",
+      "preview": {
+        "key": "chance-loan",
+        "name": "Building Loan",
+        "detail": "Your building loan matures. Receive $150.",
+        "effect": "receive",
+        "amount": 150,
+        "kind": "chance",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#f0cc9b"
+      }
+    },
+    {
+      "id": "chance-back",
+      "label": "Chance back",
+      "group": "Card backs",
+      "path": "Games/monopoly-classic/art/chance-back.svg",
+      "kind": "image"
+    },
+    {
+      "id": "community-go",
+      "label": "Advance to GO",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-go.svg",
+      "kind": "image",
+      "display_name": "Advance to GO",
+      "preview": {
+        "key": "community-go",
+        "name": "Advance to GO",
+        "detail": "Move to GO and collect $200.",
+        "effect": "move",
+        "destination": 0,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-bank-error",
+      "label": "Bank Error",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-bank-error.svg",
+      "kind": "image",
+      "display_name": "Bank Error",
+      "preview": {
+        "key": "community-bank-error",
+        "name": "Bank Error",
+        "detail": "A bank error is in your favor. Receive $200.",
+        "effect": "receive",
+        "amount": 200,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-doctor",
+      "label": "Doctor Fee",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-doctor.svg",
+      "kind": "image",
+      "display_name": "Doctor Fee",
+      "preview": {
+        "key": "community-doctor",
+        "name": "Doctor Fee",
+        "detail": "Pay $50 for a doctor visit.",
+        "effect": "pay",
+        "amount": 50,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-stock",
+      "label": "Stock Sale",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-stock.svg",
+      "kind": "image",
+      "display_name": "Stock Sale",
+      "preview": {
+        "key": "community-stock",
+        "name": "Stock Sale",
+        "detail": "Receive $50 from selling stock.",
+        "effect": "receive",
+        "amount": 50,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-jail-free",
+      "label": "Get Out of Jail Free",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-jail-free.svg",
+      "kind": "image",
+      "display_name": "Get Out of Jail Free",
+      "preview": {
+        "key": "community-jail-free",
+        "name": "Get Out of Jail Free",
+        "detail": "Keep this card until used or traded.",
+        "effect": "jail_free",
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-jail",
+      "label": "Go to Jail",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-jail.svg",
+      "kind": "image",
+      "display_name": "Go to Jail",
+      "preview": {
+        "key": "community-jail",
+        "name": "Go to Jail",
+        "detail": "Go directly to Jail. Do not collect money for passing GO.",
+        "effect": "jail",
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-holiday",
+      "label": "Holiday Fund",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-holiday.svg",
+      "kind": "image",
+      "display_name": "Holiday Fund",
+      "preview": {
+        "key": "community-holiday",
+        "name": "Holiday Fund",
+        "detail": "Your holiday fund matures. Receive $100.",
+        "effect": "receive",
+        "amount": 100,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-refund",
+      "label": "Tax Refund",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-refund.svg",
+      "kind": "image",
+      "display_name": "Tax Refund",
+      "preview": {
+        "key": "community-refund",
+        "name": "Tax Refund",
+        "detail": "Receive a $20 income tax refund.",
+        "effect": "receive",
+        "amount": 20,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-birthday",
+      "label": "Birthday",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-birthday.svg",
+      "kind": "image",
+      "display_name": "Birthday",
+      "preview": {
+        "key": "community-birthday",
+        "name": "Birthday",
+        "detail": "Receive $10 from every other player.",
+        "effect": "receive_each",
+        "amount": 10,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-insurance",
+      "label": "Life Insurance",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-insurance.svg",
+      "kind": "image",
+      "display_name": "Life Insurance",
+      "preview": {
+        "key": "community-insurance",
+        "name": "Life Insurance",
+        "detail": "Your life insurance matures. Receive $100.",
+        "effect": "receive",
+        "amount": 100,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-hospital",
+      "label": "Hospital Fees",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-hospital.svg",
+      "kind": "image",
+      "display_name": "Hospital Fees",
+      "preview": {
+        "key": "community-hospital",
+        "name": "Hospital Fees",
+        "detail": "Pay $100 in hospital fees.",
+        "effect": "pay",
+        "amount": 100,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-school",
+      "label": "School Fees",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-school.svg",
+      "kind": "image",
+      "display_name": "School Fees",
+      "preview": {
+        "key": "community-school",
+        "name": "School Fees",
+        "detail": "Pay $50 in school fees.",
+        "effect": "pay",
+        "amount": 50,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-consultancy",
+      "label": "Consultancy Fee",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-consultancy.svg",
+      "kind": "image",
+      "display_name": "Consultancy Fee",
+      "preview": {
+        "key": "community-consultancy",
+        "name": "Consultancy Fee",
+        "detail": "Receive a $25 consultancy fee.",
+        "effect": "receive",
+        "amount": 25,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-repairs",
+      "label": "Street Repairs",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-repairs.svg",
+      "kind": "image",
+      "display_name": "Street Repairs",
+      "preview": {
+        "key": "community-repairs",
+        "name": "Street Repairs",
+        "detail": "Pay $40 per house and $115 per hotel you own.",
+        "effect": "repairs",
+        "house": 40,
+        "hotel": 115,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-beauty",
+      "label": "Beauty Contest",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-beauty.svg",
+      "kind": "image",
+      "display_name": "Beauty Contest",
+      "preview": {
+        "key": "community-beauty",
+        "name": "Beauty Contest",
+        "detail": "Receive a $10 beauty contest prize.",
+        "effect": "receive",
+        "amount": 10,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-inheritance",
+      "label": "Inheritance",
+      "group": "Community",
+      "path": "Games/monopoly-classic/art/community-inheritance.svg",
+      "kind": "image",
+      "display_name": "Inheritance",
+      "preview": {
+        "key": "community-inheritance",
+        "name": "Inheritance",
+        "detail": "Receive an inheritance of $100.",
+        "effect": "receive",
+        "amount": 100,
+        "kind": "community",
+        "layout": "deal",
+        "currency": "USD",
+        "value": 0,
+        "colors": [],
+        "color": "#b8d9df"
+      }
+    },
+    {
+      "id": "community-back",
+      "label": "Community back",
+      "group": "Card backs",
+      "path": "Games/monopoly-classic/art/community-back.svg",
+      "kind": "image"
+    },
+    {
+      "id": "money-1",
+      "label": "$1",
+      "group": "Money",
+      "path": "Games/monopoly-classic/art/money-1.svg",
+      "kind": "image",
+      "preview": {
+        "kind": "money",
+        "layout": "deal",
+        "name": "$1",
+        "value": 1,
+        "currency": "USD",
+        "detail": "Cosmetic banknote",
+        "color": "#b7dcb7"
+      }
+    },
+    {
+      "id": "money-5",
+      "label": "$5",
+      "group": "Money",
+      "path": "Games/monopoly-classic/art/money-5.svg",
+      "kind": "image",
+      "preview": {
+        "kind": "money",
+        "layout": "deal",
+        "name": "$5",
+        "value": 5,
+        "currency": "USD",
+        "detail": "Cosmetic banknote",
+        "color": "#b7dcb7"
+      }
+    },
+    {
+      "id": "money-10",
+      "label": "$10",
+      "group": "Money",
+      "path": "Games/monopoly-classic/art/money-10.svg",
+      "kind": "image",
+      "preview": {
+        "kind": "money",
+        "layout": "deal",
+        "name": "$10",
+        "value": 10,
+        "currency": "USD",
+        "detail": "Cosmetic banknote",
+        "color": "#b7dcb7"
+      }
+    },
+    {
+      "id": "money-20",
+      "label": "$20",
+      "group": "Money",
+      "path": "Games/monopoly-classic/art/money-20.svg",
+      "kind": "image",
+      "preview": {
+        "kind": "money",
+        "layout": "deal",
+        "name": "$20",
+        "value": 20,
+        "currency": "USD",
+        "detail": "Cosmetic banknote",
+        "color": "#b7dcb7"
+      }
+    },
+    {
+      "id": "money-50",
+      "label": "$50",
+      "group": "Money",
+      "path": "Games/monopoly-classic/art/money-50.svg",
+      "kind": "image",
+      "preview": {
+        "kind": "money",
+        "layout": "deal",
+        "name": "$50",
+        "value": 50,
+        "currency": "USD",
+        "detail": "Cosmetic banknote",
+        "color": "#b7dcb7"
+      }
+    },
+    {
+      "id": "money-100",
+      "label": "$100",
+      "group": "Money",
+      "path": "Games/monopoly-classic/art/money-100.svg",
+      "kind": "image",
+      "preview": {
+        "kind": "money",
+        "layout": "deal",
+        "name": "$100",
+        "value": 100,
+        "currency": "USD",
+        "detail": "Cosmetic banknote",
+        "color": "#b7dcb7"
+      }
+    },
+    {
+      "id": "money-500",
+      "label": "$500",
+      "group": "Money",
+      "path": "Games/monopoly-classic/art/money-500.svg",
+      "kind": "image",
+      "preview": {
+        "kind": "money",
+        "layout": "deal",
+        "name": "$500",
+        "value": 500,
+        "currency": "USD",
+        "detail": "Cosmetic banknote",
+        "color": "#b7dcb7"
+      }
+    },
+    {
+      "id": "token-hat",
+      "label": "Hat",
+      "group": "Tokens",
+      "path": "Games/monopoly-classic/art/token-hat.svg",
+      "kind": "image"
+    },
+    {
+      "id": "token-car",
+      "label": "Car",
+      "group": "Tokens",
+      "path": "Games/monopoly-classic/art/token-car.svg",
+      "kind": "image"
+    },
+    {
+      "id": "token-dog",
+      "label": "Dog",
+      "group": "Tokens",
+      "path": "Games/monopoly-classic/art/token-dog.svg",
+      "kind": "image"
+    },
+    {
+      "id": "token-ship",
+      "label": "Ship",
+      "group": "Tokens",
+      "path": "Games/monopoly-classic/art/token-ship.svg",
+      "kind": "image"
+    },
+    {
+      "id": "token-thimble",
+      "label": "Thimble",
+      "group": "Tokens",
+      "path": "Games/monopoly-classic/art/token-thimble.svg",
+      "kind": "image"
+    },
+    {
+      "id": "token-boot",
+      "label": "Boot",
+      "group": "Tokens",
+      "path": "Games/monopoly-classic/art/token-boot.svg",
+      "kind": "image"
+    },
+    {
+      "id": "title",
+      "label": "Title",
+      "group": "Table & UI",
+      "path": "Games/monopoly-classic/art/title.svg",
+      "kind": "image"
+    },
+    {
+      "id": "collection-title",
+      "label": "Board wordmark",
+      "group": "Table & UI",
+      "path": "Games/monopoly-classic/art/collection-title.svg",
+      "kind": "image"
+    },
+    {
+      "id": "board-surface",
+      "label": "Board surface",
+      "group": "Table & UI",
+      "path": "Games/monopoly-classic/art/board-surface.svg",
+      "kind": "image"
+    },
+    {
+      "id": "table",
+      "label": "Background",
+      "group": "Table & UI",
+      "path": "Games/monopoly-classic/art/table.svg",
+      "kind": "background"
+    },
+    {
+      "id": "sound-roll",
+      "label": "Roll",
+      "group": "Audio",
+      "path": "Games/monopoly-classic/audio/roll.wav",
+      "kind": "audio"
+    },
+    {
+      "id": "sound-move",
+      "label": "Move",
+      "group": "Audio",
+      "path": "Games/monopoly-classic/audio/move.wav",
+      "kind": "audio"
+    },
+    {
+      "id": "sound-cash",
+      "label": "Cash",
+      "group": "Audio",
+      "path": "Games/monopoly-classic/audio/cash.wav",
+      "kind": "audio"
+    },
+    {
+      "id": "sound-card",
+      "label": "Card",
+      "group": "Audio",
+      "path": "Games/monopoly-classic/audio/card.wav",
+      "kind": "audio"
+    },
+    {
+      "id": "sound-build",
+      "label": "Build",
+      "group": "Audio",
+      "path": "Games/monopoly-classic/audio/build.wav",
+      "kind": "audio"
+    },
+    {
+      "id": "sound-jail",
+      "label": "Jail",
+      "group": "Audio",
+      "path": "Games/monopoly-classic/audio/jail.wav",
+      "kind": "audio"
+    },
+    {
+      "id": "sound-win",
+      "label": "Win",
+      "group": "Audio",
+      "path": "Games/monopoly-classic/audio/win.wav",
+      "kind": "audio"
+    },
+    {
+      "id": "space-chest",
+      "label": "Chest",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-chest.svg",
+      "kind": "image"
+    },
+    {
+      "id": "space-chest-base",
+      "label": "Chest Base",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-chest-base.svg",
+      "kind": "image"
+    },
+    {
+      "id": "space-chest-lid",
+      "label": "Chest Lid",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-chest-lid.svg",
+      "kind": "image"
+    },
+    {
+      "id": "space-railroad",
+      "label": "Railroad",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-railroad.svg",
+      "kind": "image"
+    },
+    {
+      "id": "space-electric",
+      "label": "Electric",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-electric.svg",
+      "kind": "image"
+    },
+    {
+      "id": "space-water",
+      "label": "Water",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-water.svg",
+      "kind": "image"
+    },
+    {
+      "id": "space-parking",
+      "label": "Parking",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-parking.svg",
+      "kind": "image"
+    },
+    {
+      "id": "space-jail",
+      "label": "Jail",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-jail.svg",
+      "kind": "image"
+    },
+    {
+      "id": "space-go-to-jail",
+      "label": "Go To Jail",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-go-to-jail.svg",
+      "kind": "image"
+    },
+    {
+      "id": "space-luxury-tax",
+      "label": "Luxury Tax",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-luxury-tax.svg",
+      "kind": "image"
+    },
+    {
+      "id": "space-income-tax",
+      "label": "Income Tax",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-income-tax.svg",
+      "kind": "image"
+    },
+    {
+      "id": "space-chance",
+      "label": "Chance",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-chance.svg",
+      "kind": "image"
+    },
+    {
+      "id": "space-go",
+      "label": "Go",
+      "group": "Board illustrations",
+      "path": "Games/monopoly-classic/art/space-go.svg",
+      "kind": "image"
+    },
+    {
+      "id": "sound-chest",
+      "label": "Chest opening",
+      "group": "Audio",
+      "path": "Games/monopoly-classic/audio/chest.wav",
+      "kind": "audio"
+    },
+    {
+      "id": "sound-card-draw",
+      "label": "Card draw",
+      "group": "Audio",
+      "path": "Games/monopoly-classic/audio/card-draw.ogg",
+      "kind": "audio"
+    },
+    {
+      "id": "sound-doubles",
+      "label": "Doubles",
+      "group": "Audio",
+      "path": "Games/monopoly-classic/audio/doubles.wav",
+      "kind": "audio"
+    }
+  ]
+}

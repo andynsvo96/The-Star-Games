@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "chess",
+  "title": "Chess",
+  "description": "A royal chess game for one or two players, with full chess rules, optional custom clocks, and a computer opponent.",
+  "version": "0.1.0",
+  "thumbnail": "thumbnail.svg",
+  "background": "art/royal-study",
+  "host_scene": "host/main.tscn",
+  "controller_entry": "controller/index.html",
+  "min_players": 1,
+  "max_players": 2,
+  "modes": [
+    "singleplayer",
+    "multiplayer"
+  ]
+}

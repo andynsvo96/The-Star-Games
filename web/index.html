@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07102b">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/styles.css">
+  <title>The Star Games</title>
+</head>
+<body>
+  <main class="shell">
+    <section class="brand" aria-labelledby="title">
+      <h1 id="title">THE STAR<br>GAMES</h1>
+      <p id="status" class="status" role="status">Connecting to the host…</p>
+    </section>
+    <form id="join-form" class="card" hidden>
+      <label for="player-name">Player name</label>
+      <input id="player-name" name="player-name" maxlength="24" autocomplete="nickname" placeholder="Enter your name" required>
+      <button type="submit">JOIN THE PARTY</button>
+    </form>
+    <p id="error" class="error" role="alert"></p>
+    <section id="joined" class="card joined" hidden>
+      <p class="eyebrow">YOU’RE IN</p>
+      <h2 id="joined-name"></h2>
+      <p>Look at the host screen. Your controls will appear here when a game begins.</p>
+      <div id="avatar" class="avatar" aria-hidden="true"></div>
+      <p id="party-state">Choose your avatar color</p>
+      <div id="colors" class="colors" aria-label="Avatar color"></div>
+      <div id="roster" class="roster"></div>
+    </section>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>

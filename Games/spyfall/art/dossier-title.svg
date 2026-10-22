@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="240" viewBox="0 0 1200 240">
+<defs>
+<pattern id="wear" width="37" height="31" patternUnits="userSpaceOnUse"><path d="m3 6 3-1 1 3-4 1zM19 16l2-1 3 3-2 1zM28 3l4 1-1 2-4-1zM8 25l5-2 1 1-5 3z" fill="black" opacity=".75"/><circle cx="31" cy="24" r="1.5" fill="black"/></pattern>
+<mask id="stencil"><rect width="1200" height="240" fill="white"/><rect width="1200" height="240" fill="url(#wear)"/><path d="M78 18h5v48H78zM78 178h5v46H78zM251 20h5v46h-5zM422 137h6v85h-6zM599 18h6v48h-6zM597 103h6v42h-6zM911 177h6v47h-6zM1071 177h6v47h-6z" fill="black"/></mask>
+</defs>
+<g mask="url(#stencil)" fill="#ffefd2" stroke="#201e19" stroke-width="2" fill-rule="evenodd">
+<path d="M48 24h102l28 28v48h-38V70l-8-8H68v40h82l28 28v70l-18 18H30v-38h108v-40H58l-28-28V42Z"/>
+<path transform="translate(198)" d="M0 24h108l28 28v84l-28 28H40v54H0Zm40 38v64h56V62Z"/>
+<path transform="translate(362)" d="M0 24h44l36 74 36-74h44l-60 116v78H60v-78Z"/>
+<path transform="translate(542)" d="M0 24h132v38H40v42h82v38H40v76H0Z"/>
+<path transform="translate(706)" fill="#cc3933" d="M40 24h62l54 194h-42l-10-40H40l-10 40H-12Zm10 116h44L72 62Z"/>
+<path transform="translate(886)" d="M0 24h40v156h100v38H0Z"/>
+<path transform="translate(1046)" d="M0 24h40v156h100v38H0Z"/>
+</g>
+<g transform="translate(768 88)" fill="#071c1e"><path d="M-23 35h48l-5-6-7-2-4-19h-22l-5 19-7 2z"/><path d="M-12 37h23l-3 19-9 7-9-7zM-13 58l-21 50h65L10 58 0 74z"/></g>
+</svg>

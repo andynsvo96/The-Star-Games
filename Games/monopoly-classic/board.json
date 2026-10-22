@@ -1,0 +1,1375 @@
+{
+  "schema_version": 1,
+  "source": "Hasbro US C1009 (2017)",
+  "board": [
+    {
+      "index": 0,
+      "kind": "go",
+      "name": "GO",
+      "amount": 0
+    },
+    {
+      "index": 1,
+      "kind": "property",
+      "property": 1,
+      "name": "Mediterranean Avenue"
+    },
+    {
+      "index": 2,
+      "kind": "community",
+      "name": "Community Chest",
+      "amount": 0
+    },
+    {
+      "index": 3,
+      "kind": "property",
+      "property": 3,
+      "name": "Baltic Avenue"
+    },
+    {
+      "index": 4,
+      "kind": "tax",
+      "name": "Income Tax",
+      "amount": 200
+    },
+    {
+      "index": 5,
+      "kind": "property",
+      "property": 5,
+      "name": "Reading Railroad"
+    },
+    {
+      "index": 6,
+      "kind": "property",
+      "property": 6,
+      "name": "Oriental Avenue"
+    },
+    {
+      "index": 7,
+      "kind": "chance",
+      "name": "Chance",
+      "amount": 0
+    },
+    {
+      "index": 8,
+      "kind": "property",
+      "property": 8,
+      "name": "Vermont Avenue"
+    },
+    {
+      "index": 9,
+      "kind": "property",
+      "property": 9,
+      "name": "Connecticut Avenue"
+    },
+    {
+      "index": 10,
+      "kind": "jail",
+      "name": "Jail / Just Visiting",
+      "amount": 0
+    },
+    {
+      "index": 11,
+      "kind": "property",
+      "property": 11,
+      "name": "St. Charles Place"
+    },
+    {
+      "index": 12,
+      "kind": "property",
+      "property": 12,
+      "name": "Electric Company"
+    },
+    {
+      "index": 13,
+      "kind": "property",
+      "property": 13,
+      "name": "States Avenue"
+    },
+    {
+      "index": 14,
+      "kind": "property",
+      "property": 14,
+      "name": "Virginia Avenue"
+    },
+    {
+      "index": 15,
+      "kind": "property",
+      "property": 15,
+      "name": "Pennsylvania Railroad"
+    },
+    {
+      "index": 16,
+      "kind": "property",
+      "property": 16,
+      "name": "St. James Place"
+    },
+    {
+      "index": 17,
+      "kind": "community",
+      "name": "Community Chest",
+      "amount": 0
+    },
+    {
+      "index": 18,
+      "kind": "property",
+      "property": 18,
+      "name": "Tennessee Avenue"
+    },
+    {
+      "index": 19,
+      "kind": "property",
+      "property": 19,
+      "name": "New York Avenue"
+    },
+    {
+      "index": 20,
+      "kind": "parking",
+      "name": "Free Parking",
+      "amount": 0
+    },
+    {
+      "index": 21,
+      "kind": "property",
+      "property": 21,
+      "name": "Kentucky Avenue"
+    },
+    {
+      "index": 22,
+      "kind": "chance",
+      "name": "Chance",
+      "amount": 0
+    },
+    {
+      "index": 23,
+      "kind": "property",
+      "property": 23,
+      "name": "Indiana Avenue"
+    },
+    {
+      "index": 24,
+      "kind": "property",
+      "property": 24,
+      "name": "Illinois Avenue"
+    },
+    {
+      "index": 25,
+      "kind": "property",
+      "property": 25,
+      "name": "B. & O. Railroad"
+    },
+    {
+      "index": 26,
+      "kind": "property",
+      "property": 26,
+      "name": "Atlantic Avenue"
+    },
+    {
+      "index": 27,
+      "kind": "property",
+      "property": 27,
+      "name": "Ventnor Avenue"
+    },
+    {
+      "index": 28,
+      "kind": "property",
+      "property": 28,
+      "name": "Water Works"
+    },
+    {
+      "index": 29,
+      "kind": "property",
+      "property": 29,
+      "name": "Marvin Gardens"
+    },
+    {
+      "index": 30,
+      "kind": "go_to_jail",
+      "name": "Go to Jail",
+      "amount": 0
+    },
+    {
+      "index": 31,
+      "kind": "property",
+      "property": 31,
+      "name": "Pacific Avenue"
+    },
+    {
+      "index": 32,
+      "kind": "property",
+      "property": 32,
+      "name": "North Carolina Avenue"
+    },
+    {
+      "index": 33,
+      "kind": "community",
+      "name": "Community Chest",
+      "amount": 0
+    },
+    {
+      "index": 34,
+      "kind": "property",
+      "property": 34,
+      "name": "Pennsylvania Avenue"
+    },
+    {
+      "index": 35,
+      "kind": "property",
+      "property": 35,
+      "name": "Short Line"
+    },
+    {
+      "index": 36,
+      "kind": "chance",
+      "name": "Chance",
+      "amount": 0
+    },
+    {
+      "index": 37,
+      "kind": "property",
+      "property": 37,
+      "name": "Park Place"
+    },
+    {
+      "index": 38,
+      "kind": "tax",
+      "name": "Luxury Tax",
+      "amount": 100
+    },
+    {
+      "index": 39,
+      "kind": "property",
+      "property": 39,
+      "name": "Boardwalk"
+    }
+  ],
+  "properties": [
+    {
+      "id": 1,
+      "key": "mediterranean-avenue",
+      "name": "Mediterranean Avenue",
+      "group": "brown",
+      "color": "#965b37",
+      "price": 60,
+      "mortgage": 30,
+      "building_cost": 50,
+      "rents": [
+        2,
+        10,
+        30,
+        90,
+        160,
+        250
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 60,
+      "colors": [
+        "brown"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 3,
+      "key": "baltic-avenue",
+      "name": "Baltic Avenue",
+      "group": "brown",
+      "color": "#965b37",
+      "price": 60,
+      "mortgage": 30,
+      "building_cost": 50,
+      "rents": [
+        4,
+        20,
+        60,
+        180,
+        320,
+        450
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 60,
+      "colors": [
+        "brown"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 5,
+      "key": "reading-railroad",
+      "name": "Reading Railroad",
+      "group": "railroad",
+      "color": "#343c46",
+      "price": 200,
+      "mortgage": 100,
+      "building_cost": 0,
+      "rents": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 200,
+      "colors": [
+        "railroad"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 6,
+      "key": "oriental-avenue",
+      "name": "Oriental Avenue",
+      "group": "light-blue",
+      "color": "#73c6e5",
+      "price": 100,
+      "mortgage": 50,
+      "building_cost": 50,
+      "rents": [
+        6,
+        30,
+        90,
+        270,
+        400,
+        550
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 100,
+      "colors": [
+        "light-blue"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 8,
+      "key": "vermont-avenue",
+      "name": "Vermont Avenue",
+      "group": "light-blue",
+      "color": "#73c6e5",
+      "price": 100,
+      "mortgage": 50,
+      "building_cost": 50,
+      "rents": [
+        6,
+        30,
+        90,
+        270,
+        400,
+        550
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 100,
+      "colors": [
+        "light-blue"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 9,
+      "key": "connecticut-avenue",
+      "name": "Connecticut Avenue",
+      "group": "light-blue",
+      "color": "#73c6e5",
+      "price": 120,
+      "mortgage": 60,
+      "building_cost": 50,
+      "rents": [
+        8,
+        40,
+        100,
+        300,
+        450,
+        600
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 120,
+      "colors": [
+        "light-blue"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 11,
+      "key": "st-charles-place",
+      "name": "St. Charles Place",
+      "group": "pink",
+      "color": "#d7579e",
+      "price": 140,
+      "mortgage": 70,
+      "building_cost": 100,
+      "rents": [
+        10,
+        50,
+        150,
+        450,
+        625,
+        750
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 140,
+      "colors": [
+        "pink"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 12,
+      "key": "electric-company",
+      "name": "Electric Company",
+      "group": "utility",
+      "color": "#a9b7a0",
+      "price": 150,
+      "mortgage": 75,
+      "building_cost": 0,
+      "rents": [
+        4,
+        10
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 150,
+      "colors": [
+        "utility"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 13,
+      "key": "states-avenue",
+      "name": "States Avenue",
+      "group": "pink",
+      "color": "#d7579e",
+      "price": 140,
+      "mortgage": 70,
+      "building_cost": 100,
+      "rents": [
+        10,
+        50,
+        150,
+        450,
+        625,
+        750
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 140,
+      "colors": [
+        "pink"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 14,
+      "key": "virginia-avenue",
+      "name": "Virginia Avenue",
+      "group": "pink",
+      "color": "#d7579e",
+      "price": 160,
+      "mortgage": 80,
+      "building_cost": 100,
+      "rents": [
+        12,
+        60,
+        180,
+        500,
+        700,
+        900
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 160,
+      "colors": [
+        "pink"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 15,
+      "key": "pennsylvania-railroad",
+      "name": "Pennsylvania Railroad",
+      "group": "railroad",
+      "color": "#343c46",
+      "price": 200,
+      "mortgage": 100,
+      "building_cost": 0,
+      "rents": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 200,
+      "colors": [
+        "railroad"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 16,
+      "key": "st-james-place",
+      "name": "St. James Place",
+      "group": "orange",
+      "color": "#ed922c",
+      "price": 180,
+      "mortgage": 90,
+      "building_cost": 100,
+      "rents": [
+        14,
+        70,
+        200,
+        550,
+        750,
+        950
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 180,
+      "colors": [
+        "orange"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 18,
+      "key": "tennessee-avenue",
+      "name": "Tennessee Avenue",
+      "group": "orange",
+      "color": "#ed922c",
+      "price": 180,
+      "mortgage": 90,
+      "building_cost": 100,
+      "rents": [
+        14,
+        70,
+        200,
+        550,
+        750,
+        950
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 180,
+      "colors": [
+        "orange"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 19,
+      "key": "new-york-avenue",
+      "name": "New York Avenue",
+      "group": "orange",
+      "color": "#ed922c",
+      "price": 200,
+      "mortgage": 100,
+      "building_cost": 100,
+      "rents": [
+        16,
+        80,
+        220,
+        600,
+        800,
+        1000
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 200,
+      "colors": [
+        "orange"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 21,
+      "key": "kentucky-avenue",
+      "name": "Kentucky Avenue",
+      "group": "red",
+      "color": "#d5393f",
+      "price": 220,
+      "mortgage": 110,
+      "building_cost": 150,
+      "rents": [
+        18,
+        90,
+        250,
+        700,
+        875,
+        1050
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 220,
+      "colors": [
+        "red"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 23,
+      "key": "indiana-avenue",
+      "name": "Indiana Avenue",
+      "group": "red",
+      "color": "#d5393f",
+      "price": 220,
+      "mortgage": 110,
+      "building_cost": 150,
+      "rents": [
+        18,
+        90,
+        250,
+        700,
+        875,
+        1050
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 220,
+      "colors": [
+        "red"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 24,
+      "key": "illinois-avenue",
+      "name": "Illinois Avenue",
+      "group": "red",
+      "color": "#d5393f",
+      "price": 240,
+      "mortgage": 120,
+      "building_cost": 150,
+      "rents": [
+        20,
+        100,
+        300,
+        750,
+        925,
+        1100
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 240,
+      "colors": [
+        "red"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 25,
+      "key": "b-and-o-railroad",
+      "name": "B. & O. Railroad",
+      "group": "railroad",
+      "color": "#343c46",
+      "price": 200,
+      "mortgage": 100,
+      "building_cost": 0,
+      "rents": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 200,
+      "colors": [
+        "railroad"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 26,
+      "key": "atlantic-avenue",
+      "name": "Atlantic Avenue",
+      "group": "yellow",
+      "color": "#f2d449",
+      "price": 260,
+      "mortgage": 130,
+      "building_cost": 150,
+      "rents": [
+        22,
+        110,
+        330,
+        800,
+        975,
+        1150
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 260,
+      "colors": [
+        "yellow"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 27,
+      "key": "ventnor-avenue",
+      "name": "Ventnor Avenue",
+      "group": "yellow",
+      "color": "#f2d449",
+      "price": 260,
+      "mortgage": 130,
+      "building_cost": 150,
+      "rents": [
+        22,
+        110,
+        330,
+        800,
+        975,
+        1150
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 260,
+      "colors": [
+        "yellow"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 28,
+      "key": "water-works",
+      "name": "Water Works",
+      "group": "utility",
+      "color": "#a9b7a0",
+      "price": 150,
+      "mortgage": 75,
+      "building_cost": 0,
+      "rents": [
+        4,
+        10
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 150,
+      "colors": [
+        "utility"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 29,
+      "key": "marvin-gardens",
+      "name": "Marvin Gardens",
+      "group": "yellow",
+      "color": "#f2d449",
+      "price": 280,
+      "mortgage": 140,
+      "building_cost": 150,
+      "rents": [
+        24,
+        120,
+        360,
+        850,
+        1025,
+        1200
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 280,
+      "colors": [
+        "yellow"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 31,
+      "key": "pacific-avenue",
+      "name": "Pacific Avenue",
+      "group": "green",
+      "color": "#279354",
+      "price": 300,
+      "mortgage": 150,
+      "building_cost": 200,
+      "rents": [
+        26,
+        130,
+        390,
+        900,
+        1100,
+        1275
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 300,
+      "colors": [
+        "green"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 32,
+      "key": "north-carolina-avenue",
+      "name": "North Carolina Avenue",
+      "group": "green",
+      "color": "#279354",
+      "price": 300,
+      "mortgage": 150,
+      "building_cost": 200,
+      "rents": [
+        26,
+        130,
+        390,
+        900,
+        1100,
+        1275
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 300,
+      "colors": [
+        "green"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 34,
+      "key": "pennsylvania-avenue",
+      "name": "Pennsylvania Avenue",
+      "group": "green",
+      "color": "#279354",
+      "price": 320,
+      "mortgage": 160,
+      "building_cost": 200,
+      "rents": [
+        28,
+        150,
+        450,
+        1000,
+        1200,
+        1400
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 320,
+      "colors": [
+        "green"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 35,
+      "key": "short-line",
+      "name": "Short Line",
+      "group": "railroad",
+      "color": "#343c46",
+      "price": 200,
+      "mortgage": 100,
+      "building_cost": 0,
+      "rents": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 200,
+      "colors": [
+        "railroad"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 37,
+      "key": "park-place",
+      "name": "Park Place",
+      "group": "dark-blue",
+      "color": "#244695",
+      "price": 350,
+      "mortgage": 175,
+      "building_cost": 200,
+      "rents": [
+        35,
+        175,
+        500,
+        1100,
+        1300,
+        1500
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 350,
+      "colors": [
+        "dark-blue"
+      ],
+      "detail": "US Classic title deed"
+    },
+    {
+      "id": 39,
+      "key": "boardwalk",
+      "name": "Boardwalk",
+      "group": "dark-blue",
+      "color": "#244695",
+      "price": 400,
+      "mortgage": 200,
+      "building_cost": 200,
+      "rents": [
+        50,
+        200,
+        600,
+        1400,
+        1700,
+        2000
+      ],
+      "kind": "property",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 400,
+      "colors": [
+        "dark-blue"
+      ],
+      "detail": "US Classic title deed"
+    }
+  ],
+  "chance": [
+    {
+      "key": "chance-go",
+      "name": "Advance to GO",
+      "detail": "Move to GO and collect $200.",
+      "effect": "move",
+      "destination": 0,
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-illinois",
+      "name": "Illinois Avenue",
+      "detail": "Advance to Illinois Avenue. Collect $200 if you pass GO.",
+      "effect": "move",
+      "destination": 24,
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-st-charles",
+      "name": "St. Charles Place",
+      "detail": "Advance to St. Charles Place. Collect $200 if you pass GO.",
+      "effect": "move",
+      "destination": 11,
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-utility",
+      "name": "Nearest Utility",
+      "detail": "Advance to the next utility. If owned, pay ten times a fresh dice roll.",
+      "effect": "utility",
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-railroad-a",
+      "name": "Nearest Railroad",
+      "detail": "Advance to the next railroad. If owned, pay twice its normal rent.",
+      "effect": "railroad",
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-railroad-b",
+      "name": "Nearest Railroad",
+      "detail": "Advance to the next railroad. If owned, pay twice its normal rent.",
+      "effect": "railroad",
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-dividend",
+      "name": "Bank Dividend",
+      "detail": "Receive a $50 dividend from the Bank.",
+      "effect": "receive",
+      "amount": 50,
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-jail-free",
+      "name": "Get Out of Jail Free",
+      "detail": "Keep this card until used or traded.",
+      "effect": "jail_free",
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-back-three",
+      "name": "Back Three Spaces",
+      "detail": "Move back three spaces and resolve that space.",
+      "effect": "back",
+      "amount": 3,
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-jail",
+      "name": "Go to Jail",
+      "detail": "Go directly to Jail. Do not collect money for passing GO.",
+      "effect": "jail",
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-repairs",
+      "name": "General Repairs",
+      "detail": "Pay $25 per house and $100 per hotel you own.",
+      "effect": "repairs",
+      "house": 25,
+      "hotel": 100,
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-fine",
+      "name": "Speeding Fine",
+      "detail": "Pay a $15 fine to the Bank.",
+      "effect": "pay",
+      "amount": 15,
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-reading",
+      "name": "Reading Railroad",
+      "detail": "Advance to Reading Railroad. Collect $200 if you pass GO.",
+      "effect": "move",
+      "destination": 5,
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-boardwalk",
+      "name": "Boardwalk",
+      "detail": "Advance to Boardwalk.",
+      "effect": "move",
+      "destination": 39,
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-chairman",
+      "name": "Elected Chairman",
+      "detail": "Pay every other player $50.",
+      "effect": "pay_each",
+      "amount": 50,
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    },
+    {
+      "key": "chance-loan",
+      "name": "Building Loan",
+      "detail": "Your building loan matures. Receive $150.",
+      "effect": "receive",
+      "amount": 150,
+      "kind": "chance",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#f0cc9b"
+    }
+  ],
+  "community": [
+    {
+      "key": "community-go",
+      "name": "Advance to GO",
+      "detail": "Move to GO and collect $200.",
+      "effect": "move",
+      "destination": 0,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-bank-error",
+      "name": "Bank Error",
+      "detail": "A bank error is in your favor. Receive $200.",
+      "effect": "receive",
+      "amount": 200,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-doctor",
+      "name": "Doctor Fee",
+      "detail": "Pay $50 for a doctor visit.",
+      "effect": "pay",
+      "amount": 50,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-stock",
+      "name": "Stock Sale",
+      "detail": "Receive $50 from selling stock.",
+      "effect": "receive",
+      "amount": 50,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-jail-free",
+      "name": "Get Out of Jail Free",
+      "detail": "Keep this card until used or traded.",
+      "effect": "jail_free",
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-jail",
+      "name": "Go to Jail",
+      "detail": "Go directly to Jail. Do not collect money for passing GO.",
+      "effect": "jail",
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-holiday",
+      "name": "Holiday Fund",
+      "detail": "Your holiday fund matures. Receive $100.",
+      "effect": "receive",
+      "amount": 100,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-refund",
+      "name": "Tax Refund",
+      "detail": "Receive a $20 income tax refund.",
+      "effect": "receive",
+      "amount": 20,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-birthday",
+      "name": "Birthday",
+      "detail": "Receive $10 from every other player.",
+      "effect": "receive_each",
+      "amount": 10,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-insurance",
+      "name": "Life Insurance",
+      "detail": "Your life insurance matures. Receive $100.",
+      "effect": "receive",
+      "amount": 100,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-hospital",
+      "name": "Hospital Fees",
+      "detail": "Pay $100 in hospital fees.",
+      "effect": "pay",
+      "amount": 100,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-school",
+      "name": "School Fees",
+      "detail": "Pay $50 in school fees.",
+      "effect": "pay",
+      "amount": 50,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-consultancy",
+      "name": "Consultancy Fee",
+      "detail": "Receive a $25 consultancy fee.",
+      "effect": "receive",
+      "amount": 25,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-repairs",
+      "name": "Street Repairs",
+      "detail": "Pay $40 per house and $115 per hotel you own.",
+      "effect": "repairs",
+      "house": 40,
+      "hotel": 115,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-beauty",
+      "name": "Beauty Contest",
+      "detail": "Receive a $10 beauty contest prize.",
+      "effect": "receive",
+      "amount": 10,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    },
+    {
+      "key": "community-inheritance",
+      "name": "Inheritance",
+      "detail": "Receive an inheritance of $100.",
+      "effect": "receive",
+      "amount": 100,
+      "kind": "community",
+      "layout": "deal",
+      "currency": "USD",
+      "value": 0,
+      "colors": [],
+      "color": "#b8d9df"
+    }
+  ]
+}

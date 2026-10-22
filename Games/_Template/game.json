@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "id": "replace-with-game-id",
+  "title": "Replace With Game Title",
+  "description": "Describe the game in one or two short sentences.",
+  "version": "0.1.0",
+  "thumbnail": "thumbnail.svg",
+  "background": "art/background",
+  "host_scene": "host/main.tscn",
+  "controller_entry": "controller/index.html",
+  "min_players": 1,
+  "max_players": 16,
+  "modes": ["singleplayer", "multiplayer"]
+}

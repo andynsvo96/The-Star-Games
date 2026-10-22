@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="64" viewBox="0 0 192 64">
+  <defs><linearGradient id="metal" x2="0" y2="1"><stop stop-color="#ded8c9"/><stop offset=".3" stop-color="#9b9587"/><stop offset=".55" stop-color="#f0eadc"/><stop offset=".8" stop-color="#9f9889"/><stop offset="1" stop-color="#524e44"/></linearGradient></defs>
+  <path d="M17 58 23 35 57 27 68 23 78 8Q96-7 114 8L124 23 135 27 169 35 175 58Z" fill="#100e0b" opacity=".4"/>
+  <path d="M14 53 20 31 54 23 65 19 75 5Q96-10 117 5L127 19 138 23 172 31 178 53Z" fill="url(#metal)" stroke="#eee4ce" stroke-width="2"/>
+  <circle cx="96" cy="13" r="9" fill="#514b3e" stroke="#eee4ce" stroke-width="2"/><rect x="11" y="49" width="170" height="9" rx="3" fill="#645e50" stroke="#cfc5af" stroke-width="2"/><path d="M24 33 58 26M168 33l-34-7" fill="none" stroke="#f8f0de" opacity=".65"/><circle cx="53" cy="32" r="2" fill="#413b32"/><circle cx="139" cy="32" r="2" fill="#413b32"/>
+</svg>

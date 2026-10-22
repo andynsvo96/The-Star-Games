@@ -1,8 +1,14 @@
 {
+  "schema_version": 1,
   "id": "spyfall",
-  "name": "Spyfall",
-  "minPlayers": 3,
-  "maxPlayers": 20,
-  "description": "Find the spy by asking clever questions",
-  "icon": "icon.png"
+  "title": "Spyfall",
+  "description": "One secret spy. One hidden location. Question your friends aloud and find the impostor.",
+  "version": "0.1.0",
+  "thumbnail": "thumbnail.svg",
+  "background": "art/spy-office",
+  "host_scene": "host/main.tscn",
+  "controller_entry": "controller/index.html",
+  "min_players": 4,
+  "max_players": 8,
+  "modes": ["multiplayer"]
 }

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+	<title>Checkers</title>
+	<link rel="stylesheet" href="/styles.css">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body class="playful-game game-royal">
+	<main class="game-controller">
+		<header>
+			<h1 class="sr-only">Checkers</h1>
+			<img class="game-title-art" src="/game/checkers/art/title-v2.png" alt="">
+			
+			<p id="connection" role="status">Connecting...</p>
+			<p id="status" class="game-status" role="status">Waiting for the host...</p>
+		</header>
+		<div class="game-arena">
+			<aside class="game-score-card game-ledger" style="--score-color: #cf2337">
+				<p id="red-player">Red player</p>
+				<output id="red-score" aria-label="Red wins this session">0 WINS</output>
+				<div id="red-clock" class="game-stat-clock" aria-label="Red clock" hidden>UNTIMED</div>
+				<div class="checkers-material"><img src="/game/checkers/art/red.svg" alt="Regular pieces"><span id="red-men">x 12</span><img src="/game/checkers/art/red-king.svg" alt="Kings"><span id="red-kings">x 0</span></div>
+			</aside>
+			<section class="game-playfield">
+				<div id="board" role="group" aria-label="Checkers board"></div>
+				<button id="replay" class="game-primary" hidden>PLAY AGAIN</button>
+			</section>
+			<aside class="game-score-card game-ledger" style="--score-color: #39435a">
+				<p id="black-player">Black player</p>
+				<output id="black-score" aria-label="Black wins this session">0 WINS</output>
+				<div id="black-clock" class="game-stat-clock" aria-label="Black clock" hidden>UNTIMED</div>
+				<div class="checkers-material"><img src="/game/checkers/art/black.svg" alt="Regular pieces"><span id="black-men">x 12</span><img src="/game/checkers/art/black-king.svg" alt="Kings"><span id="black-kings">x 0</span></div>
+			</aside>
+		</div>
+	</main>
+	<script src="/controller-sdk.js"></script>
+	<script src="/game-celebration.js"></script>
+	<script src="board-motion.js"></script>
+	<script src="controller.js"></script>
+</body>
+</html>

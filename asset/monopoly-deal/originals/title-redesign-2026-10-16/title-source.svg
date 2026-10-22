@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="490" height="280" viewBox="0 0 490 280">
+<defs><linearGradient id="red" x2="0" y2="1"><stop stop-color="#fb252d"/><stop offset=".6" stop-color="#d5000d"/><stop offset="1" stop-color="#a5000c"/></linearGradient></defs>
+<rect x="12" y="12" width="466" height="88" fill="#212121" stroke="#aaa" stroke-width="2"/>
+<rect x="16" y="16" width="458" height="80" fill="url(#red)" stroke="#fff" stroke-width="4"/>
+<g transform="translate(245 0) scale(1.07 1) translate(-245 0)"><text x="245" y="79" font-size="63" font-weight="bold" data-font-family="Century Gothic" text-anchor="middle" fill="#fff">MONOPOLY</text></g>
+<g fill-rule="evenodd" stroke-linejoin="miter">
+<path id="deal" d="M25 123H80C126 123 146 148 146 187S123 251 80 251H25ZM65 158V217H78C99 217 107 206 107 187S99 158 78 158ZM155 123H244V157H195V172H237V202H195V217H247V251H155ZM292 123H332L379 251H337L331 230H290L283 251H244ZM299 200H322L310 161ZM384 123H424V215H470L458 251H384Z" fill="#141414" stroke="#8e8e8e" stroke-width="27"/>
+<use href="#deal" fill="#080808" stroke="#dc0715" stroke-width="22"/>
+<use href="#deal" fill="#080808" stroke="#fff" stroke-width="12"/>
+<use href="#deal" fill="#080808" stroke="#080808" stroke-width="2"/>
+</g></svg>

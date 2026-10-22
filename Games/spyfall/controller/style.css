@@ -1,0 +1,13 @@
+/* Palette, panels, typography and controls come from the shared game UI. */
+.spy-playfield { display: grid; gap: .85rem; align-content: start; }
+.spy-card { min-height: 13rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem; }
+.spy-card h2 { overflow-wrap: anywhere; margin: 0; }
+.spy-clock { font-variant-numeric: tabular-nums; }
+.spy-clock small { display: block; margin-top: .35rem; font-size: .65rem; letter-spacing: .12em; }
+#timer, #vote-timer { font-size: 1.5em; font-weight: 900; }
+#choose-final { width: 100%; }
+#reveal { white-space: pre-line; overflow-wrap: anywhere; }
+@media (orientation: landscape) and (max-height: 520px) {
+  .spy-card { min-height: 10rem; }
+  .spy-card img { display: none; }
+}

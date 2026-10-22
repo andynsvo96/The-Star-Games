@@ -1,0 +1,1264 @@
+{
+  "schema_version": 1,
+  "slots": [
+    {
+      "id": "mediterranean-avenue",
+      "label": "Mediterranean Avenue",
+      "group": "Properties / Brown",
+      "path": "Games/monopoly-deal/art/mediterranean-avenue.svg",
+      "kind": "image",
+      "display_name": "Mediterranean Avenue",
+      "preview": {
+        "id": 0,
+        "key": "mediterranean-avenue",
+        "name": "Mediterranean Avenue",
+        "kind": "property",
+        "value": 1,
+        "colors": [
+          "brown"
+        ],
+        "detail": "2 for a full set",
+        "layout": "deal",
+        "color": "#965b37"
+      }
+    },
+    {
+      "id": "baltic-avenue",
+      "label": "Baltic Avenue",
+      "group": "Properties / Brown",
+      "path": "Games/monopoly-deal/art/baltic-avenue.svg",
+      "kind": "image",
+      "display_name": "Baltic Avenue",
+      "preview": {
+        "id": 1,
+        "key": "baltic-avenue",
+        "name": "Baltic Avenue",
+        "kind": "property",
+        "value": 1,
+        "colors": [
+          "brown"
+        ],
+        "detail": "2 for a full set",
+        "layout": "deal",
+        "color": "#965b37"
+      }
+    },
+    {
+      "id": "oriental-avenue",
+      "label": "Oriental Avenue",
+      "group": "Properties / Light blue",
+      "path": "Games/monopoly-deal/art/oriental-avenue.svg",
+      "kind": "image",
+      "display_name": "Oriental Avenue",
+      "preview": {
+        "id": 2,
+        "key": "oriental-avenue",
+        "name": "Oriental Avenue",
+        "kind": "property",
+        "value": 1,
+        "colors": [
+          "light-blue"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#65c7e8"
+      }
+    },
+    {
+      "id": "vermont-avenue",
+      "label": "Vermont Avenue",
+      "group": "Properties / Light blue",
+      "path": "Games/monopoly-deal/art/vermont-avenue.svg",
+      "kind": "image",
+      "display_name": "Vermont Avenue",
+      "preview": {
+        "id": 3,
+        "key": "vermont-avenue",
+        "name": "Vermont Avenue",
+        "kind": "property",
+        "value": 1,
+        "colors": [
+          "light-blue"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#65c7e8"
+      }
+    },
+    {
+      "id": "connecticut-avenue",
+      "label": "Connecticut Avenue",
+      "group": "Properties / Light blue",
+      "path": "Games/monopoly-deal/art/connecticut-avenue.svg",
+      "kind": "image",
+      "display_name": "Connecticut Avenue",
+      "preview": {
+        "id": 4,
+        "key": "connecticut-avenue",
+        "name": "Connecticut Avenue",
+        "kind": "property",
+        "value": 1,
+        "colors": [
+          "light-blue"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#65c7e8"
+      }
+    },
+    {
+      "id": "st-charles-place",
+      "label": "St. Charles Place",
+      "group": "Properties / Pink",
+      "path": "Games/monopoly-deal/art/st-charles-place.svg",
+      "kind": "image",
+      "display_name": "St. Charles Place",
+      "preview": {
+        "id": 5,
+        "key": "st-charles-place",
+        "name": "St. Charles Place",
+        "kind": "property",
+        "value": 2,
+        "colors": [
+          "pink"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#cf559b"
+      }
+    },
+    {
+      "id": "states-avenue",
+      "label": "States Avenue",
+      "group": "Properties / Pink",
+      "path": "Games/monopoly-deal/art/states-avenue.svg",
+      "kind": "image",
+      "display_name": "States Avenue",
+      "preview": {
+        "id": 6,
+        "key": "states-avenue",
+        "name": "States Avenue",
+        "kind": "property",
+        "value": 2,
+        "colors": [
+          "pink"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#cf559b"
+      }
+    },
+    {
+      "id": "virginia-avenue",
+      "label": "Virginia Avenue",
+      "group": "Properties / Pink",
+      "path": "Games/monopoly-deal/art/virginia-avenue.svg",
+      "kind": "image",
+      "display_name": "Virginia Avenue",
+      "preview": {
+        "id": 7,
+        "key": "virginia-avenue",
+        "name": "Virginia Avenue",
+        "kind": "property",
+        "value": 2,
+        "colors": [
+          "pink"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#cf559b"
+      }
+    },
+    {
+      "id": "st-james-place",
+      "label": "St. James Place",
+      "group": "Properties / Orange",
+      "path": "Games/monopoly-deal/art/st-james-place.svg",
+      "kind": "image",
+      "display_name": "St. James Place",
+      "preview": {
+        "id": 8,
+        "key": "st-james-place",
+        "name": "St. James Place",
+        "kind": "property",
+        "value": 2,
+        "colors": [
+          "orange"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#ed952e"
+      }
+    },
+    {
+      "id": "tennessee-avenue",
+      "label": "Tennessee Avenue",
+      "group": "Properties / Orange",
+      "path": "Games/monopoly-deal/art/tennessee-avenue.svg",
+      "kind": "image",
+      "display_name": "Tennessee Avenue",
+      "preview": {
+        "id": 9,
+        "key": "tennessee-avenue",
+        "name": "Tennessee Avenue",
+        "kind": "property",
+        "value": 2,
+        "colors": [
+          "orange"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#ed952e"
+      }
+    },
+    {
+      "id": "new-york-avenue",
+      "label": "New York Avenue",
+      "group": "Properties / Orange",
+      "path": "Games/monopoly-deal/art/new-york-avenue.svg",
+      "kind": "image",
+      "display_name": "New York Avenue",
+      "preview": {
+        "id": 10,
+        "key": "new-york-avenue",
+        "name": "New York Avenue",
+        "kind": "property",
+        "value": 2,
+        "colors": [
+          "orange"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#ed952e"
+      }
+    },
+    {
+      "id": "kentucky-avenue",
+      "label": "Kentucky Avenue",
+      "group": "Properties / Red",
+      "path": "Games/monopoly-deal/art/kentucky-avenue.svg",
+      "kind": "image",
+      "display_name": "Kentucky Avenue",
+      "preview": {
+        "id": 11,
+        "key": "kentucky-avenue",
+        "name": "Kentucky Avenue",
+        "kind": "property",
+        "value": 3,
+        "colors": [
+          "red"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#dc403d"
+      }
+    },
+    {
+      "id": "indiana-avenue",
+      "label": "Indiana Avenue",
+      "group": "Properties / Red",
+      "path": "Games/monopoly-deal/art/indiana-avenue.svg",
+      "kind": "image",
+      "display_name": "Indiana Avenue",
+      "preview": {
+        "id": 12,
+        "key": "indiana-avenue",
+        "name": "Indiana Avenue",
+        "kind": "property",
+        "value": 3,
+        "colors": [
+          "red"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#dc403d"
+      }
+    },
+    {
+      "id": "illinois-avenue",
+      "label": "Illinois Avenue",
+      "group": "Properties / Red",
+      "path": "Games/monopoly-deal/art/illinois-avenue.svg",
+      "kind": "image",
+      "display_name": "Illinois Avenue",
+      "preview": {
+        "id": 13,
+        "key": "illinois-avenue",
+        "name": "Illinois Avenue",
+        "kind": "property",
+        "value": 3,
+        "colors": [
+          "red"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#dc403d"
+      }
+    },
+    {
+      "id": "atlantic-avenue",
+      "label": "Atlantic Avenue",
+      "group": "Properties / Yellow",
+      "path": "Games/monopoly-deal/art/atlantic-avenue.svg",
+      "kind": "image",
+      "display_name": "Atlantic Avenue",
+      "preview": {
+        "id": 14,
+        "key": "atlantic-avenue",
+        "name": "Atlantic Avenue",
+        "kind": "property",
+        "value": 3,
+        "colors": [
+          "yellow"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#edcf3d"
+      }
+    },
+    {
+      "id": "ventnor-avenue",
+      "label": "Ventnor Avenue",
+      "group": "Properties / Yellow",
+      "path": "Games/monopoly-deal/art/ventnor-avenue.svg",
+      "kind": "image",
+      "display_name": "Ventnor Avenue",
+      "preview": {
+        "id": 15,
+        "key": "ventnor-avenue",
+        "name": "Ventnor Avenue",
+        "kind": "property",
+        "value": 3,
+        "colors": [
+          "yellow"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#edcf3d"
+      }
+    },
+    {
+      "id": "marvin-gardens",
+      "label": "Marvin Gardens",
+      "group": "Properties / Yellow",
+      "path": "Games/monopoly-deal/art/marvin-gardens.svg",
+      "kind": "image",
+      "display_name": "Marvin Gardens",
+      "preview": {
+        "id": 16,
+        "key": "marvin-gardens",
+        "name": "Marvin Gardens",
+        "kind": "property",
+        "value": 3,
+        "colors": [
+          "yellow"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#edcf3d"
+      }
+    },
+    {
+      "id": "pacific-avenue",
+      "label": "Pacific Avenue",
+      "group": "Properties / Green",
+      "path": "Games/monopoly-deal/art/pacific-avenue.svg",
+      "kind": "image",
+      "display_name": "Pacific Avenue",
+      "preview": {
+        "id": 17,
+        "key": "pacific-avenue",
+        "name": "Pacific Avenue",
+        "kind": "property",
+        "value": 4,
+        "colors": [
+          "green"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#299565"
+      }
+    },
+    {
+      "id": "north-carolina-avenue",
+      "label": "North Carolina Avenue",
+      "group": "Properties / Green",
+      "path": "Games/monopoly-deal/art/north-carolina-avenue.svg",
+      "kind": "image",
+      "display_name": "North Carolina Avenue",
+      "preview": {
+        "id": 18,
+        "key": "north-carolina-avenue",
+        "name": "North Carolina Avenue",
+        "kind": "property",
+        "value": 4,
+        "colors": [
+          "green"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#299565"
+      }
+    },
+    {
+      "id": "pennsylvania-avenue",
+      "label": "Pennsylvania Avenue",
+      "group": "Properties / Green",
+      "path": "Games/monopoly-deal/art/pennsylvania-avenue.svg",
+      "kind": "image",
+      "display_name": "Pennsylvania Avenue",
+      "preview": {
+        "id": 19,
+        "key": "pennsylvania-avenue",
+        "name": "Pennsylvania Avenue",
+        "kind": "property",
+        "value": 4,
+        "colors": [
+          "green"
+        ],
+        "detail": "3 for a full set",
+        "layout": "deal",
+        "color": "#299565"
+      }
+    },
+    {
+      "id": "park-place",
+      "label": "Park Place",
+      "group": "Properties / Dark blue",
+      "path": "Games/monopoly-deal/art/park-place.svg",
+      "kind": "image",
+      "display_name": "Park Place",
+      "preview": {
+        "id": 20,
+        "key": "park-place",
+        "name": "Park Place",
+        "kind": "property",
+        "value": 4,
+        "colors": [
+          "dark-blue"
+        ],
+        "detail": "2 for a full set",
+        "layout": "deal",
+        "color": "#225392"
+      }
+    },
+    {
+      "id": "boardwalk",
+      "label": "Boardwalk",
+      "group": "Properties / Dark blue",
+      "path": "Games/monopoly-deal/art/boardwalk.svg",
+      "kind": "image",
+      "display_name": "Boardwalk",
+      "preview": {
+        "id": 21,
+        "key": "boardwalk",
+        "name": "Boardwalk",
+        "kind": "property",
+        "value": 4,
+        "colors": [
+          "dark-blue"
+        ],
+        "detail": "2 for a full set",
+        "layout": "deal",
+        "color": "#225392"
+      }
+    },
+    {
+      "id": "reading-railroad",
+      "label": "Reading Railroad",
+      "group": "Properties / Railroad",
+      "path": "Games/monopoly-deal/art/reading-railroad.svg",
+      "kind": "image",
+      "display_name": "Reading Railroad",
+      "preview": {
+        "id": 22,
+        "key": "reading-railroad",
+        "name": "Reading Railroad",
+        "kind": "property",
+        "value": 2,
+        "colors": [
+          "railroad"
+        ],
+        "detail": "4 for a full set",
+        "layout": "deal",
+        "color": "#3b4149"
+      }
+    },
+    {
+      "id": "pennsylvania-railroad",
+      "label": "Pennsylvania Railroad",
+      "group": "Properties / Railroad",
+      "path": "Games/monopoly-deal/art/pennsylvania-railroad.svg",
+      "kind": "image",
+      "display_name": "Pennsylvania Railroad",
+      "preview": {
+        "id": 23,
+        "key": "pennsylvania-railroad",
+        "name": "Pennsylvania Railroad",
+        "kind": "property",
+        "value": 2,
+        "colors": [
+          "railroad"
+        ],
+        "detail": "4 for a full set",
+        "layout": "deal",
+        "color": "#3b4149"
+      }
+    },
+    {
+      "id": "b-and-o-railroad",
+      "label": "B. & O. Railroad",
+      "group": "Properties / Railroad",
+      "path": "Games/monopoly-deal/art/b-and-o-railroad.svg",
+      "kind": "image",
+      "display_name": "B. & O. Railroad",
+      "preview": {
+        "id": 24,
+        "key": "b-and-o-railroad",
+        "name": "B. & O. Railroad",
+        "kind": "property",
+        "value": 2,
+        "colors": [
+          "railroad"
+        ],
+        "detail": "4 for a full set",
+        "layout": "deal",
+        "color": "#3b4149"
+      }
+    },
+    {
+      "id": "short-line",
+      "label": "Short Line",
+      "group": "Properties / Railroad",
+      "path": "Games/monopoly-deal/art/short-line.svg",
+      "kind": "image",
+      "display_name": "Short Line",
+      "preview": {
+        "id": 25,
+        "key": "short-line",
+        "name": "Short Line",
+        "kind": "property",
+        "value": 2,
+        "colors": [
+          "railroad"
+        ],
+        "detail": "4 for a full set",
+        "layout": "deal",
+        "color": "#3b4149"
+      }
+    },
+    {
+      "id": "electric-company",
+      "label": "Electric Company",
+      "group": "Properties / Utility",
+      "path": "Games/monopoly-deal/art/electric-company.svg",
+      "kind": "image",
+      "display_name": "Electric Company",
+      "preview": {
+        "id": 26,
+        "key": "electric-company",
+        "name": "Electric Company",
+        "kind": "property",
+        "value": 2,
+        "colors": [
+          "utility"
+        ],
+        "detail": "2 for a full set",
+        "layout": "deal",
+        "color": "#8b9694"
+      }
+    },
+    {
+      "id": "water-works",
+      "label": "Water Works",
+      "group": "Properties / Utility",
+      "path": "Games/monopoly-deal/art/water-works.svg",
+      "kind": "image",
+      "display_name": "Water Works",
+      "preview": {
+        "id": 27,
+        "key": "water-works",
+        "name": "Water Works",
+        "kind": "property",
+        "value": 2,
+        "colors": [
+          "utility"
+        ],
+        "detail": "2 for a full set",
+        "layout": "deal",
+        "color": "#8b9694"
+      }
+    },
+    {
+      "id": "wild-light-blue-brown",
+      "label": "Light blue / Brown",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/wild-light-blue-brown.svg",
+      "kind": "image",
+      "preview": {
+        "id": 28,
+        "key": "wild-light-blue-brown",
+        "name": "Light blue / Brown",
+        "kind": "wild",
+        "value": 1,
+        "colors": [
+          "light-blue",
+          "brown"
+        ],
+        "detail": "Choose a property group",
+        "layout": "deal",
+        "color": "#65c7e8"
+      }
+    },
+    {
+      "id": "wild-light-blue-railroad",
+      "label": "Light blue / Railroad",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/wild-light-blue-railroad.svg",
+      "kind": "image",
+      "preview": {
+        "id": 29,
+        "key": "wild-light-blue-railroad",
+        "name": "Light blue / Railroad",
+        "kind": "wild",
+        "value": 4,
+        "colors": [
+          "light-blue",
+          "railroad"
+        ],
+        "detail": "Choose a property group",
+        "layout": "deal",
+        "color": "#65c7e8"
+      }
+    },
+    {
+      "id": "wild-pink-orange",
+      "label": "Pink / Orange",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/wild-pink-orange.svg",
+      "kind": "image",
+      "preview": {
+        "id": 31,
+        "key": "wild-pink-orange",
+        "name": "Pink / Orange",
+        "kind": "wild",
+        "value": 2,
+        "colors": [
+          "pink",
+          "orange"
+        ],
+        "detail": "Choose a property group",
+        "layout": "deal",
+        "color": "#cf559b"
+      }
+    },
+    {
+      "id": "wild-red-yellow",
+      "label": "Red / Yellow",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/wild-red-yellow.svg",
+      "kind": "image",
+      "preview": {
+        "id": 33,
+        "key": "wild-red-yellow",
+        "name": "Red / Yellow",
+        "kind": "wild",
+        "value": 3,
+        "colors": [
+          "red",
+          "yellow"
+        ],
+        "detail": "Choose a property group",
+        "layout": "deal",
+        "color": "#dc403d"
+      }
+    },
+    {
+      "id": "wild-dark-blue-green",
+      "label": "Dark blue / Green",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/wild-dark-blue-green.svg",
+      "kind": "image",
+      "preview": {
+        "id": 34,
+        "key": "wild-dark-blue-green",
+        "name": "Dark blue / Green",
+        "kind": "wild",
+        "value": 4,
+        "colors": [
+          "dark-blue",
+          "green"
+        ],
+        "detail": "Choose a property group",
+        "layout": "deal",
+        "color": "#225392"
+      }
+    },
+    {
+      "id": "wild-green-railroad",
+      "label": "Green / Railroad",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/wild-green-railroad.svg",
+      "kind": "image",
+      "preview": {
+        "id": 35,
+        "key": "wild-green-railroad",
+        "name": "Green / Railroad",
+        "kind": "wild",
+        "value": 4,
+        "colors": [
+          "green",
+          "railroad"
+        ],
+        "detail": "Choose a property group",
+        "layout": "deal",
+        "color": "#299565"
+      }
+    },
+    {
+      "id": "wild-railroad-utility",
+      "label": "Railroad / Utility",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/wild-railroad-utility.svg",
+      "kind": "image",
+      "preview": {
+        "id": 36,
+        "key": "wild-railroad-utility",
+        "name": "Railroad / Utility",
+        "kind": "wild",
+        "value": 2,
+        "colors": [
+          "railroad",
+          "utility"
+        ],
+        "detail": "Choose a property group",
+        "layout": "deal",
+        "color": "#3b4149"
+      }
+    },
+    {
+      "id": "wild-any",
+      "label": "Any Property",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/wild-any.svg",
+      "kind": "image",
+      "preview": {
+        "id": 38,
+        "key": "wild-any",
+        "name": "Any Property",
+        "kind": "wild",
+        "value": 0,
+        "colors": [
+          "brown",
+          "light-blue",
+          "pink",
+          "orange",
+          "red",
+          "yellow",
+          "green",
+          "dark-blue",
+          "railroad",
+          "utility"
+        ],
+        "detail": "Choose a property group",
+        "layout": "deal",
+        "color": "#965b37"
+      }
+    },
+    {
+      "id": "deal-breaker",
+      "label": "Deal Breaker",
+      "group": "Actions",
+      "path": "Games/monopoly-deal/art/deal-breaker.svg",
+      "kind": "image",
+      "display_name": "Deal Breaker",
+      "preview": {
+        "id": 40,
+        "key": "deal-breaker",
+        "name": "Deal Breaker",
+        "kind": "deal-breaker",
+        "value": 5,
+        "colors": [],
+        "detail": "Take a complete property set, including buildings.",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "forced-deal",
+      "label": "Forced Deal",
+      "group": "Actions",
+      "path": "Games/monopoly-deal/art/forced-deal.svg",
+      "kind": "image",
+      "display_name": "Forced Deal",
+      "preview": {
+        "id": 43,
+        "key": "forced-deal",
+        "name": "Forced Deal",
+        "kind": "forced-deal",
+        "value": 3,
+        "colors": [],
+        "detail": "Exchange one of your properties for an opponent's incomplete-set property.",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "sly-deal",
+      "label": "Sly Deal",
+      "group": "Actions",
+      "path": "Games/monopoly-deal/art/sly-deal.svg",
+      "kind": "image",
+      "display_name": "Sly Deal",
+      "preview": {
+        "id": 46,
+        "key": "sly-deal",
+        "name": "Sly Deal",
+        "kind": "sly-deal",
+        "value": 3,
+        "colors": [],
+        "detail": "Take one property outside a complete set.",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "just-say-no",
+      "label": "Just Say No",
+      "group": "Actions",
+      "path": "Games/monopoly-deal/art/just-say-no.svg",
+      "kind": "image",
+      "display_name": "Just Say No",
+      "preview": {
+        "id": 49,
+        "key": "just-say-no",
+        "name": "Just Say No",
+        "kind": "just-say-no",
+        "value": 4,
+        "colors": [],
+        "detail": "Cancel an action played against you, or counter a Just Say No. Uses a play on your own turn.",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "debt-collector",
+      "label": "Debt Collector",
+      "group": "Actions",
+      "path": "Games/monopoly-deal/art/debt-collector.svg",
+      "kind": "image",
+      "display_name": "Debt Collector",
+      "preview": {
+        "id": 52,
+        "key": "debt-collector",
+        "name": "Debt Collector",
+        "kind": "debt-collector",
+        "value": 3,
+        "colors": [],
+        "detail": "One opponent owes you 5M.",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "birthday",
+      "label": "It\u2019s My Birthday",
+      "group": "Actions",
+      "path": "Games/monopoly-deal/art/birthday.svg",
+      "kind": "image",
+      "display_name": "It\u2019s My Birthday",
+      "preview": {
+        "id": 55,
+        "key": "birthday",
+        "name": "It\u2019s My Birthday",
+        "kind": "birthday",
+        "value": 2,
+        "colors": [],
+        "detail": "Every opponent owes you 2M.",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "double-rent",
+      "label": "Double the Rent",
+      "group": "Actions",
+      "path": "Games/monopoly-deal/art/double-rent.svg",
+      "kind": "image",
+      "display_name": "Double the Rent",
+      "preview": {
+        "id": 57,
+        "key": "double-rent",
+        "name": "Double the Rent",
+        "kind": "double-rent",
+        "value": 1,
+        "colors": [],
+        "detail": "Play with a Rent card. Each card uses one play.",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "house",
+      "label": "House",
+      "group": "Actions",
+      "path": "Games/monopoly-deal/art/house.svg",
+      "kind": "image",
+      "display_name": "House",
+      "preview": {
+        "id": 60,
+        "key": "house",
+        "name": "House",
+        "kind": "house",
+        "value": 3,
+        "colors": [],
+        "detail": "Add 3M rent to a complete street set.",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "hotel",
+      "label": "Hotel",
+      "group": "Actions",
+      "path": "Games/monopoly-deal/art/hotel.svg",
+      "kind": "image",
+      "display_name": "Hotel",
+      "preview": {
+        "id": 62,
+        "key": "hotel",
+        "name": "Hotel",
+        "kind": "hotel",
+        "value": 4,
+        "colors": [],
+        "detail": "Add 4M rent to a street set with a House.",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "pass-go",
+      "label": "Pass Go",
+      "group": "Actions",
+      "path": "Games/monopoly-deal/art/pass-go.svg",
+      "kind": "image",
+      "display_name": "Pass Go",
+      "preview": {
+        "id": 72,
+        "key": "pass-go",
+        "name": "Pass Go",
+        "kind": "pass-go",
+        "value": 1,
+        "colors": [],
+        "detail": "Draw two cards.",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "rent-light-blue-brown",
+      "label": "Rent",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/rent-light-blue-brown.svg",
+      "kind": "image",
+      "preview": {
+        "id": 74,
+        "key": "rent-light-blue-brown",
+        "name": "Rent",
+        "kind": "rent",
+        "value": 1,
+        "colors": [
+          "light-blue",
+          "brown"
+        ],
+        "detail": "All opponents pay",
+        "layout": "deal",
+        "color": "#65c7e8"
+      }
+    },
+    {
+      "id": "rent-pink-orange",
+      "label": "Rent",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/rent-pink-orange.svg",
+      "kind": "image",
+      "preview": {
+        "id": 76,
+        "key": "rent-pink-orange",
+        "name": "Rent",
+        "kind": "rent",
+        "value": 1,
+        "colors": [
+          "pink",
+          "orange"
+        ],
+        "detail": "All opponents pay",
+        "layout": "deal",
+        "color": "#cf559b"
+      }
+    },
+    {
+      "id": "rent-red-yellow",
+      "label": "Rent",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/rent-red-yellow.svg",
+      "kind": "image",
+      "preview": {
+        "id": 78,
+        "key": "rent-red-yellow",
+        "name": "Rent",
+        "kind": "rent",
+        "value": 1,
+        "colors": [
+          "red",
+          "yellow"
+        ],
+        "detail": "All opponents pay",
+        "layout": "deal",
+        "color": "#dc403d"
+      }
+    },
+    {
+      "id": "rent-dark-blue-green",
+      "label": "Rent",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/rent-dark-blue-green.svg",
+      "kind": "image",
+      "preview": {
+        "id": 80,
+        "key": "rent-dark-blue-green",
+        "name": "Rent",
+        "kind": "rent",
+        "value": 1,
+        "colors": [
+          "dark-blue",
+          "green"
+        ],
+        "detail": "All opponents pay",
+        "layout": "deal",
+        "color": "#225392"
+      }
+    },
+    {
+      "id": "rent-railroad-utility",
+      "label": "Rent",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/rent-railroad-utility.svg",
+      "kind": "image",
+      "preview": {
+        "id": 82,
+        "key": "rent-railroad-utility",
+        "name": "Rent",
+        "kind": "rent",
+        "value": 1,
+        "colors": [
+          "railroad",
+          "utility"
+        ],
+        "detail": "All opponents pay",
+        "layout": "deal",
+        "color": "#3b4149"
+      }
+    },
+    {
+      "id": "rent-any",
+      "label": "Any Rent",
+      "group": "Rent & Wilds",
+      "path": "Games/monopoly-deal/art/rent-any.svg",
+      "kind": "image",
+      "preview": {
+        "id": 85,
+        "key": "rent-any",
+        "name": "Any Rent",
+        "kind": "rent",
+        "value": 3,
+        "colors": [
+          "brown",
+          "light-blue",
+          "pink",
+          "orange",
+          "red",
+          "yellow",
+          "green",
+          "dark-blue",
+          "railroad",
+          "utility"
+        ],
+        "detail": "Choose one opponent",
+        "layout": "deal",
+        "color": "#965b37"
+      }
+    },
+    {
+      "id": "money-1",
+      "label": "1M",
+      "group": "Money",
+      "path": "Games/monopoly-deal/art/money-1.svg",
+      "kind": "image",
+      "preview": {
+        "id": 91,
+        "key": "money-1",
+        "name": "1M",
+        "kind": "money",
+        "value": 1,
+        "colors": [],
+        "detail": "Add to your bank",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "money-2",
+      "label": "2M",
+      "group": "Money",
+      "path": "Games/monopoly-deal/art/money-2.svg",
+      "kind": "image",
+      "preview": {
+        "id": 96,
+        "key": "money-2",
+        "name": "2M",
+        "kind": "money",
+        "value": 2,
+        "colors": [],
+        "detail": "Add to your bank",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "money-3",
+      "label": "3M",
+      "group": "Money",
+      "path": "Games/monopoly-deal/art/money-3.svg",
+      "kind": "image",
+      "preview": {
+        "id": 99,
+        "key": "money-3",
+        "name": "3M",
+        "kind": "money",
+        "value": 3,
+        "colors": [],
+        "detail": "Add to your bank",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "money-4",
+      "label": "4M",
+      "group": "Money",
+      "path": "Games/monopoly-deal/art/money-4.svg",
+      "kind": "image",
+      "preview": {
+        "id": 102,
+        "key": "money-4",
+        "name": "4M",
+        "kind": "money",
+        "value": 4,
+        "colors": [],
+        "detail": "Add to your bank",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "money-5",
+      "label": "5M",
+      "group": "Money",
+      "path": "Games/monopoly-deal/art/money-5.svg",
+      "kind": "image",
+      "preview": {
+        "id": 104,
+        "key": "money-5",
+        "name": "5M",
+        "kind": "money",
+        "value": 5,
+        "colors": [],
+        "detail": "Add to your bank",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "money-10",
+      "label": "10M",
+      "group": "Money",
+      "path": "Games/monopoly-deal/art/money-10.svg",
+      "kind": "image",
+      "preview": {
+        "id": 105,
+        "key": "money-10",
+        "name": "10M",
+        "kind": "money",
+        "value": 10,
+        "colors": [],
+        "detail": "Add to your bank",
+        "layout": "deal",
+        "color": "#17594d"
+      }
+    },
+    {
+      "id": "back",
+      "label": "Card back",
+      "group": "Card backs",
+      "path": "Games/monopoly-deal/art/back.svg",
+      "kind": "image"
+    },
+    {
+      "id": "background",
+      "label": "Table & background",
+      "group": "Table & UI",
+      "path": "Games/monopoly-deal/art/table.svg",
+      "kind": "background"
+    },
+    {
+      "id": "title",
+      "label": "Title",
+      "group": "Table & UI",
+      "path": "Games/monopoly-deal/art/title.svg",
+      "kind": "image"
+    },
+    {
+      "id": "thumbnail",
+      "label": "Game icon",
+      "group": "Table & UI",
+      "path": "Games/monopoly-deal/thumbnail.svg",
+      "kind": "image"
+    },
+    {
+      "id": "sound-deal",
+      "label": "Deal",
+      "group": "Audio",
+      "path": "Games/monopoly-deal/audio/deal.wav",
+      "kind": "audio"
+    },
+    {
+      "id": "sound-play",
+      "label": "Play",
+      "group": "Audio",
+      "path": "Games/monopoly-deal/audio/play.wav",
+      "kind": "audio"
+    },
+    {
+      "id": "sound-bank",
+      "label": "Bank",
+      "group": "Audio",
+      "path": "Games/monopoly-deal/audio/bank.wav",
+      "kind": "audio"
+    },
+    {
+      "id": "sound-action",
+      "label": "Action",
+      "group": "Audio",
+      "path": "Games/monopoly-deal/audio/action.wav",
+      "kind": "audio"
+    },
+    {
+      "id": "sound-win",
+      "label": "Win",
+      "group": "Audio",
+      "path": "Games/monopoly-deal/audio/win.wav",
+      "kind": "audio"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "id": "monopoly-deal",
+  "title": "Monopoly Deal",
+  "description": "Bank, trade and steal your way to three complete property sets. Includes custom cosmetic themes.",
+  "version": "0.1.0",
+  "thumbnail": "thumbnail.svg",
+  "background": "art/table",
+  "host_scene": "host/main.tscn",
+  "controller_entry": "controller/index.html",
+  "min_players": 1,
+  "max_players": 5,
+  "modes": ["singleplayer", "multiplayer"]
+}

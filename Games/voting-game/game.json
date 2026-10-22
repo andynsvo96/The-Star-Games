@@ -1,8 +1,0 @@
-{
-  "id": "voting",
-  "name": "Voting Game",
-  "minPlayers": 3,
-  "maxPlayers": 20,
-  "description": "Vote on who among your friends best fits each question",
-  "icon": "icon.png"
-}

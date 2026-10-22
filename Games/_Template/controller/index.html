@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="style.css">
+  <title>Game Controller</title>
+  <script src="/card-ui.js"></script>
+</head>
+<!-- Set background in game.json to a local filename stem; use game-wordmark,
+     game-score-card, game-status and game-primary for matching components.
+     Red actions use game-danger; green actions use game-success.
+     Red text uses game-danger-text; eliminated names use game-player-eliminated.
+     Urgent clocks use game-countdown game-danger-text; add game-countdown-tick
+     once per new second. has-reduced-motion and device preferences stop the pulse.
+     An illustrated title uses img.game-title-art plus an sr-only h1.
+     Add game-title-prominent for a larger title that still fits the viewport.
+     Hanging scores use game-score-card game-hanging and --score-color.
+     Parchment scores use game-score-card game-scroll and --score-color.
+     Wood slabs use game-score-card game-wood; details use game-scroll-details.
+     Framed ivory sheets use game-score-card game-ledger. Body palettes can use
+     game-royal, game-arcade, or game-naval game-admiral.
+     Add game-garden to game-royal for carved controls. Icon decisions use
+     game-icon-control with an empty-alt img plus a text span. Disabled controls
+     Add game-controls-roomy to body for smaller text/icons inside larger actions.
+     A compact garden heading adds game-heading-compact to the main element.
+     inherit opaque grey chrome. Ornate cards use game-score-card game-ornate;
+     each game-illustrated-stat contains an empty-alt img and output or span.
+     Dense phone counters add game-compact-stats to the score card and use a
+     game-stat-grid containing game-stat-item pairs (icon plus count).
+     Circular selected pieces add game-selection-ring; remove it during pause,
+     movement and results. The static ring never captures controller input.
+     Add game-naval to body for shared navy/steel controls and panels.
+     Add game-covert for midnight/cyan chrome. Results use game-result plus
+     game-result-danger for red; omit danger for teal. A full-screen result adds
+     game-result-screen to body, with the same optional game-result-danger.
+     Inside game-team-reveal, use figure.game-team-member with an aria-hidden
+     .avatar (--avatar-color and --avatar-pose) plus a plain-text figcaption.
+     Shared team halos fade to transparent at every edge, outside the avatar mask. -->
+<!-- A text heading can opt into game-wordmark-prominent. A public living-player
+     lineup adds game-team-compact to game-team-reveal, using the same avatars.
+     For rounded busts, also add game-team-assembly to the lineup and
+     game-avatar-bust to each living avatar. Keep tombstones for eliminated seats.
+     To keep eliminated seats visible, add game-team-eliminated to their figures;
+     the shared avatar becomes a tombstone. Include OUT in the accessible caption. -->
+<!-- Optional game.json background_variants maps names to extensionless stems.
+     controller.setBackgroundVariant("day", true, hostReducedMotion) crossfades;
+     an empty name restores the default. Sync/reconnect should not replay a fade. -->
+<!-- Adjacent rows of decisions use game-action-stack around game-action-row
+     groups. Hide an unavailable row so it does not reserve an empty gap. -->
+<!-- An art-studio game uses body classes playful-game game-royal game-studio.
+     Shared game-ink-swatch buttons use --swatch-color and aria-pressed;
+     game-identity-strip and game-identity-dot provide a wrapping identity footer. -->
+<!-- Drawing tools may use game-drawing-toolbar, game-brush-sizes and
+     game-brush-size buttons containing game-brush-dot (--brush-dot-size).
+     Put aria-pressed and accessible Small/Medium/Large names on the buttons.
+     game-canvas-controller and game-private-card-compact leave more canvas room.
+     Canvas controls stay close below the board when inputs hide, preserving
+     reserved footer space. Use game-feedback-paper for centered feedback. -->
+<!-- game-drawing-sheet supplies a thin canvas border. game-private-word-inline
+     keeps a private word in one compact row. A game-brush-cycle button replaces
+     a multi-button size group; cycle its dot and accessible name together.
+     Guess feedback uses game-guess-correct, game-guess-close or game-guess-wrong. -->
+<body class="playful-game">
+  <main class="game-controller">
+    <header>
+    <p class="eyebrow">THE STAR GAMES</p>
+    <h1 class="game-wordmark"><span>YOUR</span> <span>GAME</span></h1>
+    <p id="connection" role="status">Connecting…</p>
+    <p id="status" class="game-status game-status-reserved" role="status">Waiting for the host...</p>
+    </header>
+    <div class="game-with-sidebar game-centered-layout">
+      <details class="game-sidebar game-scroll-details game-left-sidebar"><summary>History</summary><div class="game-history" tabindex="0">No completed rounds yet.</div></details><section class="game-playfield"><div id="board" aria-label="Example playfield"><button id="action" class="game-danger" type="button">ACTION</button></div><button id="replay" class="game-primary" hidden>PLAY AGAIN</button></section>
+      <!-- Stack multiple shared player cards in an arena/side column with
+           game-score-stack. Add game-score-dense for compact ornate multi-seat
+           counters. Hide unused cards with hidden; the width stays fitted. -->
+      <div class="game-score-stack"><aside class="game-score-card game-ledger game-text-score"><p class="is-active-player">PLAYER</p><output aria-label="Example score">0</output></aside></div>
+    </div>
+  </main>
+  <!-- Optional responsive tools: place a game-board-side-controls element with
+       data-game-side-controls inside main. At a side layout set the playfield's
+       --game-board-controls-side:1 and --game-board-footer-reserve:16.
+       The SDK moves the same live toolbar and restores it below the board. -->
+  <button id="show-options" type="button">OPTIONS</button>
+  <dialog id="options" class="game-dialog game-player-dialog" aria-labelledby="options-heading"><h2 id="options-heading">Options</h2><label for="example-choice">Example choice</label><select id="example-choice" class="game-choice game-compact-control"><option>Practice</option><option>Match</option></select><div id="example-player-picker" aria-label="Example player choice"></div><p id="example-player-selection" role="status">Choose a player icon</p><div class="game-session-score"><p>PLAYER</p><output aria-label="Example session wins">0 WINS</output></div><div class="game-action-row"><button id="close-options" class="game-compact-control" type="button">CLOSE</button></div></dialog>
+  <!-- Shared chrome starts near the top in portrait and landscape; omit below-board instructions.
+       The SDK sizes #board using its CSS aspect-ratio and reserves #replay automatically.
+       Optional setup controls inside .game-playfield use .game-board-controls. -->
+  <!-- Add game-action-compact to a game-action-row for content-sized controls
+       with 44px touch targets, such as Move/Wall/Rotate/Place in a board footer. -->
+  <!-- Optional shared social-game layout: use game-story with game-noir or
+       game-dossier on body, a wide primary area and permanent paper history. -->
+  <section class="game-social-layout" hidden aria-label="Social layout example">
+    <div class="game-paper game-paper-stacked"><h2 class="game-section-caption">PUBLIC STATE</h2><div class="game-team-reveal game-team-compact game-team-assembly"><figure class="game-team-member"><span class="avatar game-avatar-bust" style="--avatar-color: #202020" aria-hidden="true"></span><figcaption>PLAYER</figcaption></figure></div></div>
+    <aside class="game-clipboard"><h2>HISTORY</h2><p class="game-history">No completed rounds yet.</p></aside>
+  </section>
+  <aside class="game-score-card game-ledger game-compact-stats" hidden aria-label="Compact stats example"><p>PLAYER</p><output>0 WINS</output><div class="game-stat-grid"><div class="game-stat-item"><span aria-label="Pieces remaining">12</span></div></div></aside>
+  <section class="game-paper game-paper-compact" hidden aria-label="Drawing controls example">
+    <div class="game-drawing-sheet"><p class="game-guess-correct">Correct</p><p class="game-guess-close">Close spelling</p><p class="game-guess-wrong">Incorrect</p></div>
+    <p><span>PLAYER</span><span class="game-speech-bubble game-guess-wrong">A literal guess</span></p>
+    <strong class="game-countdown game-danger-text game-countdown-blink">00:10</strong>
+    <button id="example-brush-cycle" class="game-brush-size game-brush-cycle game-brush-labelled" type="button" aria-label="Brush size: Medium. Tap for Large.">Brush<span class="game-brush-indicator" aria-hidden="true"><span class="game-brush-dot" style="--brush-dot-size:9px"></span></span></button>
+    <button id="example-eraser-cycle" class="game-brush-size game-brush-cycle game-brush-labelled" type="button" aria-label="Eraser size: Medium. Tap for Large.">Eraser<span class="game-brush-indicator" aria-hidden="true"><span class="game-brush-dot game-eraser-dot" style="--brush-dot-size:9px"></span></span></button>
+    <div class="game-drawing-toolbar">
+      <button type="button">UNDO</button><button type="button">CLEAR</button><button type="button">ERASER</button>
+      <div class="game-brush-sizes" role="group" aria-label="Brush size">
+        <button class="game-brush-size" type="button" aria-label="Small brush" aria-pressed="true"><span class="game-brush-dot" style="--brush-dot-size: 5px" aria-hidden="true"></span></button>
+        <button class="game-brush-size" type="button" aria-label="Medium brush" aria-pressed="false"><span class="game-brush-dot" style="--brush-dot-size: 10px" aria-hidden="true"></span></button>
+        <button class="game-brush-size" type="button" aria-label="Large brush" aria-pressed="false"><span class="game-brush-dot" style="--brush-dot-size: 16px" aria-hidden="true"></span></button>
+      </div>
+    </div>
+    <button class="game-ink-swatch" type="button" style="--swatch-color: #88512d" aria-label="Brown ink" aria-pressed="false"></button>
+    <button class="game-ink-swatch" type="button" style="--swatch-color: #893fcc" aria-label="Purple ink" aria-pressed="false"></button>
+    <p class="game-identity-strip"><span class="game-identity-dot" aria-hidden="true"></span><span>PLAYER</span></p>
+  </section>
+  <div class="game-score-stack game-score-dense" hidden aria-label="Illustrated stats example"><aside class="game-score-card game-ornate game-compact-stats"><p>PLAYER</p><div class="game-illustrated-stat"><img src="/ui/playful/stat-wins.svg" alt=""><output>0 WINS</output></div><div class="game-illustrated-stat"><img src="/ui/playful/stat-walls.svg" alt=""><span>10 WALLS</span></div></aside></div>
+  <!-- Opt into game-modern-table on body for shared navy table components.
+       StarGamesTableUI (card-ui.js) supplies avatar badges and compact groups;
+       rules, legal choices, inspector values and public/private state stay local. -->
+  <section id="example-modern-table" hidden aria-label="Modern public-card group example"></section>
+  <!-- game-casino on body provides engraved frames, static action glows and a
+       metallic range thumb. Update range progress after snapshots and edits. -->
+  <section class="game-casino" hidden aria-label="Casino controls example"><div class="surface"><button type="button" class="game-success">BET</button><input id="example-casino-range" type="range" min="0" max="100" value="40" aria-label="Example bet amount"></div></section>
+  <!-- Asset/decision controllers can add game-asset-controller to main, with
+       game-modern-table on body. Use surface game-asset-surface for sections.
+       --game-asset-columns and --game-asset-width are layout-only hooks.
+       Dialogs inside main inherit the same palette and card components. -->
+  <div hidden><section class="game-modern-table"><div class="game-controller game-asset-controller"><section class="surface game-asset-surface"><h2>Your assets</h2><p>Semantic cash and property values</p><div class="game-action-row"><button class="game-primary" type="button">Example decision</button></div></section></div></section></div>
+  <!-- Card tables can use design-dialog game-dialog-compact for content-sized
+       decisions. Keep card, sender and chosen-player context in dialog-body. -->
+  <dialog id="example-table-decision" class="game-dialog design-dialog game-dialog-compact game-scroll-dialog" aria-labelledby="example-decision-heading"><div class="dialog-heading"><h2 id="example-decision-heading">You were chosen</h2></div><div class="dialog-body"><p class="game-action-context">Player used an action card against you.</p></div><div class="dialog-actions game-action-row"><button id="example-table-decision-close" type="button">Close</button></div></dialog>
+  <!-- Clock packets may update this output without rebuilding hand/decision
+       controls. Only the authoritative host decides expiry or turn changes. -->
+  <div class="game-turn-status" hidden><p>Player's turn</p><output class="game-turn-clock" role="timer" aria-label="Turn time remaining">1:00</output></div>
+  <script src="/controller-sdk.js"></script>
+  <!-- Party card tables use game-party-table on body. Add
+       game-centered-controller to main to center board and reserved footer
+       together; the SDK still owns responsive fitting and reconnection. -->
+  <section class="playful-game game-party-table" hidden aria-label="Party table example"><div class="game-controller"><button id="example-party-seat" class="game-seat-badge" style="--seat-color:#2463eb" type="button" aria-label="Example player, seven cards"></button><button class="game-call" type="button">CALL</button><button class="game-special" type="button">SORT</button><button id="example-party-browse" type="button" aria-label="Show next cards"></button><img class="game-table-card game-table-card-tabletop game-table-card-stack" src="/ui/playful/table-cards.svg" alt="Example public card"><details class="game-rules-panel" open><summary><img src="/ui/playful/rules-star.svg" alt="">ACTIVE RULES / EFFECTS</summary><div class="game-rules-list"><h3 class="game-rule-section">House Rules</h3><div class="game-rule-item"><img src="/ui/playful/table-cards.svg" alt=""><div><strong>Example rule</strong><small>A short public explanation</small></div></div></div></details><div class="game-table-feedback" role="status"><div><strong>Player One played a card</strong><span>Public effect detail</span></div></div></div></section>
+  <!-- game-casino opts into shared dark/brass controls. StarGamesCard with
+       layout:standard, rank:A, suit:spades (or back:true) renders live 2:3 faces. -->
+  <section id="example-standard-cards" hidden aria-label="Standard playing cards"><ol class="game-phase-track" aria-label="Phase progress"><li class="is-current" aria-current="step">First phase</li><li>Second phase</li></ol></section>
+  <dialog id="example-rules-dialog" class="game-dialog game-rules-dialog" aria-labelledby="example-rules-heading"><h2 id="example-rules-heading">Active rules / effects</h2><div class="game-rules-panel"><div class="game-rules-list"><h3 class="game-rule-section">House Rules</h3><div class="game-rule-item"><img src="/ui/playful/table-cards.svg" alt=""><div><strong>Example rule</strong><small>A short public explanation</small></div></div></div></div><button id="example-rules-close" type="button">Close</button></dialog>
+  <section id="example-ranked-results" class="game-casino" hidden aria-label="Public ranked result example"></section>
+  <script src="/game-celebration.js"></script><script src="controller.js"></script>
+</body>
+</html>

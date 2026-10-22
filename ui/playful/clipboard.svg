@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs><linearGradient id="wood" x2="1" y2="1"><stop stop-color="#986944"/><stop offset=".5" stop-color="#60442e"/><stop offset="1" stop-color="#35271e"/></linearGradient><linearGradient id="paper" x2=".3" y2="1"><stop stop-color="#f8e9cc"/><stop offset="1" stop-color="#ecd4ac"/></linearGradient><pattern id="grain" width="17" height="19" patternUnits="userSpaceOnUse"><path d="m2 4 3-1m5 10 2 1M5 16l2-2" stroke="#aa895c" opacity=".13" fill="none"/></pattern></defs>
+  <rect x="5" y="6" width="248" height="249" rx="13" fill="#100e0b" opacity=".4"/><rect x="2" y="2" width="248" height="249" rx="13" fill="url(#wood)" stroke="#c49667" stroke-width="2"/><rect x="7" y="7" width="238" height="239" rx="8" fill="none" stroke="#ddb484" stroke-opacity=".3"/>
+  <path d="M16 30H238L237 239L20 241Z" fill="#271c12" opacity=".35"/><path d="M13 24L238 25L236 236L17 237Z" fill="url(#paper)" stroke="#b98e59"/><path d="M18 32H230V230H18Z" fill="url(#grain)"/>
+</svg>

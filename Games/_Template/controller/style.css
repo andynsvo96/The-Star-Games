@@ -1,0 +1,2 @@
+/* Shared chrome is provided by /styles.css. Add only game-specific playfield rules here. */
+#board { aspect-ratio: 1; display: grid; margin: auto; width: 100%; }

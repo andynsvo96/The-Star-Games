@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "valid-game",
+  "title": "Valid Game",
+  "description": "Catalog validation fixture.",
+  "version": "1.0.0",
+  "thumbnail": "thumbnail.svg",
+  "host_scene": "host/main.tscn",
+  "controller_entry": "controller/index.html",
+  "min_players": 1,
+  "max_players": 16,
+  "modes": ["singleplayer", "multiplayer"]
+}

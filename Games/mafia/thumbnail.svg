@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180">
+  <rect width="320" height="180" rx="20" fill="#101f30"/><path fill="#ffffff" d="M276 21a27 27 0 1 0 0 44 22 22 0 1 1 0-44z"/>
+  <path fill="#25394e" d="M0 110h25V61h37v39h27V44h43v59h39V68h36v42h43V79h40v31h30v70H0z"/>
+  <path fill="#07111f" d="M80 147q9-33 32-33h36q24 0 33 33l12 33H65z"/>
+  <ellipse cx="131" cy="94" rx="21" ry="25" fill="#07111f"/><path fill="#07111f" d="M92 80h79v11H92zm17-30h45l8 32h-60z"/>
+  <text x="211" y="145" text-anchor="middle" fill="#ff7475" font-size="35" font-weight="900" font-family="Arial,sans-serif">MAFIA</text>
+</svg>

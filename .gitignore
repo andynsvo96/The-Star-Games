@@ -1,17 +1,15 @@
-node_modules/
-npm-debug.log*
-
-test-results/
-playwright-report/
-
-checkpoints/
-
+.godot/
+.test_data/
+__pycache__/
+builds/
+*.tmp
+*.bak
+*.log
 .DS_Store
-**/.DS_Store
-Thumbs.db
+desktop.ini
 
-settings.json
-stats.json
-**/playerScores.json
-**/*_lifetime*.json
-**/*_lifetime_db.json
+/Backups/
+
+# Local Godot settings, saved games, and runtime media caches.
+/Godot/
+/%SystemDrive%/
