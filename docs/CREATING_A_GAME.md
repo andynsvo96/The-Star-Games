@@ -1104,6 +1104,9 @@ stem and the shared player. Chinese Checkers uses a generated transparent title
 PNG at the same host title setting as Regular Checkers, with `game-title-prominent`
 on phones for a larger responsive heading. Original images and exact
 prompts remain in `asset/checkers-collection/` and `asset/chinese-checkers/`.
+The chooser loads wide generated board illustrations from each child's validated
+`thumbnail_path`. Its own square thumbnail represents both games and matches the
+dimensional game-selection icon family in both List and Icons views.
 
 Local checks: `tests/chinese_checkers.gd`, `tests/chinese_checkers_motion.gd`,
 `tests/chinese_checkers_network.gd`, rendered `tests/chinese_checkers_visual.gd`,
