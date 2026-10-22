@@ -1293,7 +1293,9 @@ Sort toggles Color (palette/number/action/Wilds) and
 Playable (legal IDs first, then Color order). It sorts presentation copies on
 each snapshot, never authoritative hands, and resets the browse window on an
 explicit sort change. Draws, transfers, changed legality and Flip use the chosen
-order. Refresh defaults to Color. Seven-card fan browsing retains hold, drag,
+order. Sort stays enabled between turns, during deals/card movement, and while
+gameplay is paused or reconnecting because it only changes the local hand view.
+Refresh defaults to Color. Seven-card fan browsing retains hold, drag,
 wheel and keyboard handling; releasing a drag never plays a card.
 
 Draw and UNO stay visible in stable toolbar slots, grey and disabled until

@@ -28,6 +28,12 @@ const assertions=`
  const $=id=>document.getElementById(id),publish=(patch,advance=true)=>{qaState={...qaState,...patch,revision:qaState.revision+(advance?1:0)};qaHandlers.message(structuredClone(qaState));};
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  const hand=${JSON.stringify(initial.hand)},players=${JSON.stringify(initial.players)};
+ const toggleSort=message=>{
+  const mode=$('sort-label').textContent,sent=qaSent.length;
+  check(!$('sort').hidden&&!$('sort').disabled,'Sort stays available '+message);
+  $('sort').click();check($('sort-label').textContent!==mode&&qaSent.length===sent,'Sort toggles locally '+message);
+  $('sort').click();check($('sort-label').textContent===mode,'Sort restores its chosen order '+message);
+ };
  const clickCard=id=>{const card=$('hand').querySelector('[data-card="'+id+'"]');card.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));card.click();card.dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));};
  try{
   await pause(200);await frames();
@@ -81,6 +87,7 @@ const assertions=`
   StarGamesTableUI.partySeat(plaque,identityColor);
   const waitingPlayers=structuredClone(players);waitingPlayers[0].color='#ffffff';waitingPlayers[0].pose=5;waitingPlayers[1].display_name='Jack <b>literal</b>';
   publish({players:waitingPlayers,turn:1,legal_cards:[]});await frames();
+  toggleSort("during another player's turn");
   check(!document.querySelector('#hand .is-unplayable'),'Cards keep normal brightness while waiting for another turn');
   check(!$('waiting-turn').hidden&&$('waiting-turn').textContent==="Jack <b>literal</b>'s turn"&&!$('waiting-turn').children.length&&!$('draw').hidden&&$('draw').disabled,'Waiting players see the current name literally while Draw stays visible and grey');
   const waitingDrawSent=qaSent.length;$('draw').click();check(qaSent.length===waitingDrawSent,'A grey Draw button cannot submit a draw');
@@ -135,6 +142,7 @@ const assertions=`
   check([...$('hand').querySelectorAll('[data-card]')].filter(button=>!button.disabled).length===3,'Only legal cards in the seven-card window can be played');
   const deal={revision:1,active:true,elapsed:0,duration:3.755,dealer:5,seats:6,shuffle:.55,step:.065,flight:.36,reveal:.18};
   publish({round_id:'opening',deal,animating:true,hand:hand.slice(0,7),counts:Array(6).fill(7)});
+  toggleSort('during the opening deal');
   check(reduced?document.querySelectorAll('#hand .is-undealt').length===0:document.querySelectorAll('#hand .is-undealt').length===7,'Opening deal hides cards until landing, respecting reduced motion');
   check($('deck').disabled,'Opening deal locks player input');
   check([...$('deal-cards').querySelectorAll('img')].every(img=>img.src.endsWith('wild-back.svg')),'Opening flights reveal only card backs');
@@ -194,18 +202,21 @@ const assertions=`
   publish({viewer:0,turn:0,catch_target:-1});await pause(1000);
   const eventRevision=qaState.revision+1;
   publish({hand:hand.slice(1),counts:[7,6,5,7,6,5],top:hand[0],color:'red',turn:1,animating:true,motion:{revision:eventRevision,flights:[{kind:'play',seat:0,count:1,card:hand[0]}]}});
+  toggleSort('during host card movement');
   await pause(90);
   check(reduced?document.querySelectorAll('.uno-flying-card').length===0:document.querySelectorAll('.uno-flying-card').length===1,'New plays fly from the hand, respecting reduced motion');
   check(reduced||$('discard').src.includes('yellow-draw2'),'Previous discard stays visible until the played card lands');
   const animation=document.querySelector('.uno-flying-card')?.getAnimations()[0];publish({},false);
   check(reduced||document.querySelector('.uno-flying-card')?.getAnimations()[0]===animation,'Duplicate snapshots preserve active movement');
   publish({animating:false,turn:0,legal_cards:[30,42,97,100]});check(reduced||$('deck').disabled,'Local movement stays locked after an early host settle');
+  toggleSort('while local movement settles');
   const before=qaSent.length;if(!reduced)$('draw').click();check(qaSent.length===before,'Taps during movement are discarded');
   await pause(500);check(!$('deck').disabled,'Input unlocks after host and local movement both settle');
   const penaltyRevision=qaState.revision+1;
   publish({top:{id:104,color:'wild',kind:'draw4',selected_color:'blue'},color:'blue',turn:2,animating:true,motion:{revision:penaltyRevision,flights:[{kind:'play',seat:0,count:1,card:{id:104,color:'wild',kind:'draw4',selected_color:'blue'}},{kind:'draw',seat:1,count:4,card:{}}]}});
   await pause(550);check(reduced?document.querySelectorAll('.uno-flying-card').length===0:document.querySelectorAll('.uno-flying-card').length===4,'Four penalty cards travel from the deck to the recipient');
   publish({paused:true});check(document.querySelectorAll('.uno-flying-card').length===0&&$('turn-arrow').hidden&&$('deck').disabled,'Pause cancels local flights and hides the moving arrow');
+  toggleSort('while gameplay is paused');
   const pausedOrbit=document.querySelector('#orbit-shape > path').getAttribute('d');await pause(120);
   check(document.querySelector('#orbit-shape > path').getAttribute('d')===pausedOrbit&&!$('notice').hidden,'Pause freezes the table arrows and displays exceptional feedback');
   publish({paused:false,animating:false,motion:{},turn:0,hand,legal_cards:[9],drawn:9});
@@ -223,6 +234,7 @@ const assertions=`
   publish({uno_armed:false});
   publish({hand,counts:[8,6,5,7,6,5],drawn:-1,legal_cards:[9]});
   qaHandlers.disconnected();check($('deck').disabled&&$('connection').textContent.includes('Reconnecting'),'Disconnect disables input');
+  toggleSort('while reconnecting');
   qaHandlers.connected(players[0]);publish({drawn:-1,animating:false,motion:{revision:qaState.revision+1,flights:[{kind:'draw',seat:0,count:4,card:{}}]}});
   check(document.querySelectorAll('.uno-flying-card').length===0&&$('board').getAttribute('aria-busy')==='false','Reconnect restores settled cards without replaying flights');
   publish({viewer:-1,hand:[]});check($('hand').querySelectorAll('[data-card]').length===8,'Public snapshots do not erase the private hand');qaState.viewer=0;

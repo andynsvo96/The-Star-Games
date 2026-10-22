@@ -351,7 +351,7 @@
     $('sort').hidden=state.phase==='finished';
     const canChooseDiscard=discardChoice();$('discard').tabIndex=canChooseDiscard?0:-1;$('discard').setAttribute('aria-disabled',String(!canChooseDiscard));$('discard').setAttribute('aria-label',canChooseDiscard?"Reopen this card's choice":'Top discard: '+label(discard));$('discard').classList.toggle('game-turn-glow',canChooseDiscard);
     $("actions").hidden=false;
-    $("sort").disabled=blocked||state.animating||dealing()||handDragging||localLock();
+    // Sorting only changes presentation, so it stays available through turns and motion.
     $("sort-label").textContent=sortMode==="color"?"COLOR":"PLAYABLE";
     $("sort").setAttribute("aria-label","Sort hand: "+(sortMode==="color"?"color, numbers, actions, then Wilds; switch to playable first":"playable cards first; switch to color order"));
     $("turn-arrow").hidden=true;

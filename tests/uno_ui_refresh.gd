@@ -151,6 +151,18 @@ func _run() -> void:
 	check(host.rules.hands[0] == authoritative, "Sorting changes presentation only")
 	await click_button(host.table.sort_button)
 	check(host.table.state.hand == host.Rules.sorted_hand(host.table.state.hand), "Native color mode restores the established number/action/Wild order")
+	host.rules.turn = 1
+	host.rules.revision += 1
+	host._publish()
+	await capture("sort-between-turns")
+	var sort_revision: int = host.rules.revision
+	check(host.table.sort_button.visible and not host.table.sort_button.disabled, "Sort stays enabled during another player's turn")
+	await click_button(host.table.sort_button)
+	check(host.table.sort_mode == "playable" and host.rules.revision == sort_revision and host.rules.hands[0] == authoritative, "Off-turn sorting changes only the local hand view")
+	host.rules.turn = 0
+	host.rules.revision += 1
+	host._publish()
+	await click_button(host.table.sort_button)
 	host.rules.hands[0] = [3, 9]
 	host.rules.revision += 1
 	host._publish()
@@ -165,6 +177,16 @@ func _run() -> void:
 	await click_point(host.table.get_global_transform() * play_point)
 	await capture("card-play-flight")
 	check(not host.table.flights.is_empty() and host.animating, "Native played card flies to the discard and locks input")
+	host.motion_timer.paused = true
+	host.table.set_process(false)
+	var sort_flights: Array = host.table.flights.duplicate(true)
+	sort_revision = host.rules.revision
+	check(host.table.sort_button.visible and not host.table.sort_button.disabled, "Sort stays enabled during native card movement")
+	await click_button(host.table.sort_button)
+	check(host.table.sort_mode == "playable" and host.rules.revision == sort_revision and host.table.flights == sort_flights, "Sorting during movement leaves the authoritative turn and active flights intact")
+	await click_button(host.table.sort_button)
+	host.table.set_process(true)
+	host.motion_timer.paused = false
 	host._publish()
 	check(host.table.get_global_rect().is_equal_approx(table_before), "Playing a card does not shift the centered table")
 	var moving_revision: int = host.rules.revision

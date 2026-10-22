@@ -542,7 +542,7 @@ func _draw() -> void:
 	uno_button.visible = local
 	GameLook.set_illustrated_control_disabled(uno_button, not ready)
 	sort_button.visible = local and state.phase != "finished"
-	sort_button.disabled = state.paused or state.animating or _dealing() or not flights.is_empty()
+	# Sorting only changes presentation, so it stays available through turns and motion.
 	var action_width := minf(158 * ui_scale, size.x * (.135 if short else .27))
 	var action_y := size.y - _action_height() - 4
 	var action_center := size.x * (.73 if short else .5)
