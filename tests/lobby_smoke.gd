@@ -5,6 +5,7 @@ func _init() -> void:
 
 func _run() -> void:
 	var app = load("res://Main.tscn").instantiate()
+	app.game_catalog = preload("res://tests/catalog_fixture.gd").new()
 	root.add_child(app)
 	await process_frame
 	app.profile_store.data["settings"]["reduced_motion"] = false
@@ -50,7 +51,7 @@ func _run() -> void:
 	await process_frame
 	assert(app.lobby_game_list.columns == 1 and not view_toggle.button_pressed and view_toggle.text == "View: List")
 	assert(app.game_view_toggle == view_toggle, "One button switches both views")
-	app.game_catalog.games_root = "res://tests/fixtures/Games"
+	app.game_catalog.fixture_count = 1
 	await create_timer(5.1).timeout
 	assert(app.game_catalog.games.size() == 1)
 	assert(app.lobby_game_list.get_child_count() == 1)

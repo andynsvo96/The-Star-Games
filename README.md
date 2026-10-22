@@ -1,6 +1,8 @@
 # The Star Games
 
-A collection of party and solo games built with Godot 4.7. Host on Windows, macOS, or Android, and let up to 16 players join with browser controllers on the same Wi-Fi network.
+A local party and solo game framework built with Godot 4.7. Host on Windows, macOS, or Android, and let up to 16 players join with browser controllers on the same Wi-Fi network.
+
+This public repository contains the launcher, shared host UI, browser controller SDK, development tools, and [game template](Games/_Template). **Playable game modules and their artwork, audio, and other game-specific assets are not included.** Existing local modules stay on the development PC and are excluded from future commits.
 
 ## Features
 
@@ -10,37 +12,39 @@ A collection of party and solo games built with Godot 4.7. Host on Windows, macO
 - Saved profiles, scores, and host preferences.
 - Responsive layouts, reduced motion, and customizable artwork and audio.
 
-## Current games
+## Current local game catalog
+
+The development installation currently has 12 menu entries covering the 14 games and variants below. This list describes that local installation; these modules are not distributed in this repository.
 
 | Game | Description |
 | --- | --- |
-| [Battleship](Games/battleship) | Place a secret fleet and sink your opponent's ships. |
-| [Checkers](Games/checkers) | Jump opposing pieces, crown kings, and control the board. |
-| [Chess](Games/chess) | Classic chess with computer opponents and optional clocks. |
-| [Four in a Row](Games/four-in-a-row) | Drop discs and connect four before your opponent. |
-| [Mafia](Games/mafia) | Use discussion, secret roles, and votes to uncover the Mafia. |
-| [Monopoly Classic](Games/monopoly-classic) | Buy, trade, and develop properties on the original US board. |
-| [Monopoly Deal](Games/monopoly-deal) | Bank, trade, and steal cards to complete three property sets. |
-| [Pictionary](Games/pictionary) | Draw on your phone while the other players guess the word. |
-| [Poker: Texas Hold'em](Games/poker-texas-holdem) | No-Limit Texas Hold'em tournaments with friends or computers. |
-| [Poker: Omaha](Games/poker-omaha) | Four-card Pot-Limit Omaha High tournaments. |
-| [Quoridor](Games/quoridor) | Race across the board while placing walls to slow your rivals. |
-| [Spyfall](Games/spyfall) | Ask questions and find the spy who doesn't know the location. |
-| [Tic Tac Toe](Games/tic-tac-toe) | Get three in a row against a friend or computer. |
-| [UNO](Games/uno) | Match cards and empty your hand in Classic, Flip, or No Mercy. |
+| Battleship | Place a secret fleet and sink your opponent's ships. |
+| Checkers | Jump opposing pieces, crown kings, and control the board. |
+| Chess | Classic chess with computer opponents and optional clocks. |
+| Four in a Row | Drop discs and connect four before your opponent. |
+| Mafia | Use discussion, secret roles, and votes to uncover the Mafia. |
+| Monopoly Classic | Buy, trade, and develop properties on the original US board. |
+| Monopoly Deal | Bank, trade, and steal cards to complete three property sets. |
+| Pictionary | Draw on your phone while the other players guess the word. |
+| Poker: Texas Hold'em | No-Limit Texas Hold'em tournaments with friends or computers. |
+| Poker: Omaha | Four-card Pot-Limit Omaha High tournaments. |
+| Quoridor | Race across the board while placing walls to slow your rivals. |
+| Spyfall | Ask questions and find the spy who doesn't know the location. |
+| Tic Tac Toe | Get three in a row against a friend or computer. |
+| UNO | Match cards and empty your hand in Classic, Flip, or No Mercy. |
 
 Player limits and solo options vary by game. Monopoly and Poker each have a chooser for their two variants.
 
-Both game menu views use matching illustrated icons. Original artwork and the
-rebuild instructions are in [Game selection icons](asset/game-icons/PROMPTS.md).
+Game-specific menu icons and their source artwork also remain local.
 
 ## Run locally
 
 1. Install [Godot 4.7](https://godotengine.org/download/archive/) and download or clone this repository.
-2. Open `project.godot` in Godot and press **F5**. Windows and macOS users can also use `launch_windows.bat` or `launch_macos.command`.
-3. For party play, open a lobby and connect each phone or tablet to the same Wi-Fi network.
-4. Scan the lobby's QR code or open its local join URL in a browser.
-5. Once everyone has joined, press **Play** in the lobby and choose a game.
+2. Add your own game module under `Games/<game-id>/`, starting with `Games/_Template` and the [Creating a Game](docs/CREATING_A_GAME.md) guide. The template is hidden from game selection, so a fresh clone has no playable games.
+3. Open `project.godot` in Godot and press **F5**. Windows and macOS users can also use `launch_windows.bat` or `launch_macos.command`.
+4. For party play, open a lobby and connect each phone or tablet to the same Wi-Fi network.
+5. Scan the lobby's QR code or open its local join URL in a browser.
+6. Once everyone has joined, press **Play** in the lobby and choose an installed game.
 
 Allow local-network access if your firewall prompts you. No controller app is required.
 
@@ -56,7 +60,8 @@ Install FFmpeg on the host for desktop media that needs conversion. Original med
 - [New Game Prompt](docs/NEW_GAME_PROMPT.md): a starting outline for new modules.
 - [Contributor Instructions](AGENTS.md): coding conventions and verification requirements.
 - [Automatic GitHub Sync](docs/GITHUB_SYNC.md): background publishing, status, and pause controls.
-- `Games/` contains modules, `scripts/` shared host code, and `web/` shared browser assets.
+- `Games/_Template/` contains the public module template, `scripts/` shared host code, and `web/` shared browser assets. Other `Games/` folders and game-specific source media are ignored by Git.
+- Public tests use shared framework code, the template, or synthetic fixtures. Module-dependent test suites stay local with the games; public CI runs without them.
 
 With Godot available as `godot` on your PATH, run these checks from the repository root:
 

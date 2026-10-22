@@ -1,1 +1,0 @@
-Classic card revision source originals. SVG lettering here is unoutlined; runtime SVG lettering is outlined by art/outline_text.ps1. Live card names are composed by the shared GameCard and StarGamesCard renderers. No Monopoly Man character is used.

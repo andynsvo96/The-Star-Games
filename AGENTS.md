@@ -10,11 +10,12 @@
 
 ## GitHub publishing
 
-- The user has authorized ongoing publication of Star Games and all game-module updates to `https://github.com/andynsvo96/The-Star-Games.git` on `main`.
+- The user has authorized ongoing publication of the Star Games launcher, shared framework, template, tools, and documentation to `https://github.com/andynsvo96/The-Star-Games.git` on `main`. Playable game modules, game-specific source assets/menu icons, and module-dependent tests must stay local and out of commits. This restriction applies to new games too; never force-add ignored game content.
 - Before editing, run `python tools/github_sync.py pause` so the background watcher does not publish an incomplete update. After completing the requested work and required checks, run `python tools/github_sync.py resume`, then `python tools/github_sync.py once`. A meaningful manual commit before `once` is welcome; the sync pushes existing local commits too.
 - Do not ask again for routine commit/push permission within this project. Report the published revision or any sync failure. Keep publishing paused if required checks fail or work is incomplete, and explain the reason.
 - Use the environment's Git/network permission mechanism if a sandbox blocks publishing; the ongoing publication authorization still applies. Changes to the sync tools also require `python tests/github_sync_test.py`.
 - Respect `.gitignore`. Never force-push or overwrite remote changes; integrate an advanced remote branch deliberately before publishing. See `docs/GITHUB_SYNC.md` for status, setup, and controls.
+- Only `Games/README.md` and `Games/_Template/` are published from `Games/`. Shared source-media folders and self-contained framework tests use explicit `.gitignore` exceptions; extend those only for reusable framework content. References to local games in documentation do not mean those games are bundled with the public repository.
 
 ## Game modules and controllers
 

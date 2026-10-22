@@ -26,6 +26,7 @@ func check_center(app: Control, message: String) -> void:
 func _run() -> void:
 	var app = load("res://Main.tscn").instantiate()
 	app.profile_store = ProfileStore.new("res://.test_data/lobby_layout.json")
+	app.game_catalog = preload("res://tests/catalog_fixture.gd").new()
 	root.add_child(app)
 	await process_frame
 	app.game_view = "list"

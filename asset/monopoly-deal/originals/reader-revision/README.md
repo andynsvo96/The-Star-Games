@@ -1,1 +1,0 @@
-Larger card text, contrasted wild headers, two-sided Help card, and felt-only source background. Runtime wood framing uses shared viewport chrome. SVG text originals here are unoutlined; runtime faces use art/outline_text.ps1.

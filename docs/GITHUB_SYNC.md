@@ -2,8 +2,8 @@
 
 On the configured Windows development PC, saved project changes publish to
 [`andynsvo96/The-Star-Games`](https://github.com/andynsvo96/The-Star-Games)
-after 30 seconds without further edits. This includes new games, artwork,
-documentation, and deleted files. The watcher runs in the background and starts
+after 30 seconds without further edits. This includes shared framework code,
+shared artwork, documentation, and tracked-file removals. The watcher runs in the background and starts
 at Windows sign-in while this user is logged in.
 
 Each batch becomes a normal commit on `main`. Existing local commits are pushed
@@ -11,6 +11,31 @@ as well. `.gitignore` keeps saves, caches, backups, builds, and local credential
 out of automatic commits. The sync needs Git, Python 3.10 or newer, GitHub CLI,
 and the current user's GitHub login (`gh auth login`). Credentials stay in the
 GitHub CLI credential store.
+
+## Public repository scope
+
+Publish the launcher, shared host/browser UI, controller SDK, game template,
+tools, documentation, and self-contained framework tests. Playable game modules
+remain local, including their code, artwork, audio, rule data, source archives,
+concepts, menu icons, and module-dependent test suites.
+
+`.gitignore` excludes every direct child of `Games/` except `README.md` and
+`_Template/`, so newly created modules are local by default. Source media under
+`asset/` is also excluded except the shared `lobby_songs/`, `shared-ui/`, and
+`splash_background/` folders. Public files in `tests/` use explicit exceptions
+and must run with only the framework, template, or synthetic fixtures. New
+game-specific tests remain local by default. Never force-add ignored content.
+
+Existing development files are removed from Git's index with `git rm --cached`,
+which preserves the working copies on this PC. If another checkout still tracks
+those files, back them up outside that checkout before pulling the removal
+commit. A fresh clone contains no playable games; add your own modules before
+building or playing. Public CI checks the framework without the local modules.
+
+The README's game list documents the current local catalog, not downloadable
+contents. The exclusion commit changes the latest tree and future commits;
+earlier commits still contain previously published game files. History is not
+rewritten or force-pushed by this policy.
 
 ## During development
 

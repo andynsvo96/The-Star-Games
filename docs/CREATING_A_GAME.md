@@ -1,6 +1,8 @@
 # Creating a Game for The Star Games
 
-Every game is a trusted Godot module inside `Games`. The launcher discovers direct child folders at startup and whenever the host selects **Scan for Games**. Repository games are compiled into each release; scanning does not install files onto an already-built app.
+Every game is a trusted Godot module inside `Games`. The launcher discovers direct child folders at startup and whenever the host selects **Scan for Games**. Modules present in the local project are compiled into each release; scanning does not install files onto an already-built app.
+
+The public repository includes `Games/_Template` and shared framework code, but no playable games. Other module folders, game-specific source media/menu icons, and module-dependent test suites stay local under the [publishing policy](GITHUB_SYNC.md#public-repository-scope). References to existing games and their tests throughout this guide describe the local development installation. Use the template's hidden host/controller examples for the reusable patterns available in a fresh clone.
 
 ## 1. Create the folder
 

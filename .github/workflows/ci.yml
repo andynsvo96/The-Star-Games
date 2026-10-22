@@ -1,4 +1,4 @@
-name: Test and Export
+name: Framework Tests and Export
 
 on:
   push:
@@ -13,79 +13,22 @@ jobs:
     container: barichello/godot-ci:4.7
     steps:
       - uses: actions/checkout@v4
-      - name: Import project
+      - name: Import framework and template
         run: godot --headless --editor --path . --quit
-      - name: Run tests
+      - name: Run framework tests
         run: godot --headless --path . --script res://tests/run_tests.gd
-      - name: Run game settings persistence tests
-        run: godot --headless --path . --script res://tests/game_settings.gd
       - name: Run LAN smoke test
         run: godot --headless --path . --script res://tests/network_smoke.gd
       - name: Run launcher navigation smoke test
         run: godot --headless --path . --script res://tests/ui_smoke.gd
-      - name: Run lobby and game-selection layout regression tests
-        run: godot --headless --path . --script res://tests/lobby_layout.gd
-      - name: Run Checkers rules and session tests
-        run: godot --headless --path . --script res://tests/checkers.gd
-      - name: Run Checkers movement tests
-        run: godot --headless --path . --script res://tests/checkers_motion.gd
-      - name: Run Chess rules, clocks, session and movement tests
+      - name: Run template session and identity smoke test
+        run: godot --headless --path . --script res://tests/avatar_solo_smoke.gd
+      - name: Run lobby and game-selection tests with synthetic modules
         run: |
-          godot --headless --path . --script res://tests/chess.gd
-          godot --headless --path . --script res://tests/chess_motion.gd
-      - name: Run Four in a Row rules and movement tests
-        run: |
-          godot --headless --path . --script res://tests/four_in_a_row.gd
-          godot --headless --path . --script res://tests/four_in_a_row_motion.gd
-      - name: Run shared game score-card tests
-        run: godot --headless --path . --script res://tests/game_score_cards.gd
-      - name: Run Battleship rules, motion and private LAN tests
-        run: |
-          godot --headless --path . --script res://tests/battleship.gd
-          godot --headless --path . --script res://tests/battleship_motion.gd
-          godot --headless --path . --script res://tests/battleship_network.gd
-      - name: Run Tic Tac Toe round and replay tests
-        run: |
-          godot --headless --path . --script res://tests/tic_tac_toe.gd
-          godot --headless --path . --script res://tests/tic_tac_toe_modes.gd
-          godot --headless --path . --script res://tests/tic_tac_toe_motion.gd
+          godot --headless --path . --script res://tests/lobby_layout.gd
+          godot --headless --path . --script res://tests/lobby_smoke.gd
       - name: Run shared game background tests
         run: godot --headless --path . --script res://tests/game_backgrounds.gd
-      - name: Run UNO rules, private hands and reconnect tests
-        run: |
-          godot --headless --path . --script res://tests/uno.gd
-          godot --headless --path . --script res://tests/uno_options.gd
-          godot --headless --path . --script res://tests/uno_flip.gd
-          godot --headless --path . --script res://tests/uno_flip_network.gd
-          godot --headless --path . --script res://tests/uno_network.gd
-
-      - name: Run Spyfall rules, settings and private LAN tests
-        run: |
-          godot --headless --path . --script res://tests/spyfall.gd
-          godot --headless --path . --script res://tests/spyfall_network.gd
-
-      - name: Run Mafia rules, private roles and LAN tests
-        run: |
-          godot --headless --path . --script res://tests/mafia.gd
-          godot --headless --path . --script res://tests/mafia_network.gd
-
-      - name: Run Quoridor rules, AI, scoring and LAN tests
-        run: |
-          godot --headless --path . --script res://tests/quoridor.gd
-          godot --headless --path . --script res://tests/quoridor_network.gd
-
-      - name: Run Pictionary rules, word settings and private LAN tests
-        run: |
-          godot --headless --path . --script res://tests/pictionary.gd
-          godot --headless --path . --script res://tests/pictionary_network.gd
-
-      - name: Run Monopoly Deal rules, sessions, themes and private LAN tests
-        run: |
-          godot --headless --path . --script res://tests/theme_packs.gd
-          godot --headless --path . --script res://tests/monopoly_deal.gd
-          godot --headless --path . --script res://tests/monopoly_deal_session.gd
-          godot --headless --path . --script res://tests/monopoly_deal_polish.gd
-          godot --headless --path . --script res://tests/monopoly_deal_network.gd
 
   export:
     if: startsWith(github.ref, 'refs/tags/v')

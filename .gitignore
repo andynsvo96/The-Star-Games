@@ -25,3 +25,57 @@ desktop.ini
 *.keystore
 /.aws/
 /.codex/
+
+# Publish the framework and template; playable modules stay on this PC.
+/Games/*
+!/Games/README.md
+!/Games/_Template/
+
+# Game originals, concepts, audio archives and menu icons stay local too.
+# Add shared framework asset folders explicitly when they are introduced.
+/asset/*
+!/asset/lobby_songs/
+!/asset/shared-ui/
+!/asset/splash_background/
+
+# Only self-contained framework tests and fixtures belong in the public repo.
+# Module-dependent suites remain available locally with their games.
+/tests/*
+!/tests/fixtures/
+!/tests/github_sync_test.py
+!/tests/avatar_solo_smoke.gd
+!/tests/avatar_solo_smoke.gd.uid
+!/tests/background_images_smoke.gd
+!/tests/background_images_smoke.gd.uid
+!/tests/background_loop_smoke.gd
+!/tests/background_loop_smoke.gd.uid
+!/tests/catalog_fixture.gd
+!/tests/catalog_fixture.gd.uid
+!/tests/debug_browsers.gd
+!/tests/debug_browsers.gd.uid
+!/tests/game_backgrounds.gd
+!/tests/game_backgrounds.gd.uid
+!/tests/game_settings_fixture.gd
+!/tests/game_settings_fixture.gd.uid
+!/tests/host_avatar_smoke.gd
+!/tests/host_avatar_smoke.gd.uid
+!/tests/lobby_addresses.gd
+!/tests/lobby_addresses.gd.uid
+!/tests/lobby_layout.gd
+!/tests/lobby_layout.gd.uid
+!/tests/lobby_smoke.gd
+!/tests/lobby_smoke.gd.uid
+!/tests/music_smoke.gd
+!/tests/music_smoke.gd.uid
+!/tests/network_smoke.gd
+!/tests/network_smoke.gd.uid
+!/tests/player_controls.gd
+!/tests/player_controls.gd.uid
+!/tests/render_qr.gd
+!/tests/render_qr.gd.uid
+!/tests/run_tests.gd
+!/tests/run_tests.gd.uid
+!/tests/title_intro.gd
+!/tests/title_intro.gd.uid
+!/tests/ui_smoke.gd
+!/tests/ui_smoke.gd.uid

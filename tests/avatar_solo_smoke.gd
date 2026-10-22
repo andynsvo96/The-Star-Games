@@ -30,6 +30,8 @@ func _run() -> void:
 	app._on_result_reported(id, true)
 	assert(app.profile_store.get_profile(id)["wins"] == int(before.get("wins", 0)) + 1)
 	app._launch_game({"id": "solo-test", "host_scene_path": "res://Games/_Template/host/main.tscn", "modes": ["singleplayer"], "min_players": 1, "max_players": 1})
+	for frame in 4:
+		await process_frame
 	assert(app.active_game != null and not app.active_game_is_party)
 	assert(app.active_game.session.players.is_empty())
 	assert(app.active_game.session.solo_profile["id"] == "local-host")

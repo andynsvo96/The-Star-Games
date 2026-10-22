@@ -1,1 +1,0 @@
-window.pokerGameId = "poker-omaha";
