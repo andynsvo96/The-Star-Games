@@ -88,7 +88,8 @@ func _run() -> void:
 		return _finish(false, "Shared paper texture was not served offline")
 	artwork.queue_free()
 
-	socket.inbound_buffer_size = 8 * 1024 * 1024
+	# Leave room for the bounded backpressure batch on every host platform.
+	socket.inbound_buffer_size = 64 * 1024 * 1024
 	if socket.connect_to_url("ws://127.0.0.1:%d/" % server.websocket_port) != OK:
 		return _finish(false, "WebSocket client could not begin connecting")
 	if not await _wait_for_socket(WebSocketPeer.STATE_OPEN):
@@ -123,12 +124,16 @@ func _run() -> void:
 	var private_state := await _message_of_type("game")
 	if private_state.get("payload", {}).get("test") != "stale_socket":
 		return _finish(false, "Closed socket prevented state delivery to the live controller")
-	# Exercise backpressure without polling the receiving controller between sends.
+	# Fill until output queues: loopback socket capacity differs across platforms.
+	# Do not poll the receiving controller until the host reaches backpressure.
 	var large := "x".repeat(180000)
 	var live: Dictionary = server.websocket_clients.filter(func(client: Dictionary) -> bool: return client.get("player_id") == player_id)[0]
-	for index in 30: server.send_to_player(player_id, {"type": "large_state", "sequence": index, "data": large})
+	var message_count := 0
+	while live.get("outbox", []).is_empty() and message_count < 256:
+		server.send_to_player(player_id, {"type": "large_state", "sequence": message_count, "data": large})
+		message_count += 1
 	if live.get("outbox", []).is_empty(): return _finish(false, "Backpressure fixture did not fill the outbound buffer")
-	for index in 30:
+	for index in message_count:
 		var delivered := await _message_of_type("large_state")
 		if delivered.get("sequence", -1) != index or delivered.get("data", "") != large: return _finish(false, "Queued oversized messages were dropped or reordered")
 	socket.close()
