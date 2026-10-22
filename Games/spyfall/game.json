@@ -4,7 +4,7 @@
   "title": "Spyfall",
   "description": "One secret spy. One hidden location. Question your friends aloud and find the impostor.",
   "version": "0.1.0",
-  "thumbnail": "thumbnail.svg",
+  "thumbnail": "thumbnail.webp",
   "background": "art/spy-office",
   "host_scene": "host/main.tscn",
   "controller_entry": "controller/index.html",

@@ -4,7 +4,7 @@
   "title": "Battleship",
   "description": "Deploy a secret fleet, fire your cannons, and rule the sea.",
   "version": "1.0.0",
-  "thumbnail": "thumbnail.svg",
+  "thumbnail": "thumbnail.webp",
   "background": "art/command-bridge",
   "host_scene": "host/main.tscn",
   "controller_entry": "controller/index.html",

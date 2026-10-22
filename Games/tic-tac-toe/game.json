@@ -4,7 +4,7 @@
   "title": "Tic Tac Toe",
   "description": "Three in a row wins the round. Play against a friend or computer.",
   "version": "1.0.0",
-  "thumbnail": "thumbnail.svg",
+  "thumbnail": "thumbnail.webp",
   "background": "art/garden",
   "host_scene": "host/main.tscn",
   "controller_entry": "controller/index.html",

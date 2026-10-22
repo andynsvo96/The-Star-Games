@@ -4,7 +4,7 @@
   "title": "UNO",
   "description": "Classic, Flip or No Mercy UNO for four to six seats. One to three players are joined by computer opponents.",
   "version": "0.9.0",
-  "thumbnail": "thumbnail.svg",
+  "thumbnail": "thumbnail.webp",
   "background": "art/sunset-lounge",
   "host_scene": "host/main.tscn",
   "controller_entry": "controller/index.html",

@@ -4,7 +4,7 @@
   "title": "Quoridor",
   "description": "Race to the opposite edge with two or four players. Move your pawn or place a wall to outwit your opponents.",
   "version": "0.2.0",
-  "thumbnail": "thumbnail.svg",
+  "thumbnail": "thumbnail.webp",
   "background": "art/courtyard",
   "host_scene": "host/main.tscn",
   "controller_entry": "controller/index.html",

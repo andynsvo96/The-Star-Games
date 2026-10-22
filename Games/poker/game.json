@@ -4,7 +4,7 @@
   "title": "Poker",
   "description": "Choose Texas Hold’em or Omaha Hold’em. Play with 2–10 total seats, including solo versus computers.",
   "version": "1.0.0",
-  "thumbnail": "thumbnail.svg",
+  "thumbnail": "thumbnail.webp",
   "background": "art/lounge",
   "host_scene": "host/main.tscn",
   "controller_entry": "controller/index.html",

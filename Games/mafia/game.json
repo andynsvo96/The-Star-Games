@@ -4,7 +4,7 @@
   "title": "Mafia",
   "description": "Secret roles, nighttime choices and a town vote. Find the mafia before they take over.",
   "version": "0.1.0",
-  "thumbnail": "thumbnail.svg",
+  "thumbnail": "thumbnail.webp",
   "background": "art/town-night",
   "background_variants": {"day": "art/town-day"},
   "host_scene": "host/main.tscn",

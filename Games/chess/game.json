@@ -4,7 +4,7 @@
   "title": "Chess",
   "description": "A royal chess game for one or two players, with full chess rules, optional custom clocks, and a computer opponent.",
   "version": "0.1.0",
-  "thumbnail": "thumbnail.svg",
+  "thumbnail": "thumbnail.webp",
   "background": "art/royal-study",
   "host_scene": "host/main.tscn",
   "controller_entry": "controller/index.html",

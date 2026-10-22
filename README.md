@@ -31,6 +31,9 @@ A collection of party and solo games built with Godot 4.7. Host on Windows, macO
 
 Player limits and solo options vary by game. Monopoly and Poker each have a chooser for their two variants.
 
+Both game menu views use matching illustrated icons. Original artwork and the
+rebuild instructions are in [Game selection icons](asset/game-icons/PROMPTS.md).
+
 ## Run locally
 
 1. Install [Godot 4.7](https://godotengine.org/download/archive/) and download or clone this repository.
