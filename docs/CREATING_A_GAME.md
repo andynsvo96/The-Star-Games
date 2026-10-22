@@ -1095,8 +1095,11 @@ through the SDK's measured footer. Help stays in host Settings; phones retain Zo
 hole spacing and reachable Close; keyboard selection also works. Reduced motion
 settles marbles immediately; other moves lock input until host and local motion
 finish. Duplicate syncs preserve movement, while reconnect restores settled art.
-The lantern-lit garden artwork uses the extensionless `art/background` stem and
-the shared player; its original and prompt remain in `asset/chinese-checkers/`.
+The chooser has its own blue-and-brass games library background; Chinese Checkers
+keeps a lantern-lit garden. Each uses its module's extensionless `art/background`
+stem and the shared player. Chinese Checkers uses a generated transparent title
+PNG through `add_title_art` and `img.game-title-art`. Original images and exact
+prompts remain in `asset/checkers-collection/` and `asset/chinese-checkers/`.
 
 Local checks: `tests/chinese_checkers.gd`, `tests/chinese_checkers_motion.gd`,
 `tests/chinese_checkers_network.gd`, rendered `tests/chinese_checkers_visual.gd`,
