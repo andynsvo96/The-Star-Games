@@ -63,15 +63,6 @@
   });
   playerPicker.setPlayers(examplePlayers);
   const controller = new StarGamesController(gameId, {
-    // Debug Lab previews stay inside this browser and cannot send game actions.
-    // Supply synthetic/own-player payloads for UI built on demand. Providers
-    // must be pure: never send inputs, mutate live state, or expose secrets.
-    debugScenarios: () => [
-      {id: "options", label: "Shared options dialog", selectors: ["#options"]},
-      {id: "decision", label: "Shared decision dialog", selectors: ["#example-table-decision"]},
-      {id: "results", label: "Public ranked results", selectors: ["#example-ranked-results"]},
-      {id: "status", label: "Long status text", payload: {status: "A long example status for testing wrapping in portrait and landscape."}}
-    ],
     connected: player => { connection.textContent = `Connected as ${player.display_name}`; controller.send({ action: "sync" }); },
     disconnected: () => { connection.textContent = "Reconnecting…"; },
     message: payload => { document.querySelector("#status").textContent = payload.status || "Message received"; },

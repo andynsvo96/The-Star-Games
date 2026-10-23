@@ -3,67 +3,37 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>The Star Games - Debug Lab</title>
-  <link rel="stylesheet" href="/debug-lab.css">
-  <script defer src="/debug-lab.js"></script>
+  <title>The Star Games - iPhone Debug</title>
+  <style>
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #07102b; }
+    iframe { position: absolute; left: 50%; top: 50%; border: 0; transform-origin: center; }
+  </style>
 </head>
 <body>
-  <header>
-    <strong>Debug Lab</strong>
-    <output id="connection" role="status">Join through the controller below.</output>
-    <button id="tools" type="button" aria-expanded="false" aria-controls="inspector">Tools</button>
-  </header>
-  <nav class="viewport-tools" aria-label="Preview size">
-    <label>Device <select id="device"><option value="390,844">Phone</option><option value="360,640">Small phone</option><option value="768,1024">Tablet</option><option value="1280,720">Desktop</option><option value="custom">Custom</option></select></label>
-    <label>W <input id="width" type="number" min="200" max="1920" step="1" value="390"></label>
-    <label>H <input id="height" type="number" min="200" max="2160" step="1" value="844"></label>
-    <button id="rotate" type="button">Rotate</button>
-    <button id="reload" type="button">Refresh</button>
-    <button id="hold" type="button" aria-pressed="false" disabled>Hold view</button>
-    <output id="size"></output>
-  </nav>
-  <main>
-    <section id="stage" aria-label="Controller preview">
-      <div id="device-frame"><iframe id="controller" aria-label="Phone controller preview" allow="autoplay; fullscreen"></iframe></div>
-      <p id="preview-status" hidden role="status">Read-only preview — gameplay input blocked. The host game continues.</p>
-    </section>
-    <aside id="inspector" hidden aria-label="Debug tools">
-      <nav class="tabs" aria-label="Debug tools">
-        <button type="button" data-tab="elements" aria-pressed="true">Elements</button>
-        <button type="button" data-tab="scenarios" aria-pressed="false">Scenarios</button>
-        <button type="button" data-tab="snapshots" aria-pressed="false">Snapshots</button>
-        <button type="button" data-tab="activity" aria-pressed="false">Activity</button>
-      </nav>
-      <section id="elements" class="tool-panel">
-        <p>Inspect elements already created in this view, including hidden panels and closed dialogs.</p>
-        <label>Filter <input id="filter" type="search" placeholder="Name, ID, or text"></label>
-        <label class="check"><input id="hidden-only" type="checkbox"> Hidden only</label>
-        <div class="actions"><button id="scan" type="button">Rescan</button><button id="mark" type="button" disabled>Mark checked</button></div>
-        <output id="coverage" role="status"></output>
-        <select id="element-list" size="9" aria-label="Loaded UI elements"></select>
-        <pre id="element-info">Select an element.</pre>
-        <div class="actions"><button id="reveal" type="button" disabled>Preview selected</button><button id="restore" type="button" disabled>Return to live</button></div>
-      </section>
-      <section id="scenarios" class="tool-panel" hidden>
-        <p>Existing dialogs and hidden panels appear automatically. Games can also register named previews for UI created after a trigger.</p>
-        <select id="scenario-list" size="9" aria-label="UI preview scenarios"></select>
-        <p id="scenario-info">Choose a scenario.</p>
-        <button id="scenario-preview" type="button" disabled>Preview scenario</button>
-        <p>Previews check appearance. Test the real trigger during live play to check rules and networking.</p>
-      </section>
-      <section id="snapshots" class="tool-panel" hidden>
-        <p>Recent state received by this controller only. History stays in memory and clears on navigation.</p>
-        <select id="snapshot-list" size="8" aria-label="Received snapshots"></select>
-        <div class="actions"><button id="snapshot-preview" type="button" disabled>Preview snapshot</button><button id="clear-snapshots" type="button">Clear history</button></div>
-        <pre id="snapshot-info">Waiting for game state.</pre>
-      </section>
-      <section id="activity" class="tool-panel" hidden>
-        <p>Connection, state, and input summaries. Join credentials and message contents are omitted.</p>
-        <button id="clear-activity" type="button">Clear activity</button>
-        <ol id="activity-list" aria-label="Recent activity"></ol>
-      </section>
-      <p id="notice" role="status"></p>
-    </aside>
-  </main>
+  <iframe aria-label="Phone controller preview" allow="autoplay; fullscreen"></iframe>
+  <script>
+    (() => {
+      "use strict";
+      const params = new URLSearchParams(location.search);
+      const dimension = (name, fallback, maximum) => {
+        const value = Number(params.get(name));
+        return Number.isInteger(value) && value >= 200 && value <= maximum ? value : fallback;
+      };
+      const width = dimension("width", 390, 1200);
+      const height = dimension("height", 844, 2000);
+      const frame = document.querySelector("iframe");
+      frame.style.width = `${width}px`;
+      frame.style.height = `${height}px`;
+      const fit = () => {
+        // Scaling the preview leaves the controller's media queries and viewport intact.
+        const scale = Math.min(1, innerWidth / width, innerHeight / height);
+        frame.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      };
+      addEventListener("resize", fit);
+      fit();
+      // Navigation, identity and reconnects stay inside the usual same-origin controller.
+      frame.src = "/";
+    })();
+  </script>
 </body>
 </html>

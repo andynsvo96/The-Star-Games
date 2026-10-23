@@ -16,7 +16,6 @@ var game_catalog := GameCatalog.new()
 var lan_server := LanServer.new()
 var public_address := preload("res://scripts/public_address.gd").new()
 var debug_browsers := preload("res://scripts/debug_browsers.gd").new()
-var debug_lab: CanvasLayer
 var screen_root: Control
 var title_background: Control
 var menu_music: Control
@@ -104,22 +103,6 @@ func _ready() -> void:
 	game_music.volume_changed.connect(func(value: float) -> void: _save_setting("music_volume", value))
 	_apply_runtime_settings()
 	_show_title()
-	debug_lab = preload("res://scripts/debug_lab.gd").new()
-	add_child(debug_lab)
-
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F8:
-		_toggle_debug_lab()
-		get_viewport().set_input_as_handled()
-
-
-func _toggle_debug_lab() -> void:
-	if not is_instance_valid(debug_lab): return
-	if debug_lab.opened:
-		debug_lab.close()
-	else:
-		debug_lab.open_for(active_game if is_instance_valid(active_game) else screen_root)
 
 
 func _notification(what: int) -> void:
@@ -695,19 +678,15 @@ func _show_settings(caller: String) -> void:
 	var debug_button := _button("Debug", _open_debug_controllers)
 	debug_button.custom_minimum_size.x = 120
 	debug_button.disabled = not debug_browsers.is_supported() or not lan_server.running
+	header.add_child(debug_button)
 	var editor_button := _button("Asset Editor", _show_asset_editor)
 	editor_button.disabled = OS.get_name() not in ["Windows", "macOS", "Linux"]
 	header.add_child(editor_button)
-	header.add_child(debug_button)
 	debug_notice = _label("", 14, COLOR_MUTED)
 	debug_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	debug_notice.visible = debug_button.disabled
 	debug_notice.text = "Debug browser launch is available on desktop hosts." if not debug_browsers.is_supported() else "Enter the lobby to start the controller server before using Debug."
 	column.add_child(debug_notice)
-	# The inspector also works without a running server. F8 opens it in games.
-	var lab_button := _button("Debug Lab · F8", _toggle_debug_lab)
-	lab_button.size_flags_horizontal = Control.SIZE_SHRINK_END
-	column.add_child(lab_button)
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(scroll)
@@ -1144,7 +1123,6 @@ func _on_points_awarded(profile_id: String, amount: int) -> void:
 
 
 func _replace_screen() -> void:
-	if is_instance_valid(debug_lab): debug_lab.close()
 	_cancel_title_intro()
 	public_connection_link = null
 	if screen_transition != null:

@@ -268,8 +268,6 @@ func _serve_http(peer: StreamPeerTCP, request: String) -> void:
 	match path:
 		"/", "/index.html": resource_path = "res://web/index.html"
 		"/debug.html": resource_path = "res://web/debug.html"
-		"/debug-lab.js": resource_path = "res://web/debug-lab.js"
-		"/debug-lab.css": resource_path = "res://web/debug-lab.css"
 		"/avatar-0.svg": resource_path = "res://web/avatar-0.svg"
 		"/avatar-1.svg": resource_path = "res://web/avatar-1.svg"
 		"/avatar-2.svg": resource_path = "res://web/avatar-2.svg"

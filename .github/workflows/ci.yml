@@ -23,8 +23,6 @@ jobs:
         run: godot --headless --path . --script res://tests/session_media.gd
       - name: Run launcher navigation smoke test
         run: godot --headless --path . --script res://tests/ui_smoke.gd
-      - name: Run Debug Lab with the public template
-        run: godot --headless --path . --script res://tests/debug_lab.gd
       - name: Run template session and identity smoke test
         run: godot --headless --path . --script res://tests/avatar_solo_smoke.gd
       - name: Run lobby and game-selection tests with synthetic modules
