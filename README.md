@@ -73,6 +73,28 @@ Install FFmpeg on the host for desktop media that needs conversion. Original med
 - `Games/_Template/` contains the public module template, `scripts/` shared host code, and `web/` shared browser assets. Other `Games/` folders and game-specific source media are ignored by Git.
 - Public tests use shared framework code, the template, or synthetic fixtures. Module-dependent test suites stay local with the games; public CI runs without them.
 
+Press **F8** on the host, or choose **Settings > Debug Lab**, to inspect loaded UI,
+including hidden controls. Select an element and **Preview selected**; restore it
+or close the lab to return its visibility. The inspector blocks host UI interaction
+while open; connected controllers and the game continue running. Host previews can
+save screenshots in `user://debug_lab/`.
+
+**Settings > Debug** still opens the four installed desktop browsers. Each now
+includes a Debug Lab toolbar: change the exact controller viewport, rotate it, or
+open **Tools** for hidden-element inspection, named UI scenarios, recent state,
+and input summaries. **Hold view** and all browser previews block gameplay input
+from that browser while the host continues. **Return to live** restores the view
+and requests current host state. History stays in memory, is limited to that
+player's received state, and clears on page navigation. These are visual testing
+tools, not a separate game or profile sandbox. Use a disposable session when
+testing actual scoring, saves, or destructive game actions.
+
+Existing hidden panels and dialogs work automatically. UI created only after a
+trigger needs a registered scenario or a real gameplay trigger. The template
+demonstrates both host and browser scenario hooks; see
+[Debug Lab scenarios](docs/CREATING_A_GAME.md#debug-lab-scenarios). A checked
+element records manual review, not proof that its rules or trigger passed.
+
 With Godot available as `godot` on your PATH, run these checks from the repository root:
 
 ```sh
@@ -81,6 +103,11 @@ godot --headless --path . --script res://tests/run_tests.gd
 godot --headless --path . --script res://tests/network_smoke.gd
 godot --headless --path . --script res://tests/ui_smoke.gd
 godot --headless --path . --script res://tests/session_media.gd
+godot --headless --path . --script res://tests/debug_lab.gd
 ```
+
+Run `tests/debug_lab.gd` with rendering for host screenshots. With Godot and
+Chromium installed, `node tests/debug_lab_controller.mjs` checks browser previews
+through the real LAN HTTP server. Set `GODOT_BIN` and `CHROME_BIN` if needed.
 
 Export presets are included for Windows, macOS, and Android. Install the matching Godot export templates to build them; keep generated builds in `builds/`.

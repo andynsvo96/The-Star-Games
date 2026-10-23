@@ -203,6 +203,19 @@
       this.retryTimer = null;
       this.background = new GameBackground(gameId);
       this.boardLayout = new GameBoardLayout(document.getElementById("board"), document.getElementById("replay"));
+      // The local Debug Lab sees only this controller's delivered game state.
+      // No bridge or debug commands are exposed through the LAN protocol.
+      this.debugLab = null;
+      try {
+        if (global.parent !== global && global.parent.location.origin === location.origin && global.parent.location.pathname === "/debug.html" && global.parent.StarGamesDebugLab?.version === 1) {
+          this.debugLab = global.parent.StarGamesDebugLab.attach({
+            document, gameId,
+            deliver: payload => this.#deliver(payload),
+            sync: () => this.send({action: "sync"}),
+            scenarios: () => typeof handlers.debugScenarios === "function" ? handlers.debugScenarios() : handlers.debugScenarios || []
+          });
+        }
+      } catch (_) { /* Ordinary and cross-origin frames use the normal SDK. */ }
     }
 
     connect() {
@@ -210,12 +223,14 @@
       this.socket = new WebSocket(`ws://${location.hostname}:${wsPort}/`);
       this.socket.addEventListener("message", event => this.#handle(JSON.parse(event.data)));
       this.socket.addEventListener("close", () => {
+        this.debugLab?.connection("Reconnecting…");
         this.handlers.disconnected?.();
         this.retryTimer = setTimeout(() => this.connect(), 1500);
       });
     }
 
     send(payload) {
+      if (this.debugLab?.input(payload) === false) return;
       if (this.socket?.readyState === WebSocket.OPEN) {
         this.socket.send(JSON.stringify({ type: "game", game_id: this.gameId, payload }));
       }
@@ -232,6 +247,11 @@
       this.background.load(this.gameId);
     }
 
+    #deliver(payload) {
+      if (typeof payload?.theme?.revision === "string") this.setThemeRevision(payload.theme.revision);
+      this.handlers.message?.(payload);
+    }
+
     #handle(message) {
       if (message.type === "hello" && this.identity) {
         this.socket.send(JSON.stringify({ type: "join", name: this.identity.name, reconnect_token: this.identity.token }));
@@ -244,10 +264,10 @@
         localStorage.setItem(`star-games:${location.host}`, JSON.stringify(this.identity));
         document.documentElement.style.setProperty("--accent", message.player.color || "#58d6ff");
         document.documentElement.style.setProperty("--player-color", message.player.color || "#58d6ff");
+        this.debugLab?.connection(`Connected as ${message.player.display_name}`);
         this.handlers.connected?.(message.player);
       } else if (message.type === "game" && message.game_id === this.gameId) {
-        if (typeof message.payload?.theme?.revision === "string") this.setThemeRevision(message.payload.theme.revision);
-        this.handlers.message?.(message.payload);
+        if (this.debugLab?.receive(message.payload) !== false) this.#deliver(message.payload);
       } else if (message.type === "screen" && message.game_id !== this.gameId) {
         location.href = message.game_id ? `/game/${encodeURIComponent(message.game_id)}/` : "/";
       } else if (message.type === "error") {

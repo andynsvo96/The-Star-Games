@@ -53,6 +53,9 @@ desktop.ini
 !/tests/catalog_fixture.gd.uid
 !/tests/debug_browsers.gd
 !/tests/debug_browsers.gd.uid
+!/tests/debug_lab.gd
+!/tests/debug_lab.gd.uid
+!/tests/debug_lab_controller.mjs
 !/tests/game_backgrounds.gd
 !/tests/game_backgrounds.gd.uid
 !/tests/game_settings_fixture.gd

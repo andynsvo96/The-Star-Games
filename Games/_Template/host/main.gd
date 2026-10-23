@@ -504,6 +504,13 @@ func shutdown_game() -> void:
 	screen.background_media.set_active(false)
 
 
+# Optional local inspector presets reveal UI only; they never complete a round.
+# Build sample controls here in _ready, using synthetic public text. UI created
+# on demand needs its own safe sample, not a call into the live rules engine.
+func debug_ui_scenarios() -> Array:
+	return [{"id": "result-dialog", "label": "Shared result dialog", "paths": [str(get_path_to(phase_dialog.overlay))]}]
+
+
 func handle_controller_message(_player_id: String, _message: Dictionary) -> void:
 	# Hidden-information modules may use send_state(player_id, private_view).
 	# Build that view on the host; never broadcast secrets or another player's hand.

@@ -34,6 +34,12 @@ func start_game() -> void:
 	pass
 
 
+# Optional named visual previews. Paths identify existing Controls in this game;
+# the local inspector never invokes rules, scoring, or arbitrary game methods.
+func debug_ui_scenarios() -> Array:
+	return []
+
+
 # The launcher delivers snapshots through its existing LAN server.
 func broadcast_state(payload: Dictionary) -> void:
 	controller_state_updated.emit(_with_skin(payload))
