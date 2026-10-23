@@ -580,14 +580,20 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 	if packed == null:
 		_show_error("The host scene could not be loaded.")
 		return
+	if is_instance_valid(active_game):
+		active_game.shutdown_game()
+		ThemePacks.unpin(active_game_id)
+		active_game.queue_free()
+	# Pin before instantiation: module member initializers and _ready load art.
+	var skins := ThemePacks.new(str(game.id), str(game.folder).get_base_dir())
+	var skin_settings := game_settings_store.load_settings(str(game.id), {"theme": "default"})
+	skins.pin(str(skin_settings.theme))
 	var instance := packed.instantiate()
 	if not instance is BaseGame:
 		instance.queue_free()
+		ThemePacks.unpin(str(game.id))
 		_show_error("The game host scene root must extend BaseGame.")
 		return
-	if is_instance_valid(active_game):
-		active_game.shutdown_game()
-		active_game.queue_free()
 	var selected_profile := _host_solo_profile()
 	instance.settings_store = game_settings_store
 	var count := roster.size()
@@ -637,6 +643,7 @@ func _return_from_game() -> void:
 	var roster := collection_roster.duplicate(true)
 	if active_game != null and is_instance_valid(active_game):
 		active_game.shutdown_game()
+		ThemePacks.unpin(active_game_id)
 		active_game.queue_free()
 	active_game = null
 	active_game_id = ""
@@ -753,6 +760,7 @@ func _show_asset_editor() -> void:
 	_replace_screen()
 	title_background.release_assets()
 	asset_editor = preload("res://scripts/asset_editor.gd").new()
+	asset_editor.game_settings_store = game_settings_store
 	asset_editor.reduced_motion = bool(profile_store.get_settings().get("reduced_motion", false))
 	screen_root.add_child(asset_editor)
 	asset_editor.exit_requested.connect(func() -> void: _show_settings(settings_caller))

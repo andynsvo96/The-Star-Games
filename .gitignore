@@ -84,3 +84,8 @@ desktop.ini
 
 # Synthetic shared board/controller layout regression (no local games required).
 !/tests/shared_board_controller.mjs
+
+# Synthetic skin lifecycle, editor and LAN regression (no local games required).
+!/tests/skin_packs_fixture.gd
+!/tests/skin_packs_fixture.gd.uid
+!/tests/skin_controller.mjs

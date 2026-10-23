@@ -9,6 +9,7 @@ class AssetTree extends Tree:
 		return ""
 
 var store := AssetStore.new()
+var game_settings_store := GameSettingsStore.new()
 var reduced_motion := false
 var selected: Dictionary = {}
 var pending: Dictionary = {}
@@ -438,6 +439,7 @@ func _open_themes(game_id := "") -> void:
 	_leave(func() -> void:
 		theme_editor = preload("res://scripts/theme_pack_editor.gd").new()
 		theme_editor.reduced_motion = reduced_motion
+		theme_editor.settings_store = game_settings_store
 		add_child(theme_editor)
 		if not game_id.is_empty() and theme_editor.games.has(game_id): theme_editor._load_game(theme_editor.games.find(game_id))
 		theme_editor.exit_requested.connect(func() -> void: theme_editor.queue_free())

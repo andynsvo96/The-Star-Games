@@ -8,22 +8,36 @@ var slots: Array = []
 var presentation := "card-table"
 var preview_kind := "cards"
 var last_error := ""
+var definitions_root := "res://Games"
 
 
-func _init(id := "") -> void:
+func _init(id := "", custom_definitions_root := "") -> void:
 	game_id = id
+	if not custom_definitions_root.is_empty(): definitions_root = custom_definitions_root
 	# Preserve legacy packs while allowing new modules to declare their preview.
 	if id == "monopoly-deal": presentation = "modern-table"
 	if valid_id(id):
-		var value: Variant = _read("res://Games/%s/theme-slots.json" % id)
+		var value: Variant = _read(definitions_root.path_join(id).path_join("theme-slots.json"))
 		if value is Dictionary and value.get("schema_version") == 1 and value.get("slots") is Array:
 			if value.get("presentation", "") in ["card-table", "modern-table"]:
 				presentation = value.presentation
-			if value.get("preview_kind", "") in ["cards", "portfolio"]:
+			if value.get("preview_kind", "") in ["cards", "portfolio", "assets"]:
 				preview_kind = value.preview_kind
+			# Only the bundled definition can opt into another module's shared art.
+			# Packs themselves cannot add slots, sources, or rule/content files.
+			var sources: Array = [id]
+			if value.get("asset_sources") is Array:
+				for source in value.asset_sources:
+					if source is String and valid_id(source) and not sources.has(source): sources.append(source)
+			var ids := {}; var paths := {}
 			for slot in value.slots:
-				if slot is Dictionary and valid_id(str(slot.get("id", ""))) and RuntimeAssets.safe_media_path(str(slot.get("path", ""))) and str(slot.path).begins_with("Games/%s/" % id):
-					slots.append(slot)
+				if not slot is Dictionary: continue
+				var path := str(slot.get("path", ""))
+				if not valid_id(str(slot.get("id", ""))) or not RuntimeAssets.safe_media_path(path): continue
+				if not path.begins_with("Games/") or not path.get_slice("/", 1) in sources: continue
+				if slot.get("kind") not in ["image", "audio", "background"] or not slot.get("label") is String or not slot.get("group") is String: continue
+				if ids.has(slot.id) or paths.has(path): continue
+				ids[slot.id] = true; paths[path] = true; slots.append(slot)
 
 
 static func valid_id(value: String) -> bool:
@@ -36,12 +50,12 @@ static func valid_id(value: String) -> bool:
 func list_packs() -> Array:
 	var result: Array = []
 	var ids: Array = ["default"]
-	for base in ["res://", RuntimeAssets.root_folder()]:
-		var folder: String = str(base).path_join("Games/%s/themes" % game_id)
+	for folder in [definitions_root.path_join(game_id).path_join("themes"), RuntimeAssets.root_folder().path_join("Games/%s/themes" % game_id)]:
 		if DirAccess.dir_exists_absolute(folder):
 			for id in DirAccess.get_directories_at(folder):
 				if valid_id(id) and not ids.has(id): ids.append(id)
 	ids.sort()
+	ids.erase("default"); ids.push_front("default")
 	for id in ids:
 		var pack := load_pack(id)
 		if not pack.is_empty(): result.append(pack)
@@ -52,7 +66,7 @@ func load_pack(id: String) -> Dictionary:
 	if not valid_id(game_id) or not valid_id(id) or slots.is_empty(): return {}
 	var relative := "Games/%s/themes/%s/theme.json" % [game_id, id]
 	var path := RuntimeAssets.root_folder().path_join(relative)
-	if id == "default" or not FileAccess.file_exists(path): path = "res://" + relative
+	if id == "default" or not FileAccess.file_exists(path): path = definitions_root.path_join(game_id).path_join("themes/%s/theme.json" % id)
 	var pack: Variant = _read(path)
 	if not pack is Dictionary or pack.get("schema_version") != 1 or pack.get("id") != id or not pack.get("name") is String or pack.name.strip_edges().is_empty() or pack.name.length() > 64: return {}
 	if not pack.get("assets", {}) is Dictionary or not pack.get("labels", {}) is Dictionary: return {}
@@ -146,6 +160,9 @@ func stage_media(pack: Dictionary, slot_id: String, source_path: String) -> Dict
 func pin(id: String) -> Dictionary:
 	var pack := load_pack(id)
 	if pack.is_empty(): pack = load_pack("default")
+	if pack.is_empty():
+		unpin(game_id)
+		return {}
 	var mapping := {}
 	for slot in slots:
 		if pack.get("assets", {}).has(slot.id): mapping[slot.path] = pack.assets[slot.id]
@@ -154,12 +171,27 @@ func pin(id: String) -> Dictionary:
 	return pack
 
 
+static func unpin(id: String) -> void:
+	active.erase(id)
+	RuntimeAssets.textures.clear()
+
+
+# Public cosmetic metadata only; never expose a manifest's filesystem paths.
+static func snapshot(id: String) -> Dictionary:
+	var pack: Dictionary = active.get(id, {}).get("pack", {})
+	if pack.is_empty(): return {}
+	return {"id": pack.id, "name": pack.name, "revision": pack.revision, "labels": pack.labels.duplicate(true)}
+
+
 func display_name(slot: String, fallback: String, pack: Dictionary) -> String:
 	return str(pack.get("labels", {}).get(slot, fallback))
 
 
 static func resolve(relative: String) -> String:
 	var id := relative.get_slice("/", 1)
+	# A variant may use another module's art while retaining its own pack/settings.
+	for owner in active:
+		if owner != id and active[owner].get("mapping", {}).has(relative): return str(active[owner].mapping[relative])
 	return str(active.get(id, {}).get("mapping", {}).get(relative, relative))
 
 

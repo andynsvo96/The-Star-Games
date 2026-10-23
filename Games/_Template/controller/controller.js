@@ -37,8 +37,8 @@
   // can use --game-hand-dock-width and --game-hand-dock-left in landscape.
   // StarGamesHandDock(hand, toolbar) keeps the same action buttons above the
   // hand in portrait, restoring their original placement in landscape.
-  // On themed snapshots, controller.setThemeRevision(payload.theme.revision)
-  // reloads shared background metadata; theme asset URLs remain offline.
+  // The SDK applies payload.theme.revision automatically before message().
+  // Keep canonical local asset URLs so host and phone resolve the same skin.
   const connection = document.querySelector("#connection");
   const action = document.querySelector("#action");
   // Reuse lobby colors/poses for a public player choice. Exclude the owner with

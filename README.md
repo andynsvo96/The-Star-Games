@@ -55,6 +55,13 @@ Allow local-network access if your firewall prompts you. No controller app is re
 
 Host Settings includes sound, reduced motion, and other preferences. On desktop, **Settings > Asset Editor** lets you replace artwork, backgrounds, and audio, with previous files saved in `Backups/`.
 
+Every installed local game and collection chooser supports named cosmetic skins.
+In **Asset Editor > Themes**, choose a game, duplicate its protected **Default**
+skin (called **Classic** in Monopoly Classic), and replace artwork or sounds.
+Save, then select **Use skin** to use it the next time that game opens. Default
+keeps the game's current appearance; missing custom slots inherit it. Monopoly's
+existing in-game skin selectors remain available. Skin choices are saved per game.
+
 Install FFmpeg on the host for desktop media that needs conversion. Original media stays in `asset/`; converted files are cached in user data.
 
 ## Development

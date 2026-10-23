@@ -36,12 +36,21 @@ func start_game() -> void:
 
 # The launcher delivers snapshots through its existing LAN server.
 func broadcast_state(payload: Dictionary) -> void:
-	controller_state_updated.emit(payload)
+	controller_state_updated.emit(_with_skin(payload))
 
 
 # Hidden-information games send each admitted player only their own view.
 func send_state(player_id: String, payload: Dictionary) -> void:
-	controller_private_state_updated.emit(player_id, payload)
+	controller_private_state_updated.emit(player_id, _with_skin(payload))
+
+
+func _with_skin(payload: Dictionary) -> Dictionary:
+	if session == null or payload.has("theme"): return payload
+	var skin := ThemePacks.snapshot(session.game_id)
+	if skin.is_empty(): return payload
+	var view := payload.duplicate()
+	view["theme"] = skin
+	return view
 
 
 # Expose only the files currently permitted by the game. URLs are unguessable

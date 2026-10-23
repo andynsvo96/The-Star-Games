@@ -15,8 +15,10 @@ func _ready() -> void:
 	add_child(screen)
 	screen.configure("Template Game")
 	# Reusable composed cards use GameCard with semantic text and a separate
-	# RuntimeAssets texture. Optional named cosmetic packs: ThemePacks.new(id),
-	# list_packs(), pin(id); erase ThemePacks.active[id] during shutdown.
+	# RuntimeAssets texture. Keep theme-slots.json and themes/default/theme.json:
+	# the launcher pins the saved skin before creating this scene, and BaseGame
+	# adds its public revision to snapshots. The SDK restores it on reconnect.
+	# Declare canonical artwork/audio paths in theme-slots.json when adding media.
 	# Card tables may select use_playful_style(background, "card-table") for
 	# walnut controls/gold status, and GameLook.card_table_sheet(active) for zones.
 	# GameCard's optional layout="deal" uses a 2:3 full face with a live name

@@ -246,6 +246,7 @@
         document.documentElement.style.setProperty("--player-color", message.player.color || "#58d6ff");
         this.handlers.connected?.(message.player);
       } else if (message.type === "game" && message.game_id === this.gameId) {
+        if (typeof message.payload?.theme?.revision === "string") this.setThemeRevision(message.payload.theme.revision);
         this.handlers.message?.(message.payload);
       } else if (message.type === "screen" && message.game_id !== this.gameId) {
         location.href = message.game_id ? `/game/${encodeURIComponent(message.game_id)}/` : "/";

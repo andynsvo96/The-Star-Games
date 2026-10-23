@@ -46,6 +46,9 @@ func _face(slot: Dictionary, bounds: Rect2) -> void:
 
 func _draw() -> void:
 	if manager == null: return
+	if manager.preview_kind == "assets":
+		_draw_assets()
+		return
 	var faces: Array = manager.slots.filter(func(slot: Dictionary) -> bool: return slot.has("preview"))
 	if faces.is_empty(): return
 	if phone:
@@ -53,7 +56,7 @@ func _draw() -> void:
 		draw_style_box(_sheet(),Rect2(left,8,width,35))
 		draw_string(ThemeDB.fallback_font,Vector2(left+12,31),"Your portfolio · Draft" if manager.preview_kind == "portfolio" else "Your turn · 3 plays left",HORIZONTAL_ALIGNMENT_LEFT,width-24,15,_ink())
 		draw_style_box(_sheet(),Rect2(left,52,width,130))
-		for index in 3: _face(faces[index],Rect2(left+12+index*(width-86)/2,63,70,105))
+		for index in 3: _face(faces[index % faces.size()],Rect2(left+12+index*(width-86)/2,63,70,105))
 		_face(faces[mini(40,faces.size()-1)],Rect2(size.x/2-25,193,50,75))
 		for index in 3: _face(faces[mini(39+index,faces.size()-1)],Rect2(left+14+index*(width-89)/2,280,75,112))
 	else:
@@ -68,6 +71,22 @@ func _draw() -> void:
 		_face(faces[mini(40,faces.size()-1)],Rect2(size.x/2+8,height+24,50,75))
 		for slot in manager.slots:
 			if slot.id == "back": GameCard.paint(self,Rect2(size.x/2-62,height+24,50,75),{"back":true},RuntimeAssets.texture(_source(slot)),Color("173c45")); break
+
+
+func _draw_assets() -> void:
+	var images: Array = manager.slots.filter(func(slot: Dictionary) -> bool: return slot.kind == "image")
+	var columns := 2 if phone else 3
+	var rows := maxi(1, ceili(mini(6, images.size()) / float(columns)))
+	var cell := Vector2((size.x - 32) / columns, (size.y - 40) / rows)
+	for index in mini(6, images.size()):
+		var bounds := Rect2(Vector2(16, 16) + Vector2(index % columns, index / columns) * cell, cell - Vector2(8, 8))
+		draw_style_box(_sheet(), bounds)
+		var texture := RuntimeAssets.texture(_source(images[index]))
+		if texture != null:
+			var available := bounds.grow(-8); available.size.y = maxf(1, available.size.y - 22)
+			var fitted := texture.get_size() * minf(available.size.x / texture.get_width(), available.size.y / texture.get_height())
+			draw_texture_rect(texture, Rect2(available.get_center() - fitted / 2, fitted), false)
+		draw_string(ThemeDB.fallback_font, bounds.position + Vector2(8, bounds.size.y - 9), str(images[index].label), HORIZONTAL_ALIGNMENT_LEFT, bounds.size.x - 16, 12, _ink())
 
 
 func _exit_tree() -> void:

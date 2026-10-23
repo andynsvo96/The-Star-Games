@@ -21,6 +21,8 @@ Games/<game-id>/
     index.html
     controller.js
     style.css
+  theme-slots.json
+  themes/default/theme.json
 ```
 
 Additional assets and scripts may live anywhere inside the game folder. Shared launcher code must not be changed unless the game contract itself is being deliberately revised.
@@ -1951,7 +1953,7 @@ action card, actor, chosen target and effect visible in response/payment context
 Monopoly Deal skips response acknowledgements when no Just Say No is available;
 genuine counters and payment asset choices remain host-validated private input.
 
-Named packs are optional. Declare trusted, immutable visual slots in
+New games retain the template's named skin support. Declare trusted, immutable visual slots in
 `Games/<id>/theme-slots.json`:
 
 ```json
@@ -1970,8 +1972,25 @@ The optional top-level `presentation` selects `card-table` or `modern-table` for
 the shared table/phone draft preview. Use the same presentation as the game.
 Set `preview_kind: "portfolio"` for asset-based board games; the default `cards`
 keeps the existing card-game sample captions. These fields affect draft previews.
+Use `preview_kind: "assets"` for ordinary board, social, drawing and collection
+artwork: its draft preview fits actual images without inventing card values or
+rules. Register each runtime artwork/audio path, plus every manifest background
+variant. One `background` slot represents all extensions of the same stem; keep
+its canonical image path even if a same-stem video is later added. Do not register
+private clues, answers, rule databases, source archives or generated caches.
+When copying the template, replace `replace-with-game-id` in its slot paths too.
 Ship `themes/default/theme.json` with schema_version 1, id `default`, name
 `Default`, and empty `assets`/`labels` dictionaries. It is protected in the editor.
+The empty pack preserves the current artwork, presentation, and existing accepted
+individual replacements. Custom packs inherit every omitted slot. All currently
+installed local games and their collection choosers follow this contract.
+
+Variants reusing another module's media can explicitly declare
+`"asset_sources": ["shared-game-id"]` in their trusted slot definition and list
+that module's canonical `Games/shared-game-id/...` artwork/audio paths. Each
+variant still owns its pack directory, saved selection and revision. A custom
+pack cannot declare new sources or slots. Poker's two local variants demonstrate
+this opt-in; never duplicate shared rules or media just to make another skin.
 
 `ThemePacks.new(game_id)` discovers/validates packs, groups slots, duplicates packs,
 prepares content-addressed media, saves metadata with backups/rollback, and pins
@@ -1979,12 +1998,22 @@ an immutable validated manifest via `pin(id)`. Custom `assets` map slot IDs to s
 paths inside that pack's media folder; `labels` map slot IDs to plain display text.
 Missing slots inherit Default. Rules must never read theme metadata as authority.
 The main Asset Editor routes these modules to its theme view and preserves the
-existing individual replacement workflow for other games. Save confirms pack
+individual replacement workflow for shared media and legacy modules. Save confirms pack
 metadata changes; Restore Previous stages a backed-up manifest. GameThemePreview
 and the card gallery render drafts without pinning them for a running game.
 
-Use BaseGame's settings API for the accepted theme ID. Pin only on initialization
-or a committed new game/replay; uncommitted selectors must not affect replay.
+The shared editor's **Use skin** saves the accepted `theme` ID through the same
+per-game settings store, preserving other preferences. Save a draft before using
+it. The selection applies on the next launch; browsing, duplicating, previewing
+and saving never alter a running session. The launcher pins that selection before
+instantiating the host scene, including member-variable artwork loads. Missing or
+invalid packs fall back to Default. Returning clears that game's mappings,
+including declared shared media. No new module-specific selector is required.
+
+An existing in-game selector may use BaseGame's settings API for its accepted
+theme ID, then pin on initialization or a committed new game/replay;
+uncommitted selectors must not affect replay. Preserve the module's pause and
+new-game policy. Monopoly retains its existing staged selectors.
 Call `RuntimeAssets.texture/audio` through canonical slot paths: active pack
 mapping is resolved first, followed by an existing replacement for that mapped
 path, then external/bundled media. Clear `ThemePacks.active[game_id]` and cached
@@ -1992,8 +2021,11 @@ textures on shutdown. Reload title/audio resources and call
 `screen.background_media.reload_assets()` after changing a pinned pack so an
 unchanged canonical background stem still resolves its new source.
 
-Include the pinned theme revision and sanitized public display labels in private
-controller snapshots. `controller.setThemeRevision(revision)` reloads shared
+BaseGame automatically adds the pinned theme revision and sanitized public
+display labels to public/private snapshots without mutating the supplied game
+state. Existing explicitly supplied `theme` metadata is preserved. The SDK
+applies the revision before calling the module's message handler, including after
+refresh/reconnection. `controller.setThemeRevision(revision)` reloads shared
 background metadata; revision query strings invalidate card URL caches. Existing
 offline HTTP routes serve the same canonical media with its actual MIME type.
 Do not implement a separate theme server or media player. Bundle JSON and raw
@@ -2005,6 +2037,11 @@ isolation, backup/rollback, invalid/corrupt media, stable active revisions,
 real HTTP delivery, reconnection and native/browser layouts. Tests are
 `theme_packs.gd`, `monopoly_deal_session.gd`, `monopoly_deal_network.gd`,
 `monopoly_deal_visual.gd` and `monopoly_deal_controller.mjs`.
+The self-contained public regression is `tests/skin_packs_fixture.gd`; the local
+`tests/all_game_skins.gd` verifies every installed module, its default/custom
+media, launcher lifecycle and editor layouts. Run the latter with rendering for
+host/editor captures. `node tests/skin_controller.mjs` checks SDK revision and
+reconnect behavior using synthetic offline assets.
 
 ### Asset and decision phone layouts
 

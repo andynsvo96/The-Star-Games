@@ -31,6 +31,8 @@ jobs:
           godot --headless --path . --script res://tests/lobby_smoke.gd
       - name: Run shared game background tests
         run: godot --headless --path . --script res://tests/game_backgrounds.gd
+      - name: Run skin lifecycle, editor and LAN tests with a synthetic module
+        run: godot --headless --path . --script res://tests/skin_packs_fixture.gd
 
   export:
     if: startsWith(github.ref, 'refs/tags/v')

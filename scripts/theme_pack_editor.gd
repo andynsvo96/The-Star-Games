@@ -22,6 +22,9 @@ var chooser := FileDialog.new()
 var reduced_motion := false
 var preview_audio := AudioStreamPlayer.new()
 var preview_video: Control
+var settings_store := GameSettingsStore.new()
+var use_button: Button
+var skin_status := Label.new()
 
 
 func _ready() -> void:
@@ -34,7 +37,8 @@ func _ready() -> void:
 	var bar := HFlowContainer.new(); body.add_child(bar)
 	bar.add_child(_button("Return", func() -> void: request_leave(func() -> void: exit_requested.emit())))
 	var title := Label.new(); title.text = "ASSET EDITOR · THEMES"; title.add_theme_font_size_override("font_size", 24); bar.add_child(title)
-	for id in DirAccess.get_directories_at("res://Games"):
+	var folders := DirAccess.get_directories_at("res://Games"); folders.sort()
+	for id in folders:
 		if not id.begins_with("_") and FileAccess.file_exists("res://Games/%s/theme-slots.json" % id):
 			games.append(id); game_choice.add_item(id.capitalize())
 	bar.add_child(game_choice)
@@ -60,6 +64,8 @@ func _ready() -> void:
 	var footer := HFlowContainer.new(); body.add_child(footer)
 	save_button = _button("Save", _confirm_save); footer.add_child(save_button)
 	footer.add_child(_button("Discard", func() -> void: _load_theme(str(original.id))))
+	use_button = _button("Use skin", _use_skin); footer.add_child(use_button)
+	skin_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; body.add_child(skin_status)
 	chooser.access = FileDialog.ACCESS_FILESYSTEM; chooser.file_mode = FileDialog.FILE_MODE_OPEN_FILE; chooser.use_native_dialog = true; add_child(chooser)
 	chooser.file_selected.connect(_replace)
 	add_child(preview_audio); preview_audio.bus = "Effects"
@@ -80,6 +86,7 @@ func _load_game(index: int) -> void:
 
 
 func _load_theme(id: String) -> void:
+	notice.text = ""
 	packs = manager.list_packs(); theme_choice.clear()
 	for pack in packs: theme_choice.add_item(pack.name + (" · Built in" if pack.id == "default" else ""))
 	original = manager.load_pack(id)
@@ -140,9 +147,9 @@ func _inspect() -> void:
 		var rules := Label.new(); rules.text = ("$%d" if selected.preview.get("currency", "") == "USD" else "%dM") % int(selected.preview.value) + " · " + str(selected.preview.detail); rules.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; inspector.add_child(rules)
 	var replace := _button("Replace artwork / sound", _choose); replace.disabled = draft.id == "default"; inspector.add_child(replace)
 	var reset := _button("Use Default for this slot", func() -> void: draft.assets.erase(selected.id); draft.labels.erase(selected.id); _inspect(); _populate(); _changed()); reset.disabled = draft.id == "default"; inspector.add_child(reset)
-	inspector.add_child(_button("Preview table / phone", _preview))
-	inspector.add_child(_button("Preview all cards", _gallery))
-	var help := Label.new(); help.text = "Names and artwork can change. Values, property groups and rules stay fixed."; help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; inspector.add_child(help)
+	inspector.add_child(_button("Preview artwork / phone" if manager.preview_kind == "assets" else "Preview table / phone", _preview))
+	if manager.preview_kind != "assets": inspector.add_child(_button("Preview all cards", _gallery))
+	var help := Label.new(); help.text = "Skins change artwork and sounds. Game rules stay fixed."; help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; inspector.add_child(help)
 
 
 func _preview() -> void:
@@ -176,8 +183,19 @@ func _replace(path: String) -> void:
 
 func _changed() -> void:
 	save_button.disabled = invalid_label or draft == original or draft.get("id", "default") == "default"
+	var accepted := manager.load_pack(str(settings_store.load_settings(manager.game_id, {"theme": "default"}).theme))
+	if accepted.is_empty(): accepted = manager.load_pack("default")
+	use_button.disabled = draft != original or draft.is_empty() or draft.get("id") == accepted.get("id")
+	skin_status.text = "Selected skin: %s. Skin changes apply the next time this game opens." % accepted.get("name", "Default")
 	if invalid_label: notice.text = "A display name is required."
-	if draft.get("id") == "default": notice.text = "Default is protected. Duplicate it to create a theme such as Philadelphia."
+	if draft.get("id") == "default": notice.text = "The built-in skin is protected. Duplicate it to create your own skin."
+
+
+func _use_skin() -> void:
+	if use_button.disabled or manager.load_pack(str(original.get("id", ""))).is_empty(): return
+	if settings_store.save_settings(manager.game_id, {"theme": original.id}):
+		_changed(); notice.text = "%s selected for the next launch." % original.name
+	else: notice.text = settings_store.last_error
 
 
 func _duplicate() -> void:

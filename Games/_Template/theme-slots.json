@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "preview_kind": "assets",
+  "slots": [
+    {
+      "id": "background",
+      "label": "Background",
+      "group": "Backgrounds",
+      "kind": "background",
+      "path": "Games/replace-with-game-id/art/background.svg"
+    }
+  ]
+}
