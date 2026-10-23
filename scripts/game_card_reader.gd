@@ -113,6 +113,7 @@ func _flip() -> void:
 	if pages.size() != 2: return
 	page = 1 - page; card.texture = pages[page]; card.queue_redraw(); flip.accessibility_name = "Flip to back" if page == 0 else "Flip to front"; stage.scroll_vertical = 0
 	card.accessibility_name = "Quick Start Rules" if page == 0 else "Essential Rules"
+	_fit.call_deferred()
 
 
 func _fit() -> void:
@@ -123,7 +124,12 @@ func _fit() -> void:
 	if preview.visible:
 		width = minf(300, minf(stage.size.y * 0.65, maxf(84, (size.x - 64) * 0.34)))
 		preview.custom_minimum_size.x = minf(420, maxf(160, size.x - width - 80))
-	card.custom_minimum_size = Vector2(width, width * 1.5)
+	var aspect := 2.0 / 3.0
+	if not pages.is_empty() and pages[page] != null:
+		var dimensions: Vector2 = pages[page].get_size()
+		if dimensions.y > 0: aspect = dimensions.x / dimensions.y
+		if aspect > 1: width = minf(880, maxf(160, size.x - 72))
+	card.custom_minimum_size = Vector2(width, width / aspect)
 	card.size_flags_vertical = Control.SIZE_SHRINK_BEGIN if preview.visible else Control.SIZE_SHRINK_CENTER
 	card.pivot_offset = card.size / 2
 	_place_flip.call_deferred()

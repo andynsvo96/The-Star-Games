@@ -126,6 +126,13 @@
     card.classList.toggle('is-selected', !!options.selected);
     if(options.compact) card.classList.add('game-card-small');
     const name=data.display_name || data.name || '';
+    if(data.layout==='character'){
+      card.classList.add('game-character-card');
+      card.setAttribute('aria-label',data.back?'Hidden influence':`${name}. ${data.detail||''} ${data.foot||''}`);
+      if(options.art){const art=document.createElement('img');art.src=options.art;art.alt='';art.draggable=false;card.append(art);}
+      if(!data.back){const band=document.createElement('span');band.className='game-character-caption';for(const [tag,text] of [['strong',name],['small',data.detail],['small',data.foot]]){const line=document.createElement(tag);line.textContent=text||'';band.append(line);}card.append(band);}
+      if(options.onSelect)card.addEventListener('click',options.onSelect);card.disabled=!!options.disabled;return card;
+    }
     if(data.layout==='standard'){
       card.classList.add('game-standard-card');card.classList.toggle('is-red',data.suit==='hearts'||data.suit==='diamonds');
       card.setAttribute('aria-label',data.back?'Card back':name);

@@ -6,6 +6,9 @@
 	const exampleCard = StarGamesCard({ name: "EXAMPLE", value: 1 });
 	exampleCard.hidden = true;
 	document.querySelector(".game-controller").append(exampleCard);
+	const exampleCharacter = StarGamesCard({layout:'character',name:'Envoy',detail:'Character ability',foot:'Public counteraction'}, {color:'#278eac'});
+	exampleCharacter.hidden = true;
+	document.querySelector(".game-controller").append(exampleCharacter);
   // Optional composed cards: StarGamesCard(card,{art,color,onSelect}).
   // layout:'deal' opts into a 2:3 complete face with a live semantic name.
   // Optional shared card-table surfaces: game-table on body, game-paper-card
@@ -13,6 +16,9 @@
   // and game-player-chip with --player-color for compact public navigation.
   // StarGamesCardReader shows full-screen cards with validated action callbacks,
   // and showReference([{src,alt},{src,alt}]) adds Back and a front/back flip.
+  // StarGamesCard({layout:'character',name:'Envoy',detail:'Ability',foot:'Counteraction'},
+  //   {art:'/game/my-game/art/envoy.png',color:'#278eac'}) keeps names/rules live
+  // over full portrait artwork. Native GameCard uses the same semantic fields.
   const exampleReader = new StarGamesCardReader();
   // After showCard, setSubtitle("Owned by …") supplies public ownership.
   // Public cash changes use host timing and live name rectangles. Return null

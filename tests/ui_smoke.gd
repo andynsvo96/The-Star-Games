@@ -71,7 +71,28 @@ func _run() -> void:
 	await process_frame
 	if app.current_state != "title" or app.lan_server.running:
 		return _finish(false, "Returning to title did not stop the LAN session")
+	if not await _reference_reader_check():
+		return _finish(false, "Reference pages must retain intrinsic aspect ratios and ordinary cards must reset to 2:3")
 	_finish(true, "PASS: title, lobby, caller-aware settings, and server lifecycle smoke test")
+
+
+func _reference_reader_check() -> bool:
+	var reader := GameCardReader.new()
+	root.add_child(reader)
+	var front := ImageTexture.create_from_image(Image.create(128, 256, false, Image.FORMAT_RGBA8))
+	var back := ImageTexture.create_from_image(Image.create(512, 256, false, Image.FORMAT_RGBA8))
+	reader.show_reference(front, back)
+	for frame in 4: await process_frame
+	var valid := is_equal_approx(reader.card.size.x / reader.card.size.y, 0.5)
+	reader._flip()
+	for frame in 4: await process_frame
+	valid = valid and is_equal_approx(reader.card.size.x / reader.card.size.y, 2.0)
+	reader.show_card({"layout": "character", "name": "Envoy", "detail": "Public ability", "foot": "Public counteraction"}, front, Color("278eac"))
+	for frame in 4: await process_frame
+	valid = valid and is_equal_approx(reader.card.size.x / reader.card.size.y, 2.0 / 3.0)
+	reader.close(); reader.queue_free()
+	await process_frame
+	return valid
 
 
 func _finish(success: bool, message: String) -> void:

@@ -30,6 +30,13 @@ func _ready() -> void:
 	# and show_reference(front, back), with shared Back/Flip and action controls.
 	# Use the same extensionless stem as game.json; images and videos interchange.
 	screen.use_playful_style("res://Games/_Template/art/background")
+	# Hidden reusable character-card example. Module artwork is cosmetic; names,
+	# rules and accessibility remain semantic. Readers/grids accept the same data.
+	var character_example := GameCard.new()
+	character_example.card = {"layout": "character", "name": "Envoy", "detail": "An original character ability.", "foot": "A public reference"}
+	character_example.custom_minimum_size = Vector2(112, 168)
+	screen.content.add_child(character_example)
+	character_example.hide()
 	# "studio" selects shared ivory/walnut controls, serif type and teal actions.
 	# Module artwork may frame any shared card without replacing its controls:
 	# screen.add_card(layout.sidebar, "framed", RuntimeAssets.texture(panel_path)).

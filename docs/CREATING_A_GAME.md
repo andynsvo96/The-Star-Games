@@ -1549,6 +1549,15 @@ and exclude backups and test fixtures.
 
 ### Shared composed cards and cosmetic theme packs
 
+Illustrated role games can use `GameCard` / `StarGamesCard` with
+`layout: "character"`, `name`/`display_name`, `detail` and `foot`. Supply an offline
+portrait texture (browser `art`) and role accent. The shared 2:3 surface covers
+the artwork without distortion and adds a live semantic name and two rules lines
+in its bottom caption. `back:true` omits the caption; `selected` uses the usual
+shared selection state. Names must be literal and artwork must never determine
+role identity or legal actions. Readers and grids use the same data. Both template
+views include hidden examples; existing layouts retain their behavior.
+
 Standard 52-card games use `GameCard` / `StarGamesCard` with `layout: "standard"`,
 `rank` (`2`–`10`, `J`, `Q`, `K`, `A`), `suit` (`clubs`, `diamonds`, `hearts`,
 `spades`), and a literal accessible `name`. `back:true` renders a neutral back
@@ -1708,7 +1717,9 @@ Native `show_reference(front, back)` and browser
 `showReference([{src, alt}, {src, alt}])` use the same full-screen surface with Back
 at the top left and an accessible flip icon on the reference card's top-right
 corner. Readers dismiss when the user clicks outside focused cards/controls. Keep reference
-art offline and its text consistent with the implemented rules. The template
+art offline and its text consistent with the implemented rules. Reference pages
+retain their intrinsic aspect ratios, including a portrait front and landscape
+back; the native reader refits after flipping without stretching the text. The template
 wires hidden reader examples into both views.
 
 Reversible cards can add the shared icon row with native
