@@ -889,6 +889,9 @@ The template's hidden table-decision dialog demonstrates this structure.
 `game-table-feedback` supplies a compact public thumbnail/text surface. Modules
 own the public event key and lifetime; identical snapshots must not restart it,
 and reconnection must not replay old events. Keep its footer space reserved.
+Its shared 42-by-63-pixel image bounds and wrapping text work in every presentation,
+including casino; only the party-table presentation adds its decorative surface.
+Use a direct image and plain-text span/div, and `hidden` when no public event exists.
 Use `GameRulesPanel.set_items([{title, detail, icon}])` on hosts and
 `fit(width, maximum_height, compact, scale=1.0)` to fit its vertical, scrollable
 list. Large table views can scale its text/icons without changing board fitting.

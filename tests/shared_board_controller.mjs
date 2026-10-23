@@ -94,6 +94,20 @@ const assertions = `
 		replay.hidden = true;
 		await settle();
 		unchanged(longNames.board, layout('Replay hidden').board, 'Hiding replay preserves reserved board geometry');
+		// Feedback geometry must not depend on a party-table ancestor. Use a
+		// deliberately large intrinsic portrait to reproduce overflow on phones.
+		const feedback = document.createElement('div'), picture = document.createElement('img'), words = document.createElement('span');
+		feedback.className = 'game-table-feedback'; feedback.hidden = true;
+		picture.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536"%3E%3Crect width="1024" height="1536" fill="gold"/%3E%3C/svg%3E';
+		picture.alt = ''; words.textContent = 'Public card proof with a long literal player name <Player & Friends>.';
+		feedback.append(picture, words); document.querySelector('main').append(feedback);
+		check(getComputedStyle(feedback).display === 'none', 'Hidden shared feedback stays hidden in every palette');
+		feedback.hidden = false;
+		await picture.decode();
+		const thumbnail = picture.getBoundingClientRect(), feedbackBounds = feedback.getBoundingClientRect();
+		check(thumbnail.width === 42 && thumbnail.height === 63 && thumbnail.right <= feedbackBounds.right, 'Large public artwork stays a bounded thumbnail without party-table styling');
+		check(feedback.scrollWidth <= feedback.clientWidth + 1 && !feedback.querySelector('player'), 'Feedback text wraps literally within the surface');
+		feedback.remove();
 		window.qaResult = {run, checks, failures:0, seats:count, cards:presentation, boardWidth:opening.board.width, footerHeight:opening.footer.height, longFooterHeight:longNames.footer.height};
 	} catch (error) {
 		window.qaResult = {run, checks, failures:1, error:String(error)};

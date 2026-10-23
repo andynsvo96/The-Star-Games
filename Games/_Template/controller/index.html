@@ -159,6 +159,9 @@
   <!-- Clock packets may update this output without rebuilding hand/decision
        controls. Only the authoritative host decides expiry or turn changes. -->
   <div class="game-turn-status" hidden><p>Player's turn</p><output class="game-turn-clock" role="timer" aria-label="Turn time remaining">1:00</output></div>
+  <!-- Feedback thumbnails stay bounded in every presentation, including casino.
+       Supply only public artwork and literal text; private hands stay private. -->
+  <div class="game-table-feedback" hidden role="status"><img src="/ui/playful/table-cards.svg" alt=""><span>An already-public card and its accepted effect.</span></div>
   <script src="/controller-sdk.js"></script>
   <!-- Party card tables use game-party-table on body. Add
        game-centered-controller to main to center board and reserved footer
