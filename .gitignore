@@ -89,3 +89,7 @@ desktop.ini
 !/tests/skin_packs_fixture.gd
 !/tests/skin_packs_fixture.gd.uid
 !/tests/skin_controller.mjs
+
+# Synthetic asset discovery, editor navigation and responsive layout checks.
+!/tests/asset_editor_fixture.gd
+!/tests/asset_editor_fixture.gd.uid

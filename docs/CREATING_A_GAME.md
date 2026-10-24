@@ -1535,6 +1535,10 @@ host rendering without depending on a local playable game.
 ### Editable media references
 
 The main launcher's desktop Asset Editor previews and replaces module media.
+It lists theme-managed source media too, with a per-asset Skin section showing
+`Skins: Default`. Protected slots open directly in Themes for skin duplication
+and editing; they are never replaced by synthetic "Theme packs" tree entries.
+Skin validation runs off the UI thread, and browser previews load progressively.
 Use `RuntimeAssets.texture("res://Games/<id>/art/piece.svg")` and
 `RuntimeAssets.audio("res://Games/<id>/audio/move.wav")` for fixed-path host
 artwork and sounds. These shared helpers retain normal import settings for
@@ -2000,8 +2004,9 @@ prepares content-addressed media, saves metadata with backups/rollback, and pins
 an immutable validated manifest via `pin(id)`. Custom `assets` map slot IDs to safe
 paths inside that pack's media folder; `labels` map slot IDs to plain display text.
 Missing slots inherit Default. Rules must never read theme metadata as authority.
-The main Asset Editor routes these modules to its theme view and preserves the
-individual replacement workflow for shared media and legacy modules. Save confirms pack
+The main Asset Editor lists each module's media with its Skin section and opens
+protected slots in Themes through **Edit skins in Themes**. Shared media and
+legacy modules retain individual replacement. Save confirms pack
 metadata changes; Restore Previous stages a backed-up manifest. GameThemePreview
 and the card gallery render drafts without pinning them for a running game.
 

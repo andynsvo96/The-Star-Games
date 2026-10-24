@@ -62,6 +62,14 @@ Save, then select **Use skin** to use it the next time that game opens. Default
 keeps the game's current appearance; missing custom slots inherit it. Monopoly's
 existing in-game skin selectors remain available. Skin choices are saved per game.
 
+The asset browser lists game artwork and sounds alongside launcher media. Each
+asset has a **Skin** section, with existing source artwork shown as **Skins:
+Default**. Protected game artwork opens its matching slot through **Edit skins
+in Themes**. The **Themes** button is at the right of the editor header. Themes
+separates game/skin controls, a blue asset browser with search, group and sorting
+filters, and an asset preview. Skin validation runs in the background; asset
+tiles and visible thumbnails load progressively so large libraries stay responsive.
+
 Install FFmpeg on the host for desktop media that needs conversion. Original media stays in `asset/`; converted files are cached in user data.
 
 ## Development
@@ -81,6 +89,7 @@ godot --headless --path . --script res://tests/run_tests.gd
 godot --headless --path . --script res://tests/network_smoke.gd
 godot --headless --path . --script res://tests/ui_smoke.gd
 godot --headless --path . --script res://tests/session_media.gd
+godot --headless --path . --script res://tests/asset_editor_fixture.gd
 ```
 
 Export presets are included for Windows, macOS, and Android. Install the matching Godot export templates to build them; keep generated builds in `builds/`.

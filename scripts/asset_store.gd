@@ -4,6 +4,7 @@ extends RefCounted
 const MAX_BYTES := 512 * 1024 * 1024
 var entries: Array[Dictionary] = []
 var background_stems: Array[String] = []
+var definitions_root := "res://Games"
 
 
 func scan() -> Array[Dictionary]:
@@ -12,7 +13,8 @@ func scan() -> Array[Dictionary]:
 	var paths: Dictionary = {}
 	for base in ["asset", "Games", "ui", "web"]:
 		_collect("res://" + base, base, paths)
-		_collect(RuntimeAssets.root_folder().path_join(base), base, paths)
+		if RuntimeAssets.root_folder().simplify_path() != ProjectSettings.globalize_path("res://").trim_suffix("/").simplify_path():
+			_collect(RuntimeAssets.root_folder().path_join(base), base, paths)
 	for relative: String in paths:
 		if relative.ends_with("/game.json"):
 			var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(str(paths[relative])))
@@ -20,40 +22,35 @@ func scan() -> Array[Dictionary]:
 				var stem := relative.get_base_dir().path_join(str(parsed.get("background", "")))
 				if RuntimeAssets.safe_media_path(stem + ".png"):
 					background_stems.append(stem)
-	var grouped: Dictionary = {}
-	var protected: Dictionary = {}
-	var protected_stems: Array[String] = []
-	var themed_games: Array[String] = []
-	for id in DirAccess.get_directories_at("res://Games"):
-		if FileAccess.file_exists("res://Games/%s/theme-slots.json" % id) and not id.begins_with("_"):
-			themed_games.append(id)
-			for slot in ThemePacks.new(id).slots:
-				protected[slot.path] = true
-				if slot.kind == "background": protected_stems.append(str(slot.path).get_basename())
+	var skin_slots: Dictionary = {}
+	var skin_backgrounds: Dictionary = {}
+	for id in DirAccess.get_directories_at(definitions_root):
+		if FileAccess.file_exists(definitions_root.path_join(id).path_join("theme-slots.json")) and not id.begins_with("_"):
+			for slot in ThemePacks.new(id, definitions_root).slots:
+				var skin := {"game_id": id, "slot_id": slot.id, "protected": true}
+				# A shared source can belong to multiple variants; retain its owner.
+				if not skin_slots.has(slot.path) or str(slot.path).begins_with("Games/%s/" % id):
+					skin_slots[slot.path] = skin
+				if slot.kind == "background":
+					if not skin_backgrounds.has(str(slot.path).get_basename()) or str(slot.path).begins_with("Games/%s/" % id):
+						skin_backgrounds[str(slot.path).get_basename()] = skin
+					if not background_stems.has(str(slot.path).get_basename()):
+						background_stems.append(str(slot.path).get_basename())
 	var sorted := paths.keys()
 	sorted.sort()
 	for relative: String in sorted:
-		if protected.has(relative) or protected_stems.has(relative.get_basename()) or themed_games.any(func(id: String) -> bool: return relative.begins_with("Games/%s/themes/" % id)):
-			continue
 		if not RuntimeAssets.safe_media_path(relative) or relative.get_file().contains(".replacement."):
 			continue
 		var background := relative.get_basename() in background_stems
-		if background:
-			if grouped.has(relative.get_basename()):
-				continue
-			# Use the same video/image preference as the shared background resolver.
-			var candidates := BackgroundMedia.candidates("res://" + relative.get_basename())
-			for candidate in candidates:
-				var original := relative.get_basename() + "." + candidate.get_extension()
-				if paths.has(original):
-					relative = original
-					break
-			grouped[relative.get_basename()] = true
 		var source := RuntimeAssets.source("res://" + relative)
 		var music := relative.begins_with("asset/lobby_songs/") or relative.begins_with("asset/music/")
-		entries.append({"path": relative, "background": background or relative.begins_with("asset/splash_background/"), "source": source, "kind": "audio" if music else kind(source)})
-	for id in themed_games:
-		entries.append({"path": "Games/%s/Theme packs" % id, "kind": "themes", "background": false, "game_id": id})
+		var entry := {"path": relative, "background": background or relative.begins_with("asset/splash_background/"), "source": source, "kind": "audio" if music else kind(source), "skin": "Default"}
+		entry.merge(skin_slots.get(relative, skin_backgrounds.get(relative.get_basename(), {})), true)
+		# Content-addressed skin media is visible too, but must remain immutable.
+		var parts := relative.split("/")
+		if parts.size() > 5 and parts[0] == "Games" and parts[2] == "themes":
+			entry.merge({"game_id": parts[1], "skin": parts[3].capitalize(), "protected": true}, true)
+		entries.append(entry)
 	return entries
 
 
@@ -88,6 +85,8 @@ func stage(entry: Dictionary, selected: String) -> Dictionary:
 	var relative := str(entry.get("path", ""))
 	if not RuntimeAssets.safe_media_path(relative) or not entries.any(func(item: Dictionary) -> bool: return item.path == relative):
 		return _error("Select an asset from the list first.")
+	if entries.any(func(item: Dictionary) -> bool: return item.path == relative and item.get("protected", false)):
+		return _error("This skin's source is protected. Duplicate the skin in Themes to replace its artwork or sound.")
 	var media_kind := kind(selected)
 	if media_kind.is_empty():
 		return _error("Unsupported type. Choose PNG, JPG, WebP, BMP, SVG, OGV, MP4, WebM, MOV, M4V, MKV, AVI, WAV, OGG, or MP3.")
@@ -174,6 +173,8 @@ func save(pending: Dictionary) -> Dictionary:
 	if OS.get_name() not in ["Windows", "macOS", "Linux"]:
 		return _error("Asset replacement is available on desktop hosts.")
 	var relative := str(pending.get("entry", {}).get("path", ""))
+	if entries.any(func(item: Dictionary) -> bool: return item.path == relative and item.get("protected", false)):
+		return _error("Use Themes to edit this protected skin asset.")
 	var staged := str(pending.get("staged", ""))
 	if not RuntimeAssets.safe_media_path(relative) or not staged.begins_with("user://asset_editor/staged/") or FileAccess.get_sha256(staged) != pending.get("hash", ""):
 		return _error("The prepared replacement is missing or changed. Choose the file again.")

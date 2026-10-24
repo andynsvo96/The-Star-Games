@@ -4,6 +4,8 @@ signal exit_requested
 signal asset_saved(path: String)
 signal quit_requested
 
+const EditorStyle = preload("res://scripts/asset_editor_style.gd")
+
 class AssetTree extends Tree:
 	func _get_tooltip(_at_position: Vector2) -> String:
 		return ""
@@ -34,25 +36,34 @@ var play_button: Button
 var chooser := FileDialog.new()
 var folders: Dictionary = {}
 var theme_editor: Control
+var content: MarginContainer
+var skins := Label.new()
+var skin_section: PanelContainer
+var skin_button: Button
+var themes_button: Button
 
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var margin := MarginContainer.new()
+	content = margin
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right", "top", "bottom"]:
 		margin.add_theme_constant_override("margin_" + side, 20)
 	add_child(margin)
 	var body := VBoxContainer.new()
 	margin.add_child(body)
-	var header := HFlowContainer.new()
+	var header := HBoxContainer.new()
 	body.add_child(header)
 	header.add_child(_button("← Return", request_exit))
 	var title := Label.new()
 	title.text = "ASSET EDITOR"
-	title.add_theme_font_size_override("font_size", 26)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title.add_theme_font_size_override("font_size", 24)
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	header.add_child(title)
-	header.add_child(_button("Themes", _open_themes))
+	themes_button = _button("Themes", _open_themes)
+	header.add_child(themes_button)
 	var split := HSplitContainer.new()
 	split.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	split.resized.connect(func() -> void:
@@ -60,10 +71,14 @@ func _ready() -> void:
 		preview.custom_minimum_size.y = clampf(size.y * 0.42, 140, 350)
 	)
 	body.add_child(split)
+	var browser := EditorStyle.panel(EditorStyle.BROWSER, 10)
+	browser.custom_minimum_size.x = 130
+	browser.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	split.add_child(browser)
 	var left := VBoxContainer.new()
-	left.custom_minimum_size.x = 130
-	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	split.add_child(left)
+	left.add_theme_constant_override("separation", 8)
+	browser.add_child(left)
+	left.add_child(EditorStyle.label("ASSET BROWSER", 12, EditorStyle.ACCENT))
 	search.placeholder_text = "Search assets"
 	search.text_changed.connect(func(_value: String) -> void: _populate())
 	left.add_child(search)
@@ -73,6 +88,7 @@ func _ready() -> void:
 	sections.add_child(_button("Expand All", func() -> void: _set_sections_collapsed(false)))
 	tree.hide_root = true
 	tree.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	tree.add_theme_stylebox_override("panel", EditorStyle.box(Color("111c2a"), 4))
 	tree.item_selected.connect(_select_item)
 	left.add_child(tree)
 	var scroll := ScrollContainer.new()
@@ -89,6 +105,17 @@ func _ready() -> void:
 	right.add_child(heading)
 	details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	right.add_child(details)
+	skin_section = EditorStyle.panel(EditorStyle.TOOLBAR, 12)
+	right.add_child(skin_section)
+	var skin_body := VBoxContainer.new()
+	skin_body.add_theme_constant_override("separation", 6)
+	skin_section.add_child(skin_body)
+	skin_body.add_child(EditorStyle.label("Skin", 13, EditorStyle.ACCENT))
+	skins.text = "Skins: Default"
+	skins.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	skin_body.add_child(skins)
+	skin_button = _button("Edit skins in Themes", _edit_skin)
+	skin_body.add_child(skin_button)
 	preview.custom_minimum_size.y = 260
 	preview.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	right.add_child(preview)
@@ -176,9 +203,6 @@ func _select_item() -> void:
 	if item == null or not item.get_metadata(0) is Dictionary:
 		return
 	var entry: Dictionary = item.get_metadata(0)
-	if entry.get("kind") == "themes":
-		_open_themes(str(entry.game_id))
-		return
 	if not selected.is_empty() and entry.path == selected.path:
 		return
 	var change := func() -> void:
@@ -334,6 +358,7 @@ func _discard() -> void:
 		var path := RuntimeAssets.source("res://" + str(selected.path))
 		details.text = "%s\n%s · %s" % [selected.path, str(selected.get("kind", AssetStore.kind(path))).capitalize(), path.get_extension().to_upper()]
 		_show_preview(path)
+		skins.text = "Skins: %s" % selected.get("skin", "Default")
 	_update_actions()
 
 
@@ -394,8 +419,11 @@ func _unsaved(action: Callable) -> void:
 
 func _update_actions() -> void:
 	var busy := worker != null
-	replace_button.disabled = selected.is_empty() or busy
-	restore_button.disabled = selected.is_empty() or busy or store.previous(str(selected.get("path", ""))).is_empty()
+	var protected := bool(selected.get("protected", false))
+	replace_button.disabled = selected.is_empty() or busy or protected
+	restore_button.disabled = selected.is_empty() or busy or protected or store.previous(str(selected.get("path", ""))).is_empty()
+	skin_section.visible = not selected.is_empty()
+	skin_button.visible = selected.has("game_id")
 	save_button.disabled = pending.is_empty() or busy
 	discard_button.disabled = pending.is_empty() or busy
 	tree.mouse_filter = Control.MOUSE_FILTER_IGNORE if busy else Control.MOUSE_FILTER_STOP
@@ -435,12 +463,34 @@ func _exit_tree() -> void:
 	_clear_pending()
 
 
-func _open_themes(game_id := "") -> void:
+func _edit_skin() -> void:
+	_open_themes(str(selected.get("game_id", "")), str(selected.get("slot_id", "")))
+
+
+func _close_themes() -> void:
+	theme_editor.suspend_previews()
+	theme_editor.hide()
+	content.show()
+	store.scan()
+	_populate()
+	_discard()
+
+
+func _open_themes(game_id := "", slot_id := "") -> void:
 	_leave(func() -> void:
-		theme_editor = preload("res://scripts/theme_pack_editor.gd").new()
-		theme_editor.reduced_motion = reduced_motion
-		theme_editor.settings_store = game_settings_store
-		add_child(theme_editor)
-		if not game_id.is_empty() and theme_editor.games.has(game_id): theme_editor._load_game(theme_editor.games.find(game_id))
-		theme_editor.exit_requested.connect(func() -> void: theme_editor.queue_free())
+		audio.stop()
+		if video != null: video.set_active(false)
+		content.hide()
+		if not is_instance_valid(theme_editor):
+			theme_editor = preload("res://scripts/theme_pack_editor.gd").new()
+			theme_editor.initial_game_id = game_id
+			theme_editor.initial_slot_id = slot_id
+			theme_editor.definitions_root = store.definitions_root
+			theme_editor.reduced_motion = reduced_motion
+			theme_editor.settings_store = game_settings_store
+			theme_editor.exit_requested.connect(_close_themes)
+			add_child(theme_editor)
+		else:
+			theme_editor.show()
+			theme_editor.open_asset(game_id, slot_id)
 	)
