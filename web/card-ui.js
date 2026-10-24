@@ -253,20 +253,23 @@
   };
   // Public money feedback shares host timing; resolving a hidden name returns null.
   global.StarGamesMoneyEffect = class {
-    constructor(resolve) {
+    constructor(resolve, {amountPrefix = '$', icon = '/ui/playful/table-cash.svg'} = {}) {
       this.resolve = resolve; this.key = -1; this.frame = 0;
+      this.amountPrefix = amountPrefix; this.icon = icon;
       this.layer = document.createElement('div'); this.layer.className = 'game-money-effect';
       this.layer.setAttribute('aria-hidden', 'true'); document.body.append(this.layer);
     }
     update(event, {paused = false, reduced = false} = {}) {
       cancelAnimationFrame(this.frame);
       const fresh = this.key >= 0 && event?.revision !== this.key;
+      if (event && event.revision === this.key && this.event) event = {...event,elapsed:Math.max(event.elapsed || 0,this.event.elapsed || 0)};
       this.reduced = reduced || matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (fresh) this.staticLeft = this.reduced && event?.money?.length ? .85 : 0;
       this.key = event?.revision ?? -1; this.event = event; this.paused = paused;
       this.clock = performance.now(); this.tick();
     }
     clear() { cancelAnimationFrame(this.frame); this.event = null; this.staticLeft = 0; this.layer.replaceChildren(); }
+    amountText(amount) { return (amount > 0 ? '+' : '−') + this.amountPrefix + Math.abs(amount); }
     tick() {
       this.layer.replaceChildren(); const now = performance.now(), delta = (now - this.clock) / 1000;
       this.clock = now; if (!this.paused) { this.staticLeft = Math.max(0, (this.staticLeft || 0) - delta); if (this.event) this.event = {...this.event, elapsed: (this.event.elapsed || 0) + delta}; }
@@ -278,7 +281,7 @@
         for (const change of payment.changes) {
           const rect = this.resolve(change.seat); if (!rect) continue;
           const node = document.createElement('strong'); node.className = 'game-cash-change ' + (change.amount > 0 ? 'is-gain' : 'is-loss');
-          node.textContent = (change.amount > 0 ? '+' : '−') + '$' + Math.abs(change.amount);
+          node.textContent = this.amountText(change.amount);
           const distance=this.reduced?0:p*18;
           node.style.cssText = `left:${Math.min(innerWidth - 95, Math.max(4, rect.x + rect.width / 2 - 46))}px;top:${change.amount>0?rect.y-32-distance:rect.y+rect.height+4+distance}px;opacity:${alpha}`;
           this.layer.append(node);
@@ -287,7 +290,7 @@
         const from = this.resolve(payment.seat), to = this.resolve(payment.target); if (!from || !to) continue;
         for (let i = 0; i < 5; i++) {
           const travel = Math.max(0, Math.min(1, p * 1.6 - i * .12)); if (travel <= 0 || travel >= 1) continue;
-          const note = document.createElement('img'); note.src = '/ui/playful/table-cash.svg'; note.alt = '';
+          const note = document.createElement('img'); note.src = this.icon; note.alt = '';
           note.style.cssText = `left:${from.x + from.width / 2 + (to.x + to.width / 2 - from.x - from.width / 2) * travel + Math.sin(travel * Math.PI) * 62}px;top:${from.y + (to.y - from.y) * travel}px;opacity:${alpha}`;
           this.layer.append(note);
         }

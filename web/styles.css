@@ -852,7 +852,7 @@ body.playful-game { isolation: isolate; }
 .game-money-effect .game-cash-change { position:fixed; box-sizing:border-box; width:92px; height:28px; padding:4px 8px; border:1px solid currentColor; border-radius:8px; font-size:17px; line-height:18px; text-align:center; white-space:nowrap; font-variant-numeric:tabular-nums; }
 .game-money-effect .is-gain { color:#48e59a; background:#062a21; }
 .game-money-effect .is-loss { color:#ff6976; background:#3f1822; }
-.game-money-effect img { position:fixed; width:42px; height:32px; }
+.game-money-effect img { position:fixed; width:42px; height:32px; object-fit:contain; }
 .game-playing-card.game-card-back { display:block; aspect-ratio:2/3; padding:0 !important; }
 .game-playing-card.game-card-back > img { display:block; width:100%; height:100%; object-fit:fill; }
 .game-deal-name { top:36.5%; height:22%; font-size:13.33cqw; overflow-wrap:anywhere; }

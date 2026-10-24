@@ -23,7 +23,8 @@
   // After showCard, setSubtitle("Owned by …") supplies public ownership.
   // Public cash changes use host timing and live name rectangles. Return null
   // for players absent from this view; never derive money from local input.
-  const exampleMoney = new StarGamesMoneyEffect(() => null);
+  // Optional coin/token formatting; omit the options for default dollar cash.
+  const exampleMoney = new StarGamesMoneyEffect(() => null, {amountPrefix:'', icon:'/ui/playful/table-cash.svg'});
   exampleMoney.update({revision: 0, money: [], active: false});
   new StarGamesDragScroll(exampleCard);
   // For a virtual card fan, optional getOffset/setOffset callbacks use pixels;

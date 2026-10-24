@@ -73,6 +73,8 @@ func _run() -> void:
 		return _finish(false, "Returning to title did not stop the LAN session")
 	if not await _reference_reader_check():
 		return _finish(false, "Reference pages must retain intrinsic aspect ratios and ordinary cards must reset to 2:3")
+	if not await _table_feedback_check():
+		return _finish(false, "Shared table navigation must be above the header, and money effects must support coin amounts")
 	_finish(true, "PASS: title, lobby, caller-aware settings, and server lifecycle smoke test")
 
 
@@ -91,6 +93,54 @@ func _reference_reader_check() -> bool:
 	for frame in 4: await process_frame
 	valid = valid and is_equal_approx(reader.card.size.x / reader.card.size.y, 2.0 / 3.0)
 	reader.close(); reader.queue_free()
+	await process_frame
+	return valid
+
+
+func _table_feedback_check() -> bool:
+	var holder := Control.new()
+	root.add_child(holder)
+	holder.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var screen := GameScreen.new()
+	holder.add_child(screen)
+	screen.configure("Table")
+	screen.use_playful_style(null, "casino")
+	screen.use_table_header(null, false, true)
+	screen.set_table_header_content(Control.new())
+	for frame in 4: await process_frame
+	var valid: bool = screen.back_button.is_visible_in_tree() and screen.back_button.z_index > screen._table_header_layer.get_parent().z_index
+	if not valid: printerr("Table Back is obscured by header artwork")
+	var exited := [false]
+	screen.exit_requested.connect(func() -> void: exited[0] = true)
+	for pressed in [true, false]:
+		var event := InputEventMouseButton.new()
+		event.button_index = MOUSE_BUTTON_LEFT; event.pressed = pressed
+		event.position = screen.back_button.get_global_rect().get_center()
+		event.global_position = event.position
+		root.push_input(event, true)
+		await process_frame
+	if not exited[0]: printerr("Table Back did not receive the click")
+	valid = valid and exited[0]
+	var money := GameMoneyEffect.new()
+	holder.add_child(money)
+	valid = valid and money.amount_text(3) == "+$3" and money.amount_text(-7) == "−$7"
+	money.amount_prefix = ""
+	valid = valid and money.amount_text(3) == "+3" and money.amount_text(-7) == "−7"
+	money.update({"revision":0,"money":[],"active":false}, false, true)
+	var motion := {"revision":1,"money":[{"start":0,"duration":1,"seat":0,"target":1,"changes":[{"seat":0,"amount":-2}]}],"active":false}
+	money.update(motion, false, true)
+	if money.static_left <= 0: printerr("Fresh reduced-motion feedback was omitted")
+	valid = valid and money.static_left > 0
+	money._process(.2); var remaining := money.static_left
+	money.update(motion, true, true); money._process(1)
+	if not is_equal_approx(money.static_left, remaining): printerr("Duplicate paused sync restarted reduced-motion feedback")
+	valid = valid and is_equal_approx(money.static_left, remaining)
+	money.clear(); valid = valid and money.events.is_empty() and money.static_left == 0
+	motion.active = true; motion.revision = 2
+	money.update(motion, false, false); money._process(.3); money.update(motion, false, false)
+	valid = valid and is_equal_approx(money.elapsed, .3)
+	money._process(2); valid = valid and not money.active
+	holder.queue_free()
 	await process_frame
 	return valid
 

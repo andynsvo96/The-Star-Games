@@ -241,6 +241,8 @@ func use_table_header(title_art: Texture2D = null, centered_title := false, left
 	status.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
 	status.add_theme_color_override("default_color", Color("e5f4ff"))
 	back_button.text = "‹"; back_button.accessibility_name = "Back to Games"; back_button.position = Vector2(12, 8); back_button.custom_minimum_size = Vector2(44, 44); back_button.size = Vector2(44, 44)
+	# The opaque header is a later sibling. Keep navigation above its artwork.
+	back_button.z_index = 2
 	GameLook.action(back_button, false)
 	var fit := func() -> void:
 		var width := layer.size.x

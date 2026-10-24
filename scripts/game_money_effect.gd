@@ -12,6 +12,8 @@ var active := false
 var static_left := 0.0
 var revision := -1
 var cash_icon: Texture2D
+var icon_texture: Texture2D
+var amount_prefix := "$"
 
 
 func _ready() -> void:
@@ -21,9 +23,11 @@ func _ready() -> void:
 
 func update(motion: Dictionary, is_paused: bool, reduce: bool) -> void:
 	var fresh := revision >= 0 and revision != int(motion.get("revision", -1))
+	var same := revision == int(motion.get("revision", -1))
 	if fresh and reduce and not motion.get("money", []).is_empty(): static_left = .85
 	revision = int(motion.get("revision", -1)); events = motion.get("money", [])
-	elapsed = float(motion.get("elapsed", 0)); active = motion.get("active", false); paused = is_paused; reduced = reduce
+	elapsed = maxf(elapsed, float(motion.get("elapsed", 0))) if same else float(motion.get("elapsed", 0))
+	active = motion.get("active", false); paused = is_paused; reduced = reduce
 	queue_redraw()
 
 
@@ -33,10 +37,13 @@ func clear() -> void:
 
 func _process(delta: float) -> void:
 	if paused: return
-	if active: elapsed += delta
+	var was_active := active
+	if active:
+		elapsed += delta
+		active = events.any(func(event: Dictionary) -> bool: return elapsed < float(event.start) + float(event.duration))
 	var was_static := static_left > 0
 	static_left = maxf(0, static_left - delta)
-	if active or was_static: queue_redraw()
+	if was_active or was_static: queue_redraw()
 
 
 func _draw() -> void:
@@ -56,7 +63,7 @@ func _draw() -> void:
 			var style := GameLook.box(Color("062a21") if gain else Color("3f1822"), tint, 8, 1)
 			style.bg_color.a = alpha; style.border_color.a = alpha
 			draw_style_box(style, bubble)
-			GameLook.draw_table_text(self, ("+" if gain else "−") + "$%d" % absi(int(change.amount)), bubble.position + Vector2(5, 20), 82, 17, Color(tint, alpha), true)
+			GameLook.draw_table_text(self, amount_text(int(change.amount)), bubble.position + Vector2(5, 20), 82, 17, Color(tint, alpha), true)
 		if reduced or int(event.get("target", -1)) < 0: continue
 		var transfer := resolve_transfer_rect if resolve_transfer_rect.is_valid() else resolve_rect
 		var source: Rect2 = transfer.call(int(event.seat)); var destination: Rect2 = transfer.call(int(event.target))
@@ -67,8 +74,15 @@ func _draw() -> void:
 			var center := source.get_center().lerp(destination.get_center(), travel)
 			center.x += sin(travel * PI) * (62 + note * 5)
 			draw_set_transform(center, sin(travel * TAU) * .2)
-			if cash_icon != null: draw_texture_rect(cash_icon, Rect2(-Vector2(24, 16), Vector2(48, 32)), false, Color(1, 1, 1, alpha))
+			var icon := icon_texture if icon_texture != null else cash_icon
+			if icon != null:
+				var dimensions := icon.get_size() * minf(48 / icon.get_size().x, 32 / icon.get_size().y)
+				draw_texture_rect(icon, Rect2(-dimensions / 2, dimensions), false, Color(1, 1, 1, alpha))
 			draw_set_transform(Vector2.ZERO)
+
+
+func amount_text(amount: int) -> String:
+	return ("+" if amount > 0 else "−") + amount_prefix + str(absi(amount))
 
 
 static func amount_rect(balance: Rect2, amount: int, progress: float) -> Rect2:

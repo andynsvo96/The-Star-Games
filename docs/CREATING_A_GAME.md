@@ -2117,6 +2117,14 @@ Changes come only from authoritative public balances. It never awards
 money or accepts input. Initial settled sync does not replay feedback; reduced
 motion keeps a short static amount for new events. Pause the supplied clock and
 call `clear()` on reset/exit. Both template views include a hidden example.
+Coin/token games can set native `amount_prefix = ""` and `icon_texture`, or pass
+`{amountPrefix:"", icon:"/game/<id>/art/coin.png"}` as the browser constructor's
+second argument. Transfer artwork keeps its proportions. Defaults retain the
+dollar prefix and cash artwork. A module may reserve a non-player seat key for
+its public Treasury and resolve that key to the visible coin pile; include only
+actual player balance changes in `changes`. Keep the motion revision independent
+of ordinary syncs, clear it on replay, and seed a reconnect without replaying old
+amounts. Both template views demonstrate the optional formatting/artwork hooks.
 Classic sequences this with module-owned dice, token hops, chest and jail artwork
 and shared `GameCardMotion`/`GameCardEffect`; all cues use the host Effects bus.
 

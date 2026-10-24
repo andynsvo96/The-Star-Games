@@ -108,6 +108,24 @@ const assertions = `
 		check(thumbnail.width === 42 && thumbnail.height === 63 && thumbnail.right <= feedbackBounds.right, 'Large public artwork stays a bounded thumbnail without party-table styling');
 		check(feedback.scrollWidth <= feedback.clientWidth + 1 && !feedback.querySelector('player'), 'Feedback text wraps literally within the surface');
 		feedback.remove();
+		const cash = new StarGamesMoneyEffect(() => null);
+		check(cash.amountText(3) === '+$3' && cash.amountText(-7) === '−$7', 'Money feedback retains default dollar formatting');
+		cash.clear(); cash.layer.remove();
+		const money = new StarGamesMoneyEffect(seat => ({x:20 + seat * 120,y:120,width:60,height:24}), {amountPrefix:'',icon:'/ui/playful/table-dice.svg'});
+		money.update({revision:0,money:[],active:false});
+		const payment = {revision:1,elapsed:.3,duration:1,active:true,money:[{start:0,duration:1,seat:0,target:1,changes:[{seat:0,amount:-2},{seat:1,amount:2}]}]};
+		money.update(payment, {paused:true,reduced:true});
+		check(money.layer.querySelector('.is-gain').textContent === '+2' && money.layer.querySelector('.is-loss').textContent === '−2', 'Coin/token formatting retains exact signed amounts');
+		const staticLeft = money.staticLeft;
+		money.update({...payment,elapsed:0}, {paused:true,reduced:true});
+		check(money.event.elapsed >= .3 && money.staticLeft === staticLeft, 'Duplicate paused snapshots preserve motion progress and static lifetime');
+		check(!money.layer.querySelector('img') && money.layer.getAttribute('aria-hidden') === 'true' && getComputedStyle(money.layer).pointerEvents === 'none', 'Reduced money feedback has no flights and never captures input');
+		money.update({...payment,revision:2}, {paused:true});
+		if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			const flight = money.layer.querySelector('img');
+			check(flight?.src.endsWith('/ui/playful/table-dice.svg') && getComputedStyle(flight).objectFit === 'contain', 'Custom offline transfer artwork preserves its proportions');
+		}
+		money.clear(); check(!money.layer.childElementCount, 'Clearing money feedback removes every amount and flight'); money.layer.remove();
 		window.qaResult = {run, checks, failures:0, seats:count, cards:presentation, boardWidth:opening.board.width, footerHeight:opening.footer.height, longFooterHeight:longNames.footer.height};
 	} catch (error) {
 		window.qaResult = {run, checks, failures:1, error:String(error)};
@@ -123,7 +141,7 @@ function fixture(url) {
 		: `<aside class="game-session-score"><p data-player-name class="${index === 0 ? 'is-active-player' : ''}">Player ${index + 1}</p><output>0 WINS</output><p>0 / 10 HOME</p></aside>`).join('');
 	return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Shared board fixture</title><link rel="stylesheet" href="/styles.css"><style>
 	#board { aspect-ratio:1; width:100%; margin:auto; background:repeating-conic-gradient(#f0d9a0 0% 25%, #6c452e 0% 50%) 0 0 / 25% 25%; }
-	</style></head><body class="playful-game game-royal"><main class="game-controller game-board-controller"><header><img class="game-title-art${prominent ? ' game-title-prominent' : ''}" alt="Shared board example" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='${prominent ? 160 : 52}'%3E%3Crect width='480' height='${prominent ? 160 : 52}' rx='12' fill='%23efca6f'/%3E%3Ctext x='240' y='35' text-anchor='middle' font-size='28' fill='%2356351f'%3ESHARED BOARD%3C/text%3E%3C/svg%3E"><p id="connection" role="status">Connected as Player 1</p><p id="status" class="game-status game-status-reserved" role="status">Your turn.</p></header><section class="game-playfield"><div id="board" role="group" aria-label="Example square board"></div><div class="game-board-controls game-action-row game-action-compact"><button type="button">MOVE</button><button id="replay" class="game-primary" data-game-inline-action hidden>PLAY AGAIN</button></div></section><div class="game-board-stats ${ledger ? '' : 'game-paper game-paper-compact'}" data-game-stats-columns="${seats === 6 ? '3' : '2'}" role="group" aria-label="Players and session scores">${cards}</div></main><script src="/controller-sdk.js"></script><script>${assertions}</script></body></html>`;
+	</style></head><body class="playful-game game-royal"><main class="game-controller game-board-controller"><header><img class="game-title-art${prominent ? ' game-title-prominent' : ''}" alt="Shared board example" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='${prominent ? 160 : 52}'%3E%3Crect width='480' height='${prominent ? 160 : 52}' rx='12' fill='%23efca6f'/%3E%3Ctext x='240' y='35' text-anchor='middle' font-size='28' fill='%2356351f'%3ESHARED BOARD%3C/text%3E%3C/svg%3E"><p id="connection" role="status">Connected as Player 1</p><p id="status" class="game-status game-status-reserved" role="status">Your turn.</p></header><section class="game-playfield"><div id="board" role="group" aria-label="Example square board"></div><div class="game-board-controls game-action-row game-action-compact"><button type="button">MOVE</button><button id="replay" class="game-primary" data-game-inline-action hidden>PLAY AGAIN</button></div></section><div class="game-board-stats ${ledger ? '' : 'game-paper game-paper-compact'}" data-game-stats-columns="${seats === 6 ? '3' : '2'}" role="group" aria-label="Players and session scores">${cards}</div></main><script src="/controller-sdk.js"></script><script src="/card-ui.js"></script><script>${assertions}</script></body></html>`;
 }
 
 const types = {'.js':'text/javascript', '.css':'text/css', '.svg':'image/svg+xml', '.png':'image/png'};

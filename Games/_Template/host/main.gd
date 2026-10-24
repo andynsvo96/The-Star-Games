@@ -248,6 +248,8 @@ func _ready() -> void:
 	# Public cash changes use the same host clock. Resolve each seat's live balance
 	# rectangle; an empty rectangle hides targets absent from this view.
 	var money_example := GameMoneyEffect.new(); add_child(money_example)
+	# Optional coin/token formatting; omit these two assignments for dollar cash.
+	money_example.amount_prefix = ""; money_example.icon_texture = RuntimeAssets.texture("res://ui/playful/table-cash.svg")
 	money_example.resolve_rect = func(_seat: int) -> Rect2: return Rect2()
 	money_example.update({"revision":0, "money":[], "active":false}, false, false)
 	var modal_example := screen.add_corner_details(["SETTINGS"], Callable(), true, false, false, true, true)
