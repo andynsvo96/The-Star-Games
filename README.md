@@ -11,7 +11,7 @@ This public repository contains the launcher, shared host UI, browser controller
 - Solo play and computer opponents in supported games.
 - Saved profiles, scores, and host preferences.
 - Responsive layouts, reduced motion, and customizable artwork and audio.
-- Autoplay debug sessions with adjustable temporary players for module testing.
+- A Debug menu with autoplay sessions and selectable local browser controllers for testing.
 
 ## Current local game catalog
 
@@ -77,7 +77,7 @@ Install FFmpeg on the host for desktop media that needs conversion. Original med
 
 - [Creating a Game](docs/CREATING_A_GAME.md): module structure, shared UI, and controller APIs.
 - [New Game Prompt](docs/NEW_GAME_PROMPT.md): a starting outline for new modules.
-- [Autoplay Debug](docs/DEBUG_AUTOPLAY.md): test-player controls and the reusable module adapter.
+- [Debug Tools](docs/DEBUG_AUTOPLAY.md): browser testing, autoplay controls, and the reusable module adapter.
 - [Contributor Instructions](AGENTS.md): coding conventions and verification requirements.
 - [Automatic GitHub Sync](docs/GITHUB_SYNC.md): background publishing, status, and pause controls.
 - `Games/_Template/` contains the public module template, `scripts/` shared host code, and `web/` shared browser assets. Other `Games/` folders and game-specific source media are ignored by Git.

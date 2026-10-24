@@ -1,6 +1,34 @@
-# Autoplay debug
+# Debug tools
 
-Open **Host Settings > Autoplay debug**. Select an installed game, a supported
+Open **Host Settings > Debug** for autoplay and browser controller testing.
+
+## Browser controllers
+
+Choose **Test** at the top right to scan the host for installed browsers. Select
+the browsers to use; the displayed player count is one controller per selected
+browser. Nothing opens until you choose **Open controllers** (shown with the
+selected count). **Rescan** refreshes detection and preserves available selections.
+
+Each selected browser opens the live lobby connection link in a phone-sized
+controller preview. Join with a different player name in each browser, then
+return through Debug and Settings to the lobby to choose a game. Browsers keep
+their ordinary profiles, so refresh and reconnection use the existing controller
+identity. Opening another window in the same browser does not create another
+independent player. These are ordinary LAN players with saved profiles and normal
+scoring; the temporary identities and save isolation described below apply to
+autoplay only.
+
+Browser launch is available on Windows, macOS and Linux. Detection checks common
+browser installations and PATH, plus registered Windows browser clients, including
+custom installation locations. Common entries include Firefox, Chrome, Edge,
+Brave, Vivaldi, Opera, Chromium and Safari (macOS). Only detected browsers appear;
+missing or failed launches are reported. Android hosts can still use autoplay.
+Start the lobby before launching controllers. The test menu preserves the party's
+admission lock: return to the lobby to admit new players if game selection is open.
+
+## Autoplay
+
+In Debug, select an installed game, a supported
 number of **test players**, action pace, and reduced motion, then **Start autoplay**.
 No phones, browser windows, accounts, internet connection or LAN server are needed.
 Collection variants appear individually in this list.
@@ -110,6 +138,7 @@ Keep the standard `BaseGame`, controller SDK and module layout.
 ```text
 godot --headless --editor --path . --quit
 godot --headless --path . --script res://tests/debug_autoplay.gd
+godot --headless --path . --script res://tests/debug_browsers.gd
 ```
 
 The self-contained public suite uses the template and synthetic adapters. It

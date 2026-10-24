@@ -142,7 +142,7 @@ Keep the template's `host/debug.gd` and adapt its `GameDebugAdapter` to your rea
 rules. It supplies supported test-player counts, preparation, a public progress
 token, legal decisions and a completion predicate. The shared runner owns fake
 identities, pacing, pause/step/restart/stop and stuck-run detection. Open
-**Host Settings > Autoplay debug** to run without phones. See
+**Host Settings > Debug** to run autoplay without phones. See
 [Autoplay Debug](DEBUG_AUTOPLAY.md) for the complete contract and checks.
 
 `GameSessionContext.debug_mode` marks these isolated sessions. `BaseGame` uses

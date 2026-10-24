@@ -21,6 +21,8 @@ var debug_config: Dictionary = {}
 var debug_status: Label
 var debug_pause: Button
 var debug_step: Button
+var debug_browser_panel: DebugBrowserPanel
+var debug_browser_selection := PackedStringArray()
 var screen_root: Control
 var title_background: Control
 var menu_music: Control
@@ -56,7 +58,6 @@ var profile_name_edit: LineEdit
 var game_id_edit: LineEdit
 var game_points_spin: SpinBox
 var settings_notice: Label
-var debug_notice: Label
 var pending_confirmation: Callable
 var asset_editor: Control
 
@@ -703,18 +704,12 @@ func _show_settings(caller: String) -> void:
 	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	header.add_child(heading)
-	var debug_button := _button("Debug", _open_debug_controllers)
+	var debug_button := _button("Debug", _show_debug_setup)
 	debug_button.custom_minimum_size.x = 110
-	debug_button.disabled = not debug_browsers.is_supported() or not lan_server.running
 	header.add_child(debug_button)
 	var editor_button := _button("Asset Editor", _show_asset_editor)
 	editor_button.disabled = OS.get_name() not in ["Windows", "macOS", "Linux"]
 	header.add_child(editor_button)
-	debug_notice = _label("", 14, COLOR_MUTED)
-	debug_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	debug_notice.visible = debug_button.disabled
-	debug_notice.text = "Debug browser launch is available on desktop hosts." if not debug_browsers.is_supported() else "Enter the lobby to start the controller server before using Debug."
-	column.add_child(debug_notice)
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(scroll)
@@ -722,9 +717,6 @@ func _show_settings(caller: String) -> void:
 	settings_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(settings_column)
 	var current := profile_store.get_settings()
-	settings_column.add_child(_section_title("DEVELOPMENT"))
-	settings_column.add_child(_button("Autoplay debug", func() -> void:
-		_show_debug_setup()))
 	settings_column.add_child(_section_title("AUDIO & DISPLAY"))
 	settings_column.add_child(_slider_setting("Master volume", float(current["master_volume"]), func(value: float) -> void: _save_setting("master_volume", value)))
 	settings_column.add_child(_slider_setting("Music volume", float(current["music_volume"]), func(value: float) -> void: _save_setting("music_volume", value)))
@@ -827,6 +819,32 @@ func _show_debug_setup() -> void:
 	panel.configure(game_catalog.games, str(debug_config.get("id", "")), int(debug_config.get("count", 2)))
 	panel.exit_requested.connect(func() -> void: _show_settings(settings_caller))
 	panel.start_requested.connect(_start_debug_game)
+	panel.test_requested.connect(_show_debug_browser_test)
+
+
+func _show_debug_browser_test() -> void:
+	current_state = "debug_browsers"
+	_replace_screen()
+	debug_browser_panel = DebugBrowserPanel.new()
+	debug_browser_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	screen_root.add_child(debug_browser_panel)
+	var url := lan_server.controller_url() if lan_server.running else ""
+	debug_browser_panel.configure(debug_browsers.detect(), debug_browser_selection, debug_browsers.is_supported(), url, _debug_browser_connection_notice())
+	debug_browser_panel.exit_requested.connect(func() -> void:
+		debug_browser_selection = debug_browser_panel.selected_browsers()
+		_show_debug_setup())
+	debug_browser_panel.scan_requested.connect(func() -> void:
+		debug_browser_selection = debug_browser_panel.selected_browsers()
+		debug_browser_panel.set_browsers(debug_browsers.detect(), debug_browser_selection)
+		debug_browser_panel.notice.text = _debug_browser_connection_notice())
+	debug_browser_panel.open_requested.connect(_open_debug_controllers)
+
+
+func _debug_browser_connection_notice() -> String:
+	if not debug_browsers.is_supported(): return "Browser testing is available on desktop hosts (Windows, macOS and Linux). Autoplay is available from Debug."
+	if not lan_server.running: return "Enter the lobby to start the controller server before opening test controllers."
+	if not lan_server.lobby_open: return "Return to the lobby to let new test players join. Existing players can reconnect."
+	return "Browser tests use the ordinary lobby and saved player profiles."
 
 
 func _start_debug_game(manifest: Dictionary, count: int, delay: float, reduced: bool) -> void:
@@ -869,24 +887,31 @@ func _restart_debug_game() -> void:
 	_start_debug_game(manifest, int(debug_config.count), float(debug_config.delay), bool(debug_config.reduced))
 
 
-func _open_debug_controllers() -> void:
+func _open_debug_controllers(selected: PackedStringArray) -> void:
+	if not is_instance_valid(debug_browser_panel): return
 	if not debug_browsers.is_supported() or not lan_server.running:
+		debug_browser_panel.notice.text = _debug_browser_connection_notice()
+		debug_browser_panel.connection_ready = false
+		debug_browser_panel._update_selection()
 		return
-	var result: Dictionary = debug_browsers.open_controllers(lan_server.controller_url())
+	debug_browser_selection = selected
+	var result: Dictionary = debug_browsers.open_controllers(lan_server.controller_url(), selected)
 	var messages := PackedStringArray()
 	if not result.opened.is_empty():
 		messages.append("Opened: %s." % ", ".join(result.opened))
 	else:
 		messages.append("No browsers opened.")
 	if not result.missing.is_empty():
-		messages.append("Not installed or not found: %s." % ", ".join(result.missing))
+		var missing := PackedStringArray()
+		for name: String in result.missing:
+			missing.append(debug_browser_panel.browser_choices[name].text if debug_browser_panel.browser_choices.has(name) else name)
+		messages.append("Not installed or not found: %s." % ", ".join(missing))
 	if not result.failed.is_empty():
 		messages.append("Could not open: %s." % ", ".join(result.failed))
 	if not lan_server.lobby_open:
 		messages.append("Return to the lobby to let new test players join.")
-	debug_notice.text = " ".join(messages)
-	debug_notice.visible = true
-	debug_notice.add_theme_color_override("font_color", COLOR_ACCENT if result.missing.is_empty() and result.failed.is_empty() else COLOR_DANGER)
+	debug_browser_panel.notice.text = " ".join(messages)
+	debug_browser_panel.notice.add_theme_color_override("font_color", COLOR_ACCENT if result.missing.is_empty() and result.failed.is_empty() else COLOR_DANGER)
 
 
 func _leave_lobby() -> void:
@@ -1207,6 +1232,7 @@ func _on_points_awarded(profile_id: String, amount: int) -> void:
 func _replace_screen() -> void:
 	_cancel_title_intro()
 	public_connection_link = null
+	debug_browser_panel = null
 	if screen_transition != null:
 		screen_transition.kill()
 		screen_transition = null
@@ -1217,7 +1243,7 @@ func _replace_screen() -> void:
 	screen_root.modulate = Color.WHITE
 	screen_root.position = Vector2.ZERO
 	if menu_music != null:
-		menu_music.set_active(current_state in ["title", "lobby", "game_menu", "settings", "debug_setup"])
+		menu_music.set_active(current_state in ["title", "lobby", "game_menu", "settings", "debug_setup", "debug_browsers"])
 	if game_music != null:
 		game_music.set_active(current_state in ["game", "debug_game"])
 	if title_background != null:

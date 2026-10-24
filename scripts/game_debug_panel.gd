@@ -2,6 +2,7 @@ class_name GameDebugPanel
 extends Control
 
 signal start_requested(manifest: Dictionary, count: int, delay: float, reduced: bool)
+signal test_requested
 signal exit_requested
 
 var game_choice: OptionButton
@@ -10,6 +11,7 @@ var pace_choice: OptionButton
 var reduced: CheckBox
 var notice: Label
 var start_button: Button
+var test_button: Button
 var games: Array = []
 var selected_id := ""
 var selected_count := 2
@@ -20,13 +22,18 @@ func configure(catalog: Array, previous_id := "", count := 2) -> void:
 	var margin := MarginContainer.new()
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for edge in ["left", "right", "top", "bottom"]: margin.add_theme_constant_override("margin_" + edge, 24)
+	margin.add_theme_constant_override("margin_top", 56) # Keep the music control clear.
 	add_child(margin)
-	var scroll := ScrollContainer.new(); scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; margin.add_child(scroll)
+	var column := VBoxContainer.new(); margin.add_child(column)
+	var header := HBoxContainer.new(); column.add_child(header)
+	var back := Button.new(); back.text = "Back"; back.custom_minimum_size = Vector2(100, 44); back.pressed.connect(func() -> void: exit_requested.emit()); header.add_child(back)
+	var heading := Label.new(); heading.text = "DEBUG"; heading.add_theme_font_size_override("font_size", 28); heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL; header.add_child(heading)
+	test_button = Button.new(); test_button.text = "Test"; test_button.custom_minimum_size = Vector2(100, 44); test_button.pressed.connect(func() -> void: test_requested.emit()); header.add_child(test_button)
+	var scroll := ScrollContainer.new(); scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL; column.add_child(scroll)
 	var center := CenterContainer.new(); center.size_flags_horizontal = Control.SIZE_EXPAND_FILL; scroll.add_child(center)
 	var body := VBoxContainer.new(); center.add_child(body)
 	scroll.resized.connect(func() -> void: body.custom_minimum_size.x = minf(760, maxf(0, scroll.size.x - 12)))
-	var back := Button.new(); back.text = "Back"; back.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN; back.custom_minimum_size.x = 100; back.pressed.connect(func() -> void: exit_requested.emit()); body.add_child(back)
-	var heading := Label.new(); heading.text = "AUTOPLAY DEBUG"; heading.add_theme_font_size_override("font_size", 28); body.add_child(heading)
+	var autoplay := Label.new(); autoplay.text = "Autoplay"; autoplay.add_theme_font_size_override("font_size", 24); body.add_child(autoplay)
 	var description := Label.new(); description.text = "Test players play one game to completion. Profiles, standings and game preferences stay separate. Pause bots pauses their inputs; game clocks and animations continue."; description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; body.add_child(description)
 	game_choice = _choice(body, "Game")
 	for manifest: Dictionary in catalog:
@@ -40,7 +47,7 @@ func configure(catalog: Array, previous_id := "", count := 2) -> void:
 	pace_choice.select(1)
 	reduced = CheckBox.new(); reduced.text = "Reduced motion"; reduced.button_pressed = true; body.add_child(reduced)
 	notice = Label.new(); notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; body.add_child(notice)
-	start_button = Button.new(); start_button.text = "Start autoplay"; start_button.pressed.connect(_start); body.add_child(start_button)
+	start_button = Button.new(); start_button.text = "Start autoplay"; start_button.custom_minimum_size.y = 44; start_button.pressed.connect(_start); body.add_child(start_button)
 	game_choice.item_selected.connect(func(_index: int) -> void: _select_game())
 	player_choice.item_selected.connect(func(index: int) -> void: selected_count = player_choice.get_item_id(index))
 	_select_game()
