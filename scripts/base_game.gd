@@ -12,6 +12,7 @@ signal game_selected(game_id: String)
 var session: GameSessionContext
 var settings_store := GameSettingsStore.new()
 var _controller_media: Dictionary = {}
+var _debug_settings: Dictionary = {}
 
 
 func initialize_session(context: GameSessionContext) -> void:
@@ -19,11 +20,16 @@ func initialize_session(context: GameSessionContext) -> void:
 
 
 func load_game_settings(defaults: Dictionary) -> Dictionary:
+	if session != null and session.debug_mode:
+		return GameSettingsStore._with_defaults(defaults, _debug_settings)
 	return settings_store.load_settings(session.game_id, defaults)
 
 
 # Save accepted changes immediately so even quitting during play retains them.
 func save_game_settings(values: Dictionary) -> bool:
+	if session != null and session.debug_mode:
+		_debug_settings.merge(values.duplicate(true), true)
+		return true
 	if settings_store.save_settings(session.game_id, values):
 		return true
 	push_warning(settings_store.last_error)
@@ -93,11 +99,13 @@ func handle_controller_message(_player_id: String, _message: Dictionary) -> void
 
 
 func award_points(profile_id: String, amount: int) -> void:
+	if session != null and session.debug_mode: return
 	points_awarded.emit(profile_id, amount)
 
 
 # Report once per player per completed game; omit draws and abandoned games.
 func report_result(profile_id: String, won: bool) -> void:
+	if session != null and session.debug_mode: return
 	result_reported.emit(profile_id, won)
 
 

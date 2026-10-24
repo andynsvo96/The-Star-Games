@@ -7,6 +7,7 @@ var solo_profile: Dictionary = {}
 var is_party_game := false
 var reduced_motion := false
 var game_choices: Array = []
+var debug_mode := false
 
 
 func _init(id := "", connected_players: Array = [], selected_profile: Dictionary = {}, party := false) -> void:

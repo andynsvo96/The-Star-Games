@@ -40,6 +40,9 @@ Animation, sound, and assets:
 Errors and disconnects:
 [Explain late joins, refresh/reconnect, player loss, malformed input, and host cancellation.]
 
+Autoplay testing:
+[Define supported placeholder-player counts, legal AI/scripted decisions for every phase, host-only decisions and time advances, completion, and isolation for module-owned stores.]
+
 Implementation constraints:
 - Read docs/CREATING_A_GAME.md completely before editing.
 - Copy Games/_Template to Games/[game-id].
@@ -60,6 +63,7 @@ Implementation constraints:
 - Set the background to an extensionless filename stem and use shared image/video playback, offline assets, silent loops, and reduced motion.
 - Implement the specified win format. The existing board games count one win per decisive board and offer a single Play Again control; do not introduce first-to-two matches unless specified.
 - Add focused tests or fixtures for rules and scoring.
+- Replace the template's host/debug.gd sample with a GameDebugAdapter for the real rules. Follow docs/DEBUG_AUTOPLAY.md, use permitted per-player views and validated handlers, and verify complete runs at supported counts without changing real saves or standings.
 - Run the catalog scan, standard import/core/network/UI checks, and relevant game/shared UI checks described in docs/CREATING_A_GAME.md and AGENTS.md.
 - Launch and inspect host/controller views with small/large rosters, portrait/short landscape, reduced motion, reconnect, and clean return navigation. Verify new shared artwork through real LAN routes and raw-media exports. Report which runtime/platform checks actually ran.
 ```

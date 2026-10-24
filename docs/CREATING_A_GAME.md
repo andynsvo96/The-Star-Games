@@ -136,6 +136,24 @@ Call `report_result(profile_id, won)` once per player per completed game (`true`
 
 Do not read or write the launcher profile JSON, create a second profile database, mutate the lobby roster, stop the LAN server, or navigate directly to launcher scenes.
 
+### Autoplay testing
+
+Keep the template's `host/debug.gd` and adapt its `GameDebugAdapter` to your real
+rules. It supplies supported test-player counts, preparation, a public progress
+token, legal decisions and a completion predicate. The shared runner owns fake
+identities, pacing, pause/step/restart/stop and stuck-run detection. Open
+**Host Settings > Autoplay debug** to run without phones. See
+[Autoplay Debug](DEBUG_AUTOPLAY.md) for the complete contract and checks.
+
+`GameSessionContext.debug_mode` marks these isolated sessions. `BaseGame` uses
+in-memory preferences and suppresses saved points/results; the launcher keeps fake
+players and snapshots separate from the LAN roster and real controllers. Replace
+any module-owned session/editor stores during adapter preparation too. Use each
+actor's own permitted view and the ordinary validated input/host handlers; never
+force scores/winners or reveal secrets to another bot. All new games should ship
+an adapter and verify completion at their supported player counts. The template's
+finite sample must be replaced when implementing the real rules.
+
 ## 4. Implement the browser controller
 
 Include `/controller-sdk.js` before the game script. The SDK owns connection, saved identity, heartbeat-compatible reconnection, and return-to-lobby routing.

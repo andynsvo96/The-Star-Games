@@ -532,6 +532,7 @@ func add_phase_dialog(fit_contents := false, full_screen := false, compact := fa
 	var actions := VBoxContainer.new()
 	column.add_child(actions)
 	var fit := func() -> void:
+		if not is_inside_tree(): return
 		var bounds := available_size().min(get_viewport_rect().size)
 		var width := maxf(0, bounds.x - 32) if full_screen else minf(520 if compact else 700, maxf(0, bounds.x - 32))
 		var width_limit := float(panel.get_meta("maximum_width", maximum_width))

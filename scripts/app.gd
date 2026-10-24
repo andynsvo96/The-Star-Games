@@ -16,6 +16,11 @@ var game_catalog := GameCatalog.new()
 var lan_server := LanServer.new()
 var public_address := preload("res://scripts/public_address.gd").new()
 var debug_browsers := preload("res://scripts/debug_browsers.gd").new()
+var debug_runner: GameDebugRunner
+var debug_config: Dictionary = {}
+var debug_status: Label
+var debug_pause: Button
+var debug_step: Button
 var screen_root: Control
 var title_background: Control
 var menu_music: Control
@@ -571,10 +576,13 @@ func _can_launch_for_count(game: Dictionary, party_count: int) -> bool:
 	return (game["modes"].has("multiplayer") and party_count >= int(game["min_players"]) and party_count <= int(game["max_players"])) or (party_count == 0 and game["modes"].has("singleplayer"))
 
 
-func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = []) -> void:
+func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [], automation: Dictionary = {}) -> void:
+	var debug := not automation.is_empty()
 	var roster := party_roster.duplicate(true)
-	if roster.is_empty(): roster = lan_server.get_admitted_players() if game.has("game_choices") and not lan_server.lobby_open else lan_server.get_players()
-	if not _can_launch_for_count(game, roster.size()):
+	if roster.is_empty() and not debug: roster = lan_server.get_admitted_players() if game.has("game_choices") and not lan_server.lobby_open else lan_server.get_players()
+	var driver := GameDebugAdapter.for_game(game) if debug else null
+	if debug and (driver == null or not driver.supported_counts(game).has(int(automation.get("count", 0)))): return
+	if not debug and not _can_launch_for_count(game, roster.size()):
 		return
 	var packed := load(game["host_scene_path"]) as PackedScene
 	if packed == null:
@@ -585,7 +593,8 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 		ThemePacks.unpin(active_game_id)
 		active_game.queue_free()
 	# Pin before instantiation: module member initializers and _ready load art.
-	var skins := ThemePacks.new(str(game.id), str(game.folder).get_base_dir())
+	var module_folder := str(game.get("folder", str(game.host_scene_path).get_base_dir().get_base_dir()))
+	var skins := ThemePacks.new(str(game.id), module_folder.get_base_dir())
 	var skin_settings := game_settings_store.load_settings(str(game.id), {"theme": "default"})
 	skins.pin(str(skin_settings.theme))
 	var instance := packed.instantiate()
@@ -598,34 +607,48 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 	instance.settings_store = game_settings_store
 	var count := roster.size()
 	var is_party: bool = game["modes"].has("multiplayer") and count >= int(game["min_players"]) and count <= int(game["max_players"])
-	active_game_is_party = is_party
+	active_game_is_party = is_party and not debug
 	var context := GameSessionContext.new(game["id"], roster if is_party else [], selected_profile, is_party)
-	context.reduced_motion = bool(profile_store.get_settings().get("reduced_motion", false))
+	context.debug_mode = debug
+	if debug:
+		context.solo_profile = GameDebugRunner.players(1)[0]
+		if is_party:
+			context.solo_profile.id = "debug-host"
+			context.solo_profile.profile_id = "debug-host"
+			context.solo_profile.display_name = "Test Host"
+	context.reduced_motion = bool(automation.get("reduced", true)) if debug else bool(profile_store.get_settings().get("reduced_motion", false))
 	for id in game.get("game_choices", []):
 		var choice := game_catalog.find_game(id).duplicate(true)
 		choice["can_launch"] = _can_launch_for_count(choice, count)
 		context.game_choices.append(choice)
-	current_state = "game"
+	current_state = "debug_game" if debug else "game"
 	_replace_screen()
 	active_game = instance
 	active_game_id = game["id"]
 	active_collection_id = collection_id
 	collection_roster = context.players.duplicate(true) if game.has("game_choices") or not collection_id.is_empty() else []
 	active_game.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	screen_root.add_child(active_game)
+	var game_parent: Control = _debug_game_surface() if debug else screen_root
+	game_parent.add_child(active_game)
 	active_game.points_awarded.connect(_on_points_awarded)
 	active_game.result_reported.connect(_on_result_reported)
 	active_game.return_to_lobby_requested.connect(_return_from_game)
 	active_game.game_selected.connect(_on_collection_choice)
-	active_game.controller_state_updated.connect(lan_server.broadcast_game_message)
-	active_game.controller_private_state_updated.connect(lan_server.send_game_message_to_player)
-	active_game.controller_media_updated.connect(func(resources: Dictionary) -> void: lan_server.set_game_media(str(game.id), resources))
-	lan_server.set_active_game(active_game_id if is_party else "")
+	if not debug:
+		active_game.controller_state_updated.connect(lan_server.broadcast_game_message)
+		active_game.controller_private_state_updated.connect(lan_server.send_game_message_to_player)
+		active_game.controller_media_updated.connect(func(resources: Dictionary) -> void: lan_server.set_game_media(str(game.id), resources))
+		lan_server.set_active_game(active_game_id if is_party else "")
+	else:
+		active_game.session = context
+		driver.game = active_game
+		driver.prepare(context)
 	active_game.initialize_session(context)
 	var connected_ids := lan_server.get_players().map(func(player: Dictionary) -> String: return str(player.id))
 	for player in context.players:
-		if not connected_ids.has(str(player.id)): active_game.player_disconnected(str(player.id))
+		if not debug and not connected_ids.has(str(player.id)): active_game.player_disconnected(str(player.id))
 	active_game.start_game()
+	if debug: debug_runner.start(driver, float(automation.get("delay", 0.25)))
 
 
 func _on_collection_choice(id: String) -> void:
@@ -639,6 +662,8 @@ func _on_collection_choice(id: String) -> void:
 
 
 func _return_from_game() -> void:
+	var was_debug := current_state == "debug_game"
+	if is_instance_valid(debug_runner): debug_runner.stop()
 	var collection := game_catalog.find_game(active_collection_id)
 	var roster := collection_roster.duplicate(true)
 	if active_game != null and is_instance_valid(active_game):
@@ -650,6 +675,9 @@ func _return_from_game() -> void:
 	active_collection_id = ""
 	collection_roster = []
 	active_game_is_party = false
+	if was_debug:
+		_show_debug_setup()
+		return
 	if not collection.is_empty() and _can_launch_for_count(collection, roster.size()): _launch_game(collection, "", roster)
 	else:
 		lan_server.set_active_game("")
@@ -676,7 +704,7 @@ func _show_settings(caller: String) -> void:
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	header.add_child(heading)
 	var debug_button := _button("Debug", _open_debug_controllers)
-	debug_button.custom_minimum_size.x = 120
+	debug_button.custom_minimum_size.x = 110
 	debug_button.disabled = not debug_browsers.is_supported() or not lan_server.running
 	header.add_child(debug_button)
 	var editor_button := _button("Asset Editor", _show_asset_editor)
@@ -694,6 +722,9 @@ func _show_settings(caller: String) -> void:
 	settings_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(settings_column)
 	var current := profile_store.get_settings()
+	settings_column.add_child(_section_title("DEVELOPMENT"))
+	settings_column.add_child(_button("Autoplay debug", func() -> void:
+		_show_debug_setup()))
 	settings_column.add_child(_section_title("AUDIO & DISPLAY"))
 	settings_column.add_child(_slider_setting("Master volume", float(current["master_volume"]), func(value: float) -> void: _save_setting("master_volume", value)))
 	settings_column.add_child(_slider_setting("Music volume", float(current["music_volume"]), func(value: float) -> void: _save_setting("music_volume", value)))
@@ -785,6 +816,57 @@ func _return_from_settings() -> void:
 		_show_lobby()
 	else:
 		_show_title()
+
+
+func _show_debug_setup() -> void:
+	current_state = "debug_setup"
+	_replace_screen()
+	var panel := GameDebugPanel.new()
+	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	screen_root.add_child(panel)
+	panel.configure(game_catalog.games, str(debug_config.get("id", "")), int(debug_config.get("count", 2)))
+	panel.exit_requested.connect(func() -> void: _show_settings(settings_caller))
+	panel.start_requested.connect(_start_debug_game)
+
+
+func _start_debug_game(manifest: Dictionary, count: int, delay: float, reduced: bool) -> void:
+	debug_config = {"id": str(manifest.id), "count": count, "delay": delay, "reduced": reduced}
+	_launch_game(manifest, "", GameDebugRunner.players(count) if manifest.modes.has("multiplayer") else [], debug_config)
+
+
+func _debug_game_surface() -> Control:
+	var layout := VBoxContainer.new()
+	layout.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	layout.add_theme_constant_override("separation", 0)
+	screen_root.add_child(layout)
+	var panel := PanelContainer.new(); layout.add_child(panel)
+	var flow := HFlowContainer.new(); flow.add_theme_constant_override("h_separation", 8); flow.add_theme_constant_override("v_separation", 4); panel.add_child(flow)
+	debug_status = _label("Autoplay debug", 14, COLOR_ACCENT); flow.add_child(debug_status)
+	debug_runner = GameDebugRunner.new(); layout.add_child(debug_runner)
+	debug_pause = _button("Pause bots", func() -> void: debug_runner.toggle_pause()); flow.add_child(debug_pause)
+	debug_step = _button("Step", func() -> void: debug_runner.step_once()); flow.add_child(debug_step)
+	flow.add_child(_button("Restart", _restart_debug_game))
+	flow.add_child(_button("Stop", _return_from_game))
+	debug_runner.changed.connect(_update_debug_status)
+	var surface := Control.new(); surface.size_flags_vertical = Control.SIZE_EXPAND_FILL; layout.add_child(surface)
+	return surface
+
+
+func _update_debug_status() -> void:
+	if not is_instance_valid(debug_status) or not is_instance_valid(debug_runner): return
+	var state := debug_runner.state
+	var detail := " - no progress for 30 sec" if state == "stalled" else ""
+	debug_status.text = "DEBUG | %d test players | %s | %d %s%s" % [int(debug_config.get("count", 1)), state.capitalize(), debug_runner.actions, "action" if debug_runner.actions == 1 else "actions", detail]
+	debug_pause.text = "Pause bots" if state == "running" else "Resume bots"
+	debug_pause.disabled = state not in ["running", "paused", "stalled"]
+	debug_step.disabled = state not in ["paused", "stalled"]
+
+
+func _restart_debug_game() -> void:
+	var manifest := game_catalog.find_game(str(debug_config.get("id", "")))
+	if manifest.is_empty(): return
+	debug_runner.stop()
+	_start_debug_game(manifest, int(debug_config.count), float(debug_config.delay), bool(debug_config.reduced))
 
 
 func _open_debug_controllers() -> void:
@@ -1098,27 +1180,27 @@ func _show_player_stats(player_id: String) -> void:
 
 
 func _on_player_joined(player: Dictionary) -> void:
-	if active_game != null:
+	if active_game != null and not active_game.session.debug_mode:
 		active_game.player_joined(player)
 
 
 func _on_player_disconnected(player_id: String) -> void:
-	if active_game != null:
+	if active_game != null and not active_game.session.debug_mode:
 		active_game.player_disconnected(player_id)
 
 
 func _on_controller_message(player_id: String, message: Dictionary) -> void:
-	if active_game != null:
+	if active_game != null and not active_game.session.debug_mode:
 		active_game.handle_controller_message(player_id, message)
 
 
 func _on_result_reported(profile_id: String, won: bool) -> void:
-	if active_game_is_party and not active_game_id.is_empty():
+	if current_state != "debug_game" and active_game_is_party and not active_game_id.is_empty():
 		profile_store.record_result(profile_id, won)
 
 
 func _on_points_awarded(profile_id: String, amount: int) -> void:
-	if active_game_is_party and not active_game_id.is_empty():
+	if current_state != "debug_game" and active_game_is_party and not active_game_id.is_empty():
 		profile_store.add_game_points(profile_id, active_game_id, amount)
 
 
@@ -1135,9 +1217,9 @@ func _replace_screen() -> void:
 	screen_root.modulate = Color.WHITE
 	screen_root.position = Vector2.ZERO
 	if menu_music != null:
-		menu_music.set_active(current_state in ["title", "lobby", "game_menu", "settings"])
+		menu_music.set_active(current_state in ["title", "lobby", "game_menu", "settings", "debug_setup"])
 	if game_music != null:
-		game_music.set_active(current_state == "game")
+		game_music.set_active(current_state in ["game", "debug_game"])
 	if title_background != null:
 		title_background.modulate = Color.WHITE
 		title_background.scale = Vector2.ONE

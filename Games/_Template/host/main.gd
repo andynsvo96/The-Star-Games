@@ -8,6 +8,7 @@ var phase_dialog: Dictionary
 var example_choice: OptionButton
 var example_toggle: Button
 var example_length: SpinBox
+var debug_sample_turn := 0
 
 
 func _ready() -> void:
@@ -504,7 +505,14 @@ func shutdown_game() -> void:
 	screen.background_media.set_active(false)
 
 
-func handle_controller_message(_player_id: String, _message: Dictionary) -> void:
+func handle_controller_message(player_id: String, message: Dictionary) -> void:
+	# Replace this finite sample and host/debug.gd with the game's real legal
+	# actions/completion predicate. The shared runner never guesses game rules.
+	if session.debug_mode and message.get("action") == "debug_sample":
+		if debug_sample_turn >= session.players.size() or message.get("revision") != debug_sample_turn: return
+		if str(session.players[debug_sample_turn].id) != player_id: return
+		debug_sample_turn += 1
+		screen.status.text = "Debug sample complete" if debug_sample_turn == session.players.size() else "Debug sample: %d / %d players acted" % [debug_sample_turn, session.players.size()]
 	# Hidden-information modules may use send_state(player_id, private_view).
 	# Build that view on the host; never broadcast secrets or another player's hand.
 	broadcast_state({"status": "Ready to play"})
