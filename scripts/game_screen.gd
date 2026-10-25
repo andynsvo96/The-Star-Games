@@ -274,7 +274,7 @@ func use_table_header(title_art: Texture2D = null, centered_title := false, left
 			header_content.position = Vector2((width - track_width) / 2, 38); header_content.size = Vector2(track_width, 42)
 		elif left_title:
 			var stacked := width < 760
-			_table_header_height = 88.0 if stacked else 60.0
+			_table_header_height = 104.0 if stacked else 60.0
 			header.offset_bottom = _table_header_height; layer.custom_minimum_size.y = _table_header_height - 8
 			var title_width := maxf(0, width - 184) if stacked else 230.0
 			title_label.position = Vector2(66, 0); title_label.size = Vector2(title_width, 36 if stacked else 52)
@@ -282,8 +282,8 @@ func use_table_header(title_art: Texture2D = null, centered_title := false, left
 			var left_size := 20 if stacked else 22
 			while left_size > 11 and title_label.get_theme_font("font").get_string_size(title_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, left_size).x > title_width: left_size -= 1
 			title_label.add_theme_font_size_override("font_size", left_size)
-			header_content.position = Vector2(12 if stacked else 312, 38 if stacked else 4)
-			header_content.size = Vector2(maxf(0, width - (24 if stacked else 444)), 42)
+			header_content.position = Vector2(12 if stacked else 312, 56 if stacked else 4)
+			header_content.size = Vector2(maxf(0, width - (24 if stacked else 444)), 40 if stacked else 42)
 		if _table_header_action != null:
 			_table_header_action.position = Vector2(maxf(60, width - 108), 4); _table_header_action.size = Vector2(44, 44)
 		if _table_header_summary != null:

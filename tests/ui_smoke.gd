@@ -140,6 +140,24 @@ func _table_feedback_check() -> bool:
 	money.update(motion, false, false); money._process(.3); money.update(motion, false, false)
 	valid = valid and is_equal_approx(money.elapsed, .3)
 	money._process(2); valid = valid and not money.active
+	money.amount_badge = false; money.show_transfers = false
+	var balance := Rect2(120, 180, 40, 24)
+	var gain := GameMoneyEffect.amount_rect(balance, 2, .5)
+	var loss := GameMoneyEffect.amount_rect(balance, -2, .5)
+	valid = valid and gain.end.y < balance.position.y and loss.position.y > balance.end.y and is_equal_approx(gain.get_center().x, balance.get_center().x) and is_equal_approx(loss.get_center().x, balance.get_center().x)
+	var strip := GameTurnStrip.new(); strip.tracked = true; holder.add_child(strip)
+	var roster := [{"display_name":"Active <name>","color":"#2463eb"}, {"display_name":"Out player","color":"#e53935","alive":false}]
+	strip.set_players(roster, 1)
+	valid = valid and strip.active == -1 and strip.get_child_count() == 2 and strip.get_child(1).self_modulate.r < .6 and strip.get_child(1).accessibility_name.ends_with(", eliminated")
+	roster[1].alive = true; strip.set_players(roster, 0)
+	valid = valid and strip.active == 0 and strip.get_child(1).self_modulate == Color.WHITE and strip.get_child(0).text == "Active <name>"
+	screen.set_table_header_content(strip)
+	var settings: VBoxContainer = screen.add_corner_details(["SETTINGS"], Callable(), true, true, false, true, true, true)[0]
+	var settings_button: Button = settings.get_meta("toggle_button")
+	holder.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	holder.size = Vector2(600, 720)
+	for frame in 6: await process_frame
+	valid = valid and not strip.get_global_rect().intersects(screen.back_button.get_global_rect()) and not strip.get_global_rect().intersects(settings_button.get_global_rect())
 	holder.queue_free()
 	await process_frame
 	return valid

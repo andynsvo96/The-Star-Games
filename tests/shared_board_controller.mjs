@@ -126,6 +126,17 @@ const assertions = `
 			check(flight?.src.endsWith('/ui/playful/table-dice.svg') && getComputedStyle(flight).objectFit === 'contain', 'Custom offline transfer artwork preserves its proportions');
 		}
 		money.clear(); check(!money.layer.childElementCount, 'Clearing money feedback removes every amount and flight'); money.layer.remove();
+		const numbers = new StarGamesMoneyEffect(seat => ({x:20 + seat * 120,y:120,width:60,height:24}), {amountPrefix:'',amountBadge:false,showTransfers:false});
+		numbers.update({revision:0,money:[],active:false});
+		numbers.update({...payment,revision:3}, {paused:true});
+		const gain = numbers.layer.querySelector('.is-gain'), loss = numbers.layer.querySelector('.is-loss');
+		check(gain.getBoundingClientRect().bottom < 120 && loss.getBoundingClientRect().top > 144, 'Gains float above the balance and losses below it');
+		check(getComputedStyle(gain).backgroundColor === 'rgba(0, 0, 0, 0)' && getComputedStyle(gain).borderTopWidth === '0px' && !numbers.layer.querySelector('img'), 'Plain signed amounts omit badges and transfer artwork');
+		numbers.clear(); numbers.layer.remove();
+		const order = StarGamesTurnStrip([{display_name:'Literal <player>',color:'#2463eb'},{display_name:'Out player',color:'#e53935',alive:false}],1,{tracked:true});
+		document.body.append(order);
+		check(order.children.length === 2 && order.lastElementChild.classList.contains('game-seat-eliminated') && order.lastElementChild.getAttribute('aria-label').endsWith(', eliminated') && !order.querySelector('.is-active'), 'Turn order preserves eliminated seats, mutes them, and rejects an eliminated current turn');
+		check(getComputedStyle(order.lastElementChild).filter.includes('0.55') && !order.querySelector('player'), 'Eliminated turn names stay literal and inherit shared dimming'); order.remove();
 		window.qaResult = {run, checks, failures:0, seats:count, cards:presentation, boardWidth:opening.board.width, footerHeight:opening.footer.height, longFooterHeight:longNames.footer.height};
 	} catch (error) {
 		window.qaResult = {run, checks, failures:1, error:String(error)};

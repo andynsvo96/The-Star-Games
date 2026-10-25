@@ -17,7 +17,8 @@ func _ready() -> void:
 
 
 func set_players(roster: Array, turn: int) -> void:
-	players = roster; active = turn
+	players = roster
+	active = turn if turn >= 0 and turn < players.size() and players[turn].get("alive", true) else -1
 	custom_minimum_size.y = 48 if not portraits.is_empty() else 34 if tracked else 0
 	while get_child_count() > players.size():
 		var child := get_child(get_child_count() - 1); remove_child(child); child.queue_free()
@@ -30,9 +31,11 @@ func set_players(roster: Array, turn: int) -> void:
 	for index in players.size():
 		var label: Label = get_child(index)
 		label.text = str(players[index].display_name)
+		var eliminated: bool = not players[index].get("alive", true)
+		label.self_modulate = Color(.55, .55, .55) if eliminated else Color.WHITE
 		label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM if tracked or not portraits.is_empty() else VERTICAL_ALIGNMENT_CENTER
 		label.add_theme_color_override("font_color", Color("ffe18b") if tracked and index == active else Color(str(players[index].color)) if not tracked and index == active else Color.WHITE)
-		label.accessibility_name = label.text + (", current turn" if index == active else "")
+		label.accessibility_name = label.text + (", eliminated" if eliminated else ", current turn" if index == active else "")
 		var emphasis := FontVariation.new(); emphasis.base_font = get_theme_font("font", "Label"); emphasis.variation_embolden = .8 if index == active else 0
 		label.add_theme_font_override("font", emphasis)
 	accessibility_name = "Player turn order"
@@ -55,8 +58,9 @@ func _draw() -> void:
 	for index in get_child_count():
 		var label: Control = get_child(index)
 		var point := Vector2(label.position.x + label.size.x / 2, 6)
+		var edge := Color("9ca9af").darkened(.45) if not players[index].get("alive", true) else Color("9ca9af")
 		draw_circle(point, 4 if index == active else 3, Color("ffe18b") if index == active else Color("19374b"))
-		draw_arc(point, 4 if index == active else 3, 0, TAU, 24, Color("ffe18b") if index == active else Color("9ca9af"), 1, true)
+		draw_arc(point, 4 if index == active else 3, 0, TAU, 24, Color("ffe18b") if index == active else edge, 1, true)
 
 
 func _fit() -> void:

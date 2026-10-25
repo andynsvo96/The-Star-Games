@@ -114,7 +114,17 @@
     const body=document.createElement('div');panel.append(body);const render=()=>{body.replaceChildren();const item=items[choice.selectedIndex]||items[0];if(!item)return;const summary=document.createElement('p');summary.textContent=item.summary;body.append(summary);for(const player of item.players||[]){const row=document.createElement('div');row.className='game-preview-player';const name=document.createElement('span');name.textContent=player.display_name;row.append(global.StarGamesTableUI.avatar(player),name);if(player.amount!==undefined){const amount=document.createElement('b');amount.className='game-owed';amount.textContent='$'+player.amount;row.append(amount);}body.append(row);}if(item.cards?.length)body.append(global.StarGamesCardGrid(item.cards));if(item.note){const note=document.createElement('p');note.className='game-preview-note';note.textContent=item.note;body.append(note);}};
     choice.addEventListener('change',()=>{render();onSelect?.(choice.selectedIndex);});render();return panel;
   };
-  global.StarGamesTurnStrip=(players,active,{tracked=false}={})=>{const row=document.createElement('div');row.className='game-turn-strip'+(tracked?' game-turn-strip-track':'');row.style.setProperty('--turn-seats',Math.max(1,players.length));row.setAttribute('aria-label','Player turn order');players.forEach((player,index)=>{const name=document.createElement('span');name.className='game-turn-name';name.dataset.seat=index;name.textContent=player.display_name;if(!tracked)name.style.color=index===active?player.color:'#fff';name.classList.toggle('is-active',index===active);name.setAttribute('aria-label',player.display_name+(index===active?', current turn':''));if(index===active)name.setAttribute('aria-current','step');row.append(name);});return row;};
+  global.StarGamesTurnStrip=(players,active,{tracked=false}={})=>{
+    const row=document.createElement('div');row.className='game-turn-strip'+(tracked?' game-turn-strip-track':'');row.style.setProperty('--turn-seats',Math.max(1,players.length));row.setAttribute('aria-label','Player turn order');
+    players.forEach((player,index)=>{
+      const name=document.createElement('span'),eliminated=player.alive===false,current=index===active&&!eliminated;
+      name.className='game-turn-name';name.dataset.seat=index;name.textContent=player.display_name;
+      if(!tracked)name.style.color=current?player.color:'#fff';
+      name.classList.toggle('is-active',current);name.classList.toggle('game-seat-eliminated',eliminated);
+      name.setAttribute('aria-label',player.display_name+(eliminated?', eliminated':current?', current turn':''));
+      if(current)name.setAttribute('aria-current','step');row.append(name);
+    });return row;
+  };
   // Reusable composed cards. Skin images never determine accessible rules text.
   global.StarGamesCard = function(data, options = {}) {
     const card = document.createElement(options.onSelect ? 'button' : 'div');
@@ -253,9 +263,10 @@
   };
   // Public money feedback shares host timing; resolving a hidden name returns null.
   global.StarGamesMoneyEffect = class {
-    constructor(resolve, {amountPrefix = '$', icon = '/ui/playful/table-cash.svg'} = {}) {
+    constructor(resolve, {amountPrefix = '$', icon = '/ui/playful/table-cash.svg', amountBadge = true, showTransfers = true} = {}) {
       this.resolve = resolve; this.key = -1; this.frame = 0;
       this.amountPrefix = amountPrefix; this.icon = icon;
+      this.amountBadge = amountBadge; this.showTransfers = showTransfers;
       this.layer = document.createElement('div'); this.layer.className = 'game-money-effect';
       this.layer.setAttribute('aria-hidden', 'true'); document.body.append(this.layer);
     }
@@ -281,12 +292,14 @@
         for (const change of payment.changes) {
           const rect = this.resolve(change.seat); if (!rect) continue;
           const node = document.createElement('strong'); node.className = 'game-cash-change ' + (change.amount > 0 ? 'is-gain' : 'is-loss');
+          node.classList.toggle('game-cash-number', !this.amountBadge);
           node.textContent = this.amountText(change.amount);
           const distance=this.reduced?0:p*18;
-          node.style.cssText = `left:${Math.min(innerWidth - 95, Math.max(4, rect.x + rect.width / 2 - 46))}px;top:${change.amount>0?rect.y-32-distance:rect.y+rect.height+4+distance}px;opacity:${alpha}`;
+          const width=this.amountBadge?92:Math.max(44,node.textContent.length*14);
+          node.style.cssText = `width:${width}px;left:${Math.min(innerWidth - width - 3, Math.max(4, rect.x + rect.width / 2 - width / 2))}px;top:${change.amount>0?rect.y-32-distance:rect.y+rect.height+4+distance}px;opacity:${alpha}`;
           this.layer.append(node);
         }
-        if (this.reduced || payment.target < 0) continue;
+        if (!this.showTransfers || this.reduced || payment.target < 0) continue;
         const from = this.resolve(payment.seat), to = this.resolve(payment.target); if (!from || !to) continue;
         for (let i = 0; i < 5; i++) {
           const travel = Math.max(0, Math.min(1, p * 1.6 - i * .12)); if (travel <= 0 || travel >= 1) continue;

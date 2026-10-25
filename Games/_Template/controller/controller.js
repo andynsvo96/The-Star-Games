@@ -24,7 +24,7 @@
   // Public cash changes use host timing and live name rectangles. Return null
   // for players absent from this view; never derive money from local input.
   // Optional coin/token formatting; omit the options for default dollar cash.
-  const exampleMoney = new StarGamesMoneyEffect(() => null, {amountPrefix:'', icon:'/ui/playful/table-cash.svg'});
+  const exampleMoney = new StarGamesMoneyEffect(() => null, {amountPrefix:'', amountBadge:false, showTransfers:false});
   exampleMoney.update({revision: 0, money: [], active: false});
   new StarGamesDragScroll(exampleCard);
   // For a virtual card fan, optional getOffset/setOffset callbacks use pixels;
@@ -46,6 +46,10 @@
   // setPlayers(players, viewer); validate and confirm its selectedSeat on the host.
   // An optional third constructor argument, "assembly", selects outlined busts.
   const examplePlayers = [{display_name: "PLAYER ONE", color: "#2463eb", pose: 0}, {display_name: "PLAYER TWO", color: "#e53935", pose: 1}];
+  // alive:false mutes that seat in the shared turn strip. Apply
+  // game-seat-eliminated to public artwork while keeping OUT help readable.
+  const eliminatedExample = StarGamesTurnStrip([{...examplePlayers[0],alive:false},examplePlayers[1]],1,{tracked:true});
+  eliminatedExample.hidden = true; document.querySelector('main').append(eliminatedExample);
   const partySeat = document.querySelector("#example-party-seat");
   StarGamesTableUI.partySeat(partySeat,examplePlayers[0].color);
   partySeat.append(StarGamesTableUI.avatar(examplePlayers[0]), document.createTextNode("PLAYER ONE"), StarGamesTableUI.stat("cards", 7, "Seven cards"));

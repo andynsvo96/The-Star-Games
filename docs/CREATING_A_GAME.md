@@ -1639,7 +1639,8 @@ beside the shared music control; `set_table_header_summary(control)` places publ
 facts below the header at the left. Small hosts reserve space for the summary
 through the shared board fitter. Other table headers keep their existing layout.
 Use `use_table_header(null, false, true)` for a title beside Back and progress in
-a single 60px row; narrow hosts wrap the progress row. `center_board` accepts
+a single 60px row; narrow hosts use a 104px header with progress below the 44px
+navigation/settings controls. `center_board` accepts
 center ratios from 0.3 to 0.56, allowing a private-card table to sit slightly lower
 while the shared fitter still reserves the action area and keeps it in bounds.
 
@@ -2125,6 +2126,10 @@ its public Treasury and resolve that key to the visible coin pile; include only
 actual player balance changes in `changes`. Keep the motion revision independent
 of ordinary syncs, clear it on replay, and seed a reconnect without replaying old
 amounts. Both template views demonstrate the optional formatting/artwork hooks.
+For floating signed numbers alone, set native `amount_badge=false` and
+`show_transfers=false`, or browser `{amountBadge:false, showTransfers:false}`.
+The outlined green gain rises above the balance and the red loss drops below it;
+reduced motion keeps both static briefly. The defaults retain badges and flights.
 Classic sequences this with module-owned dice, token hops, chest and jail artwork
 and shared `GameCardMotion`/`GameCardEffect`; all cues use the host Effects bus.
 
@@ -2328,6 +2333,11 @@ color. Browser callers use `StarGamesTurnStrip(players,turn,{tracked:true})`.
 Avatars and authoritative identity colors remain unchanged. Pass `-1` during a
 pause or after results to remove the current-step highlight. Both template views
 demonstrate this opt-in; the original strip remains the default.
+Public seats with `alive:false` remain in the turn order with a muted name/dot
+and an accessible eliminated label. They cannot receive the active highlight.
+Canvas tables can call `GameLook.draw_table_eliminated(canvas, bounds)` after
+drawing that seat; browsers apply `game-seat-eliminated` to its artwork/identity.
+Keep a readable OUT/spectating label and useful controls outside the dimmed art.
 After `use_table_header`, call `set_table_header_content(strip)` to replace only
 its status area; shared Back, settings, title and responsive fitting remain.
 The template includes hidden examples. Existing games retain their default header

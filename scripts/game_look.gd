@@ -692,6 +692,13 @@ static func draw_table_text(canvas: Control, text: String, point: Vector2, width
 	canvas.draw_string(font, point, fitted, HORIZONTAL_ALIGNMENT_CENTER if centered else HORIZONTAL_ALIGNMENT_LEFT, width, font_size, color)
 
 
+# A static wash keeps public eliminated seats in place without fading the roster.
+static func draw_table_eliminated(canvas: CanvasItem, bounds: Rect2) -> void:
+	var shade := box(Color(0, 0, 0, .45), Color.TRANSPARENT, 16, 0)
+	shade.shadow_size = 0
+	canvas.draw_style_box(shade, bounds)
+
+
 # Shared cash/card/house counters use the same offline SVGs as browser tables.
 static func draw_table_stats(canvas: Control, point: Vector2, width: float, stats: Array, font_size := 11, prominent := false) -> void:
 	var font := party_font(canvas.get_theme_default_font()) if prominent else canvas.get_theme_default_font()

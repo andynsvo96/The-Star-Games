@@ -14,6 +14,8 @@ var revision := -1
 var cash_icon: Texture2D
 var icon_texture: Texture2D
 var amount_prefix := "$"
+var amount_badge := true
+var show_transfers := true
 
 
 func _ready() -> void:
@@ -60,11 +62,17 @@ func _draw() -> void:
 			var gain := int(change.amount) > 0
 			var bubble := amount_rect(bounds, int(change.amount), 0 if reduced else progress)
 			var tint := Color("48e59a") if gain else Color("ff6976")
-			var style := GameLook.box(Color("062a21") if gain else Color("3f1822"), tint, 8, 1)
-			style.bg_color.a = alpha; style.border_color.a = alpha
-			draw_style_box(style, bubble)
-			GameLook.draw_table_text(self, amount_text(int(change.amount)), bubble.position + Vector2(5, 20), 82, 17, Color(tint, alpha), true)
-		if reduced or int(event.get("target", -1)) < 0: continue
+			if amount_badge:
+				var style := GameLook.box(Color("062a21") if gain else Color("3f1822"), tint, 8, 1)
+				style.bg_color.a = alpha; style.border_color.a = alpha
+				draw_style_box(style, bubble)
+				GameLook.draw_table_text(self, amount_text(int(change.amount)), bubble.position + Vector2(5, 20), 82, 17, Color(tint, alpha), true)
+			else:
+				var font := GameLook.party_font(get_theme_default_font())
+				var point := bubble.position + Vector2(0, 22)
+				draw_string_outline(font, point, amount_text(int(change.amount)), HORIZONTAL_ALIGNMENT_CENTER, bubble.size.x, 22, 4, Color(0, 0, 0, alpha * .9))
+				draw_string(font, point, amount_text(int(change.amount)), HORIZONTAL_ALIGNMENT_CENTER, bubble.size.x, 22, Color(tint, alpha))
+		if not show_transfers or reduced or int(event.get("target", -1)) < 0: continue
 		var transfer := resolve_transfer_rect if resolve_transfer_rect.is_valid() else resolve_rect
 		var source: Rect2 = transfer.call(int(event.seat)); var destination: Rect2 = transfer.call(int(event.target))
 		if not source.has_area() or not destination.has_area(): continue

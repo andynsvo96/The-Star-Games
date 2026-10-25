@@ -185,7 +185,11 @@ func _ready() -> void:
 	# screen.set_table_header_content(turn_example); update its roster/turn on render.
 	var turn_example := GameTurnStrip.new(); turn_example.tracked = true; layout.playfield.add_child(turn_example); turn_example.hide()
 	# tracked opts into neutral names with a gold current-step dot/line, like Poker.
-	turn_example.set_players([{"display_name":"Example player", "color":"#2463eb"}], 0)
+	turn_example.set_players([{"display_name":"Example player", "color":"#2463eb"}, {"display_name":"Eliminated player", "color":"#e53935", "alive":false}], 0)
+	# alive:false keeps the seat but mutes its name/dot. Dim canvas seat artwork
+	# separately, retaining a readable OUT label and useful controls.
+	var eliminated_example := Control.new(); layout.playfield.add_child(eliminated_example); eliminated_example.hide()
+	eliminated_example.draw.connect(func() -> void: GameLook.draw_table_eliminated(eliminated_example, Rect2(0, 0, 160, 100)))
 	# Alternatively, keep literal names below framed piece portraits (not tracked).
 	var portrait_example := GameTurnStrip.new(); portrait_example.portraits = [RuntimeAssets.texture("res://ui/playful/table-house.svg")]
 	layout.playfield.add_child(portrait_example); portrait_example.hide()
@@ -250,6 +254,8 @@ func _ready() -> void:
 	var money_example := GameMoneyEffect.new(); add_child(money_example)
 	# Optional coin/token formatting; omit these two assignments for dollar cash.
 	money_example.amount_prefix = ""; money_example.icon_texture = RuntimeAssets.texture("res://ui/playful/table-cash.svg")
+	# Plain signed numbers rise above gains and fall below losses, without flights.
+	money_example.amount_badge = false; money_example.show_transfers = false
 	money_example.resolve_rect = func(_seat: int) -> Rect2: return Rect2()
 	money_example.update({"revision":0, "money":[], "active":false}, false, false)
 	var modal_example := screen.add_corner_details(["SETTINGS"], Callable(), true, false, false, true, true)
