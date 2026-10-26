@@ -79,7 +79,8 @@ static func paint(canvas: CanvasItem, rect: Rect2, data: Dictionary, artwork: Te
 
 
 static func _paint_character(canvas: CanvasItem, rect: Rect2, data: Dictionary, artwork: Texture2D, tint: Color, chosen: bool) -> void:
-	canvas.draw_style_box(GameLook.box(Color("131820"), Color("ffda72") if chosen else tint, 6, 3 if chosen else 1), rect)
+	var paper: bool = data.get("caption_style","") == "paper"
+	canvas.draw_style_box(GameLook.box(Color("f7ebc9") if paper else Color("131820"), Color("ffda72") if chosen else tint, 6, 3 if chosen else 1), rect)
 	var bounds := rect.grow(-2)
 	if artwork != null:
 		var source := Rect2(Vector2.ZERO, artwork.get_size())
@@ -89,18 +90,18 @@ static func _paint_character(canvas: CanvasItem, rect: Rect2, data: Dictionary, 
 		canvas.draw_texture_rect_region(artwork, bounds, source)
 	if data.get("back", false): return
 	var band := Rect2(Vector2(bounds.position.x, bounds.end.y - bounds.size.y * .27), Vector2(bounds.size.x, bounds.size.y * .27))
-	canvas.draw_rect(band, Color("131820f2"))
+	canvas.draw_rect(band, Color("f7ebc9") if paper else Color("131820f2"))
 	canvas.draw_rect(Rect2(band.position, Vector2(band.size.x, maxf(2, rect.size.y * .009))), tint)
 	var font := ThemeDB.fallback_font
 	var font_size := maxi(5, int(rect.size.x * .105))
 	var title := str(data.get("display_name", data.get("name", "")))
 	while font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > band.size.x - 6 and font_size > 4: font_size -= 1
-	canvas.draw_string(font, band.position + Vector2(4, band.size.y * .39), title, HORIZONTAL_ALIGNMENT_CENTER, band.size.x - 8, font_size, Color("fff5dc"))
+	canvas.draw_string(font, band.position + Vector2(4, band.size.y * .39), title, HORIZONTAL_ALIGNMENT_CENTER, band.size.x - 8, font_size, GameLook.SCROLL_INK if paper else Color("fff5dc"))
 	for index in 2:
 		var text := str(data.get("detail" if index == 0 else "foot", ""))
 		var small := maxi(3, int(rect.size.x * .054))
 		while font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, small).x > band.size.x - 6 and small > 3: small -= 1
-		canvas.draw_string(font, band.position + Vector2(3, band.size.y * (.64 + index * .22)), text, HORIZONTAL_ALIGNMENT_CENTER, band.size.x - 6, small, Color("e0e5ec"))
+		canvas.draw_string(font, band.position + Vector2(3, band.size.y * (.64 + index * .22)), text, HORIZONTAL_ALIGNMENT_CENTER, band.size.x - 6, small, GameLook.SCROLL_INK if paper else Color("e0e5ec"))
 
 
 static func _paint_standard(canvas: CanvasItem, rect: Rect2, data: Dictionary, chosen: bool) -> void:

@@ -786,6 +786,9 @@ body.playful-game { isolation: isolate; }
 .game-character-caption { box-sizing:border-box; position:absolute; inset:auto 0 0; height:27%; display:flex; flex-direction:column; justify-content:center; gap:3%; padding:3% 2%; border-top:3px solid var(--card-accent); background:#131820f2; color:#fff5dc; }
 .game-character-caption strong { font-size:10.5cqw; line-height:1.2; }
 .game-playing-card .game-character-caption small { font-size:5.4cqw; line-height:1.35; color:#e0e5ec; white-space:nowrap; }
+.game-playing-card.game-character-card.game-character-paper { background:#f7ebc9 !important; }
+.game-character-paper .game-character-caption { background:#f7ebc9; color:#56351f; }
+.game-character-paper .game-character-caption :is(strong,small) { color:#56351f; }
 .game-playing-card:focus-visible { outline:3px solid var(--focus-color,#ffda72); outline-offset:3px; }
 .game-playing-card.game-card-small { width:78px; min-width:66px; }
 .game-playing-card.game-card-small .game-playing-card-name { font-size:10px; min-height:28px; }

@@ -36,7 +36,7 @@ func _ready() -> void:
 	# Hidden reusable character-card example. Module artwork is cosmetic; names,
 	# rules and accessibility remain semantic. Readers/grids accept the same data.
 	var character_example := GameCard.new()
-	character_example.card = {"layout": "character", "name": "Envoy", "detail": "An original character ability.", "foot": "A public reference"}
+	character_example.card = {"layout": "character", "caption_style":"paper", "name": "Envoy", "detail": "An original character ability.", "foot": "A public reference"}
 	character_example.custom_minimum_size = Vector2(112, 168)
 	screen.content.add_child(character_example)
 	character_example.hide()
@@ -257,6 +257,9 @@ func _ready() -> void:
 	# Plain signed numbers rise above gains and fall below losses, without flights.
 	money_example.amount_badge = false; money_example.show_transfers = false
 	money_example.resolve_rect = func(_seat: int) -> Rect2: return Rect2()
+	# Resolve the live number label's font size when feedback must match it.
+	money_example.resolve_font_size = func(_seat: int) -> int: return screen.get_theme_font_size("font_size","Label")
+	money_example.resolve_font = func(_seat: int) -> Font: return screen.get_theme_font("font","Label")
 	money_example.update({"revision":0, "money":[], "active":false}, false, false)
 	var modal_example := screen.add_corner_details(["SETTINGS"], Callable(), true, false, false, true, true)
 	screen.add_sidebar_text(modal_example[0], "Module-owned settings")

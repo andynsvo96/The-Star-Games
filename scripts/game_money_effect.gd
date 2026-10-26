@@ -4,6 +4,8 @@ extends Control
 # Presentation only: the caller supplies public cash changes and live balance bounds.
 var resolve_rect: Callable
 var resolve_transfer_rect: Callable
+var resolve_font_size: Callable
+var resolve_font: Callable
 var events: Array = []
 var elapsed := 0.0
 var paused := false
@@ -60,7 +62,9 @@ func _draw() -> void:
 			var bounds: Rect2 = resolve_rect.call(int(change.seat))
 			if not bounds.has_area(): continue
 			var gain := int(change.amount) > 0
-			var bubble := amount_rect(bounds, int(change.amount), 0 if reduced else progress)
+			var font_size := 22
+			if resolve_font_size.is_valid(): font_size = clampi(int(resolve_font_size.call(int(change.seat))),8,96)
+			var bubble := amount_rect(bounds, int(change.amount), 0 if reduced else progress,font_size)
 			var tint := Color("48e59a") if gain else Color("ff6976")
 			if amount_badge:
 				var style := GameLook.box(Color("062a21") if gain else Color("3f1822"), tint, 8, 1)
@@ -68,10 +72,10 @@ func _draw() -> void:
 				draw_style_box(style, bubble)
 				GameLook.draw_table_text(self, amount_text(int(change.amount)), bubble.position + Vector2(5, 20), 82, 17, Color(tint, alpha), true)
 			else:
-				var font := GameLook.party_font(get_theme_default_font())
-				var point := bubble.position + Vector2(0, 22)
-				draw_string_outline(font, point, amount_text(int(change.amount)), HORIZONTAL_ALIGNMENT_CENTER, bubble.size.x, 22, 4, Color(0, 0, 0, alpha * .9))
-				draw_string(font, point, amount_text(int(change.amount)), HORIZONTAL_ALIGNMENT_CENTER, bubble.size.x, 22, Color(tint, alpha))
+				var font: Font = resolve_font.call(int(change.seat)) if resolve_font.is_valid() else GameLook.party_font(get_theme_default_font())
+				var point := bubble.position + Vector2(0, font_size)
+				draw_string_outline(font, point, amount_text(int(change.amount)), HORIZONTAL_ALIGNMENT_CENTER, bubble.size.x, font_size, maxi(1,roundi(font_size*4.0/22)), Color(0, 0, 0, alpha * .9))
+				draw_string(font, point, amount_text(int(change.amount)), HORIZONTAL_ALIGNMENT_CENTER, bubble.size.x, font_size, Color(tint, alpha))
 		if not show_transfers or reduced or int(event.get("target", -1)) < 0: continue
 		var transfer := resolve_transfer_rect if resolve_transfer_rect.is_valid() else resolve_rect
 		var source: Rect2 = transfer.call(int(event.seat)); var destination: Rect2 = transfer.call(int(event.target))
@@ -93,7 +97,8 @@ func amount_text(amount: int) -> String:
 	return ("+" if amount > 0 else "−") + amount_prefix + str(absi(amount))
 
 
-static func amount_rect(balance: Rect2, amount: int, progress: float) -> Rect2:
+static func amount_rect(balance: Rect2, amount: int, progress: float, font_size := 22) -> Rect2:
 	var distance := progress * 18
-	var top := balance.position.y - 32 - distance if amount > 0 else balance.end.y + 4 + distance
-	return Rect2(Vector2(balance.get_center().x - 46, top), Vector2(92, 28))
+	var height := float(font_size+6); var width := 92.0*font_size/22.0
+	var top := balance.position.y - height - 4 - distance if amount > 0 else balance.end.y + 4 + distance
+	return Rect2(Vector2(balance.get_center().x - width/2, top), Vector2(width,height))

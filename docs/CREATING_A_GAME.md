@@ -353,10 +353,10 @@ viewport/scaling modes, checking movement frames and content insets.
 ### CATAN example
 
 The local `Games/catan` combines a public hex board with private resource and
-development-card views. It uses the shared admiral presentation, compact table
-header, centered board, asset score cards, card readers, dialogs, card movement,
-signed resource feedback and toolbar relocation. Phones preview a legal target
-and explicitly confirm it. The host is public in multiplayer and owns a private
+development-card views. It uses the shared royal presentation, compact table
+header with a turn-order strip, centered board, ornate score cards, readers,
+dialogs, card movement, signed resource feedback and toolbar relocation. Phones
+preview a legal target and explicitly confirm it. The host is public in multiplayer and owns a private
 hand only in solo play.
 The manifest admits one human for computer-filled arrangements, while the rules
 always create three to six total seats. Five/six seats use current paired turns.
@@ -365,18 +365,26 @@ Rules and geometry stay separate from presentation. Private entropy is separate
 from the public board seed, including after JSON checkpoint recovery. Discard
 tickets and stable offer IDs let independent recipients respond without rejecting
 unchanged decisions after an unrelated response. Public movement uses backs for
-private draws and steals. Both directions of an agreed trade animate together;
-input remains locked through the last flight. Disconnects and Settings pause
+private draws, steals and direct trades. Direct proposals are addressed to one
+player and visible only to their participants; the public market stays public.
+Both directions of an agreed trade animate together; input remains locked through
+the last flight. Disconnects and Settings pause
 decisions, clocks, AI and effects, with no computer takeover. Protected Default
 and named skins replace media and labels without changing rule identities.
 Its module-owned artwork map keeps canonical host/controller paths aligned with
 stable skin slot IDs when Default media changes format. Generated originals and
 4K masters stay in the local source-media folder, with smaller runtime exports
-for phone memory use. Public supply panels contain only public inventory.
+for phone memory use. A blue ocean frame surrounds the terrain; the separate
+extensionless wallpaper uses the shared background player. A development deck
+and two bonus cards stay separate from the public market and costs/overview
+reference. Short host layouts move supplementary inventory and player details
+into an explicit Table view. The host has no zoom control; phone zoom remains.
+Resource feedback uses each visible amount's own font and size, with gains above
+and losses below. Public supply views contain only public inventory.
 
 Its module README documents official rule sources, timers, scoring, autosave and
 profile-matched resume. Local checks include `tests/catan_rules.gd`,
-`catan_transactions.gd`, `catan_session.gd`, `catan_network.gd`,
+`catan_transactions.gd`, `catan_direct_trades.gd`, `catan_session.gd`, `catan_network.gd`,
 `catan_persistence.gd`, `catan_settings.gd`, `catan_ai.gd`, rendered `catan_visual.gd` and
 `catan_motion.gd`, then `node tests/catan_controller.mjs`. Debug autoplay exercises
 one to six temporary human seats through ordinary validated handlers. These
@@ -1616,6 +1624,8 @@ in its bottom caption. `back:true` omits the caption; `selected` uses the usual
 shared selection state. Names must be literal and artwork must never determine
 role identity or legal actions. Readers and grids use the same data. Both template
 views include hidden examples; existing layouts retain their behavior.
+Set `caption_style: "paper"` for a cream surface and brown caption ink on both
+host and controller; the default dark caption remains unchanged.
 
 Standard 52-card games use `GameCard` / `StarGamesCard` with `layout: "standard"`,
 `rank` (`2`–`10`, `J`, `Q`, `K`, `A`), `suit` (`clubs`, `diamonds`, `hearts`,
@@ -2161,7 +2171,12 @@ amounts. Both template views demonstrate the optional formatting/artwork hooks.
 For floating signed numbers alone, set native `amount_badge=false` and
 `show_transfers=false`, or browser `{amountBadge:false, showTransfers:false}`.
 The outlined green gain rises above the balance and the red loss drops below it;
-reduced motion keeps both static briefly. The defaults retain badges and flights.
+reduced motion keeps both static briefly. For plain feedback that matches a
+live number, supply native `resolve_font_size(seat)` and `resolve_font(seat)`
+callbacks, or browser `resolveFontSize(seat)` and `resolveFont(seat)` constructor
+options. Return the visible amount label's font size and font (browser computed
+CSS `font`). Re-resolve its rectangle and typography after responsive layout.
+The defaults retain the original typography, badges and flights.
 Classic sequences this with module-owned dice, token hops, chest and jail artwork
 and shared `GameCardMotion`/`GameCardEffect`; all cues use the host Effects bus.
 

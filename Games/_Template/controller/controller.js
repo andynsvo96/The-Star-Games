@@ -6,7 +6,7 @@
 	const exampleCard = StarGamesCard({ name: "EXAMPLE", value: 1 });
 	exampleCard.hidden = true;
 	document.querySelector(".game-controller").append(exampleCard);
-	const exampleCharacter = StarGamesCard({layout:'character',name:'Envoy',detail:'Character ability',foot:'Public counteraction'}, {color:'#278eac'});
+	const exampleCharacter = StarGamesCard({layout:'character',caption_style:'paper',name:'Envoy',detail:'Character ability',foot:'Public counteraction'}, {color:'#278eac'});
 	exampleCharacter.hidden = true;
 	document.querySelector(".game-controller").append(exampleCharacter);
   // Optional composed cards: StarGamesCard(card,{art,color,onSelect}).
@@ -24,7 +24,7 @@
   // Public cash changes use host timing and live name rectangles. Return null
   // for players absent from this view; never derive money from local input.
   // Optional coin/token formatting; omit the options for default dollar cash.
-  const exampleMoney = new StarGamesMoneyEffect(() => null, {amountPrefix:'', amountBadge:false, showTransfers:false});
+  const exampleMoney = new StarGamesMoneyEffect(() => null, {amountPrefix:'', amountBadge:false, showTransfers:false, resolveFontSize:()=>parseFloat(getComputedStyle(exampleCard).fontSize), resolveFont:()=>getComputedStyle(exampleCard).font});
   exampleMoney.update({revision: 0, money: [], active: false});
   new StarGamesDragScroll(exampleCard);
   // For a virtual card fan, optional getOffset/setOffset callbacks use pixels;
