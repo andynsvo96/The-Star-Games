@@ -134,6 +134,16 @@
   const standardExample=document.getElementById('example-standard-cards');
   if(standardExample&&typeof StarGamesCard==='function')standardExample.append(StarGamesCard({layout:'standard',rank:'A',suit:'spades',name:'Ace of spades'}),StarGamesCard({layout:'standard',back:true}));
   controller.connect();
+  // Hidden opt-in examples: public rows inspect without issuing game commands;
+  // the map camera keeps targets at 44px by projecting their normalized points.
+  // Add data-game-board-trailing to a utility row after a playfield to reserve
+  // its observed height alongside the private-hand/action footer.
+  const cameraExample=document.createElement('div');cameraExample.hidden=true;
+  const cameraSurface=document.createElementNS('http://www.w3.org/2000/svg','svg');cameraExample.append(cameraSurface);document.querySelector('main').append(cameraExample);
+  const exampleCamera=new StarGamesBoardCamera(cameraExample);
+  const rowExample=new StarGamesPlayerRow(()=>exampleCamera.reset());
+  rowExample.update({display_name:'Example player',color:'#2463eb',pose:0},[{icon:'/ui/playful/table-cards.svg',value:7,label:'Public card count'}],true);cameraExample.append(rowExample.element);
+  addEventListener('pagehide',()=>exampleCamera.destroy(),{once:true});
   const rulesExample=document.getElementById('example-rules-dialog');
   // Feed eligible badge elements and public obstacles only; clear on exit/pause.
   const playerFocusExample=new StarGamesPlayerFocus();

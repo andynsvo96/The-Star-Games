@@ -44,6 +44,7 @@ var _table_header_fit: Callable
 var _table_header_height := 60.0
 var _table_header_action: Button
 var _table_header_summary: Control
+var _table_header_summary_wide := false
 
 
 func available_size() -> Vector2:
@@ -118,7 +119,7 @@ func center_board(board: Control, replay: Button, auxiliary: Control = null, cen
 
 func _board_top_margin() -> float:
 	if _table_header:
-		if _table_header_summary != null and available_size().x < 550: return _table_header_height + _table_header_summary.get_combined_minimum_size().y + 16
+		if _table_header_summary != null and _table_header_summary.visible and (_table_header_summary_wide or available_size().x < 550): return _table_header_height + _table_header_summary.get_combined_minimum_size().y + 16
 		return _table_header_height + 8.0
 	return 64.0 if available_size().x < 700 else 16.0
 
@@ -288,7 +289,7 @@ func use_table_header(title_art: Texture2D = null, centered_title := false, left
 			_table_header_action.position = Vector2(maxf(60, width - 108), 4); _table_header_action.size = Vector2(44, 44)
 		if _table_header_summary != null:
 			_table_header_summary.position = Vector2(16, _table_header_height + 8)
-			_table_header_summary.size = Vector2(width - 24 if width < 550 else minf(232, maxf(146, width * .23)), _table_header_summary.get_combined_minimum_size().y)
+			_table_header_summary.size = Vector2(width - 32 if _table_header_summary_wide else width - 24 if width < 550 else minf(232, maxf(146, width * .23)), _table_header_summary.get_combined_minimum_size().y)
 	_table_header_fit = fit
 	layer.resized.connect(fit); resized.connect(fit); fit.call_deferred()
 
@@ -311,12 +312,14 @@ func set_table_header_action(button: Button) -> void:
 	_table_header_fit.call_deferred()
 
 
-func set_table_header_summary(control: Control) -> void:
+func set_table_header_summary(control: Control, full_width := false) -> void:
 	if _table_header_layer == null: return
 	_table_header_summary = control
+	_table_header_summary_wide = full_width
 	if control.get_parent() == null: get_parent().add_child(control)
 	else: control.reparent(get_parent())
 	control.minimum_size_changed.connect(_table_header_fit)
+	control.visibility_changed.connect(func() -> void: _table_header_fit.call_deferred(); board_space_changed.emit())
 	_table_header_fit.call_deferred()
 
 
@@ -1540,7 +1543,7 @@ func set_history_entries(log: RichTextLabel, entries: Array) -> void:
 
 
 # Symmetric side columns keep the playfield on the screen's horizontal center.
-func add_centered_layout(compact := false, center_sidebars := false, maximum_width := 940.0, minimum_playfield_width := 316.0) -> Dictionary:
+func add_centered_layout(compact := false, center_sidebars := false, maximum_width := 940.0, minimum_playfield_width := 316.0, minimum_sidebar_width := 0.0) -> Dictionary:
 	var layout := GridContainer.new()
 	layout.columns = 3
 	layout.add_theme_constant_override("h_separation", 24)
@@ -1554,6 +1557,7 @@ func add_centered_layout(compact := false, center_sidebars := false, maximum_wid
 	var left := VBoxContainer.new()
 	var playfield := VBoxContainer.new()
 	var right := VBoxContainer.new()
+	var sidebar_floor: float = minimum_sidebar_width if minimum_sidebar_width > 0 else (190.0 if compact else 220.0)
 	var sidebar_spacers: Dictionary = {}
 	for column in [left, playfield, right]:
 		if center_sidebars and column != playfield:
@@ -1561,8 +1565,9 @@ func add_centered_layout(compact := false, center_sidebars := false, maximum_wid
 			spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			column.add_child(spacer)
 			sidebar_spacers[column] = spacer
-		column.custom_minimum_size.x = (190 if compact else 220) if column != playfield else minimum_playfield_width
+		column.custom_minimum_size.x = sidebar_floor if column != playfield else minimum_playfield_width
 		column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		if column != playfield and minimum_sidebar_width > 0: column.size_flags_horizontal = Control.SIZE_FILL
 		layout.add_child(column)
 	var adapt := func() -> void:
 		# Equal side widths center the board even when settings/names differ.
@@ -1572,7 +1577,7 @@ func add_centered_layout(compact := false, center_sidebars := false, maximum_wid
 				if child is Control and child.visible and child != sidebar_spacers.get(column): have_sidebars = true
 		left.visible = have_sidebars; right.visible = have_sidebars
 		var available_width := available_size().x - 48 - content_scroll.get_v_scroll_bar().get_combined_minimum_size().x
-		var side_width := maxf(190 if compact else 220, maxf(left.get_minimum_size().x, right.get_minimum_size().x))
+		var side_width := maxf(sidebar_floor, maxf(left.get_minimum_size().x, right.get_minimum_size().x))
 		left.custom_minimum_size.x = side_width
 		right.custom_minimum_size.x = side_width
 		var board_width := available_width - side_width * 2 - 48 if have_sidebars and available_width >= side_width * 2 + minimum_playfield_width + 48 else available_width

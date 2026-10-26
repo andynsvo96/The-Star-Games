@@ -354,7 +354,7 @@ viewport/scaling modes, checking movement frames and content insets.
 
 The local `Games/catan` combines a public hex board with private resource and
 development-card views. It uses the shared royal presentation, compact table
-header with a turn-order strip, centered board, ornate score cards, readers,
+header with a turn-order strip, centered board, compact inspectable player rows, readers,
 dialogs, card movement, signed resource feedback and toolbar relocation. Phones
 preview a legal target and explicitly confirm it. The host is public in multiplayer and owns a private
 hand only in solo play.
@@ -377,8 +377,11 @@ stable skin slot IDs when Default media changes format. Generated originals and
 for phone memory use. A blue ocean frame surrounds the terrain; the separate
 extensionless wallpaper uses the shared background player. A development deck
 and two bonus cards stay separate from the public market and costs/overview
-reference. Short host layouts move supplementary inventory and player details
-into an explicit Table view. The host has no zoom control; phone zoom remains.
+reference. Wide hosts use narrow player rows on both sides of a larger island; narrow
+hosts and phones use a compact roster above it. Icon controls open the public
+Table, Market, Costs and Activity views. Clicking a row opens public player
+details without revealing private hands. Hosts and phones drag the map and
+scroll/pinch to zoom directly; camera changes never submit game actions.
 Resource feedback uses each visible amount's own font and size, with gains above
 and losses below. Public supply views contain only public inventory.
 
@@ -869,6 +872,52 @@ movement settle against the new geometry. Checkers, Four in a Row and Chess use
 this event. The template and all board games inherit the sizing automatically.
 Shared hanging scores scale text to the card width rather than splitting words.
 
+
+### Inspectable player rows and map cameras
+
+`GamePlayerRow` is a shared native Button with a literal public name, identity
+avatar, active-turn outline and icon/count pairs. Call
+`set_player(public_identity, [{texture, value, label}, ...], active)` and connect
+`pressed` to an explicit public inspector. `compact=true` plus `_layout()` fits
+three counters in a 54px phone row; other counters stay in its accessible name
+and inspector. Browser `new StarGamesPlayerRow(onSelect)` exposes `element` and
+`update(public_identity, [{icon, value, label}, ...], active)`. Add `is-compact`
+for the same small row. Update existing rows so focused targets survive syncs.
+Never supply secret resource types or development-card identities for opponents.
+`game-icon-only` supplies 44px icon buttons with an `aria-label` and empty-alt
+image. `game-resource-token` adds a shared paper surface for inspectable tokens.
+
+`add_centered_layout` accepts a fifth `minimum_sidebar_width` argument. A positive
+value retains narrow equal side columns and gives remaining width to the board;
+zero keeps existing behavior. For a compact roster above a narrow native board,
+`set_table_header_summary(roster_grid, true)` fits a full-width summary below the
+header and reserves its visible height through the shared board fitter. Hide it
+on wide screens and reparent the same rows to the sidebars. The normal summary
+and existing layouts retain their defaults. Native examples live in the template.
+
+`GameBoardCamera` is view-only state with `zoom`, pixel `pan`, `viewport_size`,
+`project(point)`, `zoom_at(factor, anchor)`, `reset()` and `cancel()`. Feed local
+pointer coordinates to `handle_input(event, point)` and redraw/reposition targets
+on `changed`. Use `tapped` for the ordinary preview handler. Drags, pinches and
+canceled touches never emit a tap. Route held gestures outside the map, gate
+input behind dialogs, cancel on focus loss/exit and ignore emulated mouse events
+when processing native touch events. Keyboard arrows pan, +/- zoom and Home fits.
+
+Browser `StarGamesBoardCamera(element, {surface, onChange})` supplies the same
+bounded drag, wheel, pinch, keyboard and cancellation behavior. `surface` defaults
+to the board SVG. Keep target buttons unscaled at 44px and position them with
+`project(normalized_x, normalized_y)` after camera/layout changes. The map clips
+artwork to its viewport; the page retains normal scrolling. `reset()` restores
+fit; call `cancel()` for reconnect/modal transitions and `destroy()` on page exit.
+Keep camera position across snapshots, resize and reading player details; reset
+for a new board. A fit button is optional, since gestures work in the main view.
+The shared camera adds no automatic motion and works with reduced motion.
+
+A utility row following the fitted playfield can carry
+`data-game-board-trailing`. The SDK observes its height and reserves it so the
+board, hand and utilities fit together on short screens. The template documents
+this opt-in; existing callers retain their footer measurements. Self-contained
+checks are `tests/board_camera.gd` and `tests/shared_board_controller.mjs`.
 
 ### Compact board phones with bottom stats
 

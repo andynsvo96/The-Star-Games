@@ -61,6 +61,17 @@ const assertions = `
 		await settle();
 		check(footer.children.length === count, 'Synthetic roster contains requested seat count');
 		check(!document.querySelector('[title]'), 'Synthetic controls omit hover tooltips');
+        const cameraView=document.createElement('div');cameraView.style.cssText='position:fixed;left:-2000px;top:0;width:240px;height:180px';const surface=document.createElement('div');cameraView.append(surface);document.body.append(cameraView);
+        const camera=new StarGamesBoardCamera(cameraView,{surface});let selected=0;cameraView.addEventListener('click',()=>selected++);
+        cameraView.dispatchEvent(new WheelEvent('wheel',{deltaY:-300,clientX:-1880,clientY:90,bubbles:true,cancelable:true}));check(camera.zoom>1,'Shared inline wheel magnifies the map');
+        const pointer=(type,id,x,y,target=cameraView)=>target.dispatchEvent(new PointerEvent(type,{pointerId:id,clientX:-2000+x,clientY:y,button:0,bubbles:true,cancelable:true,pointerType:'touch'}));
+        pointer('pointerdown',1,60,80);pointer('pointermove',1,100,110,window);pointer('pointerup',1,100,110,window);cameraView.click();check(selected===0&&camera.pan.x>0,'Shared map drag suppresses gameplay click');
+        camera.reset();pointer('pointerdown',2,60,80);pointer('pointerdown',3,120,80);pointer('pointermove',3,180,80,window);pointer('pointerup',3,180,80,window);pointer('pointerup',2,60,80,window);check(camera.zoom>1,'Shared touch pinch magnifies inline');
+        const z=camera.zoom;camera.cancel();pointer('pointermove',3,220,80,window);check(camera.zoom===z,'Canceled gesture cannot move the map later');
+        camera.reset();check(camera.zoom===1&&camera.pan.x===0&&camera.pan.y===0,'Shared fit restores the camera');camera.destroy();cameraView.remove();
+        const row=new StarGamesPlayerRow(()=>{});row.update({display_name:'Name <tag> [literal]',color:'#000000',pose:0},[{icon:'/ui/playful/table-cards.svg',label:'Public cards',value:7}],true);const original=row.element;
+        row.update({display_name:'Updated player',color:'#ffffff',pose:1},[{icon:'/ui/playful/table-cards.svg',label:'Public cards',value:8}],false);check(row.element===original&&row.element.getAttribute('aria-label').includes('Public cards: 8')&&!row.element.querySelector('tag'),'Shared player updates preserve the accessible target and literal names');
+
 		const opening = layout('Initial');
 		status.replaceChildren(document.createTextNode('Your turn.'), document.createElement('br'), document.createTextNode('Select a piece.'));
 		await settle();

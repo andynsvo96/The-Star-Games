@@ -135,6 +135,7 @@
       const container = board?.closest(".game-controller");
       if (!board || !replay || !container) return;
       this.stats = container.querySelector(".game-board-stats");
+      this.trailing = container.querySelector("[data-game-board-trailing]");
       board.dataset.gameBoard = "";
       replay.classList.add("game-board-replay");
       this.refresh = () => {
@@ -149,6 +150,7 @@
       if (header) this.observer.observe(header);
       if (this.controls) this.observer.observe(this.controls);
       if (this.stats) this.observer.observe(this.stats);
+      if (this.trailing) this.observer.observe(this.trailing);
       window.addEventListener("resize", this.refresh);
       document.fonts.ready.then(this.refresh);
       window.addEventListener("pagehide", () => {
@@ -178,9 +180,9 @@
         const centered = container.classList.contains("game-centered-controller");
         const style = getComputedStyle(container);
         const boardController = container.classList.contains("game-board-controller");
-        const footer = boardController && this.stats && !this.stats.hidden
+        const footer = (this.trailing && !this.trailing.hidden ? this.trailing.getBoundingClientRect().height + 8 : 0) + (boardController && this.stats && !this.stats.hidden
           ? this.stats.getBoundingClientRect().height + parseFloat(style.rowGap || 0) + 8
-          : 0;
+          : 0);
         const availableHeight = centered
           ? innerHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom) - room
           : innerHeight - this.board.getBoundingClientRect().top - room - footer - (boardController ? parseFloat(style.paddingBottom) : 0);
@@ -319,6 +321,87 @@
       this.onSelect(seat);
     }
   }
+  // View-only map camera. Keeps gameplay taps separate from drag/pinch gestures.
+  class StarGamesBoardCamera {
+    constructor(element, {surface = element.querySelector('svg'), onChange = () => {}} = {}) {
+      this.element = element; this.surface = surface; this.onChange = onChange;
+      this.zoom = 1; this.pan = {x:0,y:0}; this.points = new Map(); this.gesture = false; this.suppressUntil = 0;
+      element.classList.add('game-board-camera'); element.tabIndex = 0;
+      const listen = (target, event, handler, options) => { target.addEventListener(event,handler,options); this.cleanup.push(() => target.removeEventListener(event,handler,options)); };
+      this.cleanup = [];
+      listen(element,'pointerdown',e => {
+        if (e.button !== 0) return;
+        this.points.set(e.pointerId,{x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY});
+        if (this.points.size > 1) this.gesture = true;
+      });
+      listen(window,'pointermove',e => {
+        const p = this.points.get(e.pointerId); if (!p) return;
+        const before = this.measure(); p.x = e.clientX; p.y = e.clientY; const after = this.measure();
+        if (Math.hypot(p.x-p.startX,p.y-p.startY) >= 8) this.gesture = true;
+        if (!this.gesture) return;
+        e.preventDefault(); this.suppressUntil = performance.now()+400;
+        if (before.distance > 1 && after.distance > 1) this.zoomAt(after.distance/before.distance,this.local(before));
+        this.pan.x += after.x-before.x; this.pan.y += after.y-before.y; this.apply();
+      },{passive:false});
+      const end = e => {
+        if (!this.points.has(e.pointerId)) return;
+        if (this.gesture || e.type === 'pointercancel') this.suppressUntil = performance.now()+400;
+        this.points.delete(e.pointerId); if (!this.points.size) this.gesture = false;
+      };
+      listen(window,'pointerup',end); listen(window,'pointercancel',end);
+      listen(element,'click',e => { if (performance.now()<this.suppressUntil) { e.preventDefault(); e.stopImmediatePropagation(); } },true);
+      listen(element,'wheel',e => { e.preventDefault(); this.zoomAt(Math.exp(-e.deltaY*.002),this.local({x:e.clientX,y:e.clientY})); },{passive:false});
+      listen(element,'keydown',e => {
+        if (e.target !== element) return;
+        const center = {x:element.clientWidth/2,y:element.clientHeight/2};
+        if (['+','=','-','Home','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) e.preventDefault(); else return;
+        if (e.key==='Home') this.reset();
+        else if (['+','=','-'].includes(e.key)) this.zoomAt(e.key==='-'?1/1.2:1.2,center);
+        else { this.pan.x += e.key==='ArrowLeft'?32:e.key==='ArrowRight'?-32:0; this.pan.y += e.key==='ArrowUp'?32:e.key==='ArrowDown'?-32:0; this.apply(); }
+      });
+      listen(window,'blur',() => this.cancel());
+      listen(document,'visibilitychange',() => { if (document.hidden) this.cancel(); });
+      this.observer = new ResizeObserver(() => this.apply()); this.observer.observe(element);
+    }
+    local(p) { const r=this.element.getBoundingClientRect(); return {x:p.x-r.left,y:p.y-r.top}; }
+    measure() { const p=[...this.points.values()]; return {x:p.reduce((n,p)=>n+p.x,0)/p.length,y:p.reduce((n,p)=>n+p.y,0)/p.length,distance:p.length>1?Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y):0}; }
+    project(x,y) { const w=this.element.clientWidth,h=this.element.clientHeight; return {x:(x-.5)*w*this.zoom+w/2+this.pan.x,y:(y-.5)*h*this.zoom+h/2+this.pan.y}; }
+    zoomAt(factor,anchor) {
+      const next=Math.max(1,Math.min(4,this.zoom*factor)),cx=this.element.clientWidth/2,cy=this.element.clientHeight/2;
+      this.pan.x=anchor.x-cx-(anchor.x-cx-this.pan.x)*next/this.zoom; this.pan.y=anchor.y-cy-(anchor.y-cy-this.pan.y)*next/this.zoom;
+      this.zoom=next; this.apply();
+    }
+    apply() {
+      for (const [axis,size] of [['x',this.element.clientWidth],['y',this.element.clientHeight]]) { const limit=size*(.35+(this.zoom-1)*.5); this.pan[axis]=Math.max(-limit,Math.min(limit,this.pan[axis])); }
+      if (this.surface) this.surface.style.transform=`translate(${this.pan.x}px,${this.pan.y}px) scale(${this.zoom})`;
+      this.element.dataset.cameraZoom=String(this.zoom); this.onChange(this);
+    }
+    cancel() { if(this.points.size)this.suppressUntil=performance.now()+400; this.points.clear(); this.gesture=false; }
+    reset() { this.zoom=1; this.pan={x:0,y:0}; this.apply(); }
+    destroy() { this.cancel(); this.observer.disconnect(); for (const release of this.cleanup) release(); }
+  }
+  class StarGamesPlayerRow {
+    constructor(onSelect) {
+      this.element=document.createElement('button'); this.element.type='button'; this.element.className='game-player-row';
+      this.avatar=document.createElement('span'); this.avatar.className='game-player-row-avatar'; this.avatar.setAttribute('aria-hidden','true');
+      this.name=document.createElement('span'); this.name.className='game-player-row-name';
+      this.stats=document.createElement('span'); this.stats.className='game-player-row-stats';
+      this.element.append(this.avatar,this.name,this.stats); this.element.addEventListener('click',onSelect);
+    }
+    update(player,metrics,active=false) {
+      this.name.textContent=player.display_name; this.element.style.setProperty('--score-color',player.color);
+      this.element.classList.toggle('is-current',active); this.element.setAttribute('aria-label',[player.display_name,active?'Current turn':'Player details',...metrics.map(s=>s.label+': '+s.value)].join(', '));
+      if (global.StarGamesTableUI) { if (!this.avatar.firstChild) this.avatar.append(StarGamesTableUI.avatar(player)); else StarGamesTableUI.updateAvatar(this.avatar.firstChild,player); }
+      while(this.stats.children.length>metrics.length)this.stats.lastChild.remove();
+      metrics.forEach((metric,index) => {
+        let item=this.stats.children[index];
+        if(!item) { item=document.createElement('span');item.append(document.createElement('img'),document.createElement('span'));this.stats.append(item); }
+        item.firstChild.src=metric.icon;item.firstChild.alt='';item.lastChild.textContent=metric.value;item.setAttribute('aria-label',metric.label+': '+metric.value);
+      });
+    }
+  }
+  global.StarGamesBoardCamera = StarGamesBoardCamera;
+  global.StarGamesPlayerRow = StarGamesPlayerRow;
   global.StarGamesPlayerPicker = StarGamesPlayerPicker;
   global.StarGamesController = StarGamesController;
   global.StarGamesBoardLayout = GameBoardLayout;

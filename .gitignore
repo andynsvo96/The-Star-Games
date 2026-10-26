@@ -85,6 +85,8 @@ desktop.ini
 !/tests/ui_smoke.gd.uid
 
 # Synthetic shared board/controller layout regression (no local games required).
+!/tests/board_camera.gd
+!/tests/board_camera.gd.uid
 !/tests/shared_board_controller.mjs
 
 # Synthetic skin lifecycle, editor and LAN regression (no local games required).

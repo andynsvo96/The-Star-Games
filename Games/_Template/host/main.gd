@@ -211,6 +211,21 @@ func _ready() -> void:
 	inspector_example.theme = GameLook.make_theme("modern-table")
 	layout.playfield.add_child(inspector_example); inspector_example.hide()
 	inspector_example.set_content("Public cards", "Read-only inspection", [], [["Count", "0"]], "example")
+	# Compact inspectable public rows avoid widening a dense board's sidebars.
+	# add_centered_layout's fifth argument optionally sets a smaller sidebar floor.
+	var player_row_example := GamePlayerRow.new(); layout.left_sidebar.add_child(player_row_example); player_row_example.hide()
+	player_row_example.set_player({"display_name":"Example player","color":"#2463eb","pose":0},[{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"value":7,"label":"Public card count"}],true)
+	player_row_example.pressed.connect(func() -> void: inspector_example.show())
+	# A camera transforms presentation only. Route its tapped signal to the game's
+	# ordinary preview handler; never turn a drag release into a game command.
+	var camera_example := GameBoardCamera.new()
+	var camera_view := Control.new(); camera_view.custom_minimum_size = Vector2(180,180); camera_view.clip_contents = true; camera_view.focus_mode = Control.FOCUS_ALL
+	layout.playfield.add_child(camera_view); camera_view.hide()
+	var camera_art := TextureRect.new(); camera_art.texture = RuntimeAssets.texture("res://ui/playful/table-house.svg"); camera_art.size = Vector2(180,180); camera_art.mouse_filter = Control.MOUSE_FILTER_IGNORE; camera_view.add_child(camera_art)
+	camera_view.resized.connect(func() -> void: camera_example.viewport_size = camera_view.size)
+	camera_view.gui_input.connect(func(event: InputEvent) -> void: camera_example.handle_input(event,camera_view.get_local_mouse_position()))
+	camera_example.changed.connect(func() -> void: camera_art.scale = Vector2.ONE*camera_example.zoom; camera_art.position = camera_example.project(Vector2.ZERO))
+	camera_view.tree_exiting.connect(camera_example.cancel)
 	var reader_example := GameCardReader.new(); reader_example.theme = screen.theme; add_child(reader_example)
 	# After show_card, set_subtitle("Owned by …") adds explicit public ownership.
 	reader_example.set_preview([{"label":"Example action", "summary":"Public consequences", "players":[], "items":[]}])
@@ -493,6 +508,8 @@ func _ready() -> void:
 	# center_board(..., 0.53) can lower a private-card table within the shared fitter.
 	# set_table_header_action(button) docks by music; set_table_header_summary(control)
 	# keeps compact public facts below it, reserving their space on small screens.
+	# set_table_header_summary(roster_grid, true) reserves a full-width compact
+	# roster above the board while visible; hide it when moving rows to sidebars.
 	var ranked_example := GameRankedResults.new(); ranked_example.theme = GameLook.make_theme("casino")
 	ranked_example.maximum_height = 160; ranked_example.amount_icon = RuntimeAssets.texture("res://ui/playful/table-cash.svg")
 	ranked_example.hide(); screen.content.add_child(ranked_example)
