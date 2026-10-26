@@ -56,7 +56,7 @@ in-memory preferences. Modules with their own saves or editors must isolate thos
 stores in their adapter too. Debug does not replace real-phone, reconnection,
 browser-layout or platform acceptance tests.
 
-The current local installation has adapters for all 17 playable games/variants.
+The current local installation has adapters for all 18 playable games/variants.
 Board/card bots use legal moves and existing own-view AI where available. Social
 games script votes and private decisions. Jeopardy scripts host judging; Pictionary
 draws a sample shape, submits a placeholder guess and advances the real expiry/reveal paths. These test

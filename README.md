@@ -15,11 +15,12 @@ This public repository contains the launcher, shared host UI, browser controller
 
 ## Current local game catalog
 
-The development installation currently has 14 menu entries covering the 17 games and variants below. This list describes that local installation; these modules are not distributed in this repository.
+The development installation currently has 15 menu entries covering the 18 games and variants below. This list describes that local installation; these modules are not distributed in this repository.
 
 | Game | Description |
 | --- | --- |
 | Battleship | Place a secret fleet and sink your opponent's ships. |
+| CATAN | Build and trade with 3–6 human/computer seats, including the current paired-turn extension. |
 | Checkers | Jump opposing pieces, crown kings, and control the board. |
 | Chinese Checkers | Race ten marbles across a star with 2-6 human/computer seats. |
 | COUP | Bluff, challenge and eliminate rival influence with 2-6 human phone players. |

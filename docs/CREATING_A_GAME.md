@@ -350,6 +350,33 @@ Checks: `tests/quoridor.gd`, `tests/quoridor_network.gd`,
 and `tests/quoridor_layout.gd`. The latter uses real mouse input across host
 viewport/scaling modes, checking movement frames and content insets.
 
+### CATAN example
+
+The local `Games/catan` combines a public hex board with private resource and
+development-card views. It uses the shared royal presentation, centered board,
+score cards, card readers, dialogs, card movement, signed resource feedback and
+toolbar relocation. Phones preview a legal target and explicitly confirm it;
+the host is public in multiplayer and owns a private hand only in solo play.
+The manifest admits one human for computer-filled arrangements, while the rules
+always create three to six total seats. Five/six seats use current paired turns.
+
+Rules and geometry stay separate from presentation. Private entropy is separate
+from the public board seed, including after JSON checkpoint recovery. Discard
+tickets and stable offer IDs let independent recipients respond without rejecting
+unchanged decisions after an unrelated response. Public movement uses backs for
+private draws and steals. Both directions of an agreed trade animate together;
+input remains locked through the last flight. Disconnects and Settings pause
+decisions, clocks, AI and effects, with no computer takeover. Protected Default
+and named skins replace media and labels without changing rule identities.
+
+Its module README documents official rule sources, timers, scoring, autosave and
+profile-matched resume. Local checks include `tests/catan_rules.gd`,
+`catan_transactions.gd`, `catan_session.gd`, `catan_network.gd`,
+`catan_persistence.gd`, `catan_settings.gd`, `catan_ai.gd`, rendered `catan_visual.gd` and
+`catan_motion.gd`, then `node tests/catan_controller.mjs`. Debug autoplay exercises
+one to six temporary human seats through ordinary validated handlers. These
+module files and tests remain local under the publishing policy.
+
 ### Board setup controls
 
 `screen.center_board(board, replay, setup_controls)` optionally reparents a
