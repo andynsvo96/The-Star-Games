@@ -353,10 +353,11 @@ viewport/scaling modes, checking movement frames and content insets.
 ### CATAN example
 
 The local `Games/catan` combines a public hex board with private resource and
-development-card views. It uses the shared royal presentation, centered board,
-score cards, card readers, dialogs, card movement, signed resource feedback and
-toolbar relocation. Phones preview a legal target and explicitly confirm it;
-the host is public in multiplayer and owns a private hand only in solo play.
+development-card views. It uses the shared admiral presentation, compact table
+header, centered board, asset score cards, card readers, dialogs, card movement,
+signed resource feedback and toolbar relocation. Phones preview a legal target
+and explicitly confirm it. The host is public in multiplayer and owns a private
+hand only in solo play.
 The manifest admits one human for computer-filled arrangements, while the rules
 always create three to six total seats. Five/six seats use current paired turns.
 
@@ -368,6 +369,10 @@ private draws and steals. Both directions of an agreed trade animate together;
 input remains locked through the last flight. Disconnects and Settings pause
 decisions, clocks, AI and effects, with no computer takeover. Protected Default
 and named skins replace media and labels without changing rule identities.
+Its module-owned artwork map keeps canonical host/controller paths aligned with
+stable skin slot IDs when Default media changes format. Generated originals and
+4K masters stay in the local source-media folder, with smaller runtime exports
+for phone memory use. Public supply panels contain only public inventory.
 
 Its module README documents official rule sources, timers, scoring, autosave and
 profile-matched resume. Local checks include `tests/catan_rules.gd`,
