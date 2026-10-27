@@ -289,7 +289,7 @@ func _ready() -> void:
 	# When an outer panel supplies the heading, hide the duplicate inner caption.
 	activity_example.show_heading = false; activity_example.heading.hide(); activity_example.bold_latest = true
 	activity_example.entry_font_size = 17; activity_example.maximum_entries = 5; activity_example.separators = true
-	activity_example.set_entries([{"id":1, "text":"Example player banked a card","parts":[{"text":"Example player banked "},{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"width":20,"height":26}]}], true)
+	activity_example.set_entries([{"id":1, "text":"Example player banked a card","parts":[{"text":"Example player","color":GameLook.readable_text_color(Color("2463eb"),GameLook.CREAM)},{"text":" banked "},{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"width":20,"height":26}]}], true)
 	# Set expandable=true before adding a compact log; connect expand_requested to
 	# an enlarged phase dialog. show_reference(front,back,true) fits without scroll.
 	# GameLook.draw_table_winner(canvas, rect, elapsed, reduced) supplies a gold

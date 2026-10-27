@@ -69,7 +69,10 @@ func set_entries(items: Array, reduced := false, paused := false) -> void:
 			rich.add_theme_font_size_override("normal_font_size",entry_font_size); rich.add_theme_color_override("default_color",GameLook.SCROLL_INK if paper else GameLook.CREAM)
 			for part: Dictionary in items[index].parts:
 				if part.get("texture") is Texture2D: rich.add_image(part.texture,int(part.get("width",20)),int(part.get("height",26)),Color.WHITE,INLINE_ALIGNMENT_CENTER)
-				else: rich.add_text(str(part.get("text","")))
+				else:
+					if part.has("color"): rich.push_color(part.color if part.color is Color else Color(str(part.color)))
+					rich.add_text(str(part.get("text","")))
+					if part.has("color"): rich.pop()
 			label = rich
 		else:
 			var plain := Label.new(); plain.text = str(items[index].text); plain.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; plain.add_theme_font_size_override("font_size", entry_font_size); plain.add_theme_color_override("font_color",GameLook.SCROLL_INK if paper else GameLook.CREAM); label = plain

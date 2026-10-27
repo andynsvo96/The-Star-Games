@@ -378,13 +378,23 @@ earlier 4K masters stay in the local source-media folder, with smaller runtime e
 for phone memory use. A continuous ocean fills the screen through the shared
 background player using extensionless `art/ocean`. The map paints behind the UI
 across the whole viewport, retaining its initial fit through shared anchors.
-Subtle water currents freeze for reduced motion and pause with the game. Detailed
+Localized waves approach the island, break into foam and recede around rocks.
+The native coastline draws in a separate layer in board coordinates; browser
+SVG groups use finite cached geometry and local transform/opacity animations.
+Camera navigation carries the beach, foam and rocks together. Pause, reduced
+motion and page exit freeze or clear water effects. No full-screen animation
+or terrain redraw is needed for the coastline. Detailed
 vector buildings retain their identity colors with untinted ivory details,
 including for black pieces. Roads keep dark edges and soft shadows. The current
 Default pairs detailed terrain with sand bevels, coastal rocks, and a deep teal
 ocean. Transparent resource symbols are cropped and centered after resizing;
 docks and activity share those symbols. Activity uses the square shared route
-glyph and preserves building aspect ratios. Computer seat colors avoid similar
+glyph and preserves building aspect ratios. History names use each roster's
+readable identity color through literal text parts. Harbor badges lie on each
+coastal edge's outward perpendicular bisector, making equal links to both
+building sites. Solo hosts inspect their resource quantities through their own
+player panel; the host action footer omits resource cards. Phones retain their
+private hands. Computer seat colors avoid similar
 human and computer colors, including when restoring older saves.
 Ports use scalable resource symbols and 2:1/3:1 badges instead of boats. A development deck
 and two bonus cards stay separate from the public market and costs/overview
@@ -2773,7 +2783,10 @@ confirmation retains the usual grey palette and the module still validates it.
 `GameActivityLog` supports `separators=true`, `maximum_entries=5` (zero means
 unlimited), and `expandable=true` before adding it. Connect `expand_requested`
 to an enlarged phase dialog. Entry `parts` can contain literal `{text}` runs and
-`{texture,width,height}` icons. Keep full literal `text` for accessible meaning;
+`{texture,width,height}` icons. A literal text run may supply `color` (a Color or
+validated color string); the native renderer uses the rich-text color stack
+without enabling BBCode. Use the same shared contrast helper as the identity's
+roster. Keep full literal `text` for accessible meaning;
 the module filters public icons before supplying them. Browser paragraph feeds
 use `game-activity-separated` and `game-activity-bold-latest`.
 For navy browser feeds, pair `game-activity-paper` with `game-activity-dark`;
