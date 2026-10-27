@@ -84,5 +84,17 @@ func _run() -> void:
 		check(GameLook.text_contrast(color,background.bg_color) >= 4.5,"History ink remains readable when inheriting an opposite-color theme")
 		log.queue_free()
 	grid.queue_free()
+	var compact_log := GameActivityLog.new(); compact_log.maximum_entries = 5; compact_log.separators = true; compact_log.expandable = true; root.add_child(compact_log)
+	var log_items: Array = []
+	for index in 8: log_items.append({"id":index,"text":"Literal <player> %d" % index})
+	compact_log.set_entries(log_items,true)
+	check(compact_log.entries.get_child_count() == 9 and compact_log.entries.get_child(1) is HSeparator,"Compact history limits entries and separates each pair")
+	compact_log.set_entries([{"id":9,"text":"Literal <player> with an icon","parts":[{"text":"Literal <player> "},{"texture":RuntimeAssets.texture("res://ui/playful/stat-route.svg")}]}],true)
+	check(compact_log.entries.get_child(0) is RichTextLabel and compact_log.entries.get_child(0).accessibility_name == "Literal <player> with an icon","Icon history retains literal accessible meaning")
+	var cost := GameCostRow.new(); root.add_child(cost); cost.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Wood","available":false}])
+	check(cost.get_child(0).material is ShaderMaterial and cost.get_child(0).accessibility_name == "Wood missing","Missing materials desaturate and remain accessible")
+	row.set_player({"display_name":"Long name","color":"#000000"},metrics,true,{"value":"5 +2","label":"Points plus cards"}); row._layout()
+	check(row.name_label.get_rect().end.x < row.headline_value.position.x-14,"Headline bonus suffix reserves its full width")
+	cost.queue_free(); compact_log.queue_free()
 	row.queue_free(); await process_frame
 	print("Board camera: %d checks, %d failures" % [checks,failures]); quit(0 if failures == 0 else 1)

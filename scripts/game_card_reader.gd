@@ -14,6 +14,7 @@ var actions := HFlowContainer.new()
 var action_scroll := ScrollContainer.new()
 var pages: Array[Texture2D] = []
 var page := 0
+var fit_reference := false
 var rotate_row := HBoxContainer.new()
 var rotate_button := Button.new()
 var rotate_label := Label.new()
@@ -44,6 +45,8 @@ func _ready() -> void:
 	center.size_flags_horizontal = Control.SIZE_EXPAND_FILL; center.size_flags_vertical = Control.SIZE_EXPAND_FILL; stage.add_child(center); center.add_child(composition)
 	composition.add_theme_constant_override("separation", 24); composition.add_child(card); card.size_flags_vertical = Control.SIZE_SHRINK_CENTER; composition.add_child(preview); preview.hide()
 	card.item_rect_changed.connect(_place_flip)
+	composition.item_rect_changed.connect(_place_flip)
+	center.item_rect_changed.connect(_place_flip)
 	rotate_row.alignment = BoxContainer.ALIGNMENT_CENTER; rotate_row.add_theme_constant_override("separation", 12); column.add_child(rotate_row)
 	rotate_button.theme = theme; rotate_button.icon = RuntimeAssets.texture("res://ui/playful/control-rotate.svg"); rotate_button.custom_minimum_size = Vector2(48, 44); rotate_button.accessibility_name = "Rotate card"; GameLook.action(rotate_button, false); rotate_row.add_child(rotate_button)
 	rotate_label.add_theme_color_override("font_color", Color("fff4d9")); rotate_label.add_theme_font_size_override("font_size", 14); rotate_row.add_child(rotate_label); rotate_row.hide()
@@ -99,7 +102,8 @@ func set_actions(commands: Array, back := Callable()) -> void:
 	_fit.call_deferred()
 
 
-func show_reference(front: Texture2D, back: Texture2D) -> void:
+func show_reference(front: Texture2D, back: Texture2D, fit_to_view := false) -> void:
+	fit_reference = fit_to_view
 	_cancel_rotation(); shown_id = -1; card.rotation = 0; rotate_row.hide()
 	preview.hide()
 	subtitle.text = ""; subtitle.hide()
@@ -129,6 +133,7 @@ func _fit() -> void:
 		var dimensions: Vector2 = pages[page].get_size()
 		if dimensions.y > 0: aspect = dimensions.x / dimensions.y
 		if aspect > 1: width = minf(880, maxf(160, size.x - 72))
+		if fit_reference: width = maxf(1,minf(width,maxf(1,stage.size.y-40)*aspect))
 	card.custom_minimum_size = Vector2(width, width / aspect)
 	card.size_flags_vertical = Control.SIZE_SHRINK_BEGIN if preview.visible else Control.SIZE_SHRINK_CENTER
 	card.pivot_offset = card.size / 2
@@ -137,7 +142,7 @@ func _fit() -> void:
 
 func _place_flip() -> void:
 	if not is_inside_tree() or not flip.visible: return
-	flip.size = Vector2(44, 44); flip.position = card.global_position - global_position + Vector2(maxf(0, card.size.x - 28), -16)
+	flip.size = Vector2(44, 44); flip.position = card.get_global_rect().position - get_global_rect().position + Vector2(maxf(0, card.size.x - 28), -16)
 
 
 func _contains_focus(point: Vector2) -> bool:

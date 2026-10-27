@@ -881,6 +881,11 @@ static func action(button: Button, primary := true) -> void:
 
 # Fit ordinary themed controls into small artwork panels; retain their palette.
 # Call with false to restore their original size when the panel wraps on phones.
+static func confirm_control(button: Button) -> void:
+	# Semantic confirmation keeps the current theme surface and disabled palette.
+	for key in ["font_color","font_hover_color","font_pressed_color"]: button.add_theme_color_override(key,Color("97e891"))
+	button.add_theme_font_size_override("font_size",28); button.custom_minimum_size = Vector2(56,44)
+
 static func compact_control(button: BaseButton, enabled := true) -> void:
 	if not button.has_meta("game_regular_control"):
 		var styles: Dictionary = {}

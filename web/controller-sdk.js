@@ -412,6 +412,7 @@
         let item=this.stats.children[index];
         if(!item) { item=document.createElement('span');const value=document.createElement('span'),caption=document.createElement('small');value.className='game-player-row-value';caption.className='game-player-row-caption';item.append(document.createElement('img'),value,caption);this.stats.append(item); }
         item.firstChild.src=metric.icon;item.firstChild.alt='';item.children[1].textContent=metric.value;item.lastChild.textContent=metric.caption||metric.label;item.setAttribute('aria-label',metric.label+': '+metric.value);
+        item.firstChild.classList.toggle('game-stat-highlight',!!metric.highlighted);
         item.children[1].classList.toggle('is-long-count',String(metric.value).length>2);
       });
     }
@@ -424,12 +425,23 @@
         let tile=this.element.children[index];
         if(!tile){tile=document.createElement('div');tile.className='game-stat-card';const image=document.createElement('img'),copy=document.createElement('div');image.alt='';copy.append(document.createElement('output'),document.createElement('span'));tile.append(image,copy);this.element.append(tile);}
         tile.firstChild.src=metric.icon;tile.lastChild.firstChild.textContent=metric.value;tile.lastChild.lastChild.textContent=metric.label;tile.setAttribute('aria-label',metric.label+': '+metric.value);
+        tile.firstChild.classList.toggle('game-stat-highlight',!!metric.highlighted);
       });
     }
   }
   global.StarGamesBoardCamera = StarGamesBoardCamera;
   global.StarGamesPlayerRow = StarGamesPlayerRow;
   global.StarGamesStatGrid = StarGamesStatGrid;
+  global.StarGamesCostRow = items => {
+    const row=document.createElement('div');row.className='game-cost-row';
+    for(const item of items){const image=document.createElement('img');image.src=item.icon;image.alt=item.label+(item.available?' available':' missing');image.classList.toggle('is-unavailable',!item.available);row.append(image);}
+    return row;
+  };
+  global.StarGamesButtonBadge = (button,count) => {
+    let badge=button.querySelector('.game-notification-badge');
+    if(!badge){badge=document.createElement('span');badge.className='game-notification-badge';badge.setAttribute('aria-hidden','true');button.append(badge);}
+    badge.hidden=count<1;badge.textContent=count>99?'99+':String(count);button.classList.add('has-notification-badge');
+  };
   global.StarGamesPlayerPicker = StarGamesPlayerPicker;
   global.StarGamesController = StarGamesController;
   global.StarGamesBoardLayout = GameBoardLayout;

@@ -223,10 +223,16 @@ func _ready() -> void:
 	# grid_counters omits captions and gives an optional fourth set_player
 	# argument its own top-right icon/value slot, independent of the name.
 	player_row_example.grid_counters = true
+	# Optional identity-colored turn outline; highlighted metrics mark awards.
+	player_row_example.active_identity_outline = true
 	player_row_example.set_player({"display_name":"Example player","color":"#2463eb","pose":0},[{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"value":7,"label":"Public card count"}],true,{"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-victory.svg"),"value":2,"label":"Public points"})
 	var stat_grid_example := GameStatGrid.new(); layout.playfield.add_child(stat_grid_example); stat_grid_example.hide()
 	stat_grid_example.maximum_columns = 4
-	stat_grid_example.set_metrics([{"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-victory.svg"),"value":2,"label":"Public points"}])
+	stat_grid_example.set_metrics([{"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-victory.svg"),"value":2,"label":"Public points","highlighted":true}])
+	var cost_example := GameCostRow.new(); layout.playfield.add_child(cost_example); cost_example.hide()
+	cost_example.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"One required card","available":false}])
+	# A green check confirmation inherits its theme through GameLook.confirm_control.
+	var badge_example := GameButtonBadge.new(); player_row_example.add_child(badge_example); badge_example.count = 2
 	# A camera transforms presentation only. Route its tapped signal to the game's
 	# ordinary preview handler; never turn a drag release into a game command.
 	var camera_example := GameBoardCamera.new()
@@ -279,8 +285,10 @@ func _ready() -> void:
 	var activity_example := GameActivityLog.new(); activity_example.paper = true; layout.playfield.add_child(activity_example); activity_example.hide()
 	# When an outer panel supplies the heading, hide the duplicate inner caption.
 	activity_example.show_heading = false; activity_example.heading.hide(); activity_example.bold_latest = true
-	activity_example.entry_font_size = 17
-	activity_example.set_entries([{"id":1, "text":"Example player banked $1"}], true)
+	activity_example.entry_font_size = 17; activity_example.maximum_entries = 5; activity_example.separators = true
+	activity_example.set_entries([{"id":1, "text":"Example player banked a card","parts":[{"text":"Example player banked "},{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"width":20,"height":26}]}], true)
+	# Set expandable=true before adding a compact log; connect expand_requested to
+	# an enlarged phase dialog. show_reference(front,back,true) fits without scroll.
 	# GameLook.draw_table_winner(canvas, rect, elapsed, reduced) supplies a gold
 	# WINNER label; keep its animation clock paused with the owning game.
 	var winner_example := Control.new(); layout.playfield.add_child(winner_example); winner_example.hide()

@@ -1312,6 +1312,8 @@ body.playful-game { isolation: isolate; }
 .game-modern-table .game-controller .building-badge .game-table-icon { width:16px; height:16px; }
 .game-modern-table .payment-summary.is-covered .game-owed b,.game-modern-table .payment-summary.is-covered .pay-total b,.game-success-text { color:#84e8b1; }
 .game-reader-reference-wrap { position:relative; }
+.game-card-reader.has-fitted-reference .game-card-reader-stage { overflow: hidden; min-height: 0; align-items: center; }
+.game-card-reader.has-fitted-reference .game-reader-reference-wrap { flex: none; min-width: 0; min-height: 0; }
 .game-reader-reference-wrap > img { display:block; width:100%; height:100%; object-fit:contain; }
 .game-card-reader .game-reader-reference-wrap > [data-reader-flip] { position:absolute; top:-16px; right:-16px; width:44px; min-width:44px; height:44px; min-height:44px; margin:0; padding:10px; }
 .game-card-reader [data-reader-flip] svg { display:block; width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
@@ -1600,6 +1602,19 @@ body.playful-game { isolation: isolate; }
 .game-player-row-headline { display: inline-flex; align-items: center; justify-content: flex-end; gap: 3px; grid-column: 3; grid-row: 1; }
 .game-player-row-headline img { width: 25px; height: 27px; object-fit: contain; }
 .game-player-row-headline output { font-size: 1.5rem; font-weight: 700; line-height: 1; }
+.game-player-row-headline { white-space: nowrap; }
+.game-stat-highlight { outline: 2px solid #dfa823; outline-offset: 1px; border-radius: 4px; background: #ffe49a33; }
+.playful-game .game-controller button.game-player-row.is-current.has-identity-turn-outline { outline: 3px solid var(--score-color); outline-offset: -3px; }
+.game-cost-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 8px auto; }
+.game-cost-row img { width: 32px; height: 48px; object-fit: contain; }
+.game-cost-row .is-unavailable { filter: grayscale(1); opacity: .5; }
+.playful-game button.game-confirm-control { font-size: 28px; min-width: 56px; min-height: 44px; }
+.playful-game button.game-confirm-control:enabled { color: #97e891; }
+.has-notification-badge { position: relative; overflow: visible; }
+.game-notification-badge { position: absolute; top: -5px; right: -5px; display: grid; place-items: center; min-width: 20px; height: 20px; padding: 0 3px; border-radius: 50%; background: #d9373f; color: #fff; font: bold 12px/1 sans-serif; pointer-events: none; box-sizing: border-box; }
+.game-notification-badge[hidden] { display: none; }
+.game-activity-separated > p + p { border-top: 1px solid #56351f29; padding-top: 7px; }
+.game-activity-bold-latest > p:first-child { font-weight: 700; }
 .playful-game .game-controller button.game-player-row.has-headline { grid-template-columns: 34px minmax(0,1fr) auto; }
 .game-player-row.has-headline .game-player-row-stats { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px 4px; }
 .game-player-row.has-headline .game-player-row-stats > span { display: flex; min-width: 0; align-items: center; gap: 5px; }

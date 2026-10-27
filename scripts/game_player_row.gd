@@ -9,6 +9,7 @@ var detailed := false
 var show_labels := false
 var grid_counters := false
 var dense := false
+var active_identity_outline := false
 var headline := {}
 var headline_value := Label.new()
 var metrics: Array = []
@@ -50,10 +51,12 @@ func _layout() -> void:
 		var small := compact and not detailed
 		var columns := 3
 		var left := 32.0 if small else 50.0
-		var badge := 35.0 if small else 60.0
+		var headline_font := 14 if small else 21 if compact else 25
+		var value_width := maxf(19 if small else 29,headline_value.get_theme_font("font").get_string_size(headline_value.text,HORIZONTAL_ALIGNMENT_LEFT,-1,headline_font).x+2)
+		var badge := value_width+(20 if small else 34)
 		name_label.position = Vector2(left,4 if small else 7); name_label.size = Vector2(maxf(0,size.x-left-badge-7),23)
 		name_label.add_theme_font_size_override("font_size",10 if small else 13 if compact else 15)
-		headline_value.position = Vector2(size.x-(21 if small else 33),3 if small else 5); headline_value.size = Vector2(19 if small else 29,24 if small else 30)
+		headline_value.position = Vector2(size.x-value_width-5,3 if small else 5); headline_value.size = Vector2(value_width,24 if small else 30)
 		headline_value.add_theme_font_size_override("font_size",14 if small else 21 if compact else 25)
 		var step := (size.x-(12 if small else 20))/float(columns)
 		for index in values.size():
@@ -98,18 +101,20 @@ func _layout() -> void:
 
 func _draw() -> void:
 	var identity := Color(str(player.get("color","#58d6ff")))
-	draw_style_box(GameLook.box(GameLook.CREAM,Color("e9b94f") if active else GameLook.WOOD_EDGE,8,3 if active else 1),Rect2(Vector2.ONE*2,size-Vector2.ONE*4))
+	draw_style_box(GameLook.box(GameLook.CREAM,identity if active and active_identity_outline else Color("e9b94f") if active else GameLook.WOOD_EDGE,8,3 if active else 1),Rect2(Vector2.ONE*2,size-Vector2.ONE*4))
 	draw_style_box(GameLook.box(identity,identity,2,0),Rect2(Vector2(3,10),Vector2(4,size.y-20)))
 	GameLook.draw_table_avatar(self,Rect2(10,6,32,32) if detailed else Rect2(8,5,22,22) if compact else Rect2(10,8,29,29),identity,int(player.get("pose",0)))
 	if grid_counters:
 		var small := compact and not detailed
 		var columns := 3
 		var symbol: Texture2D = headline.get("texture")
-		if symbol: draw_texture_rect(symbol,Rect2(Vector2(size.x-(36 if small else 62),6 if small else 8),Vector2.ONE*(15 if small else 26)),false)
+		if symbol: draw_texture_rect(symbol,Rect2(Vector2(headline_value.position.x-(18 if small else 29),6 if small else 8),Vector2.ONE*(15 if small else 26)),false)
 		var step := (size.x-(12 if small else 20))/float(columns)
 		for index in mini(6,metrics.size()):
 			var texture: Texture2D = metrics[index].get("texture")
-			if texture: draw_texture_rect(texture,Rect2(Vector2((6 if small else 12)+(index%columns)*step,(29 if dense else 31 if small else 39)+(index/columns)*(16 if dense else 18 if small else 26 if compact else 30)),Vector2.ONE*(13 if small else 22 if compact else 26)),false)
+			var bounds := Rect2(Vector2((6 if small else 12)+(index%columns)*step,(29 if dense else 31 if small else 39)+(index/columns)*(16 if dense else 18 if small else 26 if compact else 30)),Vector2.ONE*(13 if small else 22 if compact else 26))
+			if metrics[index].get("highlighted",false): draw_style_box(GameLook.box(Color("ffe49a33"),Color("dfa823"),4,2),bounds.grow(2))
+			if texture: draw_texture_rect(texture,bounds,false)
 		return
 	if detailed:
 		var step := (size.x-20)/3.0

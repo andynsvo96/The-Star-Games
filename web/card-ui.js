@@ -210,12 +210,13 @@
       this.dialog.append(this.header,this.subtitle,this.stage,this.rotateRow,this.footer);document.body.append(this.dialog);
       global.StarGamesDismissOnOutside(this.dialog,{contains:target=>!!target.closest('.game-reader-card,.game-action-preview,button,.game-card-rotate')});
       this.dialog.addEventListener('close',onClose);this.dialog.addEventListener('cancel',event=>{event.preventDefault();this.close();});
+      this.referenceObserver=new ResizeObserver(()=>this.fitReference());this.referenceObserver.observe(this.stage);
     }
     button(label,callback,primary=false){const node=document.createElement('button');node.textContent=label;node.className=(primary?'game-primary':'game-secondary')+' game-compact-control';node.addEventListener('click',callback);return node;}
     showCard(node,{heading='',actions=[],back}={}){
       this.clearPreview();
       this.setSubtitle('');
-      this.dialog.classList.remove('has-action-preview','has-reference');this.previewIndex=0;
+      this.dialog.classList.remove('has-action-preview','has-reference','has-fitted-reference');this.previewIndex=0;
       this.rotateRow.hidden=true;
       this.pages=null;this.topBack.hidden=true;this.flip.hidden=true;this.header.append(this.flip);this.heading.textContent=heading;this.footer.hidden=false;node.classList.add('game-reader-card');this.stage.replaceChildren(node);this.setActions(actions,back);if(!this.dialog.open)this.dialog.showModal();
     }
@@ -224,8 +225,9 @@
     clearPreview(){const preview=this.stage.querySelector('.game-action-preview');preview?.dispose?.();preview?.remove();}
     setPreview(items,{selected=0,presentation='default',onSelect}={}){this.clearPreview();this.previewIndex=selected;this.dialog.classList.toggle('has-action-preview',!!items.length);if(items.length)this.stage.append(global.StarGamesActionPreview(items,{selected,presentation,onSelect:index=>{this.previewIndex=index;onSelect?.(index);}}));}
     setRotation({side=0,label='',onRotate,reduced=false,animate=false}={}){this.rotateRow.hidden=false;this.rotateLabel.textContent=label;this.onRotate=onRotate;const node=this.stage.firstElementChild;if(!node)return;node.style.transition='none';node.style.transform='rotate('+side*180+'deg)';if(animate&&!reduced&&!matchMedia('(prefers-reduced-motion: reduce)').matches)node.animate([{transform:'rotate('+(side*180-180)+'deg)'},{transform:'rotate('+side*180+'deg)'}],{duration:380,easing:'cubic-bezier(.65,0,.35,1)'});}
-    showReference(pages){this.clearPreview();this.setSubtitle('');this.dialog.classList.remove('has-action-preview');this.dialog.classList.add('has-reference');this.rotateRow.hidden=true;this.pages=pages;this.page=0;this.topBack.hidden=false;this.flip.hidden=false;this.heading.textContent='';this.footer.hidden=true;this.renderPage();if(!this.dialog.open)this.dialog.showModal();requestAnimationFrame(()=>{this.stage.scrollTop=0;});}
-    renderPage(){const wrap=document.createElement('div'),img=document.createElement('img');wrap.className='game-reader-card game-reader-reference-wrap';img.className='game-reader-reference';img.src=this.pages[this.page].src;img.alt=this.pages[this.page].alt;this.flip.replaceChildren(global.StarGamesTableUI.icon('rotate'));this.flip.setAttribute('aria-label',this.page===0?'Flip to back':'Flip to front');wrap.append(img,this.flip);this.stage.replaceChildren(wrap);this.stage.scrollTop=0;}
+    showReference(pages,{fit=false}={}){this.clearPreview();this.setSubtitle('');this.dialog.classList.remove('has-action-preview');this.dialog.classList.add('has-reference');this.dialog.classList.toggle('has-fitted-reference',fit);this.rotateRow.hidden=true;this.pages=pages;this.page=0;this.topBack.hidden=false;this.flip.hidden=false;this.heading.textContent='';this.footer.hidden=true;this.renderPage();if(!this.dialog.open)this.dialog.showModal();requestAnimationFrame(()=>{this.stage.scrollTop=0;this.fitReference();});}
+    renderPage(){const wrap=document.createElement('div'),img=document.createElement('img');wrap.className='game-reader-card game-reader-reference-wrap';img.className='game-reader-reference';img.onload=()=>this.fitReference();img.src=this.pages[this.page].src;img.alt=this.pages[this.page].alt;this.flip.replaceChildren(global.StarGamesTableUI.icon('rotate'));this.flip.setAttribute('aria-label',this.page===0?'Flip to back':'Flip to front');wrap.append(img,this.flip);this.stage.replaceChildren(wrap);this.stage.scrollTop=0;}
+    fitReference(){if(!this.dialog.open||!this.dialog.classList.contains('has-reference')||!this.dialog.classList.contains('has-fitted-reference'))return;const wrap=this.stage.querySelector('.game-reader-reference-wrap'),img=wrap?.firstChild;if(!img?.naturalHeight)return;const ratio=img.naturalWidth/img.naturalHeight,width=Math.max(1,Math.min(ratio>1?880:500,this.stage.clientWidth-48,(this.stage.clientHeight-48)*ratio));wrap.style.width=width+'px';wrap.style.height=width/ratio+'px';this.stage.scrollTop=0;}
     flipPage(){if(this.pages){this.page=1-this.page;this.renderPage();}}
     close(){this.stage.querySelector('.game-action-preview')?.stop?.();this.dialog.close();}
     get open(){return this.dialog.open;}

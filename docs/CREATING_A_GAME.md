@@ -356,7 +356,8 @@ The local `Games/catan` combines a public hex board with private resource and
 development-card views. It uses the shared royal presentation, compact table
 header with a turn-order strip, centered board, compact inspectable player rows, readers,
 dialogs, card movement, signed resource feedback and toolbar relocation. Phones
-preview a legal target and explicitly confirm it. The host is public in multiplayer and owns a private
+inspect a route/building target's material cost and confirm with a green check;
+missing materials are grey. Setup places directly. The host is public in multiplayer and owns a private
 hand only in solo play.
 The manifest admits one human for computer-filled arrangements, while the rules
 always create three to six total seats. Five/six seats use current paired turns.
@@ -382,15 +383,18 @@ vector buildings retain their identity colors with untinted white rooflines,
 doors, windows and chimneys, including for black pieces. Roads keep dark edges and soft shadows without cream backing silhouettes.
 Ports use scalable resource symbols and 2:1/3:1 badges instead of boats. A development deck
 and two bonus cards stay separate from the public market and costs/overview
-reference. Wide multiplayer hosts put larger player cards on the left
-and persistent paper History on the right. VP has a separate top-right star,
+reference. Wide hosts put larger player cards on the left and compact paper
+History plus a public Open Market preview on the right. History keeps five
+separated entries and opens the full feed when clicked; resources, buildings
+and dice use icons. A red badge counts public market offers. VP has a separate top-right star,
 with six icon-only counters below: resources, development cards, route, Knights,
 settlements and cities. Session wins move into the public inspector header.
-Solo retains side rosters; narrow hosts
-and phones use compact rows above the island. Simple star, resource-card,
+An identity-colored outline marks the active player. Gold route/army icon
+outlines mark bonus holders; VP cards appear separately as `5 +1`, including in
+the enlarged inspector. Narrow hosts and phones use compact rows above the island. Simple star, resource-card,
 development-card, route, helmet and trophy icons identify public counters.
 Clicking a row opens public counters, building totals, bonuses and only that
-player's activity. Names align left with session wins opposite. New games clear
+player's activity, bolding its latest entry. Names align left with session wins opposite. New games clear
 activity while retaining session wins; secrets stay out of public logs. Multiplayer hosts omit Help; solo hosts
 and phones open a two-sided build-cost/turn-overview card in the shared reversible
 reader. History keeps a visible caption when opened from a utility button.
@@ -399,9 +403,13 @@ scroll/pinch to zoom directly; camera changes never submit game actions.
 Private resource feedback uses the live amount's font, with gains above and
 losses below. Wide public host deltas sit beside player cards to keep the dense
 counter grid clear. Build hammers/clouds and temporary thrown dice use public
-accepted event IDs, pause with play, and do not replay on reconnect. Dice hold
+accepted event IDs, pause with play, and do not replay on reconnect. Solid dice bounce and hold
 the host's result for two seconds after landing; reduced motion keeps immediate,
-static feedback. Layered currents, caustics and shore foam remain cosmetic. Public supply views contain only public inventory.
+static feedback. Production flights retain each source hex and use host-owned
+card-slide audio. Top action captions clear after a player's turn; End Turn is
+omitted from activity. The saved, instant Roll potential toggle defaults off and
+shows neighboring production pips at possible settlements and city upgrades.
+Layered currents, caustics and shore foam remain cosmetic. Public supply views contain only public inventory.
 
 Its module README documents official rule sources, timers, scoring, autosave and
 profile-matched resume. Local checks include `tests/catan_rules.gd`,
@@ -2723,3 +2731,35 @@ Verification: `tests/pictionary.gd`, `tests/pictionary_network.gd`, rendered
 the standard import, core, network and UI smoke commands. The controller tests
 exercise portrait, landscape, small screens, reduced motion, private state,
 held-pointer streaming, pause/reconnect, offline assets and clean page exits.
+
+### Compact public feeds and costs
+
+Roster and inspector metrics accept `highlighted:true` for a static gold icon
+outline. Native rows can set `active_identity_outline=true`; browser rows add
+`has-identity-turn-outline` for an identity-colored active outline. Headline
+values can include a public suffix such as `5 +1`, reserving its measured width.
+Modules determine which bonuses are public.
+
+`GameCostRow.set_items([{texture,label,available},...])` and browser
+`StarGamesCostRow([{icon,label,available},...])` display one icon per required
+material, desaturating missing items. Use them in a shared compact phase dialog
+with a validated confirmation action. A `GameButtonBadge` attached to a Button
+(`count`) or browser `StarGamesButtonBadge(button,count)` adds a red count badge.
+Include its meaning in the button's accessible name too. Template examples
+demonstrate these presentation-only helpers.
+
+For a green checkmark on the current theme's confirmation button, use native
+`GameLook.confirm_control(button)` or browser `game-confirm-control`. Disabled
+confirmation retains the usual grey palette and the module still validates it.
+
+`GameActivityLog` supports `separators=true`, `maximum_entries=5` (zero means
+unlimited), and `expandable=true` before adding it. Connect `expand_requested`
+to an enlarged phase dialog. Entry `parts` can contain literal `{text}` runs and
+`{texture,width,height}` icons. Keep full literal `text` for accessible meaning;
+the module filters public icons before supplying them. Browser paragraph feeds
+use `game-activity-separated` and `game-activity-bold-latest`.
+
+Pass `true` as the third native `show_reference` argument or `{fit:true}` as the
+second browser `showReference` argument to fit both reference faces without
+scrolling. Flip and Back retain 44px targets. Ordinary card readers keep their
+existing scrolling behavior.

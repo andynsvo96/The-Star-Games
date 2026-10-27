@@ -146,10 +146,14 @@
   const cameraSurface=document.createElementNS('http://www.w3.org/2000/svg','svg');cameraExample.append(cameraSurface);
   const exampleCamera=new StarGamesBoardCamera(cameraExample,{fitElement:cameraFit});
   const rowExample=new StarGamesPlayerRow(()=>exampleCamera.reset());
-  rowExample.element.classList.add('is-detailed','has-headline');
+  rowExample.element.classList.add('is-detailed','has-headline','has-identity-turn-outline');
   rowExample.update({display_name:'Example player',color:'#2463eb',pose:0},[{icon:'/ui/playful/table-cards.svg',value:7,label:'Public card count'}],true,{icon:'/ui/playful/stat-victory.svg',value:2,label:'Public points'});cameraWrapper.append(rowExample.element);
   cameraWrapper.append(StarGamesTurnStrip([{display_name:'Example player',color:'#2463eb'}],0,{tracked:true,actions:['Played a public card']}));
-  const statGridExample=new StarGamesStatGrid();statGridExample.update([{icon:'/ui/playful/stat-victory.svg',value:2,label:'Public points'}]);cameraWrapper.append(statGridExample.element);
+  const statGridExample=new StarGamesStatGrid();statGridExample.update([{icon:'/ui/playful/stat-victory.svg',value:2,label:'Public points',highlighted:true}]);cameraWrapper.append(statGridExample.element);
+  cameraWrapper.append(StarGamesCostRow([{icon:'/ui/playful/table-cards.svg',label:'One required card',available:false}]));
+  StarGamesButtonBadge(rowExample.element,2);
+  // showReference(pages,{fit:true}) fits both faces without a reader scrollbar.
+  // Paragraph feeds opt into game-activity-separated/game-activity-bold-latest.
   addEventListener('pagehide',()=>exampleCamera.destroy(),{once:true});
   const rulesExample=document.getElementById('example-rules-dialog');
   // Feed eligible badge elements and public obstacles only; clear on exit/pause.
