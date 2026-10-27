@@ -35,6 +35,10 @@ func _run() -> void:
 	camera.pan = Vector2(9000,9000); camera.set_frame(Vector2(400,700),Rect2(60,180,280,280))
 	var content := Rect2(camera.focus_center()+camera.pan-camera.fit_rect.size*camera.zoom/2,camera.fit_rect.size*camera.zoom)
 	check(content.intersects(Rect2(Vector2.ZERO,camera.viewport_size)),"Resizing a panned map keeps some island reachable")
+	camera.reset(); camera.set_frame(Vector2(1920,1080),Rect2(500,100,920,880))
+	camera.set_frame(Vector2(480,850),Rect2(500,100,920,880))
+	camera.set_frame(Vector2(480,850),Rect2(40,240,400,400))
+	check(camera.pan == Vector2.ZERO and camera.focus_center() == Vector2(240,440),"Transient old container bounds cannot push an unpanned island off-center after resize")
 	var host_root := Control.new(); host_root.size = Vector2(800,600); root.add_child(host_root)
 	var screen := GameScreen.new(); host_root.add_child(screen); screen.configure("Example map")
 	var fit_anchor := Control.new(); screen.content.add_child(fit_anchor); fit_anchor.custom_minimum_size = Vector2(280,280)
@@ -49,5 +53,20 @@ func _run() -> void:
 	row.set_player({"display_name":"Player [literal] <name>","color":"#000000"},[{"label":"Public cards","value":5}],true)
 	check(row.name_label.text == "Player [literal] <name>" and row.accessibility_name.contains("Public cards: 5"),"Public rows preserve literal names and accessible counter meanings")
 	row.compact = true; row._layout(); check(row.custom_minimum_size.y >= 44 and row.custom_minimum_size.x < 110,"Compact rows preserve touch targets without widening a phone")
+	var metrics: Array = []
+	for index in 6: metrics.append({"label":"Public stat %d" % index,"caption":"Stat %d" % index,"value":index})
+	row.detailed = true; row.show_labels = true; row.set_player({"display_name":"Player <literal>","color":"#ffffff"},metrics,true); row.size = row.custom_minimum_size; row._layout()
+	check(row.values.all(func(label: Label) -> bool: return label.visible) and row.captions.all(func(label: Label) -> bool: return label.visible),"Detailed compact rows retain all six labelled public counters")
+	for label in row.values+row.captions: check(Rect2(Vector2.ZERO,row.size).encloses(label.get_rect()),"Detailed stat text stays inside its player card")
+	var grid := GameStatGrid.new(); root.add_child(grid); grid.set_metrics(metrics); grid.size.x = 430; grid._fit(); await process_frame
+	check(grid.columns == 3 and grid.values.size() == 6,"Public inspectors use a compact three-column icon grid")
+	var held := grid.values[0]; metrics[0].value = 9; grid.set_metrics(metrics)
+	check(grid.values[0] == held and held.text == "9","Stat refresh preserves existing labels and updates the authoritative value")
+	for paper in [false,true]:
+		var log := GameActivityLog.new(); log.paper = paper; log.theme = GameLook.paper_theme(GameLook.make_theme("royal")); root.add_child(log); log.set_entries([{"id":1,"text":"Player <literal> rolled 8."}],true)
+		var color: Color = log.entries.get_child(0).get_theme_color("font_color"); var background: StyleBoxFlat = log.get_theme_stylebox("panel")
+		check(GameLook.text_contrast(color,background.bg_color) >= 4.5,"History ink remains readable when inheriting an opposite-color theme")
+		log.queue_free()
+	grid.queue_free()
 	row.queue_free(); await process_frame
 	print("Board camera: %d checks, %d failures" % [checks,failures]); quit(0 if failures == 0 else 1)

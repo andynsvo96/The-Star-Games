@@ -377,14 +377,20 @@ stable skin slot IDs when Default media changes format. Generated originals and
 for phone memory use. A continuous ocean fills the screen through the shared
 background player using extensionless `art/ocean`. The map paints behind the UI
 across the whole viewport, retaining its initial fit through shared anchors.
-Subtle water currents freeze for reduced motion and pause with the game. Buildings
-and roads retain their colors with dark edges and soft shadows, without cream
-backing silhouettes. A development deck
+Subtle water currents freeze for reduced motion and pause with the game. Detailed
+vector buildings retain their identity colors, rooflines, doors, windows and
+chimneys. Roads keep dark edges and soft shadows without cream backing silhouettes.
+Ports use scalable resource symbols and 2:1/3:1 badges instead of boats. A development deck
 and two bonus cards stay separate from the public market and costs/overview
-reference. Wide hosts use narrow player rows on both sides of a larger island; narrow
-hosts and phones use a compact roster above it. Icon controls open the public
-Table, Market, Costs and Activity views. Clicking a row opens public player
-details without revealing private hands. Hosts and phones drag the map and
+reference. Wide multiplayer hosts put larger, labelled player cards on the left
+and persistent paper History on the right. Solo retains side rosters; narrow hosts
+and phones use compact rows above the island. Simple star, resource-card,
+development-card, route, helmet and trophy icons identify public counters.
+Clicking a row opens a content-sized icon grid with public building totals and
+bonuses, without revealing private hands. Multiplayer hosts omit Help; solo hosts
+and phones open a two-sided build-cost/turn-overview card in the shared reversible
+reader. History keeps a visible caption when opened from a utility button.
+Hosts and phones drag the map and
 scroll/pinch to zoom directly; camera changes never submit game actions.
 Resource feedback uses each visible amount's own font and size, with gains above
 and losses below. Public supply views contain only public inventory.
@@ -888,6 +894,24 @@ and inspector. Browser `new StarGamesPlayerRow(onSelect)` exposes `element` and
 `update(public_identity, [{icon, value, label}, ...], active)`. Add `is-compact`
 for the same small row. Update existing rows so focused targets survive syncs.
 Never supply secret resource types or development-card identities for opponents.
+Native `detailed=true` lays out six public counters in a larger, labelled
+three-column card; `compact` reduces its height while retaining those counters.
+`show_labels=true` labels ordinary rows too. Browser equivalents are `is-detailed`
+and `has-stat-labels`; optional metric `caption` supplies a short visible label
+while `label` retains its complete accessible meaning. Short landscape layouts
+can add `is-dense` to compact browser rows to omit supplementary captions.
+All counters remain described in the accessible name and explicit inspector.
+
+Use `GameStatGrid.set_metrics([{texture,value,label},...])` for a content-sized
+public inspector. `StarGamesStatGrid.update([{icon,value,label},...])` supplies the
+same responsive icon/value/label tiles through its `element`. Both update existing
+labels and use shared paper styling; callers filter private values. Browser
+dialogs can add `game-player-stats-dialog` to cap their width. Offline semantic
+art is shared at `/ui/playful/stat-{victory,resources,development,route,knights,trophy}.svg`.
+`control-help.svg` depicts a reference card; `game-labelled-utility` keeps an icon
+and visible caption together in a 44px browser action. The template demonstrates
+the row and stat grid in both views.
+
 `game-icon-only` supplies 44px icon buttons with an `aria-label` and empty-alt
 image. `game-resource-token` adds a shared paper surface for inspectable tokens.
 
@@ -898,6 +922,8 @@ zero keeps existing behavior. For a compact roster above a narrow native board,
 header and reserves its visible height through the shared board fitter. Hide it
 on wide screens and reparent the same rows to the sidebars. The normal summary
 and existing layouts retain their defaults. Native examples live in the template.
+The returned `layout` GridContainer exposes `get_meta("stacked", false)` so modules
+can follow shared wrapping when moving existing roster rows or showing a sidebar.
 
 `GameBoardCamera` is view-only state with `zoom`, pixel `pan`, `viewport_size`,
 `project(point)`, `zoom_at(factor, anchor)`, `reset()` and `cancel()`. Feed local
@@ -2060,6 +2086,11 @@ Both opt-ins are demonstrated in the template; default callers retain their layo
 `entry_font_size` defaults to 11; set it before `set_entries` for a larger feed
 inside a shared phase dialog. Reparenting a single log preserves its current
 public contents when switching between a sidebar and an enlarged history sheet.
+
+Set `paper=true` before adding the native log for an ivory surface and dark ink;
+its default navy surface explicitly keeps light ink even under an inherited
+paper theme. Browser feeds can use `game-activity-paper` with literal paragraph
+entries. Both surfaces keep readable contrast without module palette overrides.
 
 `add_centered_layout` hides empty sidebars together, avoiding blank scrolling in
 games that only populate the playfield. Populated sidebars retain symmetric

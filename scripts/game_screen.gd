@@ -311,7 +311,13 @@ func mount_board_canvas(canvas: Control, fit_anchor: Control, refit := Callable(
 	canvas.custom_minimum_size = Vector2.ZERO
 	canvas.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	canvas.set_meta("game_board_fit_anchor",fit_anchor)
-	if refit.is_valid(): fit_anchor.item_rect_changed.connect(refit,CONNECT_DEFERRED)
+	if refit.is_valid():
+		# An ancestor container can move an anchor without changing its local rect.
+		# Follow that chain so full-screen painting stays aligned after wrapping.
+		var ancestor: Control = fit_anchor
+		while is_instance_valid(ancestor) and ancestor != get_parent_control():
+			ancestor.item_rect_changed.connect(refit,CONNECT_DEFERRED)
+			ancestor = ancestor.get_parent_control()
 
 
 func board_canvas_fit_rect(canvas: Control) -> Rect2:
@@ -1614,6 +1620,7 @@ func add_centered_layout(compact := false, center_sidebars := false, maximum_wid
 			_board_width_limit = board_width; board_space_changed.emit()
 		var required_width := side_width * 2 + maxf(minimum_playfield_width, playfield.get_minimum_size().x) + 48
 		var narrow := available_width < maxf(804 if minimum_playfield_width >= 316 else 0, required_width)
+		layout.set_meta("stacked",narrow)
 		for column in sidebar_spacers:
 			var card_height := 0.0
 			for child in column.get_children():
@@ -1633,7 +1640,7 @@ func add_centered_layout(compact := false, center_sidebars := false, maximum_wid
 	for column in [left, playfield, right]:
 		column.minimum_size_changed.connect(adapt, CONNECT_DEFERRED)
 	adapt.call_deferred()
-	return {"playfield": playfield, "left_sidebar": left, "sidebar": right}
+	return {"playfield": playfield, "left_sidebar": left, "sidebar": right, "layout": layout}
 
 
 func add_formatted_text(parent: Control, centered := false) -> RichTextLabel:

@@ -408,13 +408,25 @@
       while(this.stats.children.length>metrics.length)this.stats.lastChild.remove();
       metrics.forEach((metric,index) => {
         let item=this.stats.children[index];
-        if(!item) { item=document.createElement('span');item.append(document.createElement('img'),document.createElement('span'));this.stats.append(item); }
-        item.firstChild.src=metric.icon;item.firstChild.alt='';item.lastChild.textContent=metric.value;item.setAttribute('aria-label',metric.label+': '+metric.value);
+        if(!item) { item=document.createElement('span');const value=document.createElement('span'),caption=document.createElement('small');value.className='game-player-row-value';caption.className='game-player-row-caption';item.append(document.createElement('img'),value,caption);this.stats.append(item); }
+        item.firstChild.src=metric.icon;item.firstChild.alt='';item.children[1].textContent=metric.value;item.lastChild.textContent=metric.caption||metric.label;item.setAttribute('aria-label',metric.label+': '+metric.value);
+      });
+    }
+  }
+  class StarGamesStatGrid {
+    constructor() { this.element=document.createElement('div');this.element.className='game-stat-cards'; }
+    update(metrics) {
+      while(this.element.children.length>metrics.length)this.element.lastChild.remove();
+      metrics.forEach((metric,index)=>{
+        let tile=this.element.children[index];
+        if(!tile){tile=document.createElement('div');tile.className='game-stat-card';const image=document.createElement('img'),copy=document.createElement('div');image.alt='';copy.append(document.createElement('output'),document.createElement('span'));tile.append(image,copy);this.element.append(tile);}
+        tile.firstChild.src=metric.icon;tile.lastChild.firstChild.textContent=metric.value;tile.lastChild.lastChild.textContent=metric.label;tile.setAttribute('aria-label',metric.label+': '+metric.value);
       });
     }
   }
   global.StarGamesBoardCamera = StarGamesBoardCamera;
   global.StarGamesPlayerRow = StarGamesPlayerRow;
+  global.StarGamesStatGrid = StarGamesStatGrid;
   global.StarGamesPlayerPicker = StarGamesPlayerPicker;
   global.StarGamesController = StarGamesController;
   global.StarGamesBoardLayout = GameBoardLayout;

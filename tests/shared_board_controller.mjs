@@ -76,6 +76,13 @@ const assertions = `
         fullCamera.destroy();fitArea.remove();cameraView.remove();
         const row=new StarGamesPlayerRow(()=>{});row.update({display_name:'Name <tag> [literal]',color:'#000000',pose:0},[{icon:'/ui/playful/table-cards.svg',label:'Public cards',value:7}],true);const original=row.element;
         row.update({display_name:'Updated player',color:'#ffffff',pose:1},[{icon:'/ui/playful/table-cards.svg',label:'Public cards',value:8}],false);check(row.element===original&&row.element.getAttribute('aria-label').includes('Public cards: 8')&&!row.element.querySelector('tag'),'Shared player updates preserve the accessible target and literal names');
+        const metrics=Array.from({length:6},(_,index)=>({icon:'/ui/playful/stat-victory.svg',label:'Public stat '+index,caption:'Stat '+index,value:index}));
+        const statHost=document.createElement('div');statHost.style.cssText='position:fixed;left:-2000px;top:0;width:280px;padding:0;grid-template-columns:minmax(0,1fr)';statHost.className='game-controller';document.body.append(statHost);
+        row.element.classList.add('is-detailed','has-stat-labels');row.update({display_name:'Player <tag>',color:'#ffffff',pose:1},metrics,true);statHost.append(row.element);await settle();
+        check([...row.stats.children].every(item=>getComputedStyle(item).display!=='none'&&getComputedStyle(item.lastChild).display!=='none'),'Detailed public rows show all six counters and their labels');
+        const grid=new StarGamesStatGrid();grid.update(metrics);statHost.append(grid.element);const heldValue=grid.element.firstChild.lastChild.firstChild;metrics[0].value=9;grid.update(metrics);await settle();
+        check(heldValue===grid.element.firstChild.lastChild.firstChild&&heldValue.textContent==='9'&&!statHost.querySelector('tag'),'Public stat grids update existing literal-text counters');
+        check(grid.element.scrollWidth<=grid.element.clientWidth+1,'Stat grid wraps within a phone-width surface');statHost.remove();
 
 		const opening = layout('Initial');
 		status.replaceChildren(document.createTextNode('Your turn.'), document.createElement('br'), document.createTextNode('Select a piece.'));

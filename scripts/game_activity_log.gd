@@ -11,14 +11,15 @@ var initialized := false
 var show_heading := true
 var bold_latest := false
 var entry_font_size := 11
+var paper := false
 var applied_font_size := -1
 
 func _ready() -> void:
 	clip_contents = true; accessibility_name = "Activity history"
-	var style := GameLook.modern_table_sheet(); style.content_margin_left = 7; style.content_margin_right = 7; style.content_margin_top = 6; style.content_margin_bottom = 6
+	var style := GameLook.card_table_sheet() if paper else GameLook.modern_table_sheet(); style.content_margin_left = 12 if paper else 7; style.content_margin_right = 12 if paper else 7; style.content_margin_top = 10 if paper else 6; style.content_margin_bottom = 10 if paper else 6
 	add_theme_stylebox_override("panel", style)
 	var column := VBoxContainer.new(); column.add_theme_constant_override("separation", 4); add_child(column)
-	heading.text = "Activity"; heading.add_theme_font_size_override("font_size", 12); heading.clip_text = true; column.add_child(heading)
+	heading.text = "History" if paper else "Activity"; heading.add_theme_font_size_override("font_size", 17 if paper else 12); heading.add_theme_color_override("font_color",GameLook.SCROLL_INK if paper else GameLook.CREAM); heading.clip_text = true; column.add_child(heading)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL; column.add_child(scroll)
 	entries.size_flags_horizontal = Control.SIZE_EXPAND_FILL; entries.add_theme_constant_override("separation", 6); scroll.add_child(entries)
 	heading.visible = show_heading
@@ -41,9 +42,9 @@ func set_entries(items: Array, reduced := false, paused := false) -> void:
 	initialized = true; signature = key; applied_font_size = entry_font_size
 	for child in entries.get_children(): entries.remove_child(child); child.queue_free()
 	if items.is_empty():
-		var empty := Label.new(); empty.text = "No activity yet"; empty.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; empty.add_theme_font_size_override("font_size", maxi(10, entry_font_size - 1)); entries.add_child(empty)
+		var empty := Label.new(); empty.text = "No activity yet"; empty.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; empty.add_theme_font_size_override("font_size", maxi(10, entry_font_size - 1)); empty.add_theme_color_override("font_color",GameLook.SCROLL_INK if paper else GameLook.CREAM); entries.add_child(empty)
 	for index in items.size():
-		var label := Label.new(); label.text = str(items[index].text); label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; label.add_theme_font_size_override("font_size", entry_font_size); entries.add_child(label)
+		var label := Label.new(); label.text = str(items[index].text); label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; label.add_theme_font_size_override("font_size", entry_font_size); label.add_theme_color_override("font_color",GameLook.SCROLL_INK if paper else GameLook.CREAM); entries.add_child(label)
 		if bold_latest and index == 0:
 			var emphasis := FontVariation.new(); emphasis.base_font = label.get_theme_font("font"); emphasis.variation_embolden = .8
 			label.add_theme_font_override("font", emphasis)

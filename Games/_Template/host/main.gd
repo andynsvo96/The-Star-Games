@@ -216,6 +216,11 @@ func _ready() -> void:
 	var player_row_example := GamePlayerRow.new(); layout.left_sidebar.add_child(player_row_example); player_row_example.hide()
 	player_row_example.set_player({"display_name":"Example player","color":"#2463eb","pose":0},[{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"value":7,"label":"Public card count"}],true)
 	player_row_example.pressed.connect(func() -> void: inspector_example.show())
+	# detailed=true shows six labelled counters in a larger public roster row.
+	# compact still reduces its height; show_labels labels the ordinary small row.
+	player_row_example.detailed = true; player_row_example.show_labels = true; player_row_example._layout()
+	var stat_grid_example := GameStatGrid.new(); layout.playfield.add_child(stat_grid_example); stat_grid_example.hide()
+	stat_grid_example.set_metrics([{"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-victory.svg"),"value":2,"label":"Public points"}])
 	# A camera transforms presentation only. Route its tapped signal to the game's
 	# ordinary preview handler; never turn a drag release into a game command.
 	var camera_example := GameBoardCamera.new()
@@ -265,7 +270,7 @@ func _ready() -> void:
 	art_grid_example.set_items([{"card":{"id":1,"layout":"art","display_name":"Artwork card"},"texture":card_example.texture}])
 	# A public activity feed takes plain newest-first rows and stays in a supplied
 	# rectangle. Initial/reconnected entries do not replay entrance motion.
-	var activity_example := GameActivityLog.new(); layout.playfield.add_child(activity_example); activity_example.hide()
+	var activity_example := GameActivityLog.new(); activity_example.paper = true; layout.playfield.add_child(activity_example); activity_example.hide()
 	# When an outer panel supplies the heading, hide the duplicate inner caption.
 	activity_example.show_heading = false; activity_example.heading.hide(); activity_example.bold_latest = true
 	activity_example.entry_font_size = 17

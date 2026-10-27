@@ -24,7 +24,10 @@ func is_interacting() -> bool:
 	return not _points.is_empty()
 
 func set_frame(viewport: Vector2, bounds := Rect2()) -> void:
-	viewport_size = viewport; fit_rect = bounds; _constrain()
+	viewport_size = viewport; fit_rect = bounds
+	# Containers can report their previous anchor for one resize frame. Clamping
+	# against that off-screen rectangle would turn a fitted map into a manual pan.
+	if not bounds.has_area() or Rect2(Vector2.ZERO,viewport).grow(1).encloses(bounds): _constrain()
 
 func focus_center() -> Vector2:
 	return fit_rect.get_center() if fit_rect.has_area() else viewport_size/2
