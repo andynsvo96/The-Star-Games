@@ -399,17 +399,20 @@
       this.avatar=document.createElement('span'); this.avatar.className='game-player-row-avatar'; this.avatar.setAttribute('aria-hidden','true');
       this.name=document.createElement('span'); this.name.className='game-player-row-name';
       this.stats=document.createElement('span'); this.stats.className='game-player-row-stats';
-      this.element.append(this.avatar,this.name,this.stats); this.element.addEventListener('click',onSelect);
+      this.headline=document.createElement('span');this.headline.className='game-player-row-headline';this.headline.append(document.createElement('img'),document.createElement('output'));this.headline.firstChild.alt='';this.headline.hidden=true;
+      this.element.append(this.avatar,this.name,this.headline,this.stats); this.element.addEventListener('click',onSelect);
     }
-    update(player,metrics,active=false) {
+    update(player,metrics,active=false,headline={}) {
       this.name.textContent=player.display_name; this.element.style.setProperty('--score-color',player.color);
       this.element.classList.toggle('is-current',active); this.element.setAttribute('aria-label',[player.display_name,active?'Current turn':'Player details',...metrics.map(s=>s.label+': '+s.value)].join(', '));
+      this.headline.hidden=headline.value===undefined;if(!this.headline.hidden){this.headline.firstChild.src=headline.icon;this.headline.lastChild.textContent=headline.value;this.headline.setAttribute('aria-label',headline.label+': '+headline.value);this.element.setAttribute('aria-label',this.element.getAttribute('aria-label')+', '+headline.label+': '+headline.value);}
       if (global.StarGamesTableUI) { if (!this.avatar.firstChild) this.avatar.append(StarGamesTableUI.avatar(player)); else StarGamesTableUI.updateAvatar(this.avatar.firstChild,player); }
       while(this.stats.children.length>metrics.length)this.stats.lastChild.remove();
       metrics.forEach((metric,index) => {
         let item=this.stats.children[index];
         if(!item) { item=document.createElement('span');const value=document.createElement('span'),caption=document.createElement('small');value.className='game-player-row-value';caption.className='game-player-row-caption';item.append(document.createElement('img'),value,caption);this.stats.append(item); }
         item.firstChild.src=metric.icon;item.firstChild.alt='';item.children[1].textContent=metric.value;item.lastChild.textContent=metric.caption||metric.label;item.setAttribute('aria-label',metric.label+': '+metric.value);
+        item.children[1].classList.toggle('is-long-count',String(metric.value).length>2);
       });
     }
   }

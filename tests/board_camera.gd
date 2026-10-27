@@ -48,6 +48,11 @@ func _run() -> void:
 	check(screen.board_canvas_fit_rect(canvas).size.is_equal_approx(fit_anchor.size),"Shared camera fit follows its actual anchor")
 	var overlays: Array[Control] = [fit_anchor]
 	check(screen.board_canvas_input_regions(overlays).any(func(rect: Rect2) -> bool: return rect.has_point(fit_anchor.get_global_rect().get_center())),"Explicit UI rectangles remain protected from map gestures")
+	var inspector := screen.add_phase_dialog(true,false,true)
+	screen.set_phase_dialog_header(inspector,"Player <literal>",{"value":3,"label":"Session wins"})
+	check(inspector.heading.horizontal_alignment == HORIZONTAL_ALIGNMENT_LEFT and inspector.header_value.text == "3" and inspector.header_metric.visible,"Inspector headers separate literal names and an independent public metric")
+	screen.set_phase_dialog_header(inspector,"Ordinary dialog")
+	check(not inspector.header_metric.visible and inspector.heading.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER,"Ordinary dialogs retain their centered heading")
 	host_root.queue_free(); await process_frame
 	var row := GamePlayerRow.new(); root.add_child(row)
 	row.set_player({"display_name":"Player [literal] <name>","color":"#000000"},[{"label":"Public cards","value":5}],true)
@@ -62,6 +67,17 @@ func _run() -> void:
 	check(grid.columns == 3 and grid.values.size() == 6,"Public inspectors use a compact three-column icon grid")
 	var held := grid.values[0]; metrics[0].value = 9; grid.set_metrics(metrics)
 	check(grid.values[0] == held and held.text == "9","Stat refresh preserves existing labels and updates the authoritative value")
+	row.grid_counters = true; row.detailed = false; row.compact = true; metrics[0].value = 120
+	row.set_player({"display_name":"Very long literal <player> name","color":"#000000"},metrics,true,{"value":10,"label":"Victory points"}); row.size = row.custom_minimum_size; row._layout()
+	check(row.headline_value.text == "10" and row.name_label.get_rect().end.x < row.headline_value.position.x-14,"Headline point counters never bleed into a long name")
+	for label: Label in row.values: check(Rect2(Vector2.ZERO,row.size).encloses(label.get_rect()),"Compact icon counts stay inside the roster card, including three-digit amounts")
+	var strip := GameTurnStrip.new(); strip.tracked = true; root.add_child(strip); strip.size = Vector2(400,52)
+	strip.set_players([{"display_name":"A <literal>","color":"#000000"},{"display_name":"B","color":"#ffffff"}],0); strip.set_actions(["Built a house","Rolled 6"])
+	for unused in 4: await process_frame
+	for label: Label in strip.get_children():
+		var caption: Label = label.get_child(0)
+		check(caption.visible and absf(caption.get_global_rect().get_center().x-label.get_global_rect().get_center().x)<1 and strip.get_global_rect().encloses(caption.get_global_rect()),"Turn actions remain inside the header and centered on their own identity")
+	strip.queue_free()
 	for paper in [false,true]:
 		var log := GameActivityLog.new(); log.paper = paper; log.theme = GameLook.paper_theme(GameLook.make_theme("royal")); root.add_child(log); log.set_entries([{"id":1,"text":"Player <literal> rolled 8."}],true)
 		var color: Color = log.entries.get_child(0).get_theme_color("font_color"); var background: StyleBoxFlat = log.get_theme_stylebox("panel")

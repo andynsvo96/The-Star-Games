@@ -114,14 +114,15 @@
     const body=document.createElement('div');panel.append(body);const render=()=>{body.replaceChildren();const item=items[choice.selectedIndex]||items[0];if(!item)return;const summary=document.createElement('p');summary.textContent=item.summary;body.append(summary);for(const player of item.players||[]){const row=document.createElement('div');row.className='game-preview-player';const name=document.createElement('span');name.textContent=player.display_name;row.append(global.StarGamesTableUI.avatar(player),name);if(player.amount!==undefined){const amount=document.createElement('b');amount.className='game-owed';amount.textContent='$'+player.amount;row.append(amount);}body.append(row);}if(item.cards?.length)body.append(global.StarGamesCardGrid(item.cards));if(item.note){const note=document.createElement('p');note.className='game-preview-note';note.textContent=item.note;body.append(note);}};
     choice.addEventListener('change',()=>{render();onSelect?.(choice.selectedIndex);});render();return panel;
   };
-  global.StarGamesTurnStrip=(players,active,{tracked=false}={})=>{
+  global.StarGamesTurnStrip=(players,active,{tracked=false,actions=[]}={})=>{
     const row=document.createElement('div');row.className='game-turn-strip'+(tracked?' game-turn-strip-track':'');row.style.setProperty('--turn-seats',Math.max(1,players.length));row.setAttribute('aria-label','Player turn order');
     players.forEach((player,index)=>{
       const name=document.createElement('span'),eliminated=player.alive===false,current=index===active&&!eliminated;
       name.className='game-turn-name';name.dataset.seat=index;name.textContent=player.display_name;
+      if(actions.length){const caption=document.createElement('small');caption.className='game-turn-action';caption.textContent=actions[index]||'';name.append(caption);row.classList.add('has-turn-actions');}
       if(!tracked)name.style.color=current?player.color:'#fff';
       name.classList.toggle('is-active',current);name.classList.toggle('game-seat-eliminated',eliminated);
-      name.setAttribute('aria-label',player.display_name+(eliminated?', eliminated':current?', current turn':''));
+      name.setAttribute('aria-label',player.display_name+(eliminated?', eliminated':current?', current turn':'')+(actions[index]?', '+actions[index]:''));
       if(current)name.setAttribute('aria-current','step');row.append(name);
     });return row;
   };

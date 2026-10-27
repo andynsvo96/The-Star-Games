@@ -7,6 +7,10 @@ var active := false
 var compact := false
 var detailed := false
 var show_labels := false
+var grid_counters := false
+var dense := false
+var headline := {}
+var headline_value := Label.new()
 var metrics: Array = []
 var name_label := Label.new()
 var values: Array[Label] = []
@@ -19,16 +23,19 @@ func _ready() -> void:
 	name_label.clip_text = true; name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	name_label.add_theme_font_size_override("font_size",13); name_label.add_theme_color_override("font_color",GameLook.SCROLL_INK)
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE; add_child(name_label)
+	headline_value.mouse_filter = Control.MOUSE_FILTER_IGNORE; headline_value.add_theme_color_override("font_color",GameLook.SCROLL_INK); add_child(headline_value); headline_value.hide()
 	resized.connect(_layout)
 	_layout()
 
-func set_player(identity: Dictionary, counters: Array, current := false) -> void:
-	player = identity; metrics = counters; active = current
+func set_player(identity: Dictionary, counters: Array, current := false, headline_metric: Dictionary = {}) -> void:
+	player = identity; metrics = counters; active = current; headline = headline_metric
+	headline_value.text = str(headline.get("value",""))
 	name_label.text = str(player.get("display_name",""))
 	while values.size() < metrics.size():
 		var label := Label.new(); label.mouse_filter = Control.MOUSE_FILTER_IGNORE; label.add_theme_font_size_override("font_size",12); label.add_theme_color_override("font_color",GameLook.SCROLL_INK); add_child(label); values.append(label)
 		var caption := Label.new(); caption.mouse_filter = Control.MOUSE_FILTER_IGNORE; caption.clip_text = true; caption.add_theme_color_override("font_color",GameLook.SCROLL_INK); add_child(caption); captions.append(caption)
 	var description := PackedStringArray([name_label.text,"Current turn" if active else "Player details"])
+	if not headline.is_empty(): description.append(str(headline.get("label",""))+": "+headline_value.text)
 	for index in values.size():
 		values[index].visible = index < metrics.size()
 		if index < metrics.size():
@@ -37,6 +44,30 @@ func set_player(identity: Dictionary, counters: Array, current := false) -> void
 	accessibility_name = ", ".join(description); _layout()
 
 func _layout() -> void:
+	headline_value.visible = grid_counters and not headline.is_empty()
+	if grid_counters:
+		custom_minimum_size = Vector2(96,64 if dense else 72) if compact and not detailed else Vector2(264,92 if compact else 104)
+		var small := compact and not detailed
+		var columns := 3
+		var left := 32.0 if small else 50.0
+		var badge := 35.0 if small else 60.0
+		name_label.position = Vector2(left,4 if small else 7); name_label.size = Vector2(maxf(0,size.x-left-badge-7),23)
+		name_label.add_theme_font_size_override("font_size",10 if small else 13 if compact else 15)
+		headline_value.position = Vector2(size.x-(21 if small else 33),3 if small else 5); headline_value.size = Vector2(19 if small else 29,24 if small else 30)
+		headline_value.add_theme_font_size_override("font_size",14 if small else 21 if compact else 25)
+		var step := (size.x-(12 if small else 20))/float(columns)
+		for index in values.size():
+			var origin := Vector2((6 if small else 12)+(index%columns)*step,(29 if dense else 31 if small else 39)+(index/columns)*(16 if dense else 18 if small else 26 if compact else 30))
+			values[index].visible = index < mini(6,metrics.size()); values[index].position = origin+Vector2(14 if small else 28,-2)
+			values[index].size = Vector2(maxf(12,step-(14 if small else 28)),18 if small else 25)
+			values[index].add_theme_font_size_override("font_size",11 if dense else 12 if small else 18 if compact else 21)
+			var fit_size := values[index].get_theme_font_size("font_size")
+			var counter_width := maxf(12,step-(14 if small else 28))
+			while fit_size > 8 and values[index].get_theme_font("font").get_string_size(values[index].text,HORIZONTAL_ALIGNMENT_LEFT,-1,fit_size).x > counter_width: fit_size -= 1
+			values[index].add_theme_font_size_override("font_size",fit_size)
+			values[index].size.x = counter_width
+			captions[index].hide()
+		queue_redraw(); return
 	if detailed:
 		custom_minimum_size = Vector2(264,92 if compact else 116)
 		name_label.position = Vector2(50,7); name_label.size = Vector2(maxf(0,size.x-62),25)
@@ -70,6 +101,16 @@ func _draw() -> void:
 	draw_style_box(GameLook.box(GameLook.CREAM,Color("e9b94f") if active else GameLook.WOOD_EDGE,8,3 if active else 1),Rect2(Vector2.ONE*2,size-Vector2.ONE*4))
 	draw_style_box(GameLook.box(identity,identity,2,0),Rect2(Vector2(3,10),Vector2(4,size.y-20)))
 	GameLook.draw_table_avatar(self,Rect2(10,6,32,32) if detailed else Rect2(8,5,22,22) if compact else Rect2(10,8,29,29),identity,int(player.get("pose",0)))
+	if grid_counters:
+		var small := compact and not detailed
+		var columns := 3
+		var symbol: Texture2D = headline.get("texture")
+		if symbol: draw_texture_rect(symbol,Rect2(Vector2(size.x-(36 if small else 62),6 if small else 8),Vector2.ONE*(15 if small else 26)),false)
+		var step := (size.x-(12 if small else 20))/float(columns)
+		for index in mini(6,metrics.size()):
+			var texture: Texture2D = metrics[index].get("texture")
+			if texture: draw_texture_rect(texture,Rect2(Vector2((6 if small else 12)+(index%columns)*step,(29 if dense else 31 if small else 39)+(index/columns)*(16 if dense else 18 if small else 26 if compact else 30)),Vector2.ONE*(13 if small else 22 if compact else 26)),false)
+		return
 	if detailed:
 		var step := (size.x-20)/3.0
 		for index in metrics.size():

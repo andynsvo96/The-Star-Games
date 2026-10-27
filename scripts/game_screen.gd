@@ -559,8 +559,13 @@ func add_phase_dialog(fit_contents := false, full_screen := false, compact := fa
 	var column := VBoxContainer.new()
 	panel.add_child(column)
 	var heading := add_sidebar_text(column, "")
+	var heading_row := HBoxContainer.new(); column.add_child(heading_row); column.move_child(heading_row,0)
+	heading.reparent(heading_row); heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	heading.add_theme_font_size_override("font_size", 22 if compact else 28)
+	var header_metric := HBoxContainer.new(); header_metric.size_flags_vertical = Control.SIZE_SHRINK_CENTER; header_metric.add_theme_constant_override("separation",6); heading_row.add_child(header_metric); header_metric.hide()
+	var header_icon := TextureRect.new(); header_icon.custom_minimum_size = Vector2(27,30); header_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; header_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; header_metric.add_child(header_icon)
+	var header_value := Label.new(); header_value.add_theme_font_size_override("font_size",24); header_metric.add_child(header_value)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -598,7 +603,16 @@ func add_phase_dialog(fit_contents := false, full_screen := false, compact := fa
 	fit.call_deferred()
 	back_button.z_index = 2
 	overlay.hide()
-	return {"overlay": overlay, "heading": heading, "body": body, "actions": actions, "scroll": scroll, "panel": panel, "shade": shade}
+	return {"overlay": overlay, "heading": heading, "heading_row": heading_row, "header_metric": header_metric, "header_icon": header_icon, "header_value": header_value, "body": body, "actions": actions, "scroll": scroll, "panel": panel, "shade": shade}
+
+
+func set_phase_dialog_header(dialog: Dictionary, caption: String, metric: Dictionary = {}) -> void:
+	dialog.heading.text = caption
+	dialog.heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if metric.is_empty() else HORIZONTAL_ALIGNMENT_LEFT
+	dialog.header_metric.visible = not metric.is_empty()
+	dialog.header_icon.texture = metric.get("texture")
+	dialog.header_value.text = str(metric.get("value",""))
+	dialog.header_metric.accessibility_name = str(metric.get("label",""))+": "+dialog.header_value.text
 
 
 func set_phase_dialog_width(dialog: Dictionary, maximum_width: float) -> void:

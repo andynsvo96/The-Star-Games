@@ -82,7 +82,11 @@ const assertions = `
         check([...row.stats.children].every(item=>getComputedStyle(item).display!=='none'&&getComputedStyle(item.lastChild).display!=='none'),'Detailed public rows show all six counters and their labels');
         const grid=new StarGamesStatGrid();grid.update(metrics);statHost.append(grid.element);const heldValue=grid.element.firstChild.lastChild.firstChild;metrics[0].value=9;grid.update(metrics);await settle();
         check(heldValue===grid.element.firstChild.lastChild.firstChild&&heldValue.textContent==='9'&&!statHost.querySelector('tag'),'Public stat grids update existing literal-text counters');
-        check(grid.element.scrollWidth<=grid.element.clientWidth+1,'Stat grid wraps within a phone-width surface');statHost.remove();
+        check(grid.element.scrollWidth<=grid.element.clientWidth+1,'Stat grid wraps within a phone-width surface');
+        row.element.classList.remove('is-detailed','has-stat-labels');row.element.classList.add('has-headline','is-compact');row.element.style.width='96px';metrics[0].value=120;row.update({display_name:'Long <literal> name',color:'#ffffff',pose:1},metrics,true,{icon:'/ui/playful/stat-victory.svg',value:10,label:'Victory points'});await settle();
+        check(row.headline.textContent==='10'&&row.name.getBoundingClientRect().right<=row.headline.getBoundingClientRect().left+1,'Headline values fit beside literal names on the smallest roster');
+        check([...row.stats.children].every(item=>getComputedStyle(item).display!=='none'&&getComputedStyle(item.lastChild).display==='none'&&item.children[1].getBoundingClientRect().right<=item.getBoundingClientRect().right+1),'All six icon-only counters fit their cells, including three-digit counts');
+        const turnStrip=StarGamesTurnStrip([{display_name:'Literal <name>',color:'#000000'}],0,{tracked:true,actions:['Built a house']});statHost.append(turnStrip);check(turnStrip.querySelector('.game-turn-action').textContent==='Built a house'&&!turnStrip.querySelector('name'),'Accepted turn captions remain literal and aligned with their identity');statHost.remove();
 
 		const opening = layout('Initial');
 		status.replaceChildren(document.createTextNode('Your turn.'), document.createElement('br'), document.createTextNode('Select a piece.'));

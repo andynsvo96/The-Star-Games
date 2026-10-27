@@ -186,6 +186,7 @@ func _ready() -> void:
 	var turn_example := GameTurnStrip.new(); turn_example.tracked = true; layout.playfield.add_child(turn_example); turn_example.hide()
 	# tracked opts into neutral names with a gold current-step dot/line, like Poker.
 	turn_example.set_players([{"display_name":"Example player", "color":"#2463eb"}, {"display_name":"Eliminated player", "color":"#e53935", "alive":false}], 0)
+	turn_example.set_actions(["Played a public card",""])
 	# alive:false keeps the seat but mutes its name/dot. Dim canvas seat artwork
 	# separately, retaining a readable OUT label and useful controls.
 	var eliminated_example := Control.new(); layout.playfield.add_child(eliminated_example); eliminated_example.hide()
@@ -219,7 +220,12 @@ func _ready() -> void:
 	# detailed=true shows six labelled counters in a larger public roster row.
 	# compact still reduces its height; show_labels labels the ordinary small row.
 	player_row_example.detailed = true; player_row_example.show_labels = true; player_row_example._layout()
+	# grid_counters omits captions and gives an optional fourth set_player
+	# argument its own top-right icon/value slot, independent of the name.
+	player_row_example.grid_counters = true
+	player_row_example.set_player({"display_name":"Example player","color":"#2463eb","pose":0},[{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"value":7,"label":"Public card count"}],true,{"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-victory.svg"),"value":2,"label":"Public points"})
 	var stat_grid_example := GameStatGrid.new(); layout.playfield.add_child(stat_grid_example); stat_grid_example.hide()
+	stat_grid_example.maximum_columns = 4
 	stat_grid_example.set_metrics([{"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-victory.svg"),"value":2,"label":"Public points"}])
 	# A camera transforms presentation only. Route its tapped signal to the game's
 	# ordinary preview handler; never turn a drag release into a game command.
@@ -464,6 +470,10 @@ func _ready() -> void:
 	# scrolls; actions and Back to Games stay reachable. The module owns visibility.
 	# Pass true to fit short results to their contents, with scrolling when needed.
 	phase_dialog = screen.add_phase_dialog(true, false, true)
+	var player_header_example := screen.add_phase_dialog(true,false,true)
+	screen.set_phase_dialog_header(player_header_example,"Example player",{"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-trophy.svg"),"value":3,"label":"Session wins"})
+	screen.add_sidebar_text(player_header_example.body,"Put filtered public counters and activity here.")
+	var close_player_example := Button.new(); close_player_example.text = "Close"; GameLook.action(close_player_example,false); player_header_example.actions.add_child(close_player_example); close_player_example.pressed.connect(func() -> void: player_header_example.overlay.hide())
 	phase_dialog.heading.text = "ROUND RESULT"
 	screen.add_sidebar_text(phase_dialog.body, "Add authoritative votes or results here.")
 	# Full-screen editors share the same scroll/actions/navigation contract.

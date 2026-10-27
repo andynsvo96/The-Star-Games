@@ -5,6 +5,7 @@ extends GridContainer
 var values: Array[Label] = []
 var icons: Array[TextureRect] = []
 var captions: Array[Label] = []
+var maximum_columns := 3
 
 func _ready() -> void:
 	columns = 3; size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -29,4 +30,4 @@ func set_metrics(metrics: Array) -> void:
 	_fit()
 
 func _fit() -> void:
-	columns = 3 if size.x >= 410 else 2 if size.x >= 260 else 1
+	columns = 4 if maximum_columns >= 4 and size.x >= 560 else 3 if size.x >= 410 else 2 if size.x >= 260 else 1

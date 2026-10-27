@@ -378,28 +378,36 @@ for phone memory use. A continuous ocean fills the screen through the shared
 background player using extensionless `art/ocean`. The map paints behind the UI
 across the whole viewport, retaining its initial fit through shared anchors.
 Subtle water currents freeze for reduced motion and pause with the game. Detailed
-vector buildings retain their identity colors, rooflines, doors, windows and
-chimneys. Roads keep dark edges and soft shadows without cream backing silhouettes.
+vector buildings retain their identity colors with untinted white rooflines,
+doors, windows and chimneys, including for black pieces. Roads keep dark edges and soft shadows without cream backing silhouettes.
 Ports use scalable resource symbols and 2:1/3:1 badges instead of boats. A development deck
 and two bonus cards stay separate from the public market and costs/overview
-reference. Wide multiplayer hosts put larger, labelled player cards on the left
-and persistent paper History on the right. Solo retains side rosters; narrow hosts
+reference. Wide multiplayer hosts put larger player cards on the left
+and persistent paper History on the right. VP has a separate top-right star,
+with six icon-only counters below: resources, development cards, route, Knights,
+settlements and cities. Session wins move into the public inspector header.
+Solo retains side rosters; narrow hosts
 and phones use compact rows above the island. Simple star, resource-card,
 development-card, route, helmet and trophy icons identify public counters.
-Clicking a row opens a content-sized icon grid with public building totals and
-bonuses, without revealing private hands. Multiplayer hosts omit Help; solo hosts
+Clicking a row opens public counters, building totals, bonuses and only that
+player's activity. Names align left with session wins opposite. New games clear
+activity while retaining session wins; secrets stay out of public logs. Multiplayer hosts omit Help; solo hosts
 and phones open a two-sided build-cost/turn-overview card in the shared reversible
 reader. History keeps a visible caption when opened from a utility button.
 Hosts and phones drag the map and
 scroll/pinch to zoom directly; camera changes never submit game actions.
-Resource feedback uses each visible amount's own font and size, with gains above
-and losses below. Public supply views contain only public inventory.
+Private resource feedback uses the live amount's font, with gains above and
+losses below. Wide public host deltas sit beside player cards to keep the dense
+counter grid clear. Build hammers/clouds and temporary thrown dice use public
+accepted event IDs, pause with play, and do not replay on reconnect. Dice hold
+the host's result for two seconds after landing; reduced motion keeps immediate,
+static feedback. Layered currents, caustics and shore foam remain cosmetic. Public supply views contain only public inventory.
 
 Its module README documents official rule sources, timers, scoring, autosave and
 profile-matched resume. Local checks include `tests/catan_rules.gd`,
 `catan_transactions.gd`, `catan_direct_trades.gd`, `catan_session.gd`, `catan_network.gd`,
 `catan_persistence.gd`, `catan_settings.gd`, `catan_ai.gd`, rendered `catan_visual.gd` and
-`catan_motion.gd`, then `node tests/catan_controller.mjs`. Debug autoplay exercises
+`catan_motion.gd`, `catan_presentation.gd`, then `node tests/catan_controller.mjs`. Debug autoplay exercises
 one to six temporary human seats through ordinary validated handlers. These
 module files and tests remain local under the publishing policy.
 
@@ -911,6 +919,27 @@ art is shared at `/ui/playful/stat-{victory,resources,development,route,knights,
 `control-help.svg` depicts a reference card; `game-labelled-utility` keeps an icon
 and visible caption together in a 44px browser action. The template demonstrates
 the row and stat grid in both views.
+
+For icon-only roster cards, set native `grid_counters=true` and pass an optional
+fourth `set_player` argument `{texture,value,label}` for a top-right headline
+counter. `compact` retains all six counters, and `dense` fits short landscape rows.
+The browser uses `has-headline` plus the optional fourth `update` argument
+`{icon,value,label}`. The independent name/headline slots prevent overlap; ordinary
+rows and existing labelled variants retain their layouts. Native inspector grids
+can set `maximum_columns=4` for eight public counters on a wide sheet.
+
+`screen.set_phase_dialog_header(dialog, name, {texture,value,label})` aligns a
+literal player name left with an independent right-hand public counter. Calling
+it without the metric restores an ordinary centered heading. Browser sheets use
+`game-dialog-heading-row has-header-metric`, an `h2`, and
+`game-dialog-header-metric` containing an empty-alt image and value. The template
+includes both patterns; private values must be filtered before presentation.
+
+`GameTurnStrip.set_actions(public_captions)` and browser
+`StarGamesTurnStrip(players, active, {tracked:true, actions:public_captions})`
+add one literal accepted-action caption beneath each corresponding name. Keep
+captions in seat order and preserve geometry on initial sync and resize. Derive
+them from accepted host state; the component adds no input or scoring authority.
 
 `game-icon-only` supplies 44px icon buttons with an `aria-label` and empty-alt
 image. `game-resource-token` adds a shared paper surface for inspectable tokens.
