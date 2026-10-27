@@ -441,6 +441,10 @@ static func _apply_modern_table_palette(result: Theme) -> void:
 		result.set_font_size("font_size", type, 16)
 
 
+static func interface_font() -> SystemFont:
+	var font := SystemFont.new(); font.font_names = PackedStringArray(["Segoe UI","Arial","sans-serif"]); font.font_weight = 400
+	return font
+
 static func modern_table_sheet(active := false) -> StyleBoxFlat:
 	var style := box(Color("05263df5"), Color("ffd447") if active else Color("258db6"), 15, 2 if active else 1)
 	style.shadow_color = Color("ffd44766") if active else Color("00101c66")
@@ -663,7 +667,7 @@ static func table_owed_color() -> Color:
 static func table_action(button: Button, kind := "play") -> void:
 	button.custom_minimum_size.y = 44
 	button.add_theme_font_size_override("font_size", 16)
-	var fill := Color("ffc52d") if kind == "end" else Color("4c6385") if kind == "bank" else Color("8e3ddb") if kind == "special" else Color("087be7")
+	var fill := Color("207742") if kind == "accept" else Color("983e46") if kind == "decline" else Color("ffc52d") if kind == "end" else Color("4c6385") if kind == "bank" else Color("8e3ddb") if kind == "special" else Color("087be7")
 	for state in ["normal", "hover", "pressed", "disabled"]:
 		var tint := fill.lightened(.1) if state == "hover" else fill.darkened(.12) if state == "pressed" else fill
 		if state == "disabled": tint = Color("344a5c")

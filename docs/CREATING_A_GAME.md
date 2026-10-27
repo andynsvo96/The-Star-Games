@@ -2805,6 +2805,19 @@ For navy browser feeds, pair `game-activity-paper` with `game-activity-dark`;
 inline `game-activity-icon` images preserve their aspect ratios. Native feeds
 use `paper=false`. Keep literal accessible text for icon entries.
 
+For a separate navy header with larger text and a **Show All** action, set
+native `sectioned=true` and `expandable=true` before adding the log. This uses
+`GameLook.interface_font()` for compact sans-serif text; `compact_text=true`
+can apply that body font to a plain enlarged log as well. The panel and its
+44px `show_all` button both emit `expand_requested`. Keep the same entries in
+the compact and enlarged views. Browser feeds use `game-activity-section` with
+a `header` containing `h2` and a real button, followed by the ordinary
+`game-activity-paper game-activity-dark` feed. `game-activity-compact` provides
+the matching body typography in enlarged dialogs. No timestamps are required.
+Native `GameLook.table_action(button,"accept"/"decline")` and browser
+`game-success`/`game-danger` give explicit decisions green/red surfaces while
+retaining the normal disabled palette and 44px targets.
+
 Pass `true` as the third native `show_reference` argument or `{fit:true}` as the
 second browser `showReference` argument to fit both reference faces without
 scrolling. Flip and Back retain 44px targets. Ordinary card readers keep their

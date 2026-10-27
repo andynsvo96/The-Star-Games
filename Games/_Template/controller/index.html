@@ -176,5 +176,8 @@
   <!-- Shared paper feeds use literal public text. Labelled utilities retain
        a 44px action target and a visible caption alongside their icon. -->
   <section hidden aria-label="Paper activity example"><div class="game-dialog-heading-row has-header-metric"><h2>Example player</h2><span class="game-dialog-header-metric" aria-label="Session wins: 3"><img src="/ui/playful/stat-trophy.svg" alt=""><output>3</output></span></div><div class="game-activity-paper"><p>Example player completed a public action.</p></div><nav class="game-action-row"><button type="button" class="game-labelled-utility game-icon-control" aria-label="Read reference card"><img src="/ui/playful/control-help.svg" alt=""><span>Help</span></button></nav></section>
+<!-- Sectioned public feeds reuse the shared compact type and header action.
+     Wire Show All to an enlarged dialog containing the same literal rows. -->
+<section hidden aria-label="Sectioned activity example"><section class="game-activity-section"><header><h2>Recent Activity</h2><button type="button" class="game-secondary">Show All</button></header><div class="game-activity-paper game-activity-dark game-activity-separated game-activity-bold-latest"><p>Example player completed a public action.</p></div></section></section>
 </body>
 </html>

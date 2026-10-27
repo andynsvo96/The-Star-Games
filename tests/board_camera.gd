@@ -95,6 +95,12 @@ func _run() -> void:
 	var colored: RichTextLabel = compact_log.entries.get_child(0)
 	check(colored.get_parsed_text() == "Literal [color=red]<name> acted" and not colored.bbcode_enabled,"Colored activity parts keep names literal without interpreting markup")
 	var cost := GameCostRow.new(); root.add_child(cost); cost.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Wood","available":false}])
+	var sectioned_log := GameActivityLog.new(); sectioned_log.sectioned = true; sectioned_log.expandable = true; root.add_child(sectioned_log); sectioned_log.size = Vector2(280,220); sectioned_log.heading.text = "Recent Activity"; sectioned_log.set_entries(log_items,true)
+	var expands: Array = []; sectioned_log.expand_requested.connect(func() -> void: expands.append(true)); sectioned_log.show_all.pressed.emit()
+	for unused in 3: await process_frame
+	check(expands.size() == 1 and sectioned_log.show_all.size.y >= 44 and sectioned_log.body_font != null,"Sectioned activity supplies compact type and an accessible Show All action")
+	check(sectioned_log.heading.get_global_rect().end.x <= sectioned_log.show_all.get_global_rect().position.x,"Section heading and Show All reserve separate space")
+	sectioned_log.queue_free()
 	check(cost.get_child(0).material is ShaderMaterial and cost.get_child(0).accessibility_name == "Wood missing","Missing materials desaturate and remain accessible")
 	cost.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Wood","owned":2,"required":3,"available":false}])
 	check(cost.get_child(0).accessibility_name == "Wood: have 2, need 3" and cost.find_children("*","Label",true,false).any(func(label: Label) -> bool: return label.text == "Need 1 more"),"Counted materials preserve exact owned, required and missing quantities")

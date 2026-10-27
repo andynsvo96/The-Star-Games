@@ -1679,6 +1679,16 @@ body.playful-game { isolation: isolate; }
 .game-activity-paper > p { margin: 0; padding: 10px 0; border-bottom: 1px solid #c8b58c80; font-size: .9rem; line-height: 1.45; overflow-wrap: anywhere; }
 .game-activity-paper > p:first-child { font-weight: 700; }
 .game-activity-paper > p:last-child { border-bottom: 0; }
+.game-activity-section { overflow: hidden; border: 1px solid #385168; border-radius: 12px; background: #0b1d2cef; color: #edf3f5; font-family: "Segoe UI",Arial,sans-serif; text-align: left; }
+.game-activity-section > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0; padding: 0 12px; min-height: 44px; background: #233648b8; border-bottom: 1px solid #385168; }
+.playful-game .game-controller .game-activity-section > header h2 { margin: 0; font: 700 1.1rem/1.2 "Segoe UI",Arial,sans-serif; letter-spacing: 0; }
+.playful-game .game-controller .game-activity-section > header button { min-width: 70px; min-height: 44px; width: auto; padding: 4px; border: 0; box-shadow: none; background: transparent; color: #dbeafb; font: 400 .8rem/1.2 "Segoe UI",Arial,sans-serif; text-transform: none; }
+.game-activity-section > .game-activity-paper { padding: 2px 12px; border: 0; border-radius: 0; background: transparent; }
+.game-activity-section .game-activity-paper > p, .game-activity-compact > p { padding-block: 8px; font: 400 .85rem/1.35 "Segoe UI",Arial,sans-serif; }
+.game-activity-section .game-activity-paper > p, .game-activity-compact.game-activity-separated > p { border-bottom: 0; }
+.game-activity-section .game-activity-bold-latest > p:first-child, .game-activity-compact.game-activity-bold-latest > p:first-child { font-weight: 700; }
+.playful-game.game-admiral .game-controller button.game-success:not(:disabled) { background: linear-gradient(#288b4d,#175b34); border-color: #60c783; color: #f1fff5; }
+.playful-game.game-admiral .game-controller button.game-danger:not(:disabled) { background: linear-gradient(#a74750,#722c35); border-color: #d4777e; color: #fff1f2; }
 .playful-game .game-controller .game-action-row button.game-labelled-utility { display: inline-flex; flex-direction: row; align-items: center; justify-content: center; flex: 0 1 auto; width: auto; min-width: 64px; min-height: 44px; gap: 4px; padding: 5px; font-size: .7rem; white-space: nowrap; }
 .playful-game .game-controller .game-action-row button.game-labelled-utility img { width: 20px; height: 20px; object-fit: contain; }
 .game-player-row .avatar-badge { display: grid; place-items: center; position: relative; overflow: hidden; border-radius: 50%; background: var(--player-color); border: 1px solid #fff7; }
