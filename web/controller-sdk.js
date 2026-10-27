@@ -125,6 +125,8 @@
   // Shared board sizing respects CSS aspect-ratio and reserves replay space.
   class GameBoardLayout {
     constructor(board, replay) {
+      this.canvas = board;
+      board = board?.closest('.game-controller')?.querySelector('[data-game-board-fit]') || board;
       this.board = board;
       this.replay = replay;
       this.controls = board?.closest(".game-playfield")?.querySelector(".game-board-controls");
@@ -180,7 +182,9 @@
         const centered = container.classList.contains("game-centered-controller");
         const style = getComputedStyle(container);
         const boardController = container.classList.contains("game-board-controller");
-        const footer = (this.trailing && !this.trailing.hidden ? this.trailing.getBoundingClientRect().height + 8 : 0) + (boardController && this.stats && !this.stats.hidden
+        const trailingStyle = this.trailing ? getComputedStyle(this.trailing) : null;
+        const trailingHeight = this.trailing && !this.trailing.hidden ? this.trailing.getBoundingClientRect().height + parseFloat(trailingStyle.marginTop || 0) + parseFloat(trailingStyle.marginBottom || 0) + parseFloat(style.rowGap || 0) : 0;
+        const footer = trailingHeight + (boardController && this.stats && !this.stats.hidden
           ? this.stats.getBoundingClientRect().height + parseFloat(style.rowGap || 0) + 8
           : 0);
         const availableHeight = centered
@@ -323,8 +327,9 @@
   }
   // View-only map camera. Keeps gameplay taps separate from drag/pinch gestures.
   class StarGamesBoardCamera {
-    constructor(element, {surface = element.querySelector('svg'), onChange = () => {}} = {}) {
+    constructor(element, {surface = element.querySelector('svg'), fitElement = null, onChange = () => {}} = {}) {
       this.element = element; this.surface = surface; this.onChange = onChange;
+      this.fitElement = fitElement;
       this.zoom = 1; this.pan = {x:0,y:0}; this.points = new Map(); this.gesture = false; this.suppressUntil = 0;
       element.classList.add('game-board-camera'); element.tabIndex = 0;
       const listen = (target, event, handler, options) => { target.addEventListener(event,handler,options); this.cleanup.push(() => target.removeEventListener(event,handler,options)); };
@@ -360,20 +365,28 @@
         else { this.pan.x += e.key==='ArrowLeft'?32:e.key==='ArrowRight'?-32:0; this.pan.y += e.key==='ArrowUp'?32:e.key==='ArrowDown'?-32:0; this.apply(); }
       });
       listen(window,'blur',() => this.cancel());
+      listen(window,'gameboardresize',() => this.apply());
       listen(document,'visibilitychange',() => { if (document.hidden) this.cancel(); });
       this.observer = new ResizeObserver(() => this.apply()); this.observer.observe(element);
+      if (fitElement) this.observer.observe(fitElement);
     }
     local(p) { const r=this.element.getBoundingClientRect(); return {x:p.x-r.left,y:p.y-r.top}; }
     measure() { const p=[...this.points.values()]; return {x:p.reduce((n,p)=>n+p.x,0)/p.length,y:p.reduce((n,p)=>n+p.y,0)/p.length,distance:p.length>1?Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y):0}; }
-    project(x,y) { const w=this.element.clientWidth,h=this.element.clientHeight; return {x:(x-.5)*w*this.zoom+w/2+this.pan.x,y:(y-.5)*h*this.zoom+h/2+this.pan.y}; }
+    frame() { const r=this.element.getBoundingClientRect(),f=this.fitElement?.getBoundingClientRect();return f?{x:f.left-r.left,y:f.top-r.top,width:f.width,height:f.height}:{x:0,y:0,width:r.width,height:r.height}; }
+    project(x,y) { const f=this.frame(); return {x:(x-.5)*f.width*this.zoom+f.x+f.width/2+this.pan.x,y:(y-.5)*f.height*this.zoom+f.y+f.height/2+this.pan.y}; }
     zoomAt(factor,anchor) {
-      const next=Math.max(1,Math.min(4,this.zoom*factor)),cx=this.element.clientWidth/2,cy=this.element.clientHeight/2;
+      const f=this.frame(),next=Math.max(1,Math.min(4,this.zoom*factor)),cx=f.x+f.width/2,cy=f.y+f.height/2;
       this.pan.x=anchor.x-cx-(anchor.x-cx-this.pan.x)*next/this.zoom; this.pan.y=anchor.y-cy-(anchor.y-cy-this.pan.y)*next/this.zoom;
       this.zoom=next; this.apply();
     }
     apply() {
-      for (const [axis,size] of [['x',this.element.clientWidth],['y',this.element.clientHeight]]) { const limit=size*(.35+(this.zoom-1)*.5); this.pan[axis]=Math.max(-limit,Math.min(limit,this.pan[axis])); }
+      const frame=this.frame(),edge=Math.min(48,this.element.clientWidth*.12,this.element.clientHeight*.12);
+      for (const [axis,size,length] of [['x',this.element.clientWidth,frame.width],['y',this.element.clientHeight,frame.height]]) {
+        const limit=size*(.35+(this.zoom-1)*.5),center=frame[axis]+length/2;
+        this.pan[axis]=this.fitElement?Math.max(edge-center-length*this.zoom/2,Math.min(size-edge-center+length*this.zoom/2,this.pan[axis])):Math.max(-limit,Math.min(limit,this.pan[axis]));
+      }
       if (this.surface) this.surface.style.transform=`translate(${this.pan.x}px,${this.pan.y}px) scale(${this.zoom})`;
+      if (this.surface && this.fitElement) { const f=this.frame();Object.assign(this.surface.style,{left:f.x+'px',top:f.y+'px',width:f.width+'px',height:f.height+'px'}); }
       this.element.dataset.cameraZoom=String(this.zoom); this.onChange(this);
     }
     cancel() { if(this.points.size)this.suppressUntil=performance.now()+400; this.points.clear(); this.gesture=false; }

@@ -68,7 +68,12 @@ const assertions = `
         pointer('pointerdown',1,60,80);pointer('pointermove',1,100,110,window);pointer('pointerup',1,100,110,window);cameraView.click();check(selected===0&&camera.pan.x>0,'Shared map drag suppresses gameplay click');
         camera.reset();pointer('pointerdown',2,60,80);pointer('pointerdown',3,120,80);pointer('pointermove',3,180,80,window);pointer('pointerup',3,180,80,window);pointer('pointerup',2,60,80,window);check(camera.zoom>1,'Shared touch pinch magnifies inline');
         const z=camera.zoom;camera.cancel();pointer('pointermove',3,220,80,window);check(camera.zoom===z,'Canceled gesture cannot move the map later');
-        camera.reset();check(camera.zoom===1&&camera.pan.x===0&&camera.pan.y===0,'Shared fit restores the camera');camera.destroy();cameraView.remove();
+        camera.reset();check(camera.zoom===1&&camera.pan.x===0&&camera.pan.y===0,'Shared fit restores the camera');camera.destroy();
+        const fitArea=document.createElement('div');fitArea.style.cssText='position:fixed;left:-1960px;top:30px;width:120px;height:100px';document.body.append(fitArea);
+        const fullCamera=new StarGamesBoardCamera(cameraView,{surface,fitElement:fitArea});fullCamera.zoomAt(2,{x:100,y:80});const projected=fullCamera.project(.5,.5);
+        check(Math.abs(projected.x-100)<1&&Math.abs(projected.y-80)<1&&surface.style.width==='120px','Full-canvas camera preserves the fitted center and pointer anchor');
+        fullCamera.pan={x:9000,y:9000};fullCamera.apply();const reachable=fullCamera.project(.5,.5);check(reachable.x-120<=240&&reachable.y-100<=180,'Full-canvas pan limits keep part of the map reachable');
+        fullCamera.destroy();fitArea.remove();cameraView.remove();
         const row=new StarGamesPlayerRow(()=>{});row.update({display_name:'Name <tag> [literal]',color:'#000000',pose:0},[{icon:'/ui/playful/table-cards.svg',label:'Public cards',value:7}],true);const original=row.element;
         row.update({display_name:'Updated player',color:'#ffffff',pose:1},[{icon:'/ui/playful/table-cards.svg',label:'Public cards',value:8}],false);check(row.element===original&&row.element.getAttribute('aria-label').includes('Public cards: 8')&&!row.element.querySelector('tag'),'Shared player updates preserve the accessible target and literal names');
 

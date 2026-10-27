@@ -138,11 +138,15 @@
   // the map camera keeps targets at 44px by projecting their normalized points.
   // Add data-game-board-trailing to a utility row after a playfield to reserve
   // its observed height alongside the private-hand/action footer.
-  const cameraExample=document.createElement('div');cameraExample.hidden=true;
-  const cameraSurface=document.createElementNS('http://www.w3.org/2000/svg','svg');cameraExample.append(cameraSurface);document.querySelector('main').append(cameraExample);
-  const exampleCamera=new StarGamesBoardCamera(cameraExample);
+  const cameraWrapper=document.createElement('div');cameraWrapper.hidden=true;document.querySelector('main').append(cameraWrapper);
+  // An active full-screen example adds data-game-board-fit to its normal anchor.
+  // The SDK fits that anchor while the camera surface can paint beyond it.
+  const cameraFit=document.createElement('div');cameraFit.className='game-map-fit';cameraFit.style.cssText='width:180px;height:180px';cameraWrapper.append(cameraFit);
+  const cameraExample=document.createElement('div');cameraExample.className='game-board-canvas';cameraWrapper.append(cameraExample);
+  const cameraSurface=document.createElementNS('http://www.w3.org/2000/svg','svg');cameraExample.append(cameraSurface);
+  const exampleCamera=new StarGamesBoardCamera(cameraExample,{fitElement:cameraFit});
   const rowExample=new StarGamesPlayerRow(()=>exampleCamera.reset());
-  rowExample.update({display_name:'Example player',color:'#2463eb',pose:0},[{icon:'/ui/playful/table-cards.svg',value:7,label:'Public card count'}],true);cameraExample.append(rowExample.element);
+  rowExample.update({display_name:'Example player',color:'#2463eb',pose:0},[{icon:'/ui/playful/table-cards.svg',value:7,label:'Public card count'}],true);cameraWrapper.append(rowExample.element);
   addEventListener('pagehide',()=>exampleCamera.destroy(),{once:true});
   const rulesExample=document.getElementById('example-rules-dialog');
   // Feed eligible badge elements and public obstacles only; clear on exit/pause.

@@ -226,6 +226,21 @@ func _ready() -> void:
 	camera_view.gui_input.connect(func(event: InputEvent) -> void: camera_example.handle_input(event,camera_view.get_local_mouse_position()))
 	camera_example.changed.connect(func() -> void: camera_art.scale = Vector2.ONE*camera_example.zoom; camera_art.position = camera_example.project(Vector2.ZERO))
 	camera_view.tree_exiting.connect(camera_example.cancel)
+	# Optional full-screen map: keep a fitted anchor in the layout and paint the
+	# camera behind shared chrome. Route _input through board_canvas_input_regions
+	# before starting gestures so UI buttons retain priority.
+	var backdrop_example := Control.new(); backdrop_example.hide()
+	var backdrop_camera := GameBoardCamera.new()
+	var backdrop_art := TextureRect.new(); backdrop_art.texture = camera_art.texture; backdrop_art.mouse_filter = Control.MOUSE_FILTER_IGNORE; backdrop_example.add_child(backdrop_art)
+	var refit_backdrop := func() -> void:
+		if not is_instance_valid(backdrop_example) or not is_instance_valid(camera_view): return
+		var fitted := screen.board_canvas_fit_rect(backdrop_example)
+		backdrop_camera.set_frame(backdrop_example.size,fitted)
+		backdrop_art.size = fitted.size; backdrop_art.scale = Vector2.ONE*backdrop_camera.zoom; backdrop_art.position = backdrop_camera.project(fitted.position)
+	screen.mount_board_canvas(backdrop_example,camera_view,refit_backdrop)
+	backdrop_example.resized.connect(refit_backdrop); backdrop_camera.changed.connect(refit_backdrop)
+	backdrop_example.tree_exiting.connect(backdrop_camera.cancel)
+
 	var reader_example := GameCardReader.new(); reader_example.theme = screen.theme; add_child(reader_example)
 	# After show_card, set_subtitle("Owned by …") adds explicit public ownership.
 	reader_example.set_preview([{"label":"Example action", "summary":"Public consequences", "players":[], "items":[]}])

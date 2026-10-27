@@ -8,6 +8,7 @@ signal tapped(position: Vector2)
 var zoom := 1.0
 var pan := Vector2.ZERO
 var viewport_size := Vector2.ONE
+var fit_rect := Rect2()
 var maximum_zoom := 4.0
 var _points := {}
 var _starts := {}
@@ -19,15 +20,31 @@ func reset() -> void:
 func cancel() -> void:
 	_points.clear(); _starts.clear(); _gesture = false
 
+func is_interacting() -> bool:
+	return not _points.is_empty()
+
+func set_frame(viewport: Vector2, bounds := Rect2()) -> void:
+	viewport_size = viewport; fit_rect = bounds; _constrain()
+
+func focus_center() -> Vector2:
+	return fit_rect.get_center() if fit_rect.has_area() else viewport_size/2
+
 func project(point: Vector2) -> Vector2:
-	return (point-viewport_size/2)*zoom+viewport_size/2+pan
+	var center := focus_center()
+	return (point-center)*zoom+center+pan
 
 func zoom_at(factor: float, anchor: Vector2) -> void:
 	var next := clampf(zoom*factor,1.0,maximum_zoom)
-	pan = anchor-viewport_size/2-(anchor-viewport_size/2-pan)*(next/zoom)
+	var center := focus_center()
+	pan = anchor-center-(anchor-center-pan)*(next/zoom)
 	zoom = next; _constrain(); changed.emit()
 
 func _constrain() -> void:
+	if fit_rect.has_area():
+		var edge := Vector2.ONE*minf(48,minf(viewport_size.x,viewport_size.y)*.12)
+		var half := fit_rect.size*zoom/2
+		pan = pan.clamp(edge-focus_center()-half,viewport_size-edge-focus_center()+half)
+		return
 	var limit := viewport_size*(.35+(zoom-1)*.5)
 	pan = pan.clamp(-limit,limit)
 

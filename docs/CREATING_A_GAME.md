@@ -374,8 +374,12 @@ and named skins replace media and labels without changing rule identities.
 Its module-owned artwork map keeps canonical host/controller paths aligned with
 stable skin slot IDs when Default media changes format. Generated originals and
 4K masters stay in the local source-media folder, with smaller runtime exports
-for phone memory use. A blue ocean frame surrounds the terrain; the separate
-extensionless wallpaper uses the shared background player. A development deck
+for phone memory use. A continuous ocean fills the screen through the shared
+background player using extensionless `art/ocean`. The map paints behind the UI
+across the whole viewport, retaining its initial fit through shared anchors.
+Subtle water currents freeze for reduced motion and pause with the game. Buildings
+and roads retain their colors with dark edges and soft shadows, without cream
+backing silhouettes. A development deck
 and two bonus cards stay separate from the public market and costs/overview
 reference. Wide hosts use narrow player rows on both sides of a larger island; narrow
 hosts and phones use a compact roster above it. Icon controls open the public
@@ -912,6 +916,30 @@ fit; call `cancel()` for reconnect/modal transitions and `destroy()` on page exi
 Keep camera position across snapshots, resize and reading player details; reset
 for a new board. A fit button is optional, since gestures work in the main view.
 The shared camera adds no automatic motion and works with reduced motion.
+
+For a map that may pan beyond its initial fitted rectangle, keep an ordinary
+anchor inside the playfield. On hosts, `screen.mount_board_canvas(canvas, anchor,
+refit_callback)` reparents only the painting/input canvas behind the shared UI
+and sizes it to the full host. Continue calling `center_board` with the fitted
+composition and sizing the anchor through `board_height_limit`/`board_width_limit`.
+In the refit callback, call `camera.set_frame(canvas.size,
+screen.board_canvas_fit_rect(canvas))`. Project the board around that fit
+rectangle's center; the camera remains bounded by the whole viewport.
+`screen.board_canvas_input_regions(extra_controls)` returns common navigation,
+summary, auxiliary/replay and caller-supplied UI rectangles in global coordinates.
+Before starting a map gesture, reject points inside them; finish a gesture that
+already began on the map. Modal inspection/settings still cancel input.
+
+On browsers, add `data-game-board-fit` and `game-map-fit` to the normal anchor,
+`game-board-canvas` to `#board`, and pass `{fitElement: anchor}` to
+`StarGamesBoardCamera`. The SDK fits the anchor and reserves the normal controls;
+the map SVG and 44px target layer use the full-screen canvas. Shared SVG overflow
+allows land to extend past the initial anchor; only the screen edges clip it.
+Layer interactive chrome above the map and let empty layout areas pass input
+through. The template has hidden native/browser examples. Ordinary bounded
+boards keep their current behavior. Native frame updates and browser resize
+observers keep a panned island reachable after rotation or resizing.
+
 
 A utility row following the fitted playfield can carry
 `data-game-board-trailing`. The SDK observes its height and reserves it so the

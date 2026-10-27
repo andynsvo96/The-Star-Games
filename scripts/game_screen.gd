@@ -303,6 +303,35 @@ func set_table_header_content(control: Control) -> void:
 	status.hide(); _table_header_fit.call_deferred()
 
 
+# A map can paint behind the chrome while its initial fit remains container-owned.
+func mount_board_canvas(canvas: Control, fit_anchor: Control, refit := Callable()) -> void:
+	if canvas.get_parent() == null: get_parent_control().add_child(canvas)
+	else: canvas.reparent(get_parent_control())
+	get_parent_control().move_child(canvas,get_index())
+	canvas.custom_minimum_size = Vector2.ZERO
+	canvas.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	canvas.set_meta("game_board_fit_anchor",fit_anchor)
+	if refit.is_valid(): fit_anchor.item_rect_changed.connect(refit,CONNECT_DEFERRED)
+
+
+func board_canvas_fit_rect(canvas: Control) -> Rect2:
+	var anchor: Control = canvas.get_meta("game_board_fit_anchor",null)
+	if not is_instance_valid(anchor): return Rect2(Vector2.ZERO,canvas.size)
+	return canvas.get_global_transform_with_canvas().affine_inverse()*anchor.get_global_rect()
+
+
+# Rectangles use canvas/global coordinates; a map's own pointer handler checks
+# these before starting gestures. Continue routing a gesture that already began.
+func board_canvas_input_regions(extra: Array[Control] = []) -> Array[Rect2]:
+	var result: Array[Rect2] = []
+	if _table_header: result.append(Rect2(get_parent_control().global_position,Vector2(available_size().x,_table_header_height)))
+	var controls: Array[Control] = [back_button,_table_header_summary,_board_auxiliary,_board_replay]
+	controls.append_array(extra)
+	for control in controls:
+		if is_instance_valid(control) and control.is_visible_in_tree(): result.append(control.get_global_rect())
+	return result
+
+
 func set_table_header_action(button: Button) -> void:
 	if _table_header_layer == null: return
 	_table_header_action = button
