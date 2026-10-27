@@ -356,8 +356,11 @@ The local `Games/catan` combines a public hex board with private resource and
 development-card views. It uses the shared admiral presentation, compact table
 header with a turn-order strip, centered board, compact inspectable player rows, readers,
 dialogs, card movement, signed resource feedback and toolbar relocation. Phones
-inspect a route/building target's material cost and confirm with a green check;
-missing materials are grey. Setup places directly. The host is public in multiplayer and owns a private
+tap direct road/building slots, review owned/required material quantities, and
+confirm with a green check; missing materials are grey. Houses themselves open
+city progress previews even between turns. Setup places directly. Turn rolls
+use a lightly dimmed phase prompt, with older playable development cards still
+reachable before rolling. The host is public in multiplayer and owns a private
 hand only in solo play.
 The manifest admits one human for computer-filled arrangements, while the rules
 always create three to six total seats. Five/six seats use current paired turns.
@@ -375,8 +378,10 @@ and named skins replace media and labels without changing rule identities.
 Its module-owned artwork map keeps canonical host/controller paths aligned with
 stable skin slot IDs when Default media changes format. Generated originals and
 earlier 4K masters stay in the local source-media folder, with smaller runtime exports
-for phone memory use. A continuous ocean fills the screen through the shared
-background player using extensionless `art/ocean`. The map paints behind the UI
+for phone memory use. A solid ocean fills the screen through the shared
+background player using extensionless `art/ocean`. Detailed water surrounds the
+island and docks for at least a tile's width, fading through a cached native
+mesh or SVG mask into that exact solid color. The map paints behind the UI
 across the whole viewport, retaining its initial fit through shared anchors.
 Localized waves approach the island, break into foam and recede around rocks.
 The native coastline draws in a separate layer in board coordinates; browser
@@ -401,7 +406,8 @@ and two bonus cards stay separate from the public market and costs/overview
 reference. Wide hosts put larger navy player cards on the left and compact navy
 History plus a public Open Market preview on the right. History keeps five
 separated entries and opens the full feed when clicked; resources, buildings
-and dice use icons. A red badge counts public market offers. VP has a separate top-right star,
+and dice use icons. The Open Market caption counts public offers; the footer
+omits Market, Roll and Build buttons. End Turn is labelled with text. VP has a separate top-right star,
 with six icon-only counters below: resources, development cards, route, Knights,
 settlements and cities. Session wins move into the public inspector header.
 An identity-colored outline marks the active player. Gold route/army icon
@@ -2771,7 +2777,13 @@ still own target positions, visible markers and host-validated actions.
 `GameCostRow.set_items([{texture,label,available},...])` and browser
 `StarGamesCostRow([{icon,label,available},...])` display one icon per required
 material, desaturating missing items. Use them in a shared compact phase dialog
-with a validated confirmation action. A `GameButtonBadge` attached to a Button
+with a validated confirmation action. Optional `owned` and `required` numeric
+fields group a material into an icon/name progress card (`2 / 3`, `Need 1 more`).
+Native `dark=true` and browser `game-cost-row is-dark` select navy surfaces.
+Keep affordability and permission checks in the module. Browser
+`game-dialog-soft` opts into a lighter phase-dialog backdrop; native callers
+can adjust the returned phase dialog's `shade.color` while retaining its layout
+and navigation. A `GameButtonBadge` attached to a Button
 (`count`) or browser `StarGamesButtonBadge(button,count)` adds a red count badge.
 Include its meaning in the button's accessible name too. Template examples
 demonstrate these presentation-only helpers.

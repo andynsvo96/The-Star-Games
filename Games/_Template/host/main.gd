@@ -234,6 +234,9 @@ func _ready() -> void:
 	stat_grid_example.set_metrics([{"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-victory.svg"),"value":2,"label":"Public points","highlighted":true}])
 	var cost_example := GameCostRow.new(); layout.playfield.add_child(cost_example); cost_example.hide()
 	cost_example.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"One required card","available":false}])
+	# Optional owned/required values group materials into counted progress cards.
+	var counted_cost := GameCostRow.new(); counted_cost.dark = true; layout.playfield.add_child(counted_cost); counted_cost.hide()
+	counted_cost.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Example material","owned":2,"required":3,"available":false}])
 	# A green check confirmation inherits its theme through GameLook.confirm_control.
 	var badge_example := GameButtonBadge.new(); player_row_example.add_child(badge_example); badge_example.count = 2
 	# A camera transforms presentation only. Route its tapped signal to the game's

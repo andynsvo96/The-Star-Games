@@ -153,6 +153,9 @@
   cameraWrapper.append(StarGamesTurnStrip([{display_name:'Example player',color:'#2463eb'}],0,{tracked:true,actions:['Played a public card']}));
   const statGridExample=new StarGamesStatGrid();statGridExample.element.classList.add('is-dark');statGridExample.update([{icon:'/ui/playful/stat-victory.svg',value:2,label:'Public points',highlighted:true}]);cameraWrapper.append(statGridExample.element);
   cameraWrapper.append(StarGamesCostRow([{icon:'/ui/playful/table-cards.svg',label:'One required card',available:false}]));
+  const countedCost=StarGamesCostRow([{icon:'/ui/playful/table-cards.svg',label:'Example material',owned:2,required:3,available:false}]);countedCost.classList.add('is-dark');cameraWrapper.append(countedCost);
+  // game-dialog-soft supplies a lighter backdrop for board phase prompts.
+  const softPrompt=document.createElement('dialog');softPrompt.className='game-dialog game-dialog-soft';cameraWrapper.append(softPrompt);
   StarGamesButtonBadge(rowExample.element,2);
   // showReference(pages,{fit:true}) fits both faces without a reader scrollbar.
   // Paragraph feeds opt into game-activity-separated/game-activity-bold-latest.

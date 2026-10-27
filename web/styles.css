@@ -1616,6 +1616,13 @@ body.playful-game { isolation: isolate; }
 .game-stat-highlight { outline: 2px solid #dfa823; outline-offset: 1px; border-radius: 4px; background: #ffe49a33; }
 .playful-game .game-controller button.game-player-row.is-current.has-identity-turn-outline { outline: 3px solid var(--score-color); outline-offset: -3px; }
 .game-cost-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 8px auto; }
+.game-cost-material { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 92px; padding: 9px; background: #fff7e5; color: #56351f; border: 1px solid #c8b58c; border-radius: 10px; }
+.game-cost-row.is-dark .game-cost-material { background: #092438; color: #edf3f5; border-color: #33516a; }
+.game-cost-row .game-cost-material img { width: 48px; height: 54px; object-fit: contain; }
+.game-cost-material span { font-size: .8rem; }
+.game-cost-material strong { font-size: 1.3rem; }
+.game-cost-material small { font-size: .7rem; }
+.game-dialog.game-dialog-soft::backdrop { background: #04142170; }
 .game-cost-row img { width: 32px; height: 48px; object-fit: contain; }
 .game-cost-row .is-unavailable { filter: grayscale(1); opacity: .5; }
 .playful-game button.game-confirm-control { font-size: 28px; min-width: 56px; min-height: 44px; }

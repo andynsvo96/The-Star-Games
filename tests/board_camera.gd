@@ -96,6 +96,8 @@ func _run() -> void:
 	check(colored.get_parsed_text() == "Literal [color=red]<name> acted" and not colored.bbcode_enabled,"Colored activity parts keep names literal without interpreting markup")
 	var cost := GameCostRow.new(); root.add_child(cost); cost.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Wood","available":false}])
 	check(cost.get_child(0).material is ShaderMaterial and cost.get_child(0).accessibility_name == "Wood missing","Missing materials desaturate and remain accessible")
+	cost.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Wood","owned":2,"required":3,"available":false}])
+	check(cost.get_child(0).accessibility_name == "Wood: have 2, need 3" and cost.find_children("*","Label",true,false).any(func(label: Label) -> bool: return label.text == "Need 1 more"),"Counted materials preserve exact owned, required and missing quantities")
 	row.set_player({"display_name":"Long name","color":"#000000"},metrics,true,{"value":"5 +2","label":"Points plus cards"}); row._layout()
 	check(row.name_label.get_rect().end.x < row.headline_value.position.x-14,"Headline bonus suffix reserves its full width")
 	row.dark = true; row.set_player({"display_name":"Dark identity","color":"#000000"},metrics,true)
