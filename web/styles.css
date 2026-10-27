@@ -1591,6 +1591,9 @@ body.playful-game { isolation: isolate; }
 .game-board-camera:active { cursor: grabbing; }
 .game-board-camera > svg { transform-origin: 50% 50%; }
 .game-board-camera:focus-visible { outline: 3px solid var(--accent, #edc663); outline-offset: 2px; }
+.playful-game .game-controller button.game-board-hit-target, .playful-game .game-controller button.game-board-hit-target:disabled { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; border: 0; border-image: none; border-radius: 50%; background: transparent; box-shadow: none; text-shadow: none; }
+.playful-game .game-controller button.game-board-hit-target:active { transform: none; }
+.game-board-controls.is-dark { color: #edf3f5; background: linear-gradient(145deg,#102b40f2,#071b2bf2); border: 1px solid #33516a; border-radius: 12px; box-shadow: 0 3px 9px #00101e80; padding: 8px; }
 .playful-game .game-controller button.game-player-row { position: relative; display: grid; grid-template-columns: 30px minmax(0,1fr); align-items: center; gap: 3px 5px; width: 100%; min-width: 0; min-height: 68px; margin: 0; padding: 7px; border: 1px solid var(--control-edge, #8d663e); border-left: 4px solid var(--score-color); border-radius: 8px; background: var(--cream, #f7ebc9); color: #56351f; box-shadow: 0 2px 4px #0003; text-align: left; }
 .playful-game .game-controller button.game-player-row.is-current { outline: 2px solid #edbd4b; outline-offset: -2px; }
 .game-player-row-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .8rem; font-weight: 700; }
@@ -1603,6 +1606,13 @@ body.playful-game { isolation: isolate; }
 .game-player-row-headline img { width: 25px; height: 27px; object-fit: contain; }
 .game-player-row-headline output { font-size: 1.5rem; font-weight: 700; line-height: 1; }
 .game-player-row-headline { white-space: nowrap; }
+.playful-game .game-controller button.game-player-row.is-dark { background: linear-gradient(145deg,#102b40,#071b2b); color: #edf3f5; border-color: #33516a; box-shadow: 0 3px 9px #00101e80; }
+.playful-game .game-controller button.game-player-row.is-dark.is-current.has-identity-turn-outline { outline-color: var(--turn-color,var(--score-color)); box-shadow: 0 0 12px color-mix(in srgb,var(--score-color) 30%,transparent); }
+.game-stat-cards.is-dark .game-stat-card { background: #0b2639; color: #edf3f5; border-color: #33516a; }
+.game-stat-cards.is-dark .game-stat-card output, .game-stat-cards.is-dark .game-stat-card span { color: #edf3f5; }
+.game-activity-paper.game-activity-dark { background: #092438; color: #edf3f5; border-color: #33516a; }
+.game-activity-paper.game-activity-dark.game-activity-separated > p + p { border-top-color: #e4f1f329; }
+.game-activity-icon { display: inline-block; width: 34px; height: 26px; object-fit: contain; vertical-align: middle; margin-inline: 2px; }
 .game-stat-highlight { outline: 2px solid #dfa823; outline-offset: 1px; border-radius: 4px; background: #ffe49a33; }
 .playful-game .game-controller button.game-player-row.is-current.has-identity-turn-outline { outline: 3px solid var(--score-color); outline-offset: -3px; }
 .game-cost-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 8px auto; }

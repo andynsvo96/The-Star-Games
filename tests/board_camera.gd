@@ -95,6 +95,12 @@ func _run() -> void:
 	check(cost.get_child(0).material is ShaderMaterial and cost.get_child(0).accessibility_name == "Wood missing","Missing materials desaturate and remain accessible")
 	row.set_player({"display_name":"Long name","color":"#000000"},metrics,true,{"value":"5 +2","label":"Points plus cards"}); row._layout()
 	check(row.name_label.get_rect().end.x < row.headline_value.position.x-14,"Headline bonus suffix reserves its full width")
+	row.dark = true; row.set_player({"display_name":"Dark identity","color":"#000000"},metrics,true)
+	check(GameLook.text_contrast(row.name_label.get_theme_color("font_color"),Color("061d30")) >= 4.5 and row.values[0].get_theme_color("font_color") == GameLook.CREAM,"Dark player rows keep black identities and counters readable")
+	var dark_grid := GameStatGrid.new(); dark_grid.dark = true; root.add_child(dark_grid); dark_grid.set_metrics(metrics)
+	var dark_surface: StyleBoxFlat = dark_grid.get_child(0).get_theme_stylebox("panel")
+	check(GameLook.text_contrast(dark_grid.values[0].get_theme_color("font_color"),dark_surface.bg_color) >= 4.5,"Dark inspector metrics retain accessible contrast")
+	dark_grid.queue_free()
 	cost.queue_free(); compact_log.queue_free()
 	row.queue_free(); await process_frame
 	print("Board camera: %d checks, %d failures" % [checks,failures]); quit(0 if failures == 0 else 1)

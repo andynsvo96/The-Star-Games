@@ -678,11 +678,18 @@ static func draw_table_avatar(canvas: CanvasItem, bounds: Rect2, identity: Color
 	canvas.draw_arc(bounds.get_center(), bounds.size.x / 2, 0, TAU, 32, identity.lightened(.4), 2, true)
 	var texture := RuntimeAssets.texture("res://web/avatar-%d.svg" % clampi(pose, 0, 5))
 	if texture != null:
-		canvas.draw_texture_rect(texture, Rect2(bounds.position + bounds.size * .1, bounds.size * .8), false)
+		draw_texture_contained(canvas,texture,Rect2(bounds.position + bounds.size * .1, bounds.size * .8))
 	if winner:
 		var crown_size := bounds.size.x * .6
 		canvas.draw_texture_rect(RuntimeAssets.texture("res://ui/playful/table-crown.svg"), Rect2(bounds.position + Vector2(bounds.size.x * .05, -bounds.size.y * .16), Vector2(crown_size, crown_size * .8)), false)
 
+
+static func draw_texture_contained(canvas: CanvasItem, texture: Texture2D, bounds: Rect2, tint := Color.WHITE) -> void:
+	if texture == null: return
+	var natural := texture.get_size()
+	if natural.x <= 0 or natural.y <= 0: return
+	var dimensions := natural*minf(bounds.size.x/natural.x,bounds.size.y/natural.y)
+	canvas.draw_texture_rect(texture,Rect2(bounds.get_center()-dimensions/2,dimensions),false,tint)
 
 static func draw_table_text(canvas: Control, text: String, point: Vector2, width: float, font_size: int, color: Color, centered := false) -> void:
 	var font := canvas.get_theme_default_font()

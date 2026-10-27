@@ -353,7 +353,7 @@ viewport/scaling modes, checking movement frames and content insets.
 ### CATAN example
 
 The local `Games/catan` combines a public hex board with private resource and
-development-card views. It uses the shared royal presentation, compact table
+development-card views. It uses the shared admiral presentation, compact table
 header with a turn-order strip, centered board, compact inspectable player rows, readers,
 dialogs, card movement, signed resource feedback and toolbar relocation. Phones
 inspect a route/building target's material cost and confirm with a green check;
@@ -374,16 +374,21 @@ decisions, clocks, AI and effects, with no computer takeover. Protected Default
 and named skins replace media and labels without changing rule identities.
 Its module-owned artwork map keeps canonical host/controller paths aligned with
 stable skin slot IDs when Default media changes format. Generated originals and
-4K masters stay in the local source-media folder, with smaller runtime exports
+earlier 4K masters stay in the local source-media folder, with smaller runtime exports
 for phone memory use. A continuous ocean fills the screen through the shared
 background player using extensionless `art/ocean`. The map paints behind the UI
 across the whole viewport, retaining its initial fit through shared anchors.
 Subtle water currents freeze for reduced motion and pause with the game. Detailed
-vector buildings retain their identity colors with untinted white rooflines,
-doors, windows and chimneys, including for black pieces. Roads keep dark edges and soft shadows without cream backing silhouettes.
+vector buildings retain their identity colors with untinted ivory details,
+including for black pieces. Roads keep dark edges and soft shadows. The current
+Default pairs detailed terrain with sand bevels, coastal rocks, and a deep teal
+ocean. Transparent resource symbols are cropped and centered after resizing;
+docks and activity share those symbols. Activity uses the square shared route
+glyph and preserves building aspect ratios. Computer seat colors avoid similar
+human and computer colors, including when restoring older saves.
 Ports use scalable resource symbols and 2:1/3:1 badges instead of boats. A development deck
 and two bonus cards stay separate from the public market and costs/overview
-reference. Wide hosts put larger player cards on the left and compact paper
+reference. Wide hosts put larger navy player cards on the left and compact navy
 History plus a public Open Market preview on the right. History keeps five
 separated entries and opens the full feed when clicked; resources, buildings
 and dice use icons. A red badge counts public market offers. VP has a separate top-right star,
@@ -2740,6 +2745,19 @@ outline. Native rows can set `active_identity_outline=true`; browser rows add
 values can include a public suffix such as `5 +1`, reserving its measured width.
 Modules determine which bonuses are public.
 
+For dark table surfaces, set native `GamePlayerRow.dark=true` and
+`GameStatGrid.dark=true` before supplying values. Browser counterparts add
+`is-dark` before `update()`. They reuse the shared navy panels, cream metric
+text and contrast-adjusted identity names. Default paper rows remain available.
+Native custom drawing can call `GameLook.draw_texture_contained(canvas,texture,
+bounds,tint)` to fit an icon without distorting its aspect ratio; player rows
+and avatars use this helper. Browser metric images use `object-fit:contain`.
+Browser `game-board-controls is-dark` provides a matching navy controls panel.
+Use `game-board-hit-target` on map buttons that need transparent 44px targets
+around smaller markers. It preserves the theme's keyboard focus and prevents
+ordinary button bevels or pressed movement from covering the board; modules
+still own target positions, visible markers and host-validated actions.
+
 `GameCostRow.set_items([{texture,label,available},...])` and browser
 `StarGamesCostRow([{icon,label,available},...])` display one icon per required
 material, desaturating missing items. Use them in a shared compact phase dialog
@@ -2758,6 +2776,9 @@ to an enlarged phase dialog. Entry `parts` can contain literal `{text}` runs and
 `{texture,width,height}` icons. Keep full literal `text` for accessible meaning;
 the module filters public icons before supplying them. Browser paragraph feeds
 use `game-activity-separated` and `game-activity-bold-latest`.
+For navy browser feeds, pair `game-activity-paper` with `game-activity-dark`;
+inline `game-activity-icon` images preserve their aspect ratios. Native feeds
+use `paper=false`. Keep literal accessible text for icon entries.
 
 Pass `true` as the third native `show_reference` argument or `{fit:true}` as the
 second browser `showReference` argument to fit both reference faces without

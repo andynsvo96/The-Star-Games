@@ -6,6 +6,7 @@ var values: Array[Label] = []
 var icons: Array[TextureRect] = []
 var captions: Array[Label] = []
 var maximum_columns := 3
+var dark := false
 
 func _ready() -> void:
 	columns = 3; size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -15,7 +16,7 @@ func _ready() -> void:
 func set_metrics(metrics: Array) -> void:
 	while values.size() < metrics.size():
 		var panel := PanelContainer.new(); panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL; panel.custom_minimum_size = Vector2(124,70)
-		var style := GameLook.card_table_sheet(); style.set_content_margin_all(9); panel.add_theme_stylebox_override("panel",style); add_child(panel)
+		var style := GameLook.modern_table_sheet() if dark else GameLook.card_table_sheet(); style.set_content_margin_all(9); panel.add_theme_stylebox_override("panel",style); add_child(panel)
 		var row := HBoxContainer.new(); row.add_theme_constant_override("separation",8); panel.add_child(row)
 		var icon := TextureRect.new(); icon.custom_minimum_size = Vector2(30,32); icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; row.add_child(icon); icons.append(icon)
 		icon.draw.connect(_draw_highlight.bind(icon))
@@ -27,6 +28,7 @@ func set_metrics(metrics: Array) -> void:
 		if index >= metrics.size(): continue
 		var metric: Dictionary = metrics[index]
 		values[index].text = str(metric.value); captions[index].text = str(metric.label); icons[index].texture = metric.get("texture")
+		values[index].add_theme_color_override("font_color",GameLook.CREAM if dark else GameLook.SCROLL_INK); captions[index].add_theme_color_override("font_color",GameLook.CREAM if dark else GameLook.SCROLL_INK)
 		icons[index].set_meta("highlighted",bool(metric.get("highlighted",false))); icons[index].queue_redraw()
 		get_child(index).accessibility_name = str(metric.label)+": "+str(metric.value)
 	_fit()

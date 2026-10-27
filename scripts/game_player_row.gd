@@ -10,6 +10,7 @@ var show_labels := false
 var grid_counters := false
 var dense := false
 var active_identity_outline := false
+var dark := false
 var headline := {}
 var headline_value := Label.new()
 var metrics: Array = []
@@ -30,6 +31,9 @@ func _ready() -> void:
 
 func set_player(identity: Dictionary, counters: Array, current := false, headline_metric: Dictionary = {}) -> void:
 	player = identity; metrics = counters; active = current; headline = headline_metric
+	var ink := GameLook.CREAM if dark else GameLook.SCROLL_INK
+	name_label.add_theme_color_override("font_color",GameLook.readable_text_color(Color(str(identity.get("color","#58d6ff"))),Color("061d30")) if dark else ink)
+	headline_value.add_theme_color_override("font_color",ink)
 	headline_value.text = str(headline.get("value",""))
 	name_label.text = str(player.get("display_name",""))
 	while values.size() < metrics.size():
@@ -38,6 +42,7 @@ func set_player(identity: Dictionary, counters: Array, current := false, headlin
 	var description := PackedStringArray([name_label.text,"Current turn" if active else "Player details"])
 	if not headline.is_empty(): description.append(str(headline.get("label",""))+": "+headline_value.text)
 	for index in values.size():
+		values[index].add_theme_color_override("font_color",ink); captions[index].add_theme_color_override("font_color",ink)
 		values[index].visible = index < metrics.size()
 		if index < metrics.size():
 			values[index].text = str(metrics[index].value); description.append(str(metrics[index].get("label",""))+": "+values[index].text)
@@ -101,7 +106,8 @@ func _layout() -> void:
 
 func _draw() -> void:
 	var identity := Color(str(player.get("color","#58d6ff")))
-	draw_style_box(GameLook.box(GameLook.CREAM,identity if active and active_identity_outline else Color("e9b94f") if active else GameLook.WOOD_EDGE,8,3 if active else 1),Rect2(Vector2.ONE*2,size-Vector2.ONE*4))
+	var surface: StyleBox = GameLook.asset_player_sheet(identity,active,compact) if dark else GameLook.box(GameLook.CREAM,identity if active and active_identity_outline else Color("e9b94f") if active else GameLook.WOOD_EDGE,8,3 if active else 1)
+	draw_style_box(surface,Rect2(Vector2.ONE*2,size-Vector2.ONE*4))
 	draw_style_box(GameLook.box(identity,identity,2,0),Rect2(Vector2(3,10),Vector2(4,size.y-20)))
 	GameLook.draw_table_avatar(self,Rect2(10,6,32,32) if detailed else Rect2(8,5,22,22) if compact else Rect2(10,8,29,29),identity,int(player.get("pose",0)))
 	if grid_counters:
@@ -114,16 +120,16 @@ func _draw() -> void:
 			var texture: Texture2D = metrics[index].get("texture")
 			var bounds := Rect2(Vector2((6 if small else 12)+(index%columns)*step,(29 if dense else 31 if small else 39)+(index/columns)*(16 if dense else 18 if small else 26 if compact else 30)),Vector2.ONE*(13 if small else 22 if compact else 26))
 			if metrics[index].get("highlighted",false): draw_style_box(GameLook.box(Color("ffe49a33"),Color("dfa823"),4,2),bounds.grow(2))
-			if texture: draw_texture_rect(texture,bounds,false)
+			if texture: GameLook.draw_texture_contained(self,texture,bounds)
 		return
 	if detailed:
 		var step := (size.x-20)/3.0
 		for index in metrics.size():
 			var texture: Texture2D = metrics[index].get("texture")
-			if texture: draw_texture_rect(texture,Rect2(Vector2(12+(index%3)*step,39+(index/3)*(26 if compact else 35)),Vector2.ONE*(22 if compact else 26)),false)
+			if texture: GameLook.draw_texture_contained(self,texture,Rect2(Vector2(12+(index%3)*step,39+(index/3)*(26 if compact else 35)),Vector2.ONE*(22 if compact else 26)))
 		return
 	var count := mini(3,metrics.size()) if compact else metrics.size()
 	var step := (size.x-16)/maxi(1,count)
 	for index in count:
 		var texture: Texture2D = metrics[index].get("texture")
-		if texture: draw_texture_rect(texture,Rect2(9+index*step,32 if compact else 45,14,16),false)
+		if texture: GameLook.draw_texture_contained(self,texture,Rect2(9+index*step,32 if compact else 45,14,16))

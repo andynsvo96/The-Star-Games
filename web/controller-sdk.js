@@ -404,6 +404,7 @@
     }
     update(player,metrics,active=false,headline={}) {
       this.name.textContent=player.display_name; this.element.style.setProperty('--score-color',player.color);
+      if(this.element.classList.contains('is-dark')&&global.StarGamesTableUI){const ink=StarGamesTableUI.partyAccent(player.color);this.name.style.color=ink;this.element.style.setProperty('--turn-color',ink);}
       this.element.classList.toggle('is-current',active); this.element.setAttribute('aria-label',[player.display_name,active?'Current turn':'Player details',...metrics.map(s=>s.label+': '+s.value)].join(', '));
       this.headline.hidden=headline.value===undefined;if(!this.headline.hidden){this.headline.firstChild.src=headline.icon;this.headline.lastChild.textContent=headline.value;this.headline.setAttribute('aria-label',headline.label+': '+headline.value);this.element.setAttribute('aria-label',this.element.getAttribute('aria-label')+', '+headline.label+': '+headline.value);}
       if (global.StarGamesTableUI) { if (!this.avatar.firstChild) this.avatar.append(StarGamesTableUI.avatar(player)); else StarGamesTableUI.updateAvatar(this.avatar.firstChild,player); }

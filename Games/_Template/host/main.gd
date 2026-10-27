@@ -225,9 +225,12 @@ func _ready() -> void:
 	player_row_example.grid_counters = true
 	# Optional identity-colored turn outline; highlighted metrics mark awards.
 	player_row_example.active_identity_outline = true
+	# dark opts into the shared navy asset surface; identity colors stay intact.
+	player_row_example.dark = true
 	player_row_example.set_player({"display_name":"Example player","color":"#2463eb","pose":0},[{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"value":7,"label":"Public card count"}],true,{"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-victory.svg"),"value":2,"label":"Public points"})
 	var stat_grid_example := GameStatGrid.new(); layout.playfield.add_child(stat_grid_example); stat_grid_example.hide()
 	stat_grid_example.maximum_columns = 4
+	stat_grid_example.dark = true
 	stat_grid_example.set_metrics([{"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-victory.svg"),"value":2,"label":"Public points","highlighted":true}])
 	var cost_example := GameCostRow.new(); layout.playfield.add_child(cost_example); cost_example.hide()
 	cost_example.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"One required card","available":false}])
