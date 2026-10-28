@@ -1621,6 +1621,10 @@ body.playful-game { isolation: isolate; }
 .game-cost-row .game-cost-material img { width: 48px; height: 54px; object-fit: contain; }
 .game-cost-material span { font-size: .8rem; }
 .game-cost-material strong { font-size: 1.3rem; }
+.game-cost-row.has-status-counts .game-cost-material strong { color: #ac284b; }
+.game-cost-row.has-status-counts .game-cost-material.is-covered strong { color: #197f52; }
+.game-cost-row.is-dark.has-status-counts .game-cost-material strong { color: #ff98ac; }
+.game-cost-row.is-dark.has-status-counts .game-cost-material.is-covered strong { color: #91ffc8; }
 .game-cost-material small { font-size: .7rem; }
 .game-dialog.game-dialog-soft::backdrop { background: #04142170; }
 .game-cost-row img { width: 32px; height: 48px; object-fit: contain; }

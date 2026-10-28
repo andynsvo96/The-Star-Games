@@ -39,11 +39,12 @@ func append(items: Array, elapsed: float, highlights: Array = []) -> void:
 
 
 static func progress(flight: Dictionary, elapsed: float) -> float:
-	return clampf((elapsed - float(flight.delay)) / float(flight.duration), 0, 1)
+	var hold := clampf(float(flight.get("hold",0)),0,maxf(0,float(flight.duration)-.001))
+	return clampf((elapsed - float(flight.delay) - hold) / maxf(.001,float(flight.duration)-hold), 0, 1)
 
 
-static func travel(from: Rect2, to: Rect2, progress_value: float) -> Rect2:
-	var eased := 1.0 - pow(1.0 - progress_value, 3)
+static func travel(from: Rect2, to: Rect2, progress_value: float, easing := "ease_out") -> Rect2:
+	var eased := progress_value*progress_value*(3-2*progress_value) if easing == "smooth" else 1.0 - pow(1.0 - progress_value, 3)
 	var result := Rect2(from.position.lerp(to.position, eased), from.size.lerp(to.size, eased))
 	result.position.y -= sin(progress_value * PI) * 24
 	return result

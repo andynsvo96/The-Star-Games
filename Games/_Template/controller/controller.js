@@ -33,6 +33,8 @@
   // StarGamesCardMotion(resolveRect, renderFace).update(snapshot.motion, {paused,
   // reduced}) draws finite flights above the table. Only the host owns the clock,
   // cards and legal inputs; redact all other players' hidden pickup faces.
+  // Optional flight hold seconds stay at the source within duration;
+  // easing:'smooth' gives a gradual departure/arrival instead of cubic ease-out.
   // Card tables can opt into .game-card-controller on main, shared compact
   // controls, and .game-hand-dock on the private-hand section. Dock geometry
   // can use --game-hand-dock-width and --game-hand-dock-left in landscape.
@@ -153,7 +155,7 @@
   cameraWrapper.append(StarGamesTurnStrip([{display_name:'Example player',color:'#2463eb'}],0,{tracked:true,actions:['Played a public card']}));
   const statGridExample=new StarGamesStatGrid();statGridExample.element.classList.add('is-dark');statGridExample.update([{icon:'/ui/playful/stat-victory.svg',value:2,label:'Public points',highlighted:true}]);cameraWrapper.append(statGridExample.element);
   cameraWrapper.append(StarGamesCostRow([{icon:'/ui/playful/table-cards.svg',label:'One required card',available:false}]));
-  const countedCost=StarGamesCostRow([{icon:'/ui/playful/table-cards.svg',label:'Example material',owned:2,required:3,available:false}]);countedCost.classList.add('is-dark');cameraWrapper.append(countedCost);
+  const countedCost=StarGamesCostRow([{icon:'/ui/playful/table-cards.svg',label:'Example material',owned:2,required:3,available:false}],{highlightCounts:true});countedCost.classList.add('is-dark');cameraWrapper.append(countedCost);
   // game-dialog-soft supplies a lighter backdrop for board phase prompts.
   const softPrompt=document.createElement('dialog');softPrompt.className='game-dialog game-dialog-soft';cameraWrapper.append(softPrompt);
   StarGamesButtonBadge(rowExample.element,2);

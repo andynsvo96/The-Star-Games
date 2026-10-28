@@ -235,7 +235,7 @@ func _ready() -> void:
 	var cost_example := GameCostRow.new(); layout.playfield.add_child(cost_example); cost_example.hide()
 	cost_example.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"One required card","available":false}])
 	# Optional owned/required values group materials into counted progress cards.
-	var counted_cost := GameCostRow.new(); counted_cost.dark = true; layout.playfield.add_child(counted_cost); counted_cost.hide()
+	var counted_cost := GameCostRow.new(); counted_cost.dark = true; counted_cost.highlight_counts = true; layout.playfield.add_child(counted_cost); counted_cost.hide()
 	counted_cost.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Example material","owned":2,"required":3,"available":false}])
 	# A green check confirmation inherits its theme through GameLook.confirm_control.
 	var badge_example := GameButtonBadge.new(); player_row_example.add_child(badge_example); badge_example.count = 2
@@ -335,6 +335,8 @@ func _ready() -> void:
 	card_example.set_meta("card_motion", motion_example)
 	# Supply from/to zones and card data. view(viewer, elapsed, active) redacts hidden
 	# pickup faces; GameCardMotion.travel maps live rectangles without moving layout.
+	# Optional flight hold=.22 keeps a face at its source, included in duration.
+	# easing="smooth" uses smoothstep; pass it to travel as the fourth argument.
 	# GameThemePreview.configure(ThemePacks.new(id), draft, phone, reduced_motion)
 	# previews cosmetic slots on sample Table/Phone compositions without pinning.
 	# add_centered_layout(true, true) vertically centers compact side score cards.

@@ -104,6 +104,12 @@ func _run() -> void:
 	check(cost.get_child(0).material is ShaderMaterial and cost.get_child(0).accessibility_name == "Wood missing","Missing materials desaturate and remain accessible")
 	cost.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Wood","owned":2,"required":3,"available":false}])
 	check(cost.get_child(0).accessibility_name == "Wood: have 2, need 3" and cost.find_children("*","Label",true,false).any(func(label: Label) -> bool: return label.text == "Need 1 more"),"Counted materials preserve exact owned, required and missing quantities")
+	cost.highlight_counts = true; cost.dark = true; cost.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Ready","owned":2,"required":2,"available":true},{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Missing","owned":1,"required":3,"available":false}])
+	var count_labels: Array = cost.find_children("*","Label",true,false).filter(func(label: Label) -> bool: return label.text.contains(" / "))
+	check(count_labels[0].get_theme_color("font_color") == Color("91ffc8") and count_labels[1].get_theme_color("font_color") == Color("ff98ac"),"Opt-in material counts distinguish ready and missing quantities")
+	var held_flight := {"delay":0.0,"duration":1.5,"hold":.25}
+	check(GameCardMotion.progress(held_flight,.2) == 0 and GameCardMotion.progress(held_flight,1.5) == 1,"Optional card hold stays at its source and still finishes at the authoritative deadline")
+	check(is_equal_approx(GameCardMotion.travel(Rect2(0,0,10,10),Rect2(100,0,10,10),.5,"smooth").position.x,50),"Smooth card travel remains halfway across at its midpoint")
 	row.set_player({"display_name":"Long name","color":"#000000"},metrics,true,{"value":"5 +2","label":"Points plus cards"}); row._layout()
 	check(row.name_label.get_rect().end.x < row.headline_value.position.x-14,"Headline bonus suffix reserves its full width")
 	row.dark = true; row.set_player({"display_name":"Dark identity","color":"#000000"},metrics,true)

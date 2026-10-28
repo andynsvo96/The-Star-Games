@@ -1976,8 +1976,12 @@ other cards keep their existing denomination.
 `card`, `delay`, and `duration`. A pickup to another viewer's hand exposes only a
 back. Modules map these zones to live rectangles and hide arrivals until landing.
 Native `travel` and browser `StarGamesCardMotion(resolveRect, renderFace)` use the
-same easing and arc. Include elapsed time on sync so reconnect resumes the current
-animation. Pause its clock and visuals on disconnect, reject game commands until
+same easing and arc. A flight may add `hold` seconds to stay visible at its source
+within its declared duration, and `easing: "smooth"` for a gradual departure and
+arrival. Pass that easing as the fourth argument to native `travel`; omitted
+options retain cubic ease-out with no hold. Include elapsed time on sync so
+reconnect resumes the current animation. Pause its clock and visuals on disconnect,
+reject game commands until
 the host timeline ends, and skip motion entirely for reduced motion. Do not delay
 or animate the authoritative rules themselves. Template examples are hidden.
 
@@ -2780,6 +2784,9 @@ material, desaturating missing items. Use them in a shared compact phase dialog
 with a validated confirmation action. Optional `owned` and `required` numeric
 fields group a material into an icon/name progress card (`2 / 3`, `Need 1 more`).
 Native `dark=true` and browser `game-cost-row is-dark` select navy surfaces.
+Opt into green sufficient/red short quantity text with native
+`highlight_counts=true` or browser `StarGamesCostRow(items,{highlightCounts:true})`.
+The default quantity styling remains unchanged.
 Keep affordability and permission checks in the module. Browser
 `game-dialog-soft` opts into a lighter phase-dialog backdrop; native callers
 can adjust the returned phase dialog's `shade.color` while retaining its layout
