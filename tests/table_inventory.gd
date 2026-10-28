@@ -38,6 +38,8 @@ func _run() -> void:
 	check(exchange == held_button and not exchange.find_children("*","Label",true,false).any(func(label: Label) -> bool: return label.text == "⚓"),"Supply exchange updates keep the same confirmation target and omit port anchors")
 	var unfunded: StyleBoxFlat = exchange.get_theme_stylebox("disabled")
 	check(unfunded.bg_color.a == 0 and unfunded.border_color == Color("7c8d99"),"Unfunded exchanges keep transparent surfaces and a grey outline")
+	exchange.confirmation_text = "BUILD"; exchange.set_exchanges([term,term])
+	check(exchange.find_children("*","Label",true,false).filter(func(label: Label) -> bool: return label.text == "BUILD").size() == 1 and not exchange.find_children("*","Label",true,false).any(func(label: Label) -> bool: return label.text == "✓"),"Exchange plans can use one explicit action caption instead of checkmarks")
 	var underlying := Button.new(); underlying.position = Vector2(20,420); underlying.size = Vector2(44,44); root.add_child(underlying); var clicked := [false]; underlying.pressed.connect(func() -> void: clicked[0] = true)
 	var actions := GameActionRow.new(); actions.position = Vector2(0,420); actions.size = Vector2(640,44); root.add_child(actions); var action := Button.new(); action.text = "Action"; actions.add_child(action)
 	for unused in 3: await process_frame

@@ -452,18 +452,18 @@
   }
   global.StarGamesResourceHand=StarGamesResourceHand;
   global.StarGamesExchangeButton=class {
-    constructor(onSelect,{label='Exchange resources'}={}) {
-      this.element=document.createElement('button');this.element.type='button';this.element.className='game-primary game-compact-control game-exchange-button game-outline-disabled';this.label=label;this.key='';this.element.addEventListener('click',onSelect);
+    constructor(onSelect,{label='Exchange resources',confirmationLabel='✓'}={}) {
+      this.element=document.createElement('button');this.element.type='button';this.element.className='game-primary game-compact-control game-exchange-button game-outline-disabled';this.label=label;this.confirmationLabel=confirmationLabel;this.key='';this.element.addEventListener('click',onSelect);
     }
     update(items) {
-      const key=JSON.stringify(items);if(key===this.key)return;this.key=key;this.element.replaceChildren();
+      const key=JSON.stringify([items,this.confirmationLabel]);if(key===this.key)return;this.key=key;this.element.replaceChildren();
       const descriptions=[this.label];
-      for(const item of items){
+      for(const [index,item] of items.entries()){
         const row=document.createElement('span');row.className='game-exchange-row';const count=document.createElement('span');count.className='game-exchange-count';count.append(document.createTextNode(item.owned+' / '));
         if(item.rate<(item.defaultRate||4)){const old=document.createElement('s');old.textContent=item.defaultRate||4;old.className='game-exchange-old-rate';count.append(old,document.createTextNode(' '+item.rate));}else count.append(document.createTextNode(item.rate));
         row.append(count);const give=document.createElement('img');give.src=item.giveIcon;give.alt='';row.append(give);
         if(item.port){const port=document.createElement('span');port.className='game-exchange-port';port.textContent='⚓';port.setAttribute('aria-hidden','true');row.append(port);}
-        const equal=document.createElement('span');equal.textContent='= 1';const take=document.createElement('img');take.src=item.takeIcon;take.alt='';const check=document.createElement('span');check.textContent='✓';check.className='game-exchange-check';row.append(equal,take,check);this.element.append(row);descriptions.push(item.label);
+        const equal=document.createElement('span');equal.textContent='= 1';const take=document.createElement('img');take.src=item.takeIcon;take.alt='';row.append(equal,take);if(this.confirmationLabel==='✓'||index===items.length-1){const check=document.createElement('span');check.textContent=this.confirmationLabel;check.className='game-exchange-check';row.append(check);}this.element.append(row);descriptions.push(item.label);
       }
       this.element.setAttribute('aria-label',descriptions.join('. '));
     }

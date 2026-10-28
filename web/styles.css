@@ -1761,6 +1761,7 @@ body.playful-game { isolation: isolate; }
 .game-exchange-check { color:#97e891; font-size:20px; }
 .game-exchange-button:disabled img { opacity:.65; }
 .game-exchange-button:disabled .game-exchange-check { color:inherit; }
+.game-supporting-text { margin:8px 0; color:#afbec7; font:400 13px/1.4 "Segoe UI",Arial,sans-serif; }
 .playful-game .game-controller button.game-outline-disabled:disabled, .playful-game .game-dialog button.game-outline-disabled:disabled { background:transparent; border-color:#7c8d99; color:#afbec7; box-shadow:none; opacity:1; }
 .game-activity-section.is-dense .game-activity-paper > p { padding-block:3px; font-size:13px; line-height:1.25; }
 .game-activity-section.is-dense .game-activity-icon { width:24px; height:20px; }

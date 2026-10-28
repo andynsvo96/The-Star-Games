@@ -221,7 +221,7 @@ func _ready() -> void:
 	var inventory_example := GameResourceHand.new(); inventory_section.content.add_child(inventory_example)
 	inventory_section.center_heading = true
 	inventory_section.set_summary_metric(RuntimeAssets.texture("res://ui/playful/stat-victory.svg"),10,"Points to win: 10")
-	var exchange_example := GameExchangeButton.new(); inventory_section.content.add_child(exchange_example)
+	var exchange_example := GameExchangeButton.new(); exchange_example.confirmation_text = "CONFIRM"; inventory_section.content.add_child(exchange_example)
 	exchange_example.set_exchanges([{"give_texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"take_texture":RuntimeAssets.texture("res://ui/playful/stat-resources.svg"),"owned":3,"rate":3,"label":"Have 3 cards. Exchange 3 for 1 resource."}])
 	# set_inline_header(true) puts a section's header beside its contents on short
 	# landscape views; compact=true on the inventory retains the same input target.

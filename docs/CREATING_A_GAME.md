@@ -436,7 +436,9 @@ Host signed feedback uses the live amount's font beside each affected resource o
 public counter; VP feedback remains outside the roster card. Phones omit these
 floating deltas and keep Players first, with status, resources and the four
 History/Trade/Development/Help actions in a shared bottom dock. End Turn appears
-above resources after rolling. Trade remains visible and disables between turns.
+outside the controls panel above resources after rolling. Solo hosts place it
+above their other actions too. Build previews use CANCEL/BUILD; development
+purchases reuse navy sections and live material costs. Trade remains visible and disables between turns.
 AI offers to humans retain their full response window. All card transfers use
 the same intermediate pace. Build hammers/clouds
 and temporary thrown dice use public
@@ -2917,3 +2919,10 @@ When an activity feed shares limited height with a decision, native
 `GameActivityLog.set_dense(true)` reduces row spacing without dropping entries.
 Browser `game-activity-section is-dense` uses compact row spacing and symbols.
 The template demonstrates both variants; keep the full feed reachable.
+
+Exchange confirmations can use explicit words instead of checkmarks: set native
+`GameExchangeButton.confirmation_text="BUILD"` or pass browser
+`{confirmationLabel:"BUILD"}` alongside `label` to `StarGamesExchangeButton`.
+The caption follows the final exchange in a multi-step plan. Defaults retain
+checkmarks. Browser `game-supporting-text` supplies the shared muted empty-state
+or secondary text treatment used by native `GameLook.supporting_text`.
