@@ -406,11 +406,15 @@ Ports use scalable resource symbols and 2:1/3:1 badges instead of boats. A devel
 and two bonus cards stay separate from the public market and costs/overview
 reference. Wide hosts put larger navy player cards in a Players section on the
 left and Recent Activity with private direct offers on the right. The Players
-header shows the victory target (10 by default, staged in Settings). A unique
+header centers Players beside an icon-only star/target (10 by default, staged in Settings). A unique
 leader has a gold avatar crown; tied leaders all have silver crowns. Activity
 keeps five separated entries and opens the full feed when clicked; resources,
 buildings and dice use icons. Supply/Ports is the default in the unified trade
 recipient selector, with resource symbols and anchor indicators for owned ports.
+Receive excludes Give; the exchange button shows held/required resources, with
+the default rate crossed out when a port improves it. Pending private offers
+remain in the sidebar. Zero resources dim and production flights share the same
+colored inventory cards.
 Build previews offer an explicit atomic supply/port exchange using only surplus
 resources when it can complete the selected build. Unfunded connected roads
 retain invisible inspection targets. The footer omits Market, Roll and Build
@@ -2866,3 +2870,26 @@ requirements remain accessible. Signed counter feedback can opt into native
 Resolve each affected amount's live rectangle and typography, rather than a
 whole card. Existing vertical feedback remains the default. Run the synthetic
 `tests/table_inventory.gd` for component and real LAN crown-route coverage.
+
+
+`GameSection.center_heading=true` balances the title against its trailing metric.
+`set_summary_metric(texture,value,description)` shows only an icon/value and an
+accessible description. Headers align their contents vertically in either layout.
+Resource inventories dim zero amounts and use smaller badges; reuse native
+`GameResourceHand.paint_card(canvas,bounds,texture,color)` or browser
+`StarGamesResourceCard({icon,label,color})` for the same card artwork in flights.
+Private flights must still use backs when a viewer cannot see their resource.
+
+`GameLook.choice_item_icon(texture,maximum=28)` returns an actual bounded menu
+texture, preserving its aspect ratio and original source. Use this for native
+OptionButton popup icons; a selected-button icon limit does not bound its popup.
+`GameLook.supporting_text(label,11)` styles secondary instructions in regular grey.
+
+`GameExchangeButton.set_exchanges(items)` and browser
+`StarGamesExchangeButton(onSelect,{label}).update(items)` place exchange terms
+inside one persistent confirmation target. Native items use `give_texture`,
+`take_texture`, `owned`, `rate`, optional `default_rate` (4), `port`, and literal
+`label`; browser items use `giveIcon`, `takeIcon`, `defaultRate` and the same other
+fields. A lower rate crosses out the original; only explicit `port:true` adds an
+anchor. The module owns affordability, resource exclusion, revision validation
+and atomic execution. The template includes hidden native/browser examples.

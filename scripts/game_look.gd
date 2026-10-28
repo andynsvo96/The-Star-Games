@@ -8,6 +8,18 @@ static func section_header_sheet() -> StyleBoxFlat:
 	var style := box(Color("233648b8"),Color("385168"),0,0); style.corner_radius_top_left = 11; style.corner_radius_top_right = 11; style.border_width_bottom = 1
 	style.set_content_margin_all(10); style.content_margin_top = 0; style.content_margin_bottom = 0; return style
 
+static func choice_item_icon(texture: Texture2D, maximum := 28) -> Texture2D:
+	if texture == null: return null
+	var bitmap := texture.get_image()
+	if bitmap == null or bitmap.is_empty(): return texture
+	if bitmap.is_compressed() and bitmap.decompress() != OK: return texture
+	var factor := minf(1.0,float(maximum)/maxi(bitmap.get_width(),bitmap.get_height()))
+	bitmap.resize(maxi(1,roundi(bitmap.get_width()*factor)),maxi(1,roundi(bitmap.get_height()*factor)),Image.INTERPOLATE_LANCZOS)
+	return ImageTexture.create_from_image(bitmap)
+
+static func supporting_text(label: Label, font_size := 11) -> void:
+	label.add_theme_font_override("font",interface_font()); label.add_theme_font_size_override("font_size",font_size); label.add_theme_color_override("font_color",Color("afbec7"))
+
 # Opt-in shared toy-box presentation. Game rules never depend on this theme.
 const INK := Color("243653")
 const CREAM := Color("fff4cf")

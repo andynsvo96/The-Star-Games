@@ -24,6 +24,18 @@ func _run() -> void:
 	var balance := Rect2(20,30,20,24); var gain := GameMoneyEffect.amount_rect(balance,1,0,18,"right"); var loss := GameMoneyEffect.amount_rect(balance,-1,0,18,"right")
 	check(gain.position.x > balance.end.x and gain == loss,"Right placement keeps both signed changes beside their own counter")
 	check(GameMoneyEffect.amount_rect(balance,1,0).end.y < balance.position.y,"Existing vertical feedback keeps its default placement")
+	section.center_heading = true; section.set_summary_metric(RuntimeAssets.texture("res://ui/playful/stat-victory.svg"),12,"Points to win: 12")
+	for unused in 3: await process_frame
+	check(section.summary.text == "12" and section.summary_icon.visible and absf(section.heading.get_global_rect().get_center().x-section.get_global_rect().get_center().x)<2,"Centered section headings keep a separate icon-only target")
+	items[0].amount = 0; inventory.set_items(items)
+	check(inventory.amounts[0].modulate.a < .5 and inventory.amounts[1].modulate.a == 1 and inventory.amounts[0].size.x == 24,"Empty resource counts dim and badges stay compact")
+	var bitmap := Image.create(256,128,false,Image.FORMAT_RGBA8); bitmap.fill(Color.WHITE); var source := ImageTexture.create_from_image(bitmap); var bounded := GameLook.choice_item_icon(source)
+	check(bounded.get_width() == 28 and bounded.get_height() == 14 and source.get_width() == 256,"Menu symbols are bounded without changing source art or its proportions")
+	var exchange := GameExchangeButton.new(); section.content.add_child(exchange); var held_button := exchange
+	var term := {"give_texture":source,"take_texture":source,"owned":3,"rate":3,"port":true,"label":"Have 3 cards. Trade 3 for 1 token using a port"}; exchange.set_exchanges([term])
+	check(exchange.accessibility_name.contains("Have 3") and exchange.content.get_child(0).get_child(0).get_parsed_text() == "3 / 4 3","Exchange buttons combine held quantities with the discounted requirement")
+	term.rate = 4; term.port = false; exchange.set_exchanges([term])
+	check(exchange == held_button and not exchange.find_children("*","Label",true,false).any(func(label: Label) -> bool: return label.text == "⚓"),"Supply exchange updates keep the same confirmation target and omit port anchors")
 	var store := ProfileStore.new("res://.test_data/table-inventory/profiles.json"); store.load_data()
 	var catalog := GameCatalog.new("res://tests/fixtures/Games"); catalog.scan()
 	var server := LanServer.new(); root.add_child(server); server.configure(store,catalog)

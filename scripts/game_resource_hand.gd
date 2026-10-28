@@ -15,11 +15,12 @@ func set_items(values: Array) -> void:
 	items = values
 	while amounts.size() < items.size():
 		var label := Label.new(); label.mouse_filter = Control.MOUSE_FILTER_IGNORE; label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		label.add_theme_font_override("font",GameLook.interface_font()); label.add_theme_font_size_override("font_size",18); label.add_theme_color_override("font_color",Color("19384c")); add_child(label); amounts.append(label)
+		label.add_theme_font_override("font",GameLook.interface_font()); label.add_theme_font_size_override("font_size",16); label.add_theme_color_override("font_color",Color("19384c")); add_child(label); amounts.append(label)
 	var description := PackedStringArray()
 	for index in amounts.size():
 		amounts[index].visible = index < items.size()
-		if index < items.size(): amounts[index].text = str(items[index].amount); description.append("%s: %s" % [items[index].label,items[index].amount])
+		if index < items.size():
+			amounts[index].text = str(items[index].amount); amounts[index].modulate.a = .38 if int(items[index].amount) == 0 else 1.0; description.append("%s: %s" % [items[index].label,items[index].amount])
 	accessibility_name = ", ".join(description)+". Inspect resources and production"; _layout()
 
 func card_rect(index: int) -> Rect2:
@@ -29,15 +30,18 @@ func card_rect(index: int) -> Rect2:
 func _layout() -> void:
 	custom_minimum_size = Vector2(220,56 if compact else 102)
 	for index in mini(items.size(),amounts.size()):
-		var card := card_rect(index); amounts[index].position = Vector2(card.end.x-23,4); amounts[index].size = Vector2(28,28)
+		var diameter := 20 if compact else 24
+		var card := card_rect(index); amounts[index].position = Vector2(card.end.x-diameter+5,6); amounts[index].size = Vector2.ONE*diameter; amounts[index].add_theme_font_size_override("font_size",14 if compact else 16)
 	queue_redraw()
 
 func _draw() -> void:
 	for index in items.size():
-		var rect := card_rect(index); var color: Color = items[index].get("color",Color("b8d0da"))
-		draw_style_box(GameLook.box(color.darkened(.28),color.lightened(.35),4,1),Rect2(rect.position+Vector2(0,2),rect.size+Vector2(2,2)))
-		draw_style_box(GameLook.box(color,color.lightened(.4),4,2),rect)
-		var texture: Texture2D = items[index].get("texture")
-		if texture: GameLook.draw_texture_contained(self,texture,Rect2(rect.position+(Vector2(3,4) if compact else Vector2(6,12)),rect.size-(Vector2(6,8) if compact else Vector2(12,22))))
+		var rect := card_rect(index); var color: Color = items[index].get("color",Color("b8d0da")); var alpha := .38 if int(items[index].amount) == 0 else 1.0
+		paint_card(self,rect,items[index].get("texture"),color,alpha)
 		var amount: Label = amounts[index]
-		draw_circle(amount.position+amount.size/2,14,Color("e6ebed"),true,-1,true)
+		draw_circle(amount.position+amount.size/2,amount.size.x/2,Color(Color("e6ebed"),alpha),true,-1,true)
+
+static func paint_card(canvas: CanvasItem, bounds: Rect2, texture: Texture2D, color: Color, alpha := 1.0) -> void:
+	canvas.draw_style_box(GameLook.box(Color(color.darkened(.28),alpha),Color(color.lightened(.35),alpha),4,1),Rect2(bounds.position+Vector2(0,2),bounds.size+Vector2(2,2)))
+	canvas.draw_style_box(GameLook.box(Color(color,alpha),Color(color.lightened(.4),alpha),4,2),bounds)
+	if texture: GameLook.draw_texture_contained(canvas,texture,Rect2(bounds.position+bounds.size*Vector2(.13,.17),bounds.size*Vector2(.74,.66)),Color(1,1,1,alpha))

@@ -155,6 +155,7 @@
   // is-compact fits short sections/hands; has-inline-header places header beside content.
   const inventoryExample=new StarGamesResourceHand(()=>exampleCamera.reset());inventorySection.append(inventoryExample.element);
   inventoryExample.update([{icon:'/ui/playful/table-cards.svg',label:'Example resource',amount:3,color:'#27ad68'}]);
+  const exchangeExample=new StarGamesExchangeButton(()=>{}, {label:'Example exchange'});inventorySection.append(exchangeExample.element);exchangeExample.update([{giveIcon:'/ui/playful/table-cards.svg',takeIcon:'/ui/playful/stat-resources.svg',owned:3,rate:3,label:'Have 3 cards. Exchange 3 for 1 resource.'}]);
   rowExample.element.classList.add('is-detailed','has-headline','has-identity-turn-outline','is-dark');
   rowExample.update({display_name:'Example player',color:'#2463eb',pose:0},[{icon:'/ui/playful/table-cards.svg',value:7,label:'Public card count'}],true,{icon:'/ui/playful/stat-victory.svg',value:2,label:'Public points'});cameraWrapper.append(rowExample.element);
   cameraWrapper.append(StarGamesTurnStrip([{display_name:'Example player',color:'#2463eb'}],0,{tracked:true,actions:['Played a public card']}));

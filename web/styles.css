@@ -1731,7 +1731,7 @@ body.playful-game { isolation: isolate; }
 .playful-game .game-controller button.game-resource-hand { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); align-items:end; gap:8px; width:100%; min-height:96px; padding:20px 3px 5px; margin:0; background:transparent; border:0; box-shadow:none; transform:none; }
 .game-resource-hand-card { position:relative; height:66px; min-width:0; display:grid; place-items:center; border:2px solid color-mix(in srgb,var(--resource-color),white 40%); background:var(--resource-color); border-radius:4px; box-shadow:1px 3px 0 color-mix(in srgb,var(--resource-color),black 30%); }
 .game-resource-hand-card img { width:calc(100% - 12px); height:48px; object-fit:contain; }
-.game-resource-hand-card output { position:absolute; top:-17px; right:-5px; min-width:28px; height:28px; display:grid; place-items:center; border-radius:50%; background:#e6ebed; color:#19384c; font:600 18px/1 "Segoe UI",Arial,sans-serif; }
+.game-resource-hand-card output { position:absolute; top:-14px; right:-4px; min-width:24px; height:24px; display:grid; place-items:center; border-radius:50%; background:#e6ebed; color:#19384c; font:600 16px/1 "Segoe UI",Arial,sans-serif; }
 .game-player-row-avatar { position:relative; }
 .game-player-row[data-leader="gold"] .game-player-row-avatar::after, .game-player-row[data-leader="silver"] .game-player-row-avatar::after { content:""; position:absolute; top:-10px; left:0; width:100%; height:18px; background:url('/ui/playful/table-crown.svg') center/contain no-repeat; }
 .game-player-row[data-leader="silver"] .game-player-row-avatar::after { background-image:url('/ui/playful/table-crown-silver.svg'); }
@@ -1744,7 +1744,23 @@ body.playful-game { isolation: isolate; }
 .playful-game .game-controller button.game-resource-hand.is-compact { min-height:68px; padding-top:18px; gap:7px; }
 .game-resource-hand.is-compact .game-resource-hand-card { height:42px; }
 .game-resource-hand.is-compact .game-resource-hand-card img { height:32px; }
-.game-resource-hand.is-compact .game-resource-hand-card output { width:24px; min-width:24px; height:24px; top:-15px; font-size:16px; }
+.game-resource-hand.is-compact .game-resource-hand-card output { width:20px; min-width:20px; height:20px; top:-12px; font-size:14px; }
+.game-resource-hand-card.is-empty { opacity:.38; }
+.game-resource-card { box-sizing:border-box; }
+.game-section-metric { display:inline-flex; align-items:center; justify-content:center; gap:4px; min-width:42px; }
+.game-section-metric img { width:20px; height:22px; object-fit:contain; }
+.game-section-metric output { font:600 16px/1 "Segoe UI",Arial,sans-serif; }
+.game-table-section.has-centered-heading > header::before { content:""; flex:0 0 42px; }
+.game-table-section.has-centered-heading > header > h2 { flex:1; text-align:center; }
+.game-table-section.has-centered-heading.has-inline-header > header::before { display:none; }
+.game-table-section.has-centered-heading.has-inline-header > header { align-items:center; }
+.playful-game .game-controller button.game-exchange-button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; min-height:52px; width:100%; padding:8px; text-transform:none; }
+.game-exchange-row { display:flex; align-items:center; justify-content:center; gap:6px; font:400 16px/1.3 "Segoe UI",Arial,sans-serif; pointer-events:none; }
+.game-exchange-row img { width:28px; height:32px; object-fit:contain; }
+.game-exchange-old-rate { color:#ff8b96; text-decoration-color:#ff6976; }
+.game-exchange-check { color:#97e891; font-size:20px; }
+.game-exchange-button:disabled img { opacity:.65; }
+.game-exchange-button:disabled .game-exchange-check { color:inherit; }
 .playful-game .game-controller button.game-player-row.has-headline.is-compact.is-dense { min-height:54px; gap:1px 2px; }
 .game-player-row.has-headline.is-compact.is-dense .game-player-row-stats { gap:0 2px; }
 .game-player-row.has-headline.is-compact.is-dense .game-player-row-stats img { height:12px; width:11px; }

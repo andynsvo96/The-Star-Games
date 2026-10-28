@@ -431,6 +431,9 @@
       });
     }
   }
+  global.StarGamesResourceCard = item => {
+    const card=document.createElement('span'),icon=document.createElement('img');card.className='game-resource-hand-card game-resource-card';icon.alt='';icon.src=item.icon;card.style.setProperty('--resource-color',item.color);card.setAttribute('aria-label',item.label||'Resource');card.append(icon);return card;
+  };
   class StarGamesResourceHand {
     constructor(onSelect) {
       this.element=document.createElement('button');this.element.type='button';this.element.className='game-resource-hand';this.amounts=[];
@@ -440,13 +443,31 @@
       while(this.element.children.length>items.length){this.element.lastChild.remove();this.amounts.pop();}
       items.forEach((item,index)=>{
         let card=this.element.children[index];
-        if(!card){card=document.createElement('span');card.className='game-resource-hand-card';const icon=document.createElement('img'),count=document.createElement('output');icon.alt='';card.append(icon,count);this.element.append(card);this.amounts.push(count);}
+        if(!card){card=global.StarGamesResourceCard(item);const count=document.createElement('output');card.append(count);this.element.append(card);this.amounts.push(count);}
         card.style.setProperty('--resource-color',item.color);card.firstChild.src=item.icon;card.lastChild.textContent=item.amount;card.setAttribute('aria-label',item.label+': '+item.amount);
+        card.classList.toggle('is-empty',Number(item.amount)===0);
       });
       this.element.setAttribute('aria-label',items.map(item=>item.label+': '+item.amount).join(', ')+'. Inspect resources and production');
     }
   }
   global.StarGamesResourceHand=StarGamesResourceHand;
+  global.StarGamesExchangeButton=class {
+    constructor(onSelect,{label='Exchange resources'}={}) {
+      this.element=document.createElement('button');this.element.type='button';this.element.className='game-primary game-compact-control game-exchange-button';this.label=label;this.key='';this.element.addEventListener('click',onSelect);
+    }
+    update(items) {
+      const key=JSON.stringify(items);if(key===this.key)return;this.key=key;this.element.replaceChildren();
+      const descriptions=[this.label];
+      for(const item of items){
+        const row=document.createElement('span');row.className='game-exchange-row';const count=document.createElement('span');count.className='game-exchange-count';count.append(document.createTextNode(item.owned+' / '));
+        if(item.rate<(item.defaultRate||4)){const old=document.createElement('s');old.textContent=item.defaultRate||4;old.className='game-exchange-old-rate';count.append(old,document.createTextNode(' '+item.rate));}else count.append(document.createTextNode(item.rate));
+        row.append(count);const give=document.createElement('img');give.src=item.giveIcon;give.alt='';row.append(give);
+        if(item.port){const port=document.createElement('span');port.className='game-exchange-port';port.textContent='⚓';port.setAttribute('aria-hidden','true');row.append(port);}
+        const equal=document.createElement('span');equal.textContent='= 1';const take=document.createElement('img');take.src=item.takeIcon;take.alt='';const check=document.createElement('span');check.textContent='✓';check.className='game-exchange-check';row.append(equal,take,check);this.element.append(row);descriptions.push(item.label);
+      }
+      this.element.setAttribute('aria-label',descriptions.join('. '));
+    }
+  };
   global.StarGamesBoardCamera = StarGamesBoardCamera;
   global.StarGamesPlayerRow = StarGamesPlayerRow;
   global.StarGamesStatGrid = StarGamesStatGrid;
