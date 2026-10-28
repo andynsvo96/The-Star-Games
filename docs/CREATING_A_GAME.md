@@ -397,17 +397,24 @@ docks and activity share those symbols. Activity uses the square shared route
 glyph and preserves building aspect ratios. History names use each roster's
 readable identity color through literal text parts. Harbor badges lie on each
 coastal edge's outward perpendicular bisector, making equal links to both
-building sites. Solo hosts inspect their resource quantities through their own
-player panel; the host action footer omits resource cards. Phones retain their
-private hands. Computer seat colors avoid similar
+building sites. Solo hosts and wide controllers put a private icon-only resource
+panel above Recent Activity. It opens owned-property production details; private
+quantities are omitted from player-stat inspectors. Compact views keep the same
+inventory reachable with their actions. Computer seat colors avoid similar
 human and computer colors, including when restoring older saves.
 Ports use scalable resource symbols and 2:1/3:1 badges instead of boats. A development deck
 and two bonus cards stay separate from the public market and costs/overview
-reference. Wide hosts put larger navy player cards on the left and compact navy
-History plus a public Open Market preview on the right. History keeps five
-separated entries and opens the full feed when clicked; resources, buildings
-and dice use icons. The Open Market caption counts public offers; the footer
-omits Market, Roll and Build buttons. End Turn is labelled with text. VP has a separate top-right star,
+reference. Wide hosts put larger navy player cards in a Players section on the
+left and Recent Activity with private direct offers on the right. The Players
+header shows the victory target (10 by default, staged in Settings). A unique
+leader has a gold avatar crown; tied leaders all have silver crowns. Activity
+keeps five separated entries and opens the full feed when clicked; resources,
+buildings and dice use icons. Supply/Ports is the default in the unified trade
+recipient selector, with resource symbols and anchor indicators for owned ports.
+Build previews offer an explicit atomic supply/port exchange using only surplus
+resources when it can complete the selected build. Unfunded connected roads
+retain invisible inspection targets. The footer omits Market, Roll and Build
+buttons. End Turn is labelled with text. VP has a separate top-right star,
 with six icon-only counters below: resources, development cards, route, Knights,
 settlements and cities. Session wins move into the public inspector header.
 An identity-colored outline marks the active player. Gold route/army icon
@@ -421,9 +428,9 @@ and phones open a two-sided build-cost/turn-overview card in the shared reversib
 reader. History keeps a visible caption when opened from a utility button.
 Hosts and phones drag the map and
 scroll/pinch to zoom directly; camera changes never submit game actions.
-Private resource feedback uses the live amount's font, with gains above and
-losses below. Wide public host deltas sit beside player cards to keep the dense
-counter grid clear. Build hammers/clouds and temporary thrown dice use public
+Signed feedback uses the live amount's font beside each affected resource or
+public counter; VP feedback remains outside the roster card. Build hammers/clouds
+and temporary thrown dice use public
 accepted event IDs, pause with play, and do not replay on reconnect. Solid dice bounce and hold
 the host's result for two seconds after landing; reduced motion keeps immediate,
 static feedback. Production flights retain each source hex and use host-owned
@@ -2829,3 +2836,33 @@ Pass `true` as the third native `show_reference` argument or `{fit:true}` as the
 second browser `showReference` argument to fit both reference faces without
 scrolling. Flip and Back retain 44px targets. Ordinary card readers keep their
 existing scrolling behavior.
+
+
+`GameSection` supplies the same navy panel and header styling as a sectioned
+activity log. Set `caption` before adding it and populate `content`; an empty
+caption omits the header for an icon-only inventory. `heading` and `summary`
+are literal labels. `set_inline_header(true)` puts the header beside contents
+on short landscape views without changing board centering. Browser sections use
+`game-table-section`, a `header` with `h2` and optional summary `span`, and
+`game-table-section-content`; `is-compact` and `has-inline-header` fit short views.
+
+`GameResourceHand.set_items([{texture,label,amount,color},...])` supplies a
+focusable, inspectable inventory with resource-colored cards and live count
+labels in `amounts`. Connect `pressed` to an explicit detail view. The browser
+equivalent is `new StarGamesResourceHand(onSelect)` with `element`, `amounts`
+and `update([{icon,label,amount,color},...])`. Native `compact` plus `_layout()`,
+or browser `is-compact`, uses smaller artwork while preserving its input target.
+Supply only quantities already authorized for that viewer. The template shows
+both components without enabling a private inventory in the public sample.
+
+Optional `GamePlayerRow.leader` / `StarGamesPlayerRow.leader` values `gold` and
+`silver` add a crown and accessible Leader/Joint leader meaning when the row is
+updated. The module computes leaders from public scores; the active turn does
+not imply a lead. Dense native grid rows also support detailed short rosters.
+`GameCostRow.icon_only=true` and browser `StarGamesCostRow(items,{iconOnly:true})`
+retain symbols and numeric owned/required progress while omitting prose; full
+requirements remain accessible. Signed counter feedback can opt into native
+`GameMoneyEffect.change_placement="right"` or browser `{changePlacement:"right"}`.
+Resolve each affected amount's live rectangle and typography, rather than a
+whole card. Existing vertical feedback remains the default. Run the synthetic
+`tests/table_inventory.gd` for component and real LAN crown-route coverage.

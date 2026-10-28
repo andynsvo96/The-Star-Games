@@ -37,12 +37,12 @@ func _ready() -> void:
 	)
 	var style := GameLook.card_table_sheet() if paper else GameLook.modern_table_sheet(); style.content_margin_left = 12 if paper else 7; style.content_margin_right = 12 if paper else 7; style.content_margin_top = 10 if paper else 6; style.content_margin_bottom = 10 if paper else 6
 	if sectioned:
-		style.set_content_margin_all(0); style.bg_color = Color("0b1d2cef"); style.border_color = Color("385168"); style.set_corner_radius_all(12)
+		style = GameLook.section_sheet()
 	add_theme_stylebox_override("panel", style)
 	var column := VBoxContainer.new(); column.add_theme_constant_override("separation", 4); add_child(column)
 	var header_parent: Node = column
 	if sectioned:
-		var panel := PanelContainer.new(); var fill := GameLook.box(Color("233648b8"),Color("385168"),0,0); fill.corner_radius_top_left = 11; fill.corner_radius_top_right = 11; fill.border_width_bottom = 1; fill.set_content_margin_all(10); fill.content_margin_top = 0; fill.content_margin_bottom = 0; panel.add_theme_stylebox_override("panel",fill); column.add_child(panel); header_parent = panel
+		var panel := PanelContainer.new(); panel.add_theme_stylebox_override("panel",GameLook.section_header_sheet()); column.add_child(panel); header_parent = panel
 	header.add_theme_constant_override("separation",8); header_parent.add_child(header)
 	heading.text = "History" if paper else "Activity"; heading.add_theme_font_size_override("font_size",19 if sectioned else 17 if paper else 12); heading.add_theme_color_override("font_color",GameLook.SCROLL_INK if paper else GameLook.CREAM); heading.clip_text = true; heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL; header.add_child(heading)
 	if body_font != null:

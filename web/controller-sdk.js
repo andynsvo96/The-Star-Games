@@ -403,9 +403,10 @@
       this.element.append(this.avatar,this.name,this.headline,this.stats); this.element.addEventListener('click',onSelect);
     }
     update(player,metrics,active=false,headline={}) {
+      this.element.dataset.leader=this.leader||'';
       this.name.textContent=player.display_name; this.element.style.setProperty('--score-color',player.color);
       if(this.element.classList.contains('is-dark')&&global.StarGamesTableUI){const ink=StarGamesTableUI.partyAccent(player.color);this.name.style.color=ink;this.element.style.setProperty('--turn-color',ink);}
-      this.element.classList.toggle('is-current',active); this.element.setAttribute('aria-label',[player.display_name,active?'Current turn':'Player details',...metrics.map(s=>s.label+': '+s.value)].join(', '));
+      this.element.classList.toggle('is-current',active); this.element.setAttribute('aria-label',[player.display_name,active?'Current turn':'Player details',...(this.leader?[this.leader==='silver'?'Joint leader':'Leader']:[]),...metrics.map(s=>s.label+': '+s.value)].join(', '));
       this.headline.hidden=headline.value===undefined;if(!this.headline.hidden){this.headline.firstChild.src=headline.icon;this.headline.lastChild.textContent=headline.value;this.headline.setAttribute('aria-label',headline.label+': '+headline.value);this.element.setAttribute('aria-label',this.element.getAttribute('aria-label')+', '+headline.label+': '+headline.value);}
       if (global.StarGamesTableUI) { if (!this.avatar.firstChild) this.avatar.append(StarGamesTableUI.avatar(player)); else StarGamesTableUI.updateAvatar(this.avatar.firstChild,player); }
       while(this.stats.children.length>metrics.length)this.stats.lastChild.remove();
@@ -430,12 +431,28 @@
       });
     }
   }
+  class StarGamesResourceHand {
+    constructor(onSelect) {
+      this.element=document.createElement('button');this.element.type='button';this.element.className='game-resource-hand';this.amounts=[];
+      this.element.addEventListener('click',onSelect);
+    }
+    update(items) {
+      while(this.element.children.length>items.length){this.element.lastChild.remove();this.amounts.pop();}
+      items.forEach((item,index)=>{
+        let card=this.element.children[index];
+        if(!card){card=document.createElement('span');card.className='game-resource-hand-card';const icon=document.createElement('img'),count=document.createElement('output');icon.alt='';card.append(icon,count);this.element.append(card);this.amounts.push(count);}
+        card.style.setProperty('--resource-color',item.color);card.firstChild.src=item.icon;card.lastChild.textContent=item.amount;card.setAttribute('aria-label',item.label+': '+item.amount);
+      });
+      this.element.setAttribute('aria-label',items.map(item=>item.label+': '+item.amount).join(', ')+'. Inspect resources and production');
+    }
+  }
+  global.StarGamesResourceHand=StarGamesResourceHand;
   global.StarGamesBoardCamera = StarGamesBoardCamera;
   global.StarGamesPlayerRow = StarGamesPlayerRow;
   global.StarGamesStatGrid = StarGamesStatGrid;
-  global.StarGamesCostRow = (items,{highlightCounts=false}={}) => {
+  global.StarGamesCostRow = (items,{highlightCounts=false,iconOnly=false}={}) => {
     const row=document.createElement('div');row.className='game-cost-row';row.classList.toggle('has-status-counts',highlightCounts);
-    for(const item of items){const image=document.createElement('img');image.src=item.icon;image.alt=item.label+(item.available?' available':' missing');image.classList.toggle('is-unavailable',!item.available);if(item.owned!==undefined&&item.required!==undefined){const material=document.createElement('div');material.className='game-cost-material';material.classList.toggle('is-covered',item.owned>=item.required);material.setAttribute('aria-label',`${item.label}: have ${item.owned}, need ${item.required}`);material.append(image);for(const [tag,text] of [['span',item.label],['strong',`${item.owned} / ${item.required}`],['small',item.owned>=item.required?'Ready':`Need ${item.required-item.owned} more`]]){const label=document.createElement(tag);label.textContent=text;material.append(label);}row.append(material);}else row.append(image);}
+    for(const item of items){const image=document.createElement('img');image.src=item.icon;image.alt=item.label+(item.available?' available':' missing');image.classList.toggle('is-unavailable',!item.available);if(item.owned!==undefined&&item.required!==undefined){const material=document.createElement('div');material.className='game-cost-material';material.classList.toggle('is-covered',item.owned>=item.required);material.setAttribute('aria-label',`${item.label}: have ${item.owned}, need ${item.required}`);material.append(image);for(const [tag,text] of [['span',item.label],['strong',`${item.owned} / ${item.required}`],['small',item.owned>=item.required?'Ready':`Need ${item.required-item.owned} more`]]){if(iconOnly&&tag!=='strong')continue;const label=document.createElement(tag);label.textContent=text;material.append(label);}row.append(material);}else row.append(image);}
     return row;
   };
   global.StarGamesButtonBadge = (button,count) => {

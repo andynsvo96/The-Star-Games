@@ -18,6 +18,7 @@ var icon_texture: Texture2D
 var amount_prefix := "$"
 var amount_badge := true
 var show_transfers := true
+var change_placement := "vertical"
 
 
 func _ready() -> void:
@@ -64,7 +65,7 @@ func _draw() -> void:
 			var gain := int(change.amount) > 0
 			var font_size := 22
 			if resolve_font_size.is_valid(): font_size = clampi(int(resolve_font_size.call(int(change.seat))),8,96)
-			var bubble := amount_rect(bounds, int(change.amount), 0 if reduced else progress,font_size)
+			var bubble := amount_rect(bounds, int(change.amount), 0 if reduced else progress,font_size,change_placement)
 			var tint := Color("48e59a") if gain else Color("ff6976")
 			if amount_badge:
 				var style := GameLook.box(Color("062a21") if gain else Color("3f1822"), tint, 8, 1)
@@ -97,8 +98,9 @@ func amount_text(amount: int) -> String:
 	return ("+" if amount > 0 else "−") + amount_prefix + str(absi(amount))
 
 
-static func amount_rect(balance: Rect2, amount: int, progress: float, font_size := 22) -> Rect2:
+static func amount_rect(balance: Rect2, amount: int, progress: float, font_size := 22, placement := "vertical") -> Rect2:
 	var distance := progress * 18
 	var height := float(font_size+6); var width := 92.0*font_size/22.0
 	var top := balance.position.y - height - 4 - distance if amount > 0 else balance.end.y + 4 + distance
+	if placement == "right": return Rect2(Vector2(balance.end.x+3,balance.get_center().y-height/2-distance*.3),Vector2(maxf(20,font_size*1.6),height))
 	return Rect2(Vector2(balance.get_center().x - width/2, top), Vector2(width,height))

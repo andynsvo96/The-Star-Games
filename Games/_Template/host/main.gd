@@ -215,6 +215,14 @@ func _ready() -> void:
 	# Compact inspectable public rows avoid widening a dense board's sidebars.
 	# add_centered_layout's fifth argument optionally sets a smaller sidebar floor.
 	var player_row_example := GamePlayerRow.new(); layout.left_sidebar.add_child(player_row_example); player_row_example.hide()
+	# Optional compact section and icon-only private inventory. Only pass values
+	# this viewer may see; connect pressed to the game's explicit detail view.
+	var inventory_section := GameSection.new(); inventory_section.hide(); screen.content.add_child(inventory_section)
+	var inventory_example := GameResourceHand.new(); inventory_section.content.add_child(inventory_example)
+	# set_inline_header(true) puts a section's header beside its contents on short
+	# landscape views; compact=true on the inventory retains the same input target.
+	inventory_example.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Example resource","amount":3,"color":Color("27ad68")}])
+	player_row_example.leader = "silver" # Explicit tied-lead feedback; not turn state.
 	player_row_example.set_player({"display_name":"Example player","color":"#2463eb","pose":0},[{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"value":7,"label":"Public card count"}],true)
 	player_row_example.pressed.connect(func() -> void: inspector_example.show())
 	# detailed=true shows six labelled counters in a larger public roster row.
@@ -235,7 +243,7 @@ func _ready() -> void:
 	var cost_example := GameCostRow.new(); layout.playfield.add_child(cost_example); cost_example.hide()
 	cost_example.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"One required card","available":false}])
 	# Optional owned/required values group materials into counted progress cards.
-	var counted_cost := GameCostRow.new(); counted_cost.dark = true; counted_cost.highlight_counts = true; layout.playfield.add_child(counted_cost); counted_cost.hide()
+	var counted_cost := GameCostRow.new(); counted_cost.dark = true; counted_cost.highlight_counts = true; counted_cost.icon_only = true; layout.playfield.add_child(counted_cost); counted_cost.hide()
 	counted_cost.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Example material","owned":2,"required":3,"available":false}])
 	# A green check confirmation inherits its theme through GameLook.confirm_control.
 	var badge_example := GameButtonBadge.new(); player_row_example.add_child(badge_example); badge_example.count = 2
@@ -315,6 +323,7 @@ func _ready() -> void:
 	money_example.amount_prefix = ""; money_example.icon_texture = RuntimeAssets.texture("res://ui/playful/table-cash.svg")
 	# Plain signed numbers rise above gains and fall below losses, without flights.
 	money_example.amount_badge = false; money_example.show_transfers = false
+	# change_placement="right" anchors signed feedback beside each live counter.
 	money_example.resolve_rect = func(_seat: int) -> Rect2: return Rect2()
 	# Resolve the live number label's font size when feedback must match it.
 	money_example.resolve_font_size = func(_seat: int) -> int: return screen.get_theme_font_size("font_size","Label")

@@ -88,6 +88,8 @@ desktop.ini
 !/tests/board_camera.gd
 !/tests/board_camera.gd.uid
 !/tests/shared_board_controller.mjs
+!/tests/table_inventory.gd
+!/tests/table_inventory.gd.uid
 
 # Synthetic skin lifecycle, editor and LAN regression (no local games required).
 !/tests/skin_packs_fixture.gd

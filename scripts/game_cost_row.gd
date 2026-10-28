@@ -5,6 +5,7 @@ extends HFlowContainer
 const DESATURATE := "shader_type canvas_item; void fragment(){ vec4 c=COLOR; float g=dot(c.rgb,vec3(.299,.587,.114)); COLOR=vec4(vec3(g),c.a*.65); }"
 var dark := false
 var highlight_counts := false
+var icon_only := false
 
 func set_items(items: Array) -> void:
 	for child in get_children(): remove_child(child); child.queue_free()
@@ -26,6 +27,7 @@ func set_items(items: Array) -> void:
 		destination.add_child(image)
 		if detailed:
 			for row in [[str(item.label),13],["%d / %d" % [int(item.owned),int(item.required)],22],["Ready" if int(item.owned) >= int(item.required) else "Need %d more" % (int(item.required)-int(item.owned)),12]]:
+				if icon_only and int(row[1]) != 22: continue
 				var label := Label.new(); label.text = str(row[0]); label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; label.add_theme_font_size_override("font_size",int(row[1])); label.add_theme_color_override("font_color",GameLook.CREAM if dark else GameLook.SCROLL_INK); destination.add_child(label)
 				if highlight_counts and int(row[1]) == 22:
 					var covered: bool = int(item.owned) >= int(item.required)

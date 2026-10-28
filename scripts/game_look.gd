@@ -1,6 +1,13 @@
 class_name GameLook
 extends RefCounted
 
+static func section_sheet() -> StyleBoxFlat:
+	var style := box(Color("0b1d2cef"),Color("385168"),12,1); style.set_content_margin_all(0); return style
+
+static func section_header_sheet() -> StyleBoxFlat:
+	var style := box(Color("233648b8"),Color("385168"),0,0); style.corner_radius_top_left = 11; style.corner_radius_top_right = 11; style.border_width_bottom = 1
+	style.set_content_margin_all(10); style.content_margin_top = 0; style.content_margin_bottom = 0; return style
+
 # Opt-in shared toy-box presentation. Game rules never depend on this theme.
 const INK := Color("243653")
 const CREAM := Color("fff4cf")

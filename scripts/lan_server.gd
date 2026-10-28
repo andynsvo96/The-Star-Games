@@ -304,6 +304,7 @@ func _serve_http(peer: StreamPeerTCP, request: String) -> void:
 		"/ui/playful/table-flag.svg": resource_path = "res://ui/playful/table-flag.svg"
 		"/ui/playful/table-cards.svg": resource_path = "res://ui/playful/table-cards.svg"
 		"/ui/playful/table-house.svg": resource_path = "res://ui/playful/table-house.svg"
+		"/ui/playful/table-crown-silver.svg": resource_path = "res://ui/playful/table-crown-silver.svg"
 		"/ui/playful/table-crown.svg": resource_path = "res://ui/playful/table-crown.svg"
 		"/ui/playful/rules-star.svg": resource_path = "res://ui/playful/rules-star.svg"
 		"/ui/playful/party-sheen.svg": resource_path = "res://ui/playful/party-sheen.svg"

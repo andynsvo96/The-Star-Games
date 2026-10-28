@@ -1721,3 +1721,31 @@ body.playful-game { isolation: isolate; }
 .game-turn-strip.has-turn-actions .game-turn-name { position:relative; overflow:hidden; padding-bottom:18px; }
 .game-turn-action { display:block; position:absolute; inset:auto 0 0; font-size:.68rem; font-weight:400; color:#deebef; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .game-turn-strip.has-turn-actions .is-active .game-turn-action { color:#ffe18b; }
+
+/* Reusable compact inventory/roster sections share activity chrome. */
+.game-table-section { border: 1px solid #385168; border-radius: 12px; background: #0b1d2cef; color: #edf3f5; font-family: "Segoe UI",Arial,sans-serif; text-align: left; }
+.game-table-section > header { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0; padding:0 10px; min-height:44px; background:#233648b8; border-bottom:1px solid #385168; border-radius:11px 11px 0 0; }
+.playful-game .game-controller .game-table-section > header h2 { margin:0; font:700 1.1rem/1.2 "Segoe UI",Arial,sans-serif; letter-spacing:0; }
+.game-table-section > header > span { font-size:.75rem; }
+.game-table-section-content { padding:10px 8px; min-width:0; }
+.playful-game .game-controller button.game-resource-hand { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); align-items:end; gap:8px; width:100%; min-height:96px; padding:20px 3px 5px; margin:0; background:transparent; border:0; box-shadow:none; transform:none; }
+.game-resource-hand-card { position:relative; height:66px; min-width:0; display:grid; place-items:center; border:2px solid color-mix(in srgb,var(--resource-color),white 40%); background:var(--resource-color); border-radius:4px; box-shadow:1px 3px 0 color-mix(in srgb,var(--resource-color),black 30%); }
+.game-resource-hand-card img { width:calc(100% - 12px); height:48px; object-fit:contain; }
+.game-resource-hand-card output { position:absolute; top:-17px; right:-5px; min-width:28px; height:28px; display:grid; place-items:center; border-radius:50%; background:#e6ebed; color:#19384c; font:600 18px/1 "Segoe UI",Arial,sans-serif; }
+.game-player-row-avatar { position:relative; }
+.game-player-row[data-leader="gold"] .game-player-row-avatar::after, .game-player-row[data-leader="silver"] .game-player-row-avatar::after { content:""; position:absolute; top:-10px; left:0; width:100%; height:18px; background:url('/ui/playful/table-crown.svg') center/contain no-repeat; }
+.game-player-row[data-leader="silver"] .game-player-row-avatar::after { background-image:url('/ui/playful/table-crown-silver.svg'); }
+.game-table-section.is-compact > header { min-height:28px; }
+.game-table-section.is-compact > .game-table-section-content { padding:5px 6px; }
+.game-table-section.has-inline-header { display:flex; align-items:stretch; }
+.game-table-section.has-inline-header > header { flex:0 0 150px; flex-direction:column; align-items:flex-start; justify-content:center; border-bottom:0; border-right:1px solid #385168; }
+.game-table-section.has-inline-header > header > span { font-size:.65rem; }
+.game-table-section.has-inline-header > .game-table-section-content { flex:1; }
+.playful-game .game-controller button.game-resource-hand.is-compact { min-height:68px; padding-top:18px; gap:7px; }
+.game-resource-hand.is-compact .game-resource-hand-card { height:42px; }
+.game-resource-hand.is-compact .game-resource-hand-card img { height:32px; }
+.game-resource-hand.is-compact .game-resource-hand-card output { width:24px; min-width:24px; height:24px; top:-15px; font-size:16px; }
+.playful-game .game-controller button.game-player-row.has-headline.is-compact.is-dense { min-height:54px; gap:1px 2px; }
+.game-player-row.has-headline.is-compact.is-dense .game-player-row-stats { gap:0 2px; }
+.game-player-row.has-headline.is-compact.is-dense .game-player-row-stats img { height:12px; width:11px; }
+.game-player-row.has-headline.is-compact.is-dense .game-player-row-avatar, .game-player-row.has-headline.is-compact.is-dense .game-player-row-avatar > * { width:16px !important; height:16px !important; }

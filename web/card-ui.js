@@ -267,10 +267,10 @@
   };
   // Public money feedback shares host timing; resolving a hidden name returns null.
   global.StarGamesMoneyEffect = class {
-    constructor(resolve, {amountPrefix = '$', icon = '/ui/playful/table-cash.svg', amountBadge = true, showTransfers = true, resolveFontSize = null, resolveFont = null} = {}) {
+    constructor(resolve, {amountPrefix = '$', icon = '/ui/playful/table-cash.svg', amountBadge = true, showTransfers = true, changePlacement = 'vertical', resolveFontSize = null, resolveFont = null} = {}) {
       this.resolve = resolve; this.key = -1; this.frame = 0;
       this.amountPrefix = amountPrefix; this.icon = icon;
-      this.amountBadge = amountBadge; this.showTransfers = showTransfers;
+      this.amountBadge = amountBadge; this.showTransfers = showTransfers; this.changePlacement = changePlacement;
       this.resolveFontSize = resolveFontSize;
       this.resolveFont = resolveFont;
       this.layer = document.createElement('div'); this.layer.className = 'game-money-effect';
@@ -302,10 +302,10 @@
           node.textContent = this.amountText(change.amount);
           const distance=this.reduced?0:p*18;
           const fontSize=this.resolveFontSize?Math.max(8,Math.min(96,Number(this.resolveFontSize(change.seat))||22)):null;
-          const width=this.amountBadge?92:Math.max(fontSize?fontSize*2:44,node.textContent.length*(fontSize?fontSize*.64:14));
+          const width=this.changePlacement==='right'?Math.max(20,(fontSize||16)*1.6):this.amountBadge?92:Math.max(fontSize?fontSize*2:44,node.textContent.length*(fontSize?fontSize*.64:14));
           const height=fontSize&&!this.amountBadge?Math.ceil(fontSize*1.3):28;
           const rise=fontSize?height+4:32;
-          node.style.cssText = `width:${width}px;left:${Math.min(innerWidth - width - 3, Math.max(4, rect.x + rect.width / 2 - width / 2))}px;top:${change.amount>0?rect.y-rise-distance:rect.y+rect.height+4+distance}px;opacity:${alpha}${fontSize?';font-size:'+fontSize+'px;line-height:1.2;height:'+height+'px':''}`;
+          node.style.cssText = `width:${width}px;left:${Math.min(innerWidth - width - 3, Math.max(4, this.changePlacement==='right'?rect.x+rect.width+3:rect.x + rect.width / 2 - width / 2))}px;top:${this.changePlacement==='right'?rect.y+rect.height/2-height/2-distance*.3:change.amount>0?rect.y-rise-distance:rect.y+rect.height+4+distance}px;opacity:${alpha}${fontSize?';font-size:'+fontSize+'px;line-height:1.2;height:'+height+'px':''}`;
           if(this.resolveFont)node.style.font=String(this.resolveFont(change.seat)||'');
           this.layer.append(node);
         }
