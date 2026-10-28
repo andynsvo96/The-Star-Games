@@ -8,6 +8,7 @@ var fit_icons := false
 
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	resized.connect(queue_sort)
 	child_order_changed.connect(queue_sort)

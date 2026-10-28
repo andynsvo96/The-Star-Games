@@ -109,6 +109,7 @@ func center_board(board: Control, replay: Button, auxiliary: Control = null, cen
 	_board_bottom_auxiliary = bottom_auxiliary and wide_auxiliary and auxiliary != null
 	if auxiliary != null:
 		auxiliary.reparent(get_parent() if wide_auxiliary else _replay_slot)
+		if wide_auxiliary: auxiliary.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_centered.alignment = BoxContainer.ALIGNMENT_BEGIN
 	_centered.add_theme_constant_override("separation", 0)
 	_board_spacer = Control.new()

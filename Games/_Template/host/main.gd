@@ -307,7 +307,7 @@ func _ready() -> void:
 	activity_example.set_entries([{"id":1, "text":"Example player banked a card","parts":[{"text":"Example player","color":GameLook.readable_text_color(Color("2463eb"),GameLook.CREAM)},{"text":" banked "},{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"width":20,"height":26}]}], true)
 	# Set expandable=true before adding a compact log; connect expand_requested to
 	# an enlarged phase dialog. show_reference(front,back,true) fits without scroll.
-	var sectioned_activity := GameActivityLog.new(); sectioned_activity.sectioned = true; sectioned_activity.expandable = true; sectioned_activity.maximum_entries = 5; sectioned_activity.entry_font_size = 14
+	var sectioned_activity := GameActivityLog.new(); sectioned_activity.sectioned = true; sectioned_activity.expandable = true; sectioned_activity.maximum_entries = 6; sectioned_activity.entry_font_size = 14; sectioned_activity.dense = true
 	layout.playfield.add_child(sectioned_activity); sectioned_activity.heading.text = "Recent Activity"; sectioned_activity.hide()
 	# sectioned=true supplies a separate compact sans-serif header and a 44px
 	# Show All button. Both the panel and the button emit expand_requested.

@@ -8,6 +8,11 @@
   <title>Game Controller</title>
   <script src="/card-ui.js"></script>
 </head>
+<!-- A bottom control dock opts main into game-board-controller game-docked-controller.
+     Put the roster and .game-playfield inside [data-game-board-stage]. The shared
+     fitter reserves the live controls' height; existing side-control relocation
+     also works in short landscape views. game-outline-disabled gives an unfunded
+     confirmation a transparent surface with a grey border. -->
 <!-- Set background in game.json to a local filename stem; use game-wordmark,
      game-score-card, game-status and game-primary for matching components.
      Red actions use game-danger; green actions use game-success.
@@ -100,6 +105,17 @@
   </div>
 </section>
 </main>
+  <template id="example-bottom-dock">
+    <main class="game-controller game-board-controller game-docked-controller">
+      <div data-game-board-stage>
+        <section class="game-table-section" aria-label="Players"><header><h2>Players</h2></header></section>
+        <section class="game-playfield">
+          <div class="game-map-fit" data-game-board-fit></div>
+          <div class="game-board-controls is-dark"><p class="game-status">Your turn</p><button class="game-primary game-outline-disabled">Confirm</button></div>
+        </section>
+      </div>
+    </main>
+  </template>
   <!-- Optional responsive tools: place a game-board-side-controls element with
        data-game-side-controls inside main. At a side layout set the playfield's
        --game-board-controls-side:1 and --game-board-footer-reserve:16.
@@ -178,6 +194,6 @@
   <section hidden aria-label="Paper activity example"><div class="game-dialog-heading-row has-header-metric"><h2>Example player</h2><span class="game-dialog-header-metric" aria-label="Session wins: 3"><img src="/ui/playful/stat-trophy.svg" alt=""><output>3</output></span></div><div class="game-activity-paper"><p>Example player completed a public action.</p></div><nav class="game-action-row"><button type="button" class="game-labelled-utility game-icon-control" aria-label="Read reference card"><img src="/ui/playful/control-help.svg" alt=""><span>Help</span></button></nav></section>
 <!-- Sectioned public feeds reuse the shared compact type and header action.
      Wire Show All to an enlarged dialog containing the same literal rows. -->
-<section hidden aria-label="Sectioned activity example"><section class="game-activity-section"><header><h2>Recent Activity</h2><button type="button" class="game-secondary">Show All</button></header><div class="game-activity-paper game-activity-dark game-activity-separated game-activity-bold-latest"><p>Example player completed a public action.</p></div></section></section>
+<section hidden aria-label="Sectioned activity example"><section class="game-activity-section is-dense"><header><h2>Recent Activity</h2><button type="button" class="game-secondary">Show All</button></header><div class="game-activity-paper game-activity-dark game-activity-separated game-activity-bold-latest"><p>Example player completed a public action.</p></div></section></section>
 </body>
 </html>

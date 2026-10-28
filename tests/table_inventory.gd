@@ -8,7 +8,7 @@ func check(ok: bool, message: String) -> void:
 	checks += 1
 	if not ok: failures += 1; printerr("FAIL: "+message)
 func _run() -> void:
-	root.size = Vector2i(640,480)
+	root.min_size = Vector2i.ONE; root.content_scale_size = Vector2i(640,480); root.size = Vector2i(640,480)
 	var section := GameSection.new(); section.caption = "Players"; root.add_child(section); section.size = Vector2(300,220)
 	var inventory := GameResourceHand.new(); section.content.add_child(inventory)
 	var items: Array = []
@@ -36,6 +36,15 @@ func _run() -> void:
 	check(exchange.accessibility_name.contains("Have 3") and exchange.content.get_child(0).get_child(0).get_parsed_text() == "3 / 4 3","Exchange buttons combine held quantities with the discounted requirement")
 	term.rate = 4; term.port = false; exchange.set_exchanges([term])
 	check(exchange == held_button and not exchange.find_children("*","Label",true,false).any(func(label: Label) -> bool: return label.text == "⚓"),"Supply exchange updates keep the same confirmation target and omit port anchors")
+	var unfunded: StyleBoxFlat = exchange.get_theme_stylebox("disabled")
+	check(unfunded.bg_color.a == 0 and unfunded.border_color == Color("7c8d99"),"Unfunded exchanges keep transparent surfaces and a grey outline")
+	var underlying := Button.new(); underlying.position = Vector2(20,420); underlying.size = Vector2(44,44); root.add_child(underlying); var clicked := [false]; underlying.pressed.connect(func() -> void: clicked[0] = true)
+	var actions := GameActionRow.new(); actions.position = Vector2(0,420); actions.size = Vector2(640,44); root.add_child(actions); var action := Button.new(); action.text = "Action"; actions.add_child(action)
+	for unused in 3: await process_frame
+	for pressed in [true,false]:
+		var event := InputEventMouseButton.new(); event.button_index = MOUSE_BUTTON_LEFT; event.pressed = pressed; event.position = Vector2(42,442); Input.parse_input_event(event); await process_frame
+	check(clicked[0],"Empty toolbar space passes clicks to visible controls underneath")
+	actions.queue_free(); underlying.queue_free()
 	var store := ProfileStore.new("res://.test_data/table-inventory/profiles.json"); store.load_data()
 	var catalog := GameCatalog.new("res://tests/fixtures/Games"); catalog.scan()
 	var server := LanServer.new(); root.add_child(server); server.configure(store,catalog)

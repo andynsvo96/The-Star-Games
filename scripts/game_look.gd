@@ -20,6 +20,12 @@ static func choice_item_icon(texture: Texture2D, maximum := 28) -> Texture2D:
 static func supporting_text(label: Label, font_size := 11) -> void:
 	label.add_theme_font_override("font",interface_font()); label.add_theme_font_size_override("font_size",font_size); label.add_theme_color_override("font_color",Color("afbec7"))
 
+static func outline_disabled(button: Button) -> void:
+	var style := box(Color.TRANSPARENT,Color("7c8d99"),7,2)
+	style.shadow_size = 0
+	button.add_theme_stylebox_override("disabled",style)
+	button.add_theme_color_override("font_disabled_color",Color("afbec7"))
+
 # Opt-in shared toy-box presentation. Game rules never depend on this theme.
 const INK := Color("243653")
 const CREAM := Color("fff4cf")

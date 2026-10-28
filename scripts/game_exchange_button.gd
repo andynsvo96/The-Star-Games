@@ -11,6 +11,7 @@ func _ready() -> void:
 	tooltip_text = ""; text = ""; custom_minimum_size.y = 52
 	content.mouse_filter = Control.MOUSE_FILTER_IGNORE; content.add_theme_constant_override("separation",4); add_child(content)
 	resized.connect(_layout)
+	GameLook.outline_disabled(self)
 
 func _layout() -> void:
 	var height := content.get_combined_minimum_size().y
@@ -19,8 +20,8 @@ func _layout() -> void:
 func _draw() -> void:
 	if applied_disabled == int(disabled): return
 	applied_disabled = int(disabled)
-	for label in content.find_children("*","Label",true,false): label.add_theme_color_override("font_color",Color("435060") if disabled else Color("97e891") if label.text == "✓" else GameLook.CREAM)
-	for label in content.find_children("*","RichTextLabel",true,false): label.add_theme_color_override("default_color",Color("435060") if disabled else GameLook.CREAM)
+	for label in content.find_children("*","Label",true,false): label.add_theme_color_override("font_color",Color("afbec7") if disabled else Color("97e891") if label.text == "✓" else GameLook.CREAM)
+	for label in content.find_children("*","RichTextLabel",true,false): label.add_theme_color_override("default_color",Color("afbec7") if disabled else GameLook.CREAM)
 	for picture in content.find_children("*","TextureRect",true,false): picture.modulate.a = .65 if disabled else 1.0
 
 func set_exchanges(items: Array) -> void:

@@ -21,10 +21,16 @@ var maximum_entries := 0
 var separators := false
 var expandable := false
 var sectioned := false
+var dense := false
 var compact_text := false
 var show_all := Button.new()
 var header := HBoxContainer.new()
 var body_font: Font
+
+func set_dense(enabled: bool) -> void:
+	if dense == enabled: return
+	dense = enabled
+	entries.add_theme_constant_override("separation",3 if enabled else 6)
 
 func _ready() -> void:
 	clip_contents = true; accessibility_name = "Activity history"
@@ -56,7 +62,7 @@ func _ready() -> void:
 	if expandable:
 		scroll.mouse_filter = Control.MOUSE_FILTER_PASS; scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 		entries.mouse_filter = Control.MOUSE_FILTER_PASS
-	entries.size_flags_horizontal = Control.SIZE_EXPAND_FILL; entries.add_theme_constant_override("separation", 6); scroll.add_child(entries)
+	entries.size_flags_horizontal = Control.SIZE_EXPAND_FILL; entries.add_theme_constant_override("separation", 3 if dense else 6); scroll.add_child(entries)
 	heading.visible = show_heading
 	header.visible = show_heading
 	resized.connect(func() -> void: header.visible = show_heading and size.x >= 72)

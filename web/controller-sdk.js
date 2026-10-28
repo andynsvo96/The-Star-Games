@@ -453,7 +453,7 @@
   global.StarGamesResourceHand=StarGamesResourceHand;
   global.StarGamesExchangeButton=class {
     constructor(onSelect,{label='Exchange resources'}={}) {
-      this.element=document.createElement('button');this.element.type='button';this.element.className='game-primary game-compact-control game-exchange-button';this.label=label;this.key='';this.element.addEventListener('click',onSelect);
+      this.element=document.createElement('button');this.element.type='button';this.element.className='game-primary game-compact-control game-exchange-button game-outline-disabled';this.label=label;this.key='';this.element.addEventListener('click',onSelect);
     }
     update(items) {
       const key=JSON.stringify(items);if(key===this.key)return;this.key=key;this.element.replaceChildren();
