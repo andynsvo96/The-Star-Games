@@ -1237,6 +1237,9 @@ body.playful-game { isolation: isolate; }
 .game-card-strip > .game-playing-card,.game-card-strip > .game-card-empty,.game-modern-table .game-controller .game-card-strip > .game-playing-card { box-sizing:border-box; flex:0 0 clamp(76px,calc((100% - 16px) / 3),var(--card-width,108px)); width:clamp(76px,calc((100% - 16px) / 3),var(--card-width,108px)); min-width:0; max-width:var(--card-width,108px); height:auto; aspect-ratio:2/3; scroll-snap-align:start; }
 .playful-game.game-modern-table .game-controller .game-card-tile { display:flex; flex-direction:column; align-items:center; gap:4px; padding:5px; width:100%; min-width:0; min-height:44px; background:#021b2c; border:2px solid #27566b; border-radius:8px; box-shadow:none; }
 .playful-game.game-modern-table .game-controller .game-card-tile.is-selected { border-color:#ffe36c; background:#155b66; box-shadow:0 0 0 1px #ffe36c; }
+.playful-game .game-controller .game-card-grid.is-dark > button.game-card-tile { display:flex; flex-direction:column; align-items:center; gap:4px; box-sizing:border-box; padding:5px; margin:0; width:100%; max-width:var(--card-width,108px); justify-self:center; min-width:0; min-height:44px; background:#021b2c; color:#edf3f5; border:1px solid #27566b; border-radius:7px; box-shadow:none; font:inherit; text-transform:none; letter-spacing:normal; opacity:1; }
+.playful-game .game-controller .game-card-grid.is-dark > button.game-card-tile:disabled { color:#afbec7; }
+.playful-game .game-controller .game-card-grid.is-dark > button.game-card-tile.is-selected { border-color:#ffe36c; background:#155b66; box-shadow:0 0 0 1px #ffe36c; }
 .game-card-tile > .game-playing-card { width:100%; min-width:0; height:auto; aspect-ratio:2/3; }
 .game-card-tile-caption { font-size:12px; line-height:1.3; white-space:normal; }
 .game-owed,.game-modern-table .payment-summary .game-owed b { color:#ff777c; }

@@ -440,8 +440,11 @@ floating deltas and keep Players first, with status, resources and the four
 History/Trade/Development/Help actions in a shared bottom dock. End Turn appears
 outside the controls panel above resources after rolling. Solo hosts place it
 above their other actions too. Build previews use CANCEL/BUILD; development
-purchases use compact cost chips and a deck-count/BUY strip. Development
-faces and hidden-card backs use simple symbols; card rules stay in the reader. Trade remains visible and disables between turns.
+purchases use compact cost chips and a deck-count/BUY control beside a reference
+button listing the five possible types. Its private hand keeps five stable type
+slots, empty when unowned, with positive count badges for owned copies. Grouped
+inspection prefers a playable copy. Development faces and hidden-card backs use
+simple symbols; card rules stay in the reader. Trade remains visible and disables between turns.
 AI offers to humans retain their full response window. All card transfers use
 the same intermediate pace. Build hammers/clouds
 and temporary thrown dice use public
@@ -2071,6 +2074,9 @@ the shared `game-owed` class (native `GameLook.table_owed_color()`) for money ow
 `slots` there to wrap long sets rather than squeezing their cards into one row.
 Actual button faces and missing-card slots share the same dimensions, including
 inside modern-table dialogs. The template demonstrates this larger grid.
+Browser grids can add `is-dark` to keep native-style navy card tiles in other
+palettes, including disabled empty slots. Use the existing button badge for
+positive owned counts and an accessible label for the count or empty state.
 
 For compact single-row public collections, use
 `StarGamesCardStrip(nodes,{cardWidth:108,visibleCards:4,label})` instead of a grid.
