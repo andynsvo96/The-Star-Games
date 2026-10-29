@@ -17,6 +17,9 @@ func _run() -> void:
 	check(inventory.amounts[0] == amount and amount.text == "3","Resource updates preserve the live count target")
 	check(inventory.tooltip_text.is_empty() and inventory.accessibility_name.contains("Resource 0: 3"),"Icon-only inventory retains literal accessible quantities without hover text")
 	check(section.heading.text == "Players" and section.get_theme_stylebox("panel").bg_color == GameLook.section_sheet().bg_color,"Sections use shared compact feed chrome")
+	var flip := Button.new(); flip.icon = RuntimeAssets.texture("res://ui/playful/control-rotate.svg"); flip.toggle_mode = true; flip.accessibility_name = "Flip inventory"; section.set_header_action(flip)
+	for unused in 3: await process_frame
+	check(flip.get_parent() == section.metric and flip.size.x >= 44 and flip.size.y >= 44 and flip.tooltip_text.is_empty(),"Section header actions retain a trailing accessible 44px target without hover text")
 	var costs := GameCostRow.new(); costs.icon_only = true; section.content.add_child(costs); costs.set_items([{"texture":items[0].texture,"label":"Resource","owned":1,"required":2,"available":false}])
 	check(costs.find_children("*","Label",true,false).size() == 1 and costs.get_child(0).accessibility_name.contains("have 1, need 2"),"Icon-only costs omit prose while retaining accessible requirements")
 	var compact_cost := GameCostRow.new(); compact_cost.dark = true; compact_cost.icon_only = true; compact_cost.compact = true; root.add_child(compact_cost); compact_cost.position = Vector2(350,100); compact_cost.size = Vector2(250,44)

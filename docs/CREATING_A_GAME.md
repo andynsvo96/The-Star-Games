@@ -397,8 +397,10 @@ docks and activity share those symbols. Activity uses the square shared route
 glyph and preserves building aspect ratios. History names use each roster's
 readable identity color through literal text parts. Harbor badges lie on each
 coastal edge's outward perpendicular bisector, making equal links to both
-building sites. Solo hosts and wide controllers put a private icon-only resource
-panel above Recent Activity. It opens a per-resource summary with held counts,
+building sites. Solo hosts and wide controllers put a private inventory
+panel below Recent Activity. Its Resources heading has a trailing flip icon that
+switches to Development, reusing the grouped private cards and five empty slots.
+Compact views keep the same toggle in their action area. Resources open a per-resource summary with held counts,
 the board's numbered probability discs/pips, combined cards per roll, explicit
 robber blocking and owned port rates, without settlement IDs. Private
 quantities are omitted from player-stat inspectors. Compact views keep the same
@@ -2880,6 +2882,11 @@ are literal labels. `set_inline_header(true)` puts the header beside contents
 on short landscape views without changing board centering. Browser sections use
 `game-table-section`, a `header` with `h2` and optional summary `span`, and
 `game-table-section-content`; `is-compact` and `has-inline-header` fit short views.
+Use `set_header_action(button)` for a trailing native action with a 44px target;
+the caller owns its icon, accessible name, toggle state and callback. Browser
+sections put the same real `button.game-icon-only` after the heading in `header`.
+The template demonstrates a Resources/Development flip using the shared rotate
+icon and empty card slots. Keep the action and hand targets across snapshots.
 
 `GameResourceHand.set_items([{texture,label,amount,color},...])` supplies a
 focusable, inspectable inventory with resource-colored cards and live count

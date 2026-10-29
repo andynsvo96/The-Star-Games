@@ -217,8 +217,15 @@ func _ready() -> void:
 	var player_row_example := GamePlayerRow.new(); layout.left_sidebar.add_child(player_row_example); player_row_example.hide()
 	# Optional compact section and icon-only private inventory. Only pass values
 	# this viewer may see; connect pressed to the game's explicit detail view.
-	var inventory_section := GameSection.new(); inventory_section.hide(); screen.content.add_child(inventory_section)
+	var inventory_section := GameSection.new(); inventory_section.caption = "Resources"; inventory_section.hide(); screen.content.add_child(inventory_section)
 	var inventory_example := GameResourceHand.new(); inventory_section.content.add_child(inventory_example)
+	var inventory_flip := Button.new(); inventory_flip.icon = RuntimeAssets.texture("res://ui/playful/control-rotate.svg"); inventory_flip.toggle_mode = true; inventory_flip.accessibility_name = "Show development cards"; inventory_section.set_header_action(inventory_flip)
+	var inventory_cards := GameCardGrid.new(); inventory_cards.fixed_columns = 5; inventory_section.content.add_child(inventory_cards); inventory_cards.set_items([{ "placeholder":true },{ "placeholder":true },{ "placeholder":true },{ "placeholder":true },{ "placeholder":true }]); inventory_cards.hide()
+	inventory_flip.toggled.connect(func(show_cards: bool) -> void:
+		inventory_section.heading.text = "Development" if show_cards else "Resources"
+		inventory_flip.accessibility_name = "Show resources" if show_cards else "Show development cards"
+		inventory_example.visible = not show_cards; inventory_cards.visible = show_cards
+	)
 	var compact_cost_example := GameCostRow.new(); compact_cost_example.dark = true; compact_cost_example.icon_only = true; compact_cost_example.compact = true; inventory_section.content.add_child(compact_cost_example)
 	compact_cost_example.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/stat-resources.svg"),"label":"Example material","owned":1,"required":1,"available":true}])
 	inventory_section.center_heading = true

@@ -13,6 +13,14 @@ var leading := Control.new()
 var metric := HBoxContainer.new()
 var summary_icon := TextureRect.new()
 var inline_header := false
+var header_action: Button
+
+func set_header_action(button: Button) -> void:
+	if is_instance_valid(header_action) and header_action.get_parent() == metric: metric.remove_child(header_action)
+	header_action = button
+	if button != null:
+		metric.add_child(button); button.custom_minimum_size = Vector2(44,44); button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_layout_header()
 
 func set_summary_metric(texture: Texture2D, value: Variant, description: String) -> void:
 	summary_icon.texture = texture; summary_icon.visible = texture != null; summary.text = str(value); metric.accessibility_name = description

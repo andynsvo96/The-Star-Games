@@ -1735,6 +1735,7 @@ body.playful-game { isolation: isolate; }
 .game-table-section > header { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0; padding:0 10px; min-height:44px; background:#233648b8; border-bottom:1px solid #385168; border-radius:11px 11px 0 0; }
 .playful-game .game-controller .game-table-section > header h2 { margin:0; font:700 1.1rem/1.2 "Segoe UI",Arial,sans-serif; letter-spacing:0; }
 .game-table-section > header > span { font-size:.75rem; }
+.game-table-section > header > button { flex:none; margin:0; }
 .game-table-section-content { padding:10px 8px; min-width:0; }
 .playful-game .game-controller button.game-resource-hand { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); align-items:end; gap:8px; width:100%; min-height:96px; padding:20px 3px 5px; margin:0; background:transparent; border:0; box-shadow:none; transform:none; }
 .game-resource-hand-card { position:relative; height:66px; min-width:0; display:grid; place-items:center; border:2px solid color-mix(in srgb,var(--resource-color),white 40%); background:var(--resource-color); border-radius:4px; box-shadow:1px 3px 0 color-mix(in srgb,var(--resource-color),black 30%); }
