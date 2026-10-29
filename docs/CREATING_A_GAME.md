@@ -442,12 +442,12 @@ Hosts and phones drag the map and
 scroll/pinch to zoom directly; camera changes never submit game actions.
 Host signed feedback uses the live amount's font beside each affected resource or
 public counter; VP feedback remains outside the roster card. Phones omit these
-floating deltas and keep Players first, with status, resources and the four
+floating deltas and keep Players first, with resources and the four
 History/Trade/Development/Help actions in a shared bottom dock. End Turn appears
-outside the controls panel above resources after rolling. Phone status and
-clocks also sit outside that panel, immediately above it. Compact inventory
-headers use smaller titles/icons and dense card spacing, retaining 44px touch
-targets and the same card/count positions on both sides. Solo hosts place End Turn
+outside the controls panel above resources after rolling. Phones omit quick
+instruction/status captions; the optional turn clock shares the End Turn row.
+Compact inventory headers use smaller titles/icons and dense card spacing, with
+44px touch targets and the same card/count positions on both sides. Solo hosts place End Turn
 above their other actions too. Build previews use CANCEL/BUILD; development
 purchases use compact cost chips and a deck-count/BUY control beside a reference
 button opening a six-slot grid of the five possible types with short rules,
