@@ -16,6 +16,19 @@ func _run() -> void:
 	inventory.set_items(items); var amount := inventory.amounts[0]; items[0].amount = 3; inventory.set_items(items)
 	check(inventory.amounts[0] == amount and amount.text == "3","Resource updates preserve the live count target")
 	check(inventory.tooltip_text.is_empty() and inventory.accessibility_name.contains("Resource 0: 3"),"Icon-only inventory retains literal accessible quantities without hover text")
+	var card_inventory := GameResourceHand.new(); card_inventory.inspect_caption = "Inspect development cards"; root.add_child(card_inventory)
+	var card_items: Array = []
+	for index in 5: card_items.append({"card":{"layout":"symbol","name":"Public example","detail":"Choose a token."},"texture":items[0].texture,"label":"Example card","amount":2 if index == 0 else 0,"empty":index > 0})
+	card_inventory.set_items(card_items)
+	for compact in [false,true]:
+		inventory.compact = compact; card_inventory.compact = compact; inventory._layout(); card_inventory._layout(); card_inventory.size = inventory.size; card_inventory._layout()
+		var aligned := true
+		for index in 5:
+			if inventory.card_rect(index) != card_inventory.card_rect(index) or inventory.amounts[index].position != card_inventory.amounts[index].position or inventory.amounts[index].size != card_inventory.amounts[index].size: aligned = false
+		check(aligned,"Card-face and resource quickviews share exact slot and badge geometry, compact=%s" % compact)
+	check(card_inventory.amounts[0].visible and card_inventory.amounts[0].text == "2" and card_inventory.amounts.slice(1).all(func(label: Label) -> bool: return not label.visible),"Card-face inventories show owned counts and omit empty-slot zero badges")
+	check(not card_inventory.disabled and card_inventory.accessibility_name.contains("Inspect development cards"),"The whole card-face quickview remains inspectable with a literal accessible caption")
+	inventory.compact = false; inventory._layout(); card_inventory.queue_free()
 	check(section.heading.text == "Players" and section.get_theme_stylebox("panel").bg_color == GameLook.section_sheet().bg_color,"Sections use shared compact feed chrome")
 	var flip := Button.new(); flip.icon = RuntimeAssets.texture("res://ui/playful/control-rotate.svg"); flip.toggle_mode = true; flip.accessibility_name = "Flip inventory"; section.set_header_action(flip)
 	for unused in 3: await process_frame

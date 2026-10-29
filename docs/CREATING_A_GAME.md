@@ -399,7 +399,9 @@ readable identity color through literal text parts. Harbor badges lie on each
 coastal edge's outward perpendicular bisector, making equal links to both
 building sites. Solo hosts and wide controllers put a private inventory
 panel below Recent Activity. Its Resources heading has a trailing flip icon that
-switches to Development, reusing the grouped private cards and five empty slots.
+switches to Development, reusing the same five slot bounds and count anchors.
+Both quickviews open their complete private UI, including an empty development
+hand. A flip icon in those dialogs switches between the two complete views.
 Compact views keep the same toggle in their action area. Resources open a per-resource summary with held counts,
 the board's numbered probability discs/pips, combined cards per roll, explicit
 robber blocking and owned port rates, without settlement IDs. Private
@@ -2896,6 +2898,17 @@ and `update([{icon,label,amount,color},...])`. Native `compact` plus `_layout()`
 or browser `is-compact`, uses smaller artwork while preserving its input target.
 Supply only quantities already authorized for that viewer. The template shows
 both components without enabling a private inventory in the public sample.
+
+For a card-face quickview with identical slot geometry, keep the same item count
+and compact setting. Native items accept a semantic `card` dictionary and its
+`texture`; browser items accept a noninteractive `face` node. Add `empty:true`
+for a blank outlined slot. Card-face items hide zero badges but retain positive
+counts at the same resource-count anchors. Native `inspect_caption` and browser
+`new StarGamesResourceHand(onSelect,{label})` customize the accessible inspection
+caption. The entire quickview remains one button, including when all slots are
+empty; open the full inventory from its callback, then inspect individual cards
+there. The template demonstrates both forms. Existing resource items keep their
+colored cards, zero dimming and inspection behavior.
 
 Optional `GamePlayerRow.leader` / `StarGamesPlayerRow.leader` values `gold` and
 `silver` add a crown and accessible Leader/Joint leader meaning when the row is

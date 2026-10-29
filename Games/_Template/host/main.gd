@@ -220,7 +220,12 @@ func _ready() -> void:
 	var inventory_section := GameSection.new(); inventory_section.caption = "Resources"; inventory_section.hide(); screen.content.add_child(inventory_section)
 	var inventory_example := GameResourceHand.new(); inventory_section.content.add_child(inventory_example)
 	var inventory_flip := Button.new(); inventory_flip.icon = RuntimeAssets.texture("res://ui/playful/control-rotate.svg"); inventory_flip.toggle_mode = true; inventory_flip.accessibility_name = "Show development cards"; inventory_section.set_header_action(inventory_flip)
-	var inventory_cards := GameCardGrid.new(); inventory_cards.fixed_columns = 5; inventory_section.content.add_child(inventory_cards); inventory_cards.set_items([{ "placeholder":true },{ "placeholder":true },{ "placeholder":true },{ "placeholder":true },{ "placeholder":true }]); inventory_cards.hide()
+	# A card-face quickview shares all five resource slots and badge anchors.
+	# Connect pressed to the full private inventory UI, including when empty.
+	var inventory_cards := GameResourceHand.new(); inventory_cards.inspect_caption = "Inspect development cards"; inventory_section.content.add_child(inventory_cards)
+	var empty_inventory: Array = []
+	for index in 5: empty_inventory.append({"card":{},"empty":true,"label":"Empty card slot","amount":0})
+	inventory_cards.set_items(empty_inventory); inventory_cards.hide()
 	inventory_flip.toggled.connect(func(show_cards: bool) -> void:
 		inventory_section.heading.text = "Development" if show_cards else "Resources"
 		inventory_flip.accessibility_name = "Show resources" if show_cards else "Show development cards"
@@ -234,7 +239,9 @@ func _ready() -> void:
 	exchange_example.set_exchanges([{"give_texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"take_texture":RuntimeAssets.texture("res://ui/playful/stat-resources.svg"),"owned":3,"rate":3,"label":"Have 3 cards. Exchange 3 for 1 resource."}])
 	# set_inline_header(true) puts a section's header beside its contents on short
 	# landscape views; compact=true on the inventory retains the same input target.
-	inventory_example.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Example resource","amount":3,"color":Color("27ad68")}])
+	var example_resources: Array = []
+	for index in 5: example_resources.append({"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"label":"Example resource %d" % index,"amount":3,"color":Color("27ad68")})
+	inventory_example.set_items(example_resources)
 	player_row_example.leader = "silver" # Explicit tied-lead feedback; not turn state.
 	player_row_example.set_player({"display_name":"Example player","color":"#2463eb","pose":0},[{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"value":7,"label":"Public card count"}],true)
 	player_row_example.pressed.connect(func() -> void: inspector_example.show())

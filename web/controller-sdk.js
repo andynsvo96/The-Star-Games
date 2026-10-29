@@ -435,19 +435,22 @@
     const card=document.createElement('span'),icon=document.createElement('img');card.className='game-resource-hand-card game-resource-card';icon.alt='';icon.src=item.icon;card.style.setProperty('--resource-color',item.color);card.setAttribute('aria-label',item.label||'Resource');card.append(icon);return card;
   };
   class StarGamesResourceHand {
-    constructor(onSelect) {
-      this.element=document.createElement('button');this.element.type='button';this.element.className='game-resource-hand';this.amounts=[];
+    constructor(onSelect,{label='Inspect resources and production'}={}) {
+      this.element=document.createElement('button');this.element.type='button';this.element.className='game-resource-hand';this.amounts=[];this.inspectionLabel=label;
       this.element.addEventListener('click',onSelect);
     }
     update(items) {
       while(this.element.children.length>items.length){this.element.lastChild.remove();this.amounts.pop();}
       items.forEach((item,index)=>{
         let card=this.element.children[index];
-        if(!card){card=global.StarGamesResourceCard(item);const count=document.createElement('output');card.append(count);this.element.append(card);this.amounts.push(count);}
-        card.style.setProperty('--resource-color',item.color);card.firstChild.src=item.icon;card.lastChild.textContent=item.amount;card.setAttribute('aria-label',item.label+': '+item.amount);
-        card.classList.toggle('is-empty',Number(item.amount)===0);
+        if(!card){card=document.createElement('span');card.className='game-resource-hand-card game-resource-card';card.append(document.createElement('span'),document.createElement('output'));this.element.append(card);this.amounts.push(card.lastChild);}
+        const faceMode=item.face!==undefined||item.empty===true;
+        if(faceMode){const face=item.face||card.firstChild;if(card.firstChild!==face)card.firstChild.replaceWith(face);face.classList.add('game-resource-hand-face');face.setAttribute('aria-hidden','true');}
+        else {if(card.firstChild.tagName!=='IMG')card.firstChild.replaceWith(document.createElement('img'));card.firstChild.src=item.icon;card.firstChild.alt='';}
+        card.style.setProperty('--resource-color',item.color||'#0b1d2c');card.lastChild.textContent=item.amount;card.lastChild.hidden=faceMode&&Number(item.amount)===0;card.setAttribute('aria-label',item.label+': '+item.amount);
+        card.classList.toggle('has-card-face',faceMode);card.classList.toggle('is-blank',!!item.empty);card.classList.toggle('is-empty',!faceMode&&Number(item.amount)===0);
       });
-      this.element.setAttribute('aria-label',items.map(item=>item.label+': '+item.amount).join(', ')+'. Inspect resources and production');
+      this.element.setAttribute('aria-label',items.map(item=>item.label+': '+item.amount).join(', ')+'. '+this.inspectionLabel);
     }
   }
   global.StarGamesResourceHand=StarGamesResourceHand;
