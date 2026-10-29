@@ -56,10 +56,12 @@ in-memory preferences. Modules with their own saves or editors must isolate thos
 stores in their adapter too. Debug does not replace real-phone, reconnection,
 browser-layout or platform acceptance tests.
 
-The current local installation has adapters for all 18 playable games/variants.
+The current local installation has adapters for all 19 playable games/variants.
 Board/card bots use legal moves and existing own-view AI where available. Social
 games script votes and private decisions. Jeopardy scripts host judging; Pictionary
-draws a sample shape, submits a placeholder guess and advances the real expiry/reveal paths. These test
+draws a sample shape, submits a placeholder guess and advances the real expiry/reveal
+paths. Charades scripts guesses, physical Chain attempts and timer expiry without
+passing hidden words to a guesser. These test
 policies exercise completion; they do not provide human-quality conversation,
 drawing recognition or trivia knowledge. No hidden answer is copied to a guesser.
 Classic plays to bankruptcy by default. For a shorter test, enable its existing
