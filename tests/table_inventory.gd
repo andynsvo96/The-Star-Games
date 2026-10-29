@@ -19,6 +19,11 @@ func _run() -> void:
 	check(section.heading.text == "Players" and section.get_theme_stylebox("panel").bg_color == GameLook.section_sheet().bg_color,"Sections use shared compact feed chrome")
 	var costs := GameCostRow.new(); costs.icon_only = true; section.content.add_child(costs); costs.set_items([{"texture":items[0].texture,"label":"Resource","owned":1,"required":2,"available":false}])
 	check(costs.find_children("*","Label",true,false).size() == 1 and costs.get_child(0).accessibility_name.contains("have 1, need 2"),"Icon-only costs omit prose while retaining accessible requirements")
+	var compact_cost := GameCostRow.new(); compact_cost.dark = true; compact_cost.icon_only = true; compact_cost.compact = true; root.add_child(compact_cost); compact_cost.position = Vector2(350,100); compact_cost.size = Vector2(250,44)
+	compact_cost.set_items([{"texture":items[0].texture,"label":"Material","owned":1,"required":2,"available":false}])
+	for unused in 3: await process_frame
+	check(compact_cost.get_combined_minimum_size().y <= 44 and compact_cost.find_children("*","Label",true,false)[0].text == "1/2" and compact_cost.get_child(0).accessibility_name.contains("have 1, need 2"),"Compact costs keep owned/required meaning in a short horizontal chip")
+	compact_cost.queue_free()
 	var row := GamePlayerRow.new(); section.content.add_child(row); row.leader = "silver"; row.set_player({"display_name":"Name <literal>","color":"#2463eb"},[],false)
 	check(row.name_label.text == "Name <literal>" and row.accessibility_name.contains("Joint leader"),"Leader feedback is explicit and names remain literal")
 	var balance := Rect2(20,30,20,24); var gain := GameMoneyEffect.amount_rect(balance,1,0,18,"right"); var loss := GameMoneyEffect.amount_rect(balance,-1,0,18,"right")

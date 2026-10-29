@@ -219,6 +219,8 @@ func _ready() -> void:
 	# this viewer may see; connect pressed to the game's explicit detail view.
 	var inventory_section := GameSection.new(); inventory_section.hide(); screen.content.add_child(inventory_section)
 	var inventory_example := GameResourceHand.new(); inventory_section.content.add_child(inventory_example)
+	var compact_cost_example := GameCostRow.new(); compact_cost_example.dark = true; compact_cost_example.icon_only = true; compact_cost_example.compact = true; inventory_section.content.add_child(compact_cost_example)
+	compact_cost_example.set_items([{"texture":RuntimeAssets.texture("res://ui/playful/stat-resources.svg"),"label":"Example material","owned":1,"required":1,"available":true}])
 	inventory_section.center_heading = true
 	inventory_section.set_summary_metric(RuntimeAssets.texture("res://ui/playful/stat-victory.svg"),10,"Points to win: 10")
 	var exchange_example := GameExchangeButton.new(); exchange_example.confirmation_text = "CONFIRM"; inventory_section.content.add_child(exchange_example)

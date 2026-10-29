@@ -438,7 +438,8 @@ floating deltas and keep Players first, with status, resources and the four
 History/Trade/Development/Help actions in a shared bottom dock. End Turn appears
 outside the controls panel above resources after rolling. Solo hosts place it
 above their other actions too. Build previews use CANCEL/BUILD; development
-purchases reuse navy sections and live material costs. Trade remains visible and disables between turns.
+purchases use compact cost chips and a deck-count/BUY strip. Development
+faces and hidden-card backs use simple symbols; card rules stay in the reader. Trade remains visible and disables between turns.
 AI offers to humans retain their full response window. All card transfers use
 the same intermediate pace. Build hammers/clouds
 and temporary thrown dice use public
@@ -447,7 +448,8 @@ the host's result for two seconds after landing; reduced motion keeps immediate,
 static feedback. Production flights retain each source hex and use host-owned
 card-slide audio. Top action captions clear after a player's turn; End Turn is
 omitted from activity. The saved, instant Roll potential toggle defaults off and
-shows neighboring production pips at possible settlements and city upgrades.
+shows only new legal road endpoints when road materials alone are held;
+settlement materials unlock production forecasts across empty island sites.
 Layered currents, caustics and shore foam remain cosmetic. Public supply views contain only public inventory.
 
 Its module README documents official rule sources, timers, scoring, autosave and
@@ -2926,3 +2928,10 @@ Exchange confirmations can use explicit words instead of checkmarks: set native
 The caption follows the final exchange in a multi-step plan. Defaults retain
 checkmarks. Browser `game-supporting-text` supplies the shared muted empty-state
 or secondary text treatment used by native `GameLook.supporting_text`.
+
+`GameCostRow.compact=true` and browser
+`StarGamesCostRow(items,{compact:true,iconOnly:true})` arrange each material icon
+beside its owned/required quantity in a small horizontal chip. This keeps purchase
+previews compact while retaining accessible resource names and availability.
+Normal material cards keep their existing layout. The template includes hidden
+native/browser examples.

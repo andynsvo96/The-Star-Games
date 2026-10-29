@@ -471,9 +471,9 @@
   global.StarGamesBoardCamera = StarGamesBoardCamera;
   global.StarGamesPlayerRow = StarGamesPlayerRow;
   global.StarGamesStatGrid = StarGamesStatGrid;
-  global.StarGamesCostRow = (items,{highlightCounts=false,iconOnly=false}={}) => {
-    const row=document.createElement('div');row.className='game-cost-row';row.classList.toggle('has-status-counts',highlightCounts);
-    for(const item of items){const image=document.createElement('img');image.src=item.icon;image.alt=item.label+(item.available?' available':' missing');image.classList.toggle('is-unavailable',!item.available);if(item.owned!==undefined&&item.required!==undefined){const material=document.createElement('div');material.className='game-cost-material';material.classList.toggle('is-covered',item.owned>=item.required);material.setAttribute('aria-label',`${item.label}: have ${item.owned}, need ${item.required}`);material.append(image);for(const [tag,text] of [['span',item.label],['strong',`${item.owned} / ${item.required}`],['small',item.owned>=item.required?'Ready':`Need ${item.required-item.owned} more`]]){if(iconOnly&&tag!=='strong')continue;const label=document.createElement(tag);label.textContent=text;material.append(label);}row.append(material);}else row.append(image);}
+  global.StarGamesCostRow = (items,{highlightCounts=false,iconOnly=false,compact=false}={}) => {
+    const row=document.createElement('div');row.className='game-cost-row';row.classList.toggle('has-status-counts',highlightCounts);row.classList.toggle('is-compact',compact);
+    for(const item of items){const image=document.createElement('img');image.src=item.icon;image.alt=item.label+(item.available?' available':' missing');image.classList.toggle('is-unavailable',!item.available);if(item.owned!==undefined&&item.required!==undefined){const material=document.createElement('div');material.className='game-cost-material';material.classList.toggle('is-covered',item.owned>=item.required);material.setAttribute('aria-label',`${item.label}: have ${item.owned}, need ${item.required}`);material.append(image);for(const [tag,text] of [['span',item.label],['strong',compact?`${item.owned}/${item.required}`:`${item.owned} / ${item.required}`],['small',item.owned>=item.required?'Ready':`Need ${item.required-item.owned} more`]]){if(iconOnly&&tag!=='strong')continue;const label=document.createElement(tag);label.textContent=text;material.append(label);}row.append(material);}else row.append(image);}
     return row;
   };
   global.StarGamesButtonBadge = (button,count) => {

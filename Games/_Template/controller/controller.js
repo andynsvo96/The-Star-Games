@@ -155,13 +155,14 @@
   // is-compact fits short sections/hands; has-inline-header places header beside content.
   const inventoryExample=new StarGamesResourceHand(()=>exampleCamera.reset());inventorySection.append(inventoryExample.element);
   inventoryExample.update([{icon:'/ui/playful/table-cards.svg',label:'Example resource',amount:3,color:'#27ad68'}]);
+  inventorySection.append(StarGamesCostRow([{icon:'/ui/playful/stat-resources.svg',label:'Example material',owned:1,required:1,available:true}],{iconOnly:true,compact:true}));
   const exchangeExample=new StarGamesExchangeButton(()=>{}, {label:'Example exchange',confirmationLabel:'CONFIRM'});inventorySection.append(exchangeExample.element);exchangeExample.update([{giveIcon:'/ui/playful/table-cards.svg',takeIcon:'/ui/playful/stat-resources.svg',owned:3,rate:3,label:'Have 3 cards. Exchange 3 for 1 resource.'}]);
   rowExample.element.classList.add('is-detailed','has-headline','has-identity-turn-outline','is-dark');
   rowExample.update({display_name:'Example player',color:'#2463eb',pose:0},[{icon:'/ui/playful/table-cards.svg',value:7,label:'Public card count'}],true,{icon:'/ui/playful/stat-victory.svg',value:2,label:'Public points'});cameraWrapper.append(rowExample.element);
   cameraWrapper.append(StarGamesTurnStrip([{display_name:'Example player',color:'#2463eb'}],0,{tracked:true,actions:['Played a public card']}));
   const statGridExample=new StarGamesStatGrid();statGridExample.element.classList.add('is-dark');statGridExample.update([{icon:'/ui/playful/stat-victory.svg',value:2,label:'Public points',highlighted:true}]);cameraWrapper.append(statGridExample.element);
   cameraWrapper.append(StarGamesCostRow([{icon:'/ui/playful/table-cards.svg',label:'One required card',available:false}]));
-  const countedCost=StarGamesCostRow([{icon:'/ui/playful/table-cards.svg',label:'Example material',owned:2,required:3,available:false}],{highlightCounts:true,iconOnly:true});countedCost.classList.add('is-dark');cameraWrapper.append(countedCost);
+  const countedCost=StarGamesCostRow([{icon:'/ui/playful/table-cards.svg',label:'Example material',owned:2,required:3,available:false}],{highlightCounts:true,iconOnly:true,compact:true});countedCost.classList.add('is-dark');cameraWrapper.append(countedCost);
   // game-dialog-soft supplies a lighter backdrop for board phase prompts.
   const softPrompt=document.createElement('dialog');softPrompt.className='game-dialog game-dialog-soft';cameraWrapper.append(softPrompt);
   StarGamesButtonBadge(rowExample.element,2);
