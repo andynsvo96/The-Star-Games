@@ -118,6 +118,7 @@
     const countedTile=StarGamesCardTile(StarGamesCard({id:'example-counted',name:'Example card',value:1}),{label:'Example card, 2 owned',onSelect:()=>{}}),emptyTile=StarGamesCardTile(StarGamesCardPlaceholder(),{label:'Example card, not owned',onSelect:()=>{}});
     emptyTile.disabled=true;StarGamesButtonBadge(countedTile,2);StarGamesButtonBadge(emptyTile,0);
     const darkGrid=StarGamesCardGrid([countedTile,emptyTile]);darkGrid.classList.add('is-dark');modernExample.append(darkGrid);
+    modernExample.append(StarGamesCard({id:'symbol',layout:'symbol',name:'Choose',detail:'Pick any two tokens.',foot:'Public reference',accent:'#397c91'},{art:'/ui/playful/stat-resources.svg'}));
     // Read-only public collections can instead use a single-row strip. It fits
     // three cards on phones, at most four at full width, and supports mouse/touch
     // dragging, keyboard scrolling, and tap-to-read without submitting commands.

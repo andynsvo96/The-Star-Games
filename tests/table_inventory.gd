@@ -61,4 +61,27 @@ func _run() -> void:
 		http.request("http://127.0.0.1:%d/ui/playful/%s" % [server.http_port,path]); var response: Array = await http.request_completed
 		check(int(response[1]) == 200 and response[3].get_string_from_utf8().contains("<svg"),"Actual LAN route serves "+path)
 	server.stop_server(); http.queue_free(); server.queue_free(); section.queue_free(); for unused in 3: await process_frame
+	# A content-fitted dialog must reserve scrollbar width before a responsive
+	# grid measures its height; otherwise its gutter can trigger a sizing loop.
+	root.content_scale_size = Vector2i(1280,720); root.size = Vector2i(1280,720)
+	var holder := Control.new(); root.add_child(holder); holder.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var screen := GameScreen.new(); holder.add_child(screen); screen.configure("Shared cards")
+	var dialog := screen.add_phase_dialog(true,false,false,true,540); dialog.heading.text = "Symbol cards"
+	var cards := GameCardGrid.new(); cards.fixed_columns = 5; cards.left_aligned = true; cards.preferred_width = 108; dialog.body.add_child(cards)
+	var symbol := {"id":"symbol","layout":"symbol","name":"Choose <one>","detail":"Pick any two tokens.","foot":"Public reference","accent":"#397c91"}
+	var entries: Array = []
+	for index in 5: entries.append({"card":symbol.duplicate(),"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-resources.svg")})
+	cards.set_items(entries); dialog.overlay.show()
+	for unused in 20: await process_frame
+	check(dialog.scroll.vertical_scroll_mode == ScrollContainer.SCROLL_MODE_RESERVE,"Fitted dialogs reserve their scroll gutter before card wrapping")
+	check(cards.get_child(0).accessibility_name.contains("Pick any two tokens") and not cards.get_child(0).accessibility_name.contains("$0"),"Symbol cards expose literal instructions without monetary fields")
+	var fitted: Rect2 = dialog.panel.get_global_rect()
+	for unused in 8: await process_frame
+	check(dialog.panel.get_global_rect() == fitted and cards.size.x <= dialog.scroll.size.x,"A narrow fitted dialog settles without a scrollbar/grid resize loop")
+	if DisplayServer.get_name() != "headless":
+		DirAccess.make_dir_recursive_absolute("res://.test_data/table-inventory")
+		await RenderingServer.frame_post_draw; root.get_texture().get_image().save_png("res://.test_data/table-inventory/symbol-dialog.png")
+	var hidden_symbol: Dictionary = symbol.duplicate(); hidden_symbol.back = true
+	cards.set_items([{"card":hidden_symbol,"texture":entries[0].texture}]); check(cards.get_child(0).accessibility_name == "Card back","Symbol backs omit private names and rules from their accessible label")
+	holder.queue_free(); for unused in 4: await process_frame
 	print("Shared table inventory: %d checks, %d failures" % [checks,failures]); quit(0 if failures == 0 else 1)

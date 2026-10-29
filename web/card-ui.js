@@ -130,13 +130,22 @@
   global.StarGamesCard = function(data, options = {}) {
     const card = document.createElement(options.onSelect ? 'button' : 'div');
     card.className = 'game-playing-card';
-    card.style.setProperty('--card-accent',options.color || '#617c76');
-    const rgb=(options.color||'#617c76').replace('#','');
+    const accent=data.layout==='symbol'?(data.back?'#617c76':data.accent||options.color||'#617c76'):(options.color||'#617c76');
+    card.style.setProperty('--card-accent',accent);
+    const rgb=accent.replace('#','');
     const luminance=[0,2,4].map(i=>parseInt(rgb.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
     card.style.setProperty('--card-ink',luminance>.179?'#172d27':'#ffffff');
     card.classList.toggle('is-selected', !!options.selected);
     if(options.compact) card.classList.add('game-card-small');
     const name=data.display_name || data.name || '';
+    if(data.layout==='symbol'){
+      if(data.back){card.classList.add('game-symbol-card');card.style.setProperty('--symbol-accent','#131820');card.setAttribute('aria-label','Card back');return card;}
+      card.classList.add('game-symbol-card');card.style.setProperty('--symbol-accent',data.accent||options.color||'#617c76');card.setAttribute('aria-label',`${name}. ${data.detail||''} ${data.foot||''}`);
+      const title=document.createElement('strong'),detail=document.createElement('span'),foot=document.createElement('small');title.className='game-symbol-title';detail.className='game-symbol-detail';foot.className='game-symbol-foot';title.textContent=name;detail.textContent=data.detail||'';foot.textContent=data.foot||'';
+      card.append(title);
+      if(options.art){const ns='http://www.w3.org/2000/svg',art=document.createElementNS(ns,'svg'),image=document.createElementNS(ns,'image'),region=data.art_region||[0,0,1,1],size=data.art_size||[1,1];art.classList.add('game-symbol-art');art.setAttribute('viewBox',`${region[0]*size[0]} ${region[1]*size[1]} ${region[2]*size[0]} ${region[3]*size[1]}`);art.setAttribute('aria-hidden','true');image.setAttribute('href',options.art);image.setAttribute('width',size[0]);image.setAttribute('height',size[1]);image.setAttribute('preserveAspectRatio','none');art.append(image);card.append(art);}
+      card.append(detail,foot);if(options.onSelect)card.addEventListener('click',options.onSelect);card.disabled=!!options.disabled;return card;
+    }
     if(data.layout==='character'){
       card.classList.add('game-character-card');
       card.classList.toggle('game-character-paper',data.caption_style==='paper');

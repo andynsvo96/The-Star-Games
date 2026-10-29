@@ -569,6 +569,7 @@ func add_phase_dialog(fit_contents := false, full_screen := false, compact := fa
 	var header_value := Label.new(); header_value.add_theme_font_size_override("font_size",24); header_metric.add_child(header_value)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_RESERVE
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(scroll)
 	var body := VBoxContainer.new()

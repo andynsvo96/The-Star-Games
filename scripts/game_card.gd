@@ -23,6 +23,9 @@ func _draw() -> void:
 
 
 static func paint(canvas: CanvasItem, rect: Rect2, data: Dictionary, artwork: Texture2D, tint: Color, chosen := false) -> void:
+	if data.get("layout", "") == "symbol":
+		_paint_symbol(canvas,rect,data,artwork,tint,chosen)
+		return
 	if data.get("layout", "") == "character":
 		_paint_character(canvas, rect, data, artwork, tint, chosen)
 		return
@@ -77,6 +80,28 @@ static func paint(canvas: CanvasItem, rect: Rect2, data: Dictionary, artwork: Te
 		var note_width := font.get_string_size(note, HORIZONTAL_ALIGNMENT_LEFT, -1, note_size).x
 		canvas.draw_string(font, Vector2(bounds.get_center().x - note_width / 2, bounds.end.y - 6), note, HORIZONTAL_ALIGNMENT_LEFT, -1, note_size, Color("3d4b3b"))
 
+
+static func _paint_symbol(canvas: CanvasItem, rect: Rect2, data: Dictionary, artwork: Texture2D, tint: Color, chosen: bool) -> void:
+	if data.get("back",false):
+		canvas.draw_style_box(GameLook.box(Color("131820"),Color("617c76"),6,2),rect)
+		return
+	var fill := Color.from_string(str(data.get("accent",tint.to_html())),tint)
+	var ink := GameLook.readable_text_color(GameLook.CREAM,fill)
+	canvas.draw_style_box(GameLook.box(fill,Color("ffda72") if chosen else fill.lightened(.35),6,2),rect)
+	var font := ThemeDB.fallback_font; var width := rect.size.x; var height := rect.size.y
+	var title_size := maxi(4,roundi(width*.105)); var body_size := maxi(4,roundi(width*.09)); var foot_size := maxi(3,roundi(width*.075))
+	var title: Array = _wrap(str(data.get("display_name",data.get("name",""))),font,title_size,width*.88,2)
+	for index in title.size():
+		canvas.draw_string(font,rect.position+Vector2(width*.06,height*.08+title_size+index*title_size*1.1),str(title[index]),HORIZONTAL_ALIGNMENT_CENTER,width*.88,title_size,ink)
+	if artwork != null:
+		var target := Rect2(rect.position+Vector2(width*.26,height*.23),Vector2(width*.48,height*.29))
+		var region: Array = data.get("art_region",[0,0,1,1]); var source := Rect2(Vector2(float(region[0]),float(region[1]))*artwork.get_size(),Vector2(float(region[2]),float(region[3]))*artwork.get_size())
+		var factor := minf(target.size.x/source.size.x,target.size.y/source.size.y); var fitted := source.size*factor
+		canvas.draw_texture_rect_region(artwork,Rect2(target.get_center()-fitted/2,fitted),source)
+	var lines: Array = _wrap(str(data.get("detail","")),font,body_size,width*.86,4)
+	for index in lines.size():
+		canvas.draw_string(font,rect.position+Vector2(width*.07,height*.56+body_size+index*body_size*1.15),str(lines[index]),HORIZONTAL_ALIGNMENT_CENTER,width*.86,body_size,ink)
+	canvas.draw_string(font,rect.position+Vector2(width*.05,height*.94),str(data.get("foot","")),HORIZONTAL_ALIGNMENT_CENTER,width*.9,foot_size,ink)
 
 static func _paint_character(canvas: CanvasItem, rect: Rect2, data: Dictionary, artwork: Texture2D, tint: Color, chosen: bool) -> void:
 	var paper: bool = data.get("caption_style","") == "paper"

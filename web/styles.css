@@ -789,6 +789,11 @@ body.playful-game { isolation: isolate; }
 .game-playing-card.game-character-card.game-character-paper { background:#f7ebc9 !important; }
 .game-character-paper .game-character-caption { background:#f7ebc9; color:#56351f; }
 .game-character-paper .game-character-caption :is(strong,small) { color:#56351f; }
+.game-playing-card.game-symbol-card { display:block; position:relative; container-type:inline-size; box-sizing:border-box; padding:0 !important; aspect-ratio:2/3; min-width:0; background:var(--symbol-accent) !important; color:var(--card-ink) !important; border-color:var(--symbol-accent) !important; border-radius:6px; font-family:"Segoe UI",Arial,sans-serif; }
+.game-symbol-title { position:absolute; inset:7% 6% auto; font-size:10.5cqw; line-height:1.1; text-align:center; }
+.game-symbol-art { position:absolute; left:26%; top:23%; width:48%; height:29%; overflow:hidden; }
+.game-symbol-detail { position:absolute; inset:56% 7% auto; font-size:9cqw; line-height:1.15; text-align:center; white-space:normal; overflow-wrap:normal; }
+.game-playing-card .game-symbol-foot { position:absolute; inset:auto 5% 4%; font:400 7.5cqw/1.1 "Segoe UI",Arial,sans-serif; text-align:center; color:inherit; }
 .game-playing-card:focus-visible { outline:3px solid var(--focus-color,#ffda72); outline-offset:3px; }
 .game-playing-card.game-card-small { width:78px; min-width:66px; }
 .game-playing-card.game-card-small .game-playing-card-name { font-size:10px; min-height:28px; }

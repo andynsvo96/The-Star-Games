@@ -441,10 +441,12 @@ History/Trade/Development/Help actions in a shared bottom dock. End Turn appears
 outside the controls panel above resources after rolling. Solo hosts place it
 above their other actions too. Build previews use CANCEL/BUILD; development
 purchases use compact cost chips and a deck-count/BUY control beside a reference
-button listing the five possible types. Its private hand keeps five stable type
-slots, empty when unowned, with positive count badges for owned copies. Grouped
-inspection prefers a playable copy. Development faces and hidden-card backs use
-simple symbols; card rules stay in the reader. Trade remains visible and disables between turns.
+button opening a six-slot grid of the five possible types, including their short
+rules and initial deck probabilities. BUY includes material costs and remaining/
+original stock, switching to Sold Out at zero. Its narrower private hand packs
+owned groups from the left in receipt order, followed by blank slots. Positive
+badges count copies; grouped inspection prefers a playable copy. Development
+faces use shared symbol cards with instructions below artwork. Trade remains visible and disables between turns.
 AI offers to humans retain their full response window. All card transfers use
 the same intermediate pace. Build hammers/clouds
 and temporary thrown dice use public
@@ -1221,6 +1223,10 @@ show for voting/results and hide on host restart or shutdown. Use plain text or
 `set_text_parts` for names; keep rules and vote privacy in the module. The template
 constructs a hidden example. Spyfall uses it without local centering overrides.
 
+Phase dialogs reserve their vertical scrollbar gutter before wrapping content.
+This keeps content-fitted card grids stable when their height is near the scroll
+threshold, avoiding repeated width/height changes as the scrollbar appears.
+
 Pass `true` to `add_phase_dialog(true)` to fit its height to the heading, body
 and actions, avoiding empty space below short results. Wrapped content refits
 automatically; long results still scroll within the same viewport limit while
@@ -1812,6 +1818,14 @@ role identity or legal actions. Readers and grids use the same data. Both templa
 views include hidden examples; existing layouts retain their behavior.
 Set `caption_style: "paper"` for a cream surface and brown caption ink on both
 host and controller; the default dark caption remains unchanged.
+
+For a simple icon and short rule inside one face, use `layout:"symbol"` with a
+literal `name`/`display_name`, `detail`, optional `foot`, and an `accent` hex color.
+Both renderers put the title above contained artwork and wrap instructions below
+it, with a small footer. Optional normalized `art_region:[x,y,w,h]` crops the source;
+`art_size:[width,height]` supplies its browser design dimensions when cropping.
+Omit both for an ordinary complete icon. Keep authoritative rules separate from
+this presentation data. Native/browser template examples demonstrate the layout.
 
 Standard 52-card games use `GameCard` / `StarGamesCard` with `layout: "standard"`,
 `rank` (`2`–`10`, `J`, `Q`, `K`, `A`), `suit` (`clubs`, `diamonds`, `hearts`,

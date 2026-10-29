@@ -300,6 +300,10 @@ func _ready() -> void:
 	# Complete illustrated faces opt into layout="art" to avoid live money/text overlays.
 	var art_grid_example := GameCardGrid.new(); layout.playfield.add_child(art_grid_example); art_grid_example.hide()
 	art_grid_example.set_items([{"card":{"id":1,"layout":"art","display_name":"Artwork card"},"texture":card_example.texture}])
+	# Symbol cards keep live instructions below contained artwork. art_region is
+	# an optional normalized source crop; art_size supplies its browser design size.
+	var symbol_example := GameCard.new(); symbol_example.card = {"id":"symbol","layout":"symbol","name":"Choose","detail":"Pick any two tokens.","foot":"Public reference","accent":"#397c91"}; symbol_example.texture = RuntimeAssets.scalable_texture("res://ui/playful/stat-resources.svg")
+	layout.playfield.add_child(symbol_example); symbol_example.custom_minimum_size = Vector2(144,216); symbol_example.hide()
 	# A public activity feed takes plain newest-first rows and stays in a supplied
 	# rectangle. Initial/reconnected entries do not replay entrance motion.
 	var activity_example := GameActivityLog.new(); activity_example.paper = true; layout.playfield.add_child(activity_example); activity_example.hide()

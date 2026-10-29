@@ -38,7 +38,9 @@ func set_items(items: Array) -> void:
 			button.disabled = true; button.accessibility_name = "Missing property"
 		else:
 			var data: Dictionary = entry.card
-			button.accessibility_name = str(data.get("display_name", data.get("name", "Card"))) + ("" if data.get("layout", "") == "art" else ", $%d " % data.get("value", 0)) + str(entry.get("caption", ""))
+			button.accessibility_name = str(data.get("display_name", data.get("name", "Card"))) + ("" if data.get("layout", "") in ["art","symbol"] else ", $%d " % data.get("value", 0)) + str(entry.get("caption", ""))
+			if data.get("layout", "") == "symbol": button.accessibility_name += ". "+str(data.get("detail",""))+" "+str(data.get("foot",""))
+			if data.get("layout", "") == "symbol" and data.get("back",false): button.accessibility_name = "Card back"
 			if data.get("mortgaged", false): button.accessibility_name += ", mortgaged"
 			elif not str(data.get("deed_state", {}).get("badge", "")).is_empty(): button.accessibility_name += ", " + str(data.deed_state.badge)
 			var face := GameCard.new(); face.card = data; face.texture = entry.texture; face.accent = entry.get("tint", Color("17594d"))
