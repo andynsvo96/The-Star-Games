@@ -1754,6 +1754,13 @@ body.playful-game { isolation: isolate; }
 .game-resource-hand.is-compact .game-resource-hand-card { height:42px; }
 .game-resource-hand.is-compact .game-resource-hand-card img { height:32px; }
 .game-resource-hand.is-compact .game-resource-hand-card output { width:20px; min-width:20px; height:20px; top:-12px; font-size:14px; }
+.game-table-section.has-compact-header > header { min-height:32px; height:32px; margin:0; box-sizing:border-box; }
+.playful-game .game-controller .game-table-section.has-compact-header > header h2 { font-size:13px; }
+.playful-game .game-controller .game-table-section.has-compact-header > header > button.game-icon-only { position:relative; z-index:1; width:44px; min-width:44px; height:44px; min-height:44px; margin-block:-6px; padding:0; border-color:transparent; background:transparent; box-shadow:none; }
+.game-table-section.has-compact-header > header > button.game-icon-only > img, .game-table-section.has-compact-header > header > button.game-icon-only > svg { width:18px; height:18px; }
+.game-table-section.has-dense-inventory > .game-table-section-content { min-height:64px; padding:6px 6px 0; box-sizing:border-box; }
+.playful-game .game-controller button.game-resource-hand.is-compact.is-dense { min-height:58px; padding-top:8px; }
+.game-resource-hand.is-compact.is-dense .game-resource-hand-card output { top:-10px; }
 .game-resource-hand-card.is-empty { opacity:.38; }
 .game-resource-hand-card.has-card-face { background:#021b2c; border-color:#27566b; box-shadow:1px 3px 0 #071625; }
 .game-resource-hand-card.has-card-face > .game-resource-hand-face { width:100%; height:100%; min-width:0; min-height:0; margin:0; pointer-events:none; }

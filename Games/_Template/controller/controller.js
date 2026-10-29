@@ -157,13 +157,14 @@
   const exampleCamera=new StarGamesBoardCamera(cameraExample,{fitElement:cameraFit});
   const rowExample=new StarGamesPlayerRow(()=>exampleCamera.reset());
   rowExample.leader='silver'; // Explicit tied-lead indicator, independent of turn.
-  const inventorySection=document.createElement('section');inventorySection.className='game-table-section';cameraWrapper.append(inventorySection);
-  // is-compact fits short sections/hands; has-inline-header places header beside content.
-  const inventoryExample=new StarGamesResourceHand(()=>exampleCamera.reset());inventorySection.append(inventoryExample.element);
+  const inventorySection=document.createElement('section'),inventoryContent=document.createElement('div');inventorySection.className='game-table-section is-compact has-compact-header has-dense-inventory';inventoryContent.className='game-table-section-content';inventorySection.append(inventoryContent);cameraWrapper.append(inventorySection);
+  // A small header/icon retains a 44px touch target; dense hands remove unused
+  // space above cards. Use the same variants for both sides of the quickview.
+  const inventoryExample=new StarGamesResourceHand(()=>exampleCamera.reset());inventoryExample.element.classList.add('is-compact','is-dense');inventoryContent.append(inventoryExample.element);
   const inventoryHeader=document.createElement('header'),inventoryHeading=document.createElement('h2'),inventoryFlip=document.createElement('button');inventoryHeading.textContent='Resources';inventoryFlip.className='game-secondary game-icon-only';inventoryFlip.type='button';inventoryFlip.append(StarGamesTableUI.icon('rotate'));inventoryFlip.setAttribute('aria-label','Show development cards');inventoryFlip.setAttribute('aria-pressed','false');inventoryHeader.append(inventoryHeading,inventoryFlip);inventorySection.prepend(inventoryHeader);
   // The optional face/empty form shares exact slot and badge geometry; its
   // click callback opens the full private inventory, including an empty hand.
-  const inventoryCards=new StarGamesResourceHand(()=>exampleCamera.reset(),{label:'Inspect development cards'});inventoryCards.update(Array.from({length:5},()=>({empty:true,label:'Empty card slot',amount:0})));inventoryCards.element.hidden=true;inventorySection.append(inventoryCards.element);
+  const inventoryCards=new StarGamesResourceHand(()=>exampleCamera.reset(),{label:'Inspect development cards'});inventoryCards.element.classList.add('is-compact','is-dense');inventoryCards.update(Array.from({length:5},()=>({empty:true,label:'Empty card slot',amount:0})));inventoryCards.element.hidden=true;inventoryContent.append(inventoryCards.element);
   inventoryFlip.addEventListener('click',()=>{const showCards=inventoryFlip.getAttribute('aria-pressed')!=='true';inventoryFlip.setAttribute('aria-pressed',String(showCards));inventoryFlip.setAttribute('aria-label',showCards?'Show resources':'Show development cards');inventoryHeading.textContent=showCards?'Development':'Resources';inventoryExample.element.hidden=showCards;inventoryCards.element.hidden=!showCards;});
   inventoryExample.update(Array.from({length:5},(_,index)=>({icon:'/ui/playful/table-cards.svg',label:'Example resource '+index,amount:3,color:'#27ad68'})));
   inventorySection.append(StarGamesCostRow([{icon:'/ui/playful/stat-resources.svg',label:'Example material',owned:1,required:1,available:true}],{iconOnly:true,compact:true}));

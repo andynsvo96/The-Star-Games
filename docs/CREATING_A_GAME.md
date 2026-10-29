@@ -444,7 +444,10 @@ Host signed feedback uses the live amount's font beside each affected resource o
 public counter; VP feedback remains outside the roster card. Phones omit these
 floating deltas and keep Players first, with status, resources and the four
 History/Trade/Development/Help actions in a shared bottom dock. End Turn appears
-outside the controls panel above resources after rolling. Solo hosts place it
+outside the controls panel above resources after rolling. Phone status and
+clocks also sit outside that panel, immediately above it. Compact inventory
+headers use smaller titles/icons and dense card spacing, retaining 44px touch
+targets and the same card/count positions on both sides. Solo hosts place End Turn
 above their other actions too. Build previews use CANCEL/BUILD; development
 purchases use compact cost chips and a deck-count/BUY control beside a reference
 button opening a six-slot grid of the five possible types with short rules,
@@ -2891,6 +2894,15 @@ the caller owns its icon, accessible name, toggle state and callback. Browser
 sections put the same real `button.game-icon-only` after the heading in `header`.
 The template demonstrates a Resources/Development flip using the shared rotate
 icon and empty card slots. Keep the action and hand targets across snapshots.
+
+For compact browser inventories, add `has-compact-header` and
+`has-dense-inventory` alongside `is-compact` on the section, and `is-dense`
+alongside `is-compact` on each `game-resource-hand`. The shared variants reduce
+the header title/icon and reserved space above cards while keeping the header
+action's 44px touch area. Apply the same variants to both inventory views so slot
+and badge positions stay identical. Keep status and clocks as siblings above a
+surfaced controls section inside the shared dock, rather than inside that panel.
+The template's compact inventory and bottom-dock examples demonstrate both.
 
 `GameResourceHand.set_items([{texture,label,amount,color},...])` supplies a
 focusable, inspectable inventory with resource-colored cards and live count
