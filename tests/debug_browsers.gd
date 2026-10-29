@@ -178,7 +178,15 @@ func _run() -> void:
 		await process_frame
 	button = debug_button(app)
 	check(not button.disabled, "Debug is enabled for the live lobby")
-	check(button.get_global_rect().position.x > app.size.x * 0.75 and button.get_global_rect().position.y < 120, "Debug is in the top-right settings header")
+	check_settings_header(app, "host font")
+	var host_font: Font = app.theme.default_font
+	app.theme.default_font = ThemeDB.fallback_font
+	for frame in 4:
+		await process_frame
+	check_settings_header(app, "bundled fallback font")
+	app.theme.default_font = host_font
+	for frame in 4:
+		await process_frame
 	button.pressed.emit(); await process_frame
 	setup = app.screen_root.get_child(0)
 	for frame in 4: await process_frame
@@ -250,6 +258,18 @@ func check_launch(call: Dictionary, browser_name: String, url: String) -> void:
 	else:
 		check("--window-size=422,984" in arguments, "%s requests phone dimensions with room for browser chrome" % browser_name)
 	check(not arguments.has("--incognito") and not arguments.has("--private-window") and not "--no-remote" in arguments, "%s preserves the normal profile and reconnect identity" % browser_name)
+
+
+func check_settings_header(app: Control, font_label: String) -> void:
+	var button := debug_button(app)
+	var editor := find_button(app, "Asset Editor")
+	var header := button.get_parent() as Control
+	var debug_rect := button.get_global_rect()
+	var editor_rect := editor.get_global_rect()
+	var header_rect := header.get_global_rect()
+	# Font metrics change action widths; the group must still align to the right.
+	check(debug_rect.position.x > app.size.x * 0.5 and debug_rect.position.y < 120 and app.get_global_rect().encloses(debug_rect) and app.get_global_rect().encloses(editor_rect), "Settings header actions stay visible at the top right with %s" % font_label)
+	check(debug_rect.end.x <= editor_rect.position.x and is_equal_approx(debug_rect.position.y, editor_rect.position.y) and is_equal_approx(editor_rect.end.x, header_rect.end.x), "Debug precedes the right-aligned Asset Editor action with %s" % font_label)
 
 
 func debug_button(app: Control) -> Button:
