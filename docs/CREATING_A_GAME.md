@@ -398,7 +398,9 @@ glyph and preserves building aspect ratios. History names use each roster's
 readable identity color through literal text parts. Harbor badges lie on each
 coastal edge's outward perpendicular bisector, making equal links to both
 building sites. Solo hosts and wide controllers put a private icon-only resource
-panel above Recent Activity. It opens owned-property production details; private
+panel above Recent Activity. It opens a per-resource summary with held counts,
+the board's numbered probability discs/pips, combined cards per roll, explicit
+robber blocking and owned port rates, without settlement IDs. Private
 quantities are omitted from player-stat inspectors. Compact views keep the same
 inventory reachable with their actions. Computer seat colors avoid similar
 human and computer colors, including when restoring older saves.
