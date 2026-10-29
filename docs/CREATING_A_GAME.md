@@ -402,6 +402,8 @@ panel below Recent Activity. Its Resources heading has a trailing flip icon that
 switches to Development, reusing the same five slot bounds and count anchors.
 Both quickviews open their complete private UI, including an empty development
 hand. A flip icon in those dialogs switches between the two complete views.
+Both inventory dialogs share a responsive 540px width limit and fit their
+contents, wrapping long production lists inside the same scrollable body.
 Compact views keep the same toggle in their action area. Resources open a per-resource summary with held counts,
 the board's numbered probability discs/pips, combined cards per roll, explicit
 robber blocking and owned port rates, without settlement IDs. Private
