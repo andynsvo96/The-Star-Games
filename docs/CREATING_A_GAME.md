@@ -441,8 +441,8 @@ History/Trade/Development/Help actions in a shared bottom dock. End Turn appears
 outside the controls panel above resources after rolling. Solo hosts place it
 above their other actions too. Build previews use CANCEL/BUILD; development
 purchases use compact cost chips and a deck-count/BUY control beside a reference
-button opening a six-slot grid of the five possible types, including their short
-rules and initial deck probabilities. BUY includes material costs and remaining/
+button opening a six-slot grid of the five possible types with short rules,
+without count/probability footers. BUY includes material costs and remaining/
 original stock, switching to Sold Out at zero. Its narrower private hand packs
 owned groups from the left in receipt order, followed by blank slots. Positive
 badges count copies; grouped inspection prefers a playable copy. Development
