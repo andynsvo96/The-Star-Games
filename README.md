@@ -21,7 +21,7 @@ The development installation currently has 16 menu entries covering the 19 games
 | --- | --- |
 | Battleship | Place a secret fleet and sink your opponent's ships. |
 | CATAN | Build and trade with 3–6 human/computer seats, including the current paired-turn extension. |
-| Charades | Act and guess from phones in Classic, Heads Up, Guess Who, and an in-person team Chain. |
+| Charades | Classic, Heads Up, Guess Who, and an in-person team Chain with editable word categories and shuffled prompts. |
 | Checkers | Jump opposing pieces, crown kings, and control the board. |
 | Chinese Checkers | Race ten marbles across a star with 2-6 human/computer seats. |
 | COUP | Bluff, challenge and eliminate rival influence with 2-6 human phone players. |
