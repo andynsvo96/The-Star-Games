@@ -2,7 +2,7 @@
 
 A local party and solo game framework built with Godot 4.7. Host on Windows, macOS, or Android, and let up to 16 players join with browser controllers on the same Wi-Fi network.
 
-This public repository contains the launcher, shared host UI, browser controller SDK, development tools, and [game template](Games/_Template). **Playable game modules and their artwork, audio, and other game-specific assets are not included.** Existing local modules stay on the development PC and are excluded from future commits.
+This public repository contains the launcher, shared host UI, browser controller SDK, development tools, and [game template](Games/_Template). **Songs, music libraries, playable game modules, and their artwork, audio, and other game-specific assets are not included.** Music (including `asset/music/` and `asset/lobby_songs/`) and playable modules stay on the development PC and are excluded from future commits. A fresh clone needs your own locally supplied games and music.
 
 ## Features
 
@@ -83,7 +83,7 @@ Install FFmpeg on the host for desktop media that needs conversion. Original med
 - [Debug Tools](docs/DEBUG_AUTOPLAY.md): browser testing, autoplay controls, and the reusable module adapter.
 - [Contributor Instructions](AGENTS.md): coding conventions and verification requirements.
 - [Automatic GitHub Sync](docs/GITHUB_SYNC.md): background publishing, status, and pause controls.
-- `Games/_Template/` contains the public module template, `scripts/` shared host code, and `web/` shared browser assets. Other `Games/` folders and game-specific source media are ignored by Git.
+- `Games/_Template/` contains the public module template, `scripts/` shared host code, and `web/` shared browser assets. Other `Games/` folders, all song libraries, and game-specific source media are ignored by Git.
 - Public tests use shared framework code, the template, or synthetic fixtures. Module-dependent test suites stay local with the games; public CI runs without them.
 
 With Godot available as `godot` on your PATH, run these checks from the repository root:

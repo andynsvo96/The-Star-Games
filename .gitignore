@@ -31,10 +31,9 @@ desktop.ini
 !/Games/README.md
 !/Games/_Template/
 
-# Game originals, concepts, audio archives and menu icons stay local too.
-# Add shared framework asset folders explicitly when they are introduced.
+# All song libraries, game originals, concepts, audio archives and menu icons stay local.
+# Only reusable framework artwork may be added as an exception; never song libraries.
 /asset/*
-!/asset/lobby_songs/
 !/asset/shared-ui/
 !/asset/splash_background/
 

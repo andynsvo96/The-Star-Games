@@ -15,27 +15,32 @@ GitHub CLI credential store.
 ## Public repository scope
 
 Publish the launcher, shared host/browser UI, controller SDK, game template,
-tools, documentation, and self-contained framework tests. Playable game modules
+tools, documentation, and self-contained framework tests. All songs and music
+libraries remain local, including `asset/music/` and `asset/lobby_songs/` and
+audio stored in MP4 or other video containers. Playable game modules also
 remain local, including their code, artwork, audio, rule data, source archives,
 concepts, menu icons, and module-dependent test suites.
 
 `.gitignore` excludes every direct child of `Games/` except `README.md` and
 `_Template/`, so newly created modules are local by default. Source media under
-`asset/` is also excluded except the shared `lobby_songs/`, `shared-ui/`, and
-`splash_background/` folders. Public files in `tests/` use explicit exceptions
-and must run with only the framework, template, or synthetic fixtures. New
-game-specific tests remain local by default. Never force-add ignored content.
+`asset/` is also excluded except the shared framework artwork in `shared-ui/`
+and `splash_background/`. Music folders must never be added as exceptions.
+Public files in `tests/` use explicit exceptions and must run with only the
+framework, template, or synthetic fixtures. New song libraries, playable games,
+and game-specific tests remain local by default. Never force-add ignored content.
 
 Existing development files are removed from Git's index with `git rm --cached`,
 which preserves the working copies on this PC. If another checkout still tracks
 those files, back them up outside that checkout before pulling the removal
-commit. A fresh clone contains no playable games; add your own modules before
-building or playing. Public CI checks the framework without the local modules.
+commit. A fresh clone contains no playable games or songs; add your own local
+modules and music before building or playing. Public CI checks the framework
+without the local games or music libraries.
 
 The README's game list documents the current local catalog, not downloadable
 contents. The exclusion commit changes the latest tree and future commits;
-earlier commits still contain previously published game files. History is not
-rewritten or force-pushed by this policy.
+earlier commits can still contain previously published songs and game files.
+Removing those from old history requires a separate, explicitly authorized
+history cleanup; this policy does not rewrite history or force-push.
 
 ## During development
 

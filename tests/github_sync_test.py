@@ -58,13 +58,17 @@ class GitHubSyncTests(unittest.TestCase):
 	def test_add_edit_delete_and_ignored_files(self):
 		(self.local / "rules.md").unlink()
 		published = ["Games/README.md", "Games/_Template/controller/controller.js",
-			"asset/shared-ui/framework.svg", "asset/lobby_songs/menu.ogg",
+			"asset/shared-ui/framework.svg",
 			"asset/splash_background/title.png", "scripts/framework.gd",
 			"tests/run_tests.gd", "tests/fixtures/Games/valid-game/game.json", "web/sdk.js"]
 		private = ["Games/new-game/controller.js", "Games/new-game/art.png",
 			"Games/uno/game.json", "Games/monopoly/host/main.gd",
 			"asset/new-game/original.png", "asset/game-icons/originals/uno.png",
-			"asset/monopoly-classic/originals/board.svg", "tests/new_game.gd",
+			"asset/monopoly-classic/originals/board.svg",
+			"asset/music/menu.mp3", "asset/music/menu.mp3.import",
+			"asset/lobby_songs/menu.ogg", "asset/lobby_songs/menu.mp4",
+			"asset/lobby_songs/menu.mp4.import", "asset/new-song-library/menu.flac",
+			"tests/new_game.gd",
 			"tests/uno.gd", "tests/uno.gd.uid", "tests/uno_controller.mjs"]
 		for name in published + private:
 			path = self.local / name
@@ -89,20 +93,23 @@ class GitHubSyncTests(unittest.TestCase):
 		self.assertTrue(self.sync.sync_once())
 		self.assertEqual(self.head(self.remote), published_head)
 
-	def test_untracking_previously_published_games_keeps_local_copies(self):
-		name = "Games/old-game/game.json"
-		game = self.local / name
-		game.parent.mkdir(parents=True)
-		game.write_text("previously published fixture\n", encoding="utf-8")
-		self.run_git(self.local, "add", "--force", "--", name)
-		self.run_git(self.local, "commit", "-m", "Previously published game fixture")
+	def test_untracking_previously_published_games_and_songs_keeps_local_copies(self):
+		names = ["Games/old-game/game.json", "asset/music/menu.mp3", "asset/lobby_songs/menu.mp4"]
+		for name in names:
+			path = self.local / name
+			path.parent.mkdir(parents=True)
+			path.write_text("previously published fixture\n", encoding="utf-8")
+		self.run_git(self.local, "add", "--force", "--", *names)
+		self.run_git(self.local, "commit", "-m", "Previously published game and song fixtures")
 		self.run_git(self.local, "push", "origin", "main")
-		self.run_git(self.local, "rm", "--cached", "--", name)
+		self.run_git(self.local, "rm", "--cached", "--", *names)
 		self.assertTrue(self.sync.sync_once())
 		paths = self.run_git(self.remote, "ls-tree", "-r", "--name-only", "main").stdout.splitlines()
-		self.assertNotIn(name, paths)
-		self.assertEqual(game.read_text(encoding="utf-8"), "previously published fixture\n")
-		game.write_text("private ongoing development\n", encoding="utf-8")
+		for name in names:
+			self.assertNotIn(name, paths)
+			path = self.local / name
+			self.assertEqual(path.read_text(encoding="utf-8"), "previously published fixture\n")
+			path.write_text("private ongoing development\n", encoding="utf-8")
 		self.assertFalse(self.sync.pending())
 
 	def test_unchanged_tree_does_not_create_commits(self):
