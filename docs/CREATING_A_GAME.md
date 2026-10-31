@@ -3140,3 +3140,26 @@ red/black suit inks in both renderers, independent of the surrounding theme.
 Run `tests/controller_viewport.gd` and `node tests/controller_viewport.mjs` for
 synthetic HTTP, explicit-choice, scaled-input, navigation/refresh and high-
 resolution phone-frame checks without any installed game modules.
+
+### Staged card selection and centered actions
+
+`GameCardGrid.dim_selected=true` dims selected faces while retaining the selected
+border, pressed state and literal accessible name. Optional `selection_limit`
+(zero means unlimited) prevents selecting more cards than a decision allows.
+Browser `StarGamesCardGrid(tiles,{dimSelected:true})` provides the same face
+dimming through each tile's `is-selected`/`aria-pressed` state. Modules stage IDs,
+show a selected/required counter, and expose confirmation only when the complete
+selection is valid. Selection never submits a card; the host validates ownership,
+count, distinct IDs, phase, sender and revision before an atomic commit.
+
+`GameActionRow.centered_button` optionally anchors one of its visible Buttons at
+the row's exact midpoint even when the labels on either side differ. Other rows
+keep their normal group centering. Use the shared wide/bottom auxiliary and
+embedded replay flags on `GameScreen.center_board` for a bottom dock; keep the
+same reserved height through decisions and results. The template demonstrates
+both optional components.
+
+`set_phase_dialog_width(dialog, maximum_width, true)` may expand an existing
+compact sheet for a larger card-selection grid, still clamped to the viewport.
+Omitting the third argument keeps its normal width cap. Restore the normal cap
+when returning to a compact response/payment decision.

@@ -39,6 +39,7 @@ const handWindow=document.createElement('div'),hand=document.createElement('div'
 hand.append(...Array.from({length:12},(_,id)=>StarGamesCard({id,name:'Card '+id,value:1})));window.browse=new StarGamesHandBrowse(hand,previous,next);window.hand=hand;window.handNext=next;
 const activity=document.createElement('div');activity.className='game-activity-paper game-activity-dark';document.querySelector('main').append(activity);window.activity=activity;
 window.entries=[{id:1,text:'Name <literal> paid $5 → Other',parts:[{text:'Name <literal>',color:'#80c8ff'},{text:' paid $5 '},{icon:'bank'},{text:' → Other'}]}];StarGamesActivityEntries(activity,entries);
+const discardTile=StarGamesCardTile(StarGamesCard({id:1,name:'Discard choice',value:1}),{label:'Discard choice',selected:true,onSelect:()=>{}});document.querySelector('main').append(StarGamesCardGrid([discardTile],{dimSelected:true}));
 </script></body></html>`;
 const lobbyBoot=`class FixtureSocket {
  static OPEN=1;
@@ -86,6 +87,7 @@ try {
   check(components.assets.includes('$0 + $7')&&components.icons===2,'Synthetic public payment choices include distinct cash/property values');
   check(components.browsed&&components.arrow>=44,'Shared counted hand arrows browse at full touch-target size');
   check(components.literal&&components.stable&&components.accessible==='Name <literal> paid $5 → Other','Shared activity preserves literal names, complete transfers and rows on duplicate sync');
+  check(await evaluate(`(()=>{const child=document.getElementById('phone').contentWindow,tile=child.document.querySelector('.game-card-grid-dim-selected .game-card-tile');return tile.getAttribute('aria-pressed')==='true'&&child.getComputedStyle(tile.firstElementChild).filter==='brightness(0.35)';})()`),'A shared discard grid dims selected artwork and keeps its accessible pressed state');
   const position=await evaluate(`(()=>{const frame=document.getElementById('phone'),rect=frame.getBoundingClientRect(),button=frame.contentWindow.document.getElementById('tap').getBoundingClientRect(),scale=rect.width/frame.contentWindow.innerWidth;return{x:rect.left+(button.left+button.width/2)*scale,y:rect.top+(button.top+button.height/2)*scale,before:Number(frame.contentWindow.localStorage.getItem('fixture-taps')||0)};})()`);
   await page.send('Input.dispatchMouseEvent',{type:'mousePressed',x:position.x,y:position.y,button:'left',clickCount:1});await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',x:position.x,y:position.y,button:'left',clickCount:1});
   check(await evaluate('Number(document.getElementById("phone").contentWindow.localStorage.getItem("fixture-taps"))')===position.before+1,'Scaled input reaches the correct phone control');

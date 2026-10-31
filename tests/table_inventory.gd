@@ -72,7 +72,20 @@ func _run() -> void:
 	for pressed in [true,false]:
 		var event := InputEventMouseButton.new(); event.button_index = MOUSE_BUTTON_LEFT; event.pressed = pressed; event.position = Vector2(42,442); Input.parse_input_event(event); await process_frame
 	check(clicked[0],"Empty toolbar space passes clicks to visible controls underneath")
+	var left_action := Button.new(); left_action.text = "Long history label"; actions.add_child(left_action); actions.move_child(left_action,0)
+	var right_action := Button.new(); right_action.text = "Help"; actions.add_child(right_action); actions.centered_button = action
+	for width in [320,640]:
+		actions.size.x = width
+		for unused in 4: await process_frame
+		check(absf(action.get_global_rect().get_center().x-actions.get_global_rect().get_center().x)<1 and actions.get_children().all(func(control: Button) -> bool: return actions.get_global_rect().encloses(control.get_global_rect()) and control.size.y >= 44),"A chosen action stays exactly centered with unequal flanks at %d pixels" % width)
 	actions.queue_free(); underlying.queue_free()
+	var choice_grid := GameCardGrid.new(); choice_grid.selectable = true; choice_grid.selection_limit = 1; choice_grid.dim_selected = true; root.add_child(choice_grid); choice_grid.size = Vector2(300,180)
+	choice_grid.set_items([{"card":{"id":1,"name":"First","value":1},"texture":source},{"card":{"id":2,"name":"Second","value":2},"texture":source}])
+	choice_grid.get_child(0).pressed.emit(); choice_grid.get_child(1).pressed.emit()
+	check(choice_grid.selected == [1] and choice_grid.get_child(0).get_child(0).modulate.r < .5 and choice_grid.get_child(1).get_child(0).modulate == Color.WHITE,"Limited card selection dims only the accepted choice and rejects excess selections")
+	choice_grid.get_child(0).pressed.emit()
+	check(choice_grid.selected.is_empty() and choice_grid.get_child(0).get_child(0).modulate == Color.WHITE,"Deselecting a dimmed card restores its full face")
+	choice_grid.queue_free()
 	var preview := GameActionPreview.new(); root.add_child(preview); preview.size = Vector2(340,220)
 	preview.set_options([{"label":"Player", "players":[{"display_name":"Name <literal>", "bank_total":0, "property_total":7}], "items":[]}], -1, "players")
 	for unused in 4: await process_frame

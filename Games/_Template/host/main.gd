@@ -204,6 +204,8 @@ func _ready() -> void:
 	action_row_example.fit_icons = true
 	action_example.icon = RuntimeAssets.texture("res://ui/playful/table-cards.svg"); action_example.expand_icon = true; action_example.add_theme_constant_override("icon_max_width", 22)
 	action_row_example.add_child(action_example)
+	# Keep one action centered even when neighboring button labels differ.
+	action_row_example.centered_button = action_example
 	# Canvas counters use GameLook.draw_table_stats(canvas, point, width,
 	# [{"icon":"cash", "value":"$5"}, {"icon":"cards", "value":7},
 	# {"icon":"house", "value":"1/3"}]); the browser uses the same offline SVGs.
@@ -314,6 +316,8 @@ func _ready() -> void:
 	grid_example.left_aligned = true
 	# Optional maximum_height fits every public face within a bounded stats panel.
 	grid_example.maximum_height = 180
+	# Stage a bounded selection, dim chosen faces, then explicitly confirm it.
+	grid_example.selectable = true; grid_example.dim_selected = true; grid_example.selection_limit = 2
 	grid_example.fixed_columns = 3; grid_example.set_items([{"card":card_example.card, "texture":card_example.texture}, {"placeholder":true}, {"placeholder":true}])
 	# Complete illustrated faces opt into layout="art" to avoid live money/text overlays.
 	var art_grid_example := GameCardGrid.new(); layout.playfield.add_child(art_grid_example); art_grid_example.hide()
@@ -528,6 +532,8 @@ func _ready() -> void:
 	# Pass true to fit short results to their contents, with scrolling when needed.
 	phase_dialog = screen.add_phase_dialog(true, false, true)
 	var player_header_example := screen.add_phase_dialog(true,false,true)
+	# Pass true to expand a compact sheet for a larger card-choice grid.
+	screen.set_phase_dialog_width(player_header_example, 840, true)
 	screen.set_phase_dialog_header(player_header_example,"Example player",{"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-trophy.svg"),"value":3,"label":"Session wins"})
 	screen.add_sidebar_text(player_header_example.body,"Put filtered public counters and activity here.")
 	var close_player_example := Button.new(); close_player_example.text = "Close"; GameLook.action(close_player_example,false); player_header_example.actions.add_child(close_player_example); close_player_example.pressed.connect(func() -> void: player_header_example.overlay.hide())

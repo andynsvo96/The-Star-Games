@@ -10,6 +10,8 @@ var preferred_width := 108.0
 var maximum_columns := 6
 var maximum_height := 0.0
 var selectable := false
+var selection_limit := 0
+var dim_selected := false
 var left_aligned := false
 var center_vertically := false
 var caption_lines := 1
@@ -67,7 +69,7 @@ func set_items(items: Array) -> void:
 			button.pressed.connect(func() -> void:
 				if selectable:
 					if selected.has(data.id): selected.erase(data.id)
-					else: selected.append(data.id)
+					elif selection_limit <= 0 or selected.size() < selection_limit: selected.append(data.id)
 					set_selected(selected); selection_changed.emit(selected.duplicate())
 				else: card_pressed.emit(data))
 		add_child(button)
@@ -79,6 +81,8 @@ func set_selected(ids: Array) -> void:
 		var entry: Dictionary = button.get_meta("grid_entry")
 		var on: bool = not entry.get("placeholder", false) and selected.has(entry.card.id)
 		button.set_pressed_no_signal(on)
+		for child in button.get_children():
+			if child is GameCard and dim_selected: child.modulate = Color(.35, .35, .35) if on else Color.WHITE
 		for state in ["normal", "hover", "pressed", "disabled"]:
 			var surface := GameLook.box(Color("155b66") if on else Color("021b2c"), Color("ffe36c") if on else Color("27566b"), 7, 3 if on else 1)
 			if get_theme_constant("casino", "GamePalette") == 1: surface = GameLook.casino_sheet(on)

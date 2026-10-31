@@ -5,6 +5,7 @@ extends Container
 var preferred_font_size := 16
 var row_height := 44.0
 var fit_icons := false
+var centered_button: Button
 
 
 func _ready() -> void:
@@ -32,6 +33,9 @@ func _fit() -> void:
 	var font_size := preferred_font_size
 	var widths: Array[float] = []
 	var total := 0.0
+	var pivot := buttons.find(centered_button) if is_instance_valid(centered_button) else -1
+	var balanced_width := 0.0
+	var balanced_gap := 0.0
 	while true:
 		widths.clear(); total = 0
 		for button in buttons:
@@ -41,10 +45,20 @@ func _fit() -> void:
 				var icon_width := minf(button.icon.get_width(), limit if limit > 0 else row_height - 8)
 				width += icon_width + button.get_theme_constant("h_separation")
 			widths.append(width); total += width
-		if total <= available or font_size <= 11: break
+		if pivot >= 0:
+			var before := 0.0; var after := 0.0
+			for index in widths.size():
+				if index < pivot: before += widths[index]
+				elif index > pivot: after += widths[index]
+			balanced_width = widths[pivot] + 2 * maxf(before, after)
+			balanced_gap = gap * 2 * maxi(pivot, buttons.size() - pivot - 1)
+		if (balanced_width + balanced_gap <= size.x if pivot >= 0 else total <= available) or font_size <= 11: break
 		font_size -= 1
-	var scale := minf(1, available / maxf(1, total))
+	var scale := minf(1, maxf(0, size.x - balanced_gap) / maxf(1, balanced_width) if pivot >= 0 else available / maxf(1, total))
 	var left := maxf(0, (size.x - total * scale - gap * (buttons.size() - 1)) / 2)
+	if pivot >= 0:
+		left = (size.x - widths[pivot] * scale) / 2 - gap * pivot
+		for index in pivot: left -= widths[index] * scale
 	for index in buttons.size():
 		var button := buttons[index]
 		if not button.has_meta("action_row_fitted"):

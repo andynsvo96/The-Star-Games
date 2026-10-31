@@ -585,7 +585,7 @@ func add_phase_dialog(fit_contents := false, full_screen := false, compact := fa
 		var bounds := available_size().min(get_viewport_rect().size)
 		var width := maxf(0, bounds.x - 32) if full_screen else minf(520 if compact else 700, maxf(0, bounds.x - 32))
 		var width_limit := float(panel.get_meta("maximum_width", maximum_width))
-		if width_limit > 0: width = minf(width, width_limit)
+		if width_limit > 0: width = minf(maxf(0, bounds.x - 32) if panel.get_meta("expand_width", false) else width, width_limit)
 		var height := maxf(0, bounds.y - 112) if full_screen else minf(560, maxf(0, bounds.y - 112))
 		# Set width first so wrapped names and team rows can settle before fitting.
 		panel.size.x = width
@@ -619,8 +619,9 @@ func set_phase_dialog_header(dialog: Dictionary, caption: String, metric: Dictio
 	dialog.header_metric.accessibility_name = str(metric.get("label",""))+": "+dialog.header_value.text
 
 
-func set_phase_dialog_width(dialog: Dictionary, maximum_width: float) -> void:
+func set_phase_dialog_width(dialog: Dictionary, maximum_width: float, expand := false) -> void:
 	dialog.panel.set_meta("maximum_width", maximum_width)
+	dialog.panel.set_meta("expand_width", expand)
 	dialog.panel.minimum_size_changed.emit()
 
 

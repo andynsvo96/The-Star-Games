@@ -116,6 +116,8 @@
     modernExample.append(StarGamesTableUI.stat('bank','$5','Bank: $5'),StarGamesTableUI.stat('cards',7,'7 cards in hand'),StarGamesTableUI.stat('house','1/3','1 of 3 complete sets'));
     modernExample.append(StarGamesTableUI.group({label:'Example',color:'#2463eb',count:0,size:3,rent:0,complete:false},[],()=>{}));
     modernExample.append(StarGamesCardGrid([StarGamesCardTile(StarGamesCard({id:1,name:'EXAMPLE',value:1}),{label:'Example payment card',caption:'$1',selected:true,onSelect:()=>{}}),StarGamesCardPlaceholder(),StarGamesCardPlaceholder()],{cardWidth:144}));
+    // Stage discard IDs locally and confirm the complete host-validated choice.
+    modernExample.append(StarGamesCardGrid([StarGamesCardTile(StarGamesCard({id:2,name:'EXAMPLE',value:2}),{label:'Selected discard example',selected:true,onSelect:()=>{}})],{dimSelected:true}));
     // is-dark keeps navy slots in other palettes, including disabled empty slots.
     // Counts are supplied by the module from the viewer's authorized inventory.
     const countedTile=StarGamesCardTile(StarGamesCard({id:'example-counted',name:'Example card',value:1}),{label:'Example card, 2 owned',onSelect:()=>{}}),emptyTile=StarGamesCardTile(StarGamesCardPlaceholder(),{label:'Example card, not owned',onSelect:()=>{}});
