@@ -165,6 +165,12 @@ applies equally to LAN and forwarded internet URLs. Keep using ordinary SDK
 navigation, same-origin identity storage, and shared fitters inside the document;
 modules must not add another frame or their own aspect-ratio enforcement.
 
+The shared join/lobby page fits its heading, avatar, all sixteen color choices,
+and the roster inside this viewport without page scrolling. Larger parties use
+a denser roster with wrapped names; color choices retain 44-pixel touch targets.
+Keep spacing changes scoped to the lobby rather than clipping overflow in game
+readers or required decisions.
+
 Include `/controller-sdk.js` before the game script. The SDK owns connection, saved identity, heartbeat-compatible reconnection, and return-to-lobby routing.
 
 ```js

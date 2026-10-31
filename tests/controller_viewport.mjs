@@ -38,7 +38,7 @@ document.getElementById('rent').append(StarGamesTableUI.rent('Brown',2,7,[{kind:
 </script></body></html>`;
 const lobbyBoot=`class FixtureSocket {
  static OPEN=1;
- constructor(){this.listeners={};this.readyState=1;setTimeout(()=>this.message({type:'hello',host_name:'Fixture Host',lobby_open:true}),0);}
+ constructor(){window.fixtureSocket=this;this.listeners={};this.readyState=1;setTimeout(()=>this.message({type:'hello',host_name:'Fixture Host',lobby_open:true}),0);}
  addEventListener(type,callback){(this.listeners[type]??=[]).push(callback);}
  message(payload){for(const callback of this.listeners.message||[])callback({data:JSON.stringify(payload)});}
  send(value){const command=JSON.parse(value);if(command.type==='join'){
@@ -90,6 +90,7 @@ try {
  }
  for(const [width,height] of [[390,844],[1920,1080],[3840,2160]]){
   await page.send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});
+  await page.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:width===3840?'reduce':'no-preference'}]});
   await page.send('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/?fixture=lobby'});
   for(let attempt=0;attempt<100;attempt++){if(await evaluate('Boolean(document.getElementById("phone")?.contentDocument.getElementById("join-form"))'))break;await delay(30);}
   await evaluate(`(()=>{const doc=document.getElementById('phone').contentDocument;if(!doc.getElementById('join-form').hidden){doc.getElementById('player-name').value='Fixture Player';doc.getElementById('join-form').requestSubmit();}})()`);
@@ -100,6 +101,30 @@ try {
   check(joined.stars.includes('\u2726')&&!joined.stars.includes('\u00e2'),'Lobby decorations render stars instead of garbled encoding');
   await delay(400); // Let the join card's finite entrance settle before visual QA.
   if(width<=1920){const png=await page.send('Page.captureScreenshot',{format:'png'});await writeFile(join(output,'join-'+width+'x'+height+'.png'),Buffer.from(png.data,'base64'));}
+  for(const count of [3,8,16]){
+   for(const locked of [false,true]){
+    const layout=await evaluate(`(()=>{
+     const child=document.getElementById('phone').contentWindow,doc=child.document,socket=child.fixtureSocket;
+     const name=${count}>3?'W'.repeat(24):'Tony';
+     socket.message({type:'joined',player:{id:'self',display_name:name,color:'#202020',pose:0},lobby_open:!${locked},reconnect_token:'fixture-token'});
+     const players=Array.from({length:${count}},(_,index)=>({id:index?'player-'+index:'self',display_name:${count}>3?'W'.repeat(23)+(index%10):['Tony','Andy','John'][index],color:index?'#ffffff':'#202020',pose:index%6}));
+     socket.message({type:'roster',players});
+     if(${locked})socket.message({type:'error',code:'color_unavailable',message:'That color is already taken. Choose another color.'});
+     const nodes=[...doc.querySelectorAll('#colors button,#roster span,#joined-name,#error')].filter(node=>node.getBoundingClientRect().height);
+     const bounds=nodes.map(node=>({text:node.textContent,rect:node.getBoundingClientRect().toJSON()}));
+     return{height:child.innerHeight,scrollHeight:doc.scrollingElement.scrollHeight,scrollWidth:doc.scrollingElement.scrollWidth,
+      names:[...doc.querySelectorAll('#roster span')].map(node=>node.textContent),expected:players.map(player=>player.display_name),
+      colors:[...doc.querySelectorAll('#colors button')].map(node=>node.getBoundingClientRect().toJSON()),bounds,
+      visible:bounds.every(({rect})=>rect.top>=0&&rect.bottom<=child.innerHeight&&rect.left>=0&&rect.right<=child.innerWidth)};
+    })()`);
+    const caption=count+' players'+(locked?' with locked party and color error':'')+' at '+width+'x'+height;
+    check(layout.scrollHeight<=layout.height+1&&layout.scrollWidth<=390&&layout.visible,'The complete lobby fits without scrolling or clipping: '+caption+' '+JSON.stringify({height:layout.height,scrollHeight:layout.scrollHeight,scrollWidth:layout.scrollWidth,visible:layout.visible,bottom:Math.max(...layout.bounds.map(({rect})=>rect.bottom))}));
+    check(JSON.stringify(layout.names)===JSON.stringify(layout.expected),'All roster names remain complete: '+caption);
+    check(layout.colors.length===16&&layout.colors.every(rect=>rect.width>=44&&rect.height>=44),'All sixteen color choices keep 44px touch targets: '+caption);
+    if(width===390&&count===16&&locked){const png=await page.send('Page.captureScreenshot',{format:'png'});await writeFile(join(output,'join-full-party.png'),Buffer.from(png.data,'base64'));}
+   }
+  }
+  await evaluate(`document.getElementById('phone').contentWindow.fixtureSocket.message({type:'joined',player:{id:'self',display_name:'Fixture Player',color:'#202020',pose:0},lobby_open:true,reconnect_token:'fixture-token'})`);
  }
  await page.send('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/debug.html?width=390&height=844'});
  for(let attempt=0;attempt<100;attempt++){if(await evaluate('location.pathname==="/"&&Boolean(document.getElementById("phone")?.contentDocument.getElementById("tap"))'))break;await delay(30);}

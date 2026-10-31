@@ -111,6 +111,29 @@ button:disabled { opacity: .45; cursor: default; }
 .avatar { transition: background-color .3s ease; }
 @media (prefers-reduced-motion: reduce) { .avatar { transition: none; } }
 
+/* Fit the join/lobby contents inside the portrait controller, including all
+   sixteen colors and player names, without creating a scrolling page. */
+.shell { padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom)); gap:12px; }
+.shell > .brand h1 { font-size:clamp(2rem,10vw,3.6rem); margin:0 0 8px; line-height:.86; }
+.shell > .brand .status { margin:0; font-size:14px; line-height:1.3; }
+.shell > .card { padding:16px; }
+.shell .joined { display:flex; flex-direction:column; gap:8px; }
+.shell .joined > p,.shell .joined > h2 { margin:0; }
+.shell .joined > p { font-size:14px; line-height:1.35; }
+.shell .joined > .eyebrow { font-size:11px; line-height:1.2; }
+.shell .joined > h2 { font-size:26px; line-height:1.2; overflow-wrap:anywhere; }
+.shell .avatar { width:80px; height:80px; margin:4px auto; flex:none; }
+.shell .colors { gap:8px; }
+.shell .roster { gap:6px; margin:0; }
+.shell .roster > span { min-width:0; max-width:calc(50% - 3px); padding:3px 7px; font-size:12px; line-height:1.2; overflow-wrap:anywhere; }
+.shell > .error { margin:0; font-size:13px; line-height:1.3; }
+.shell .roster:has(> :nth-child(9)) { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px; }
+.shell .roster:has(> :nth-child(9)) > span { max-width:none; padding:3px 4px; border-radius:8px; font-size:11px; line-height:1.15; }
+.shell:has(#roster > :nth-child(9)) > .brand h1 { font-size:2rem; }
+.shell:has(#roster > :nth-child(9)) .joined { gap:4px; }
+.shell:has(#roster > :nth-child(9)) .joined > h2 { font-size:22px; }
+.shell:has(#roster > :nth-child(9)) .avatar { width:48px; height:48px; }
+
 /* Shared turn/choice feedback on the owning player's decision view. */
 .game-turn-glow, .playful-game .game-controller button.game-turn-glow { outline: 3px solid #fff0a1; outline-offset: 2px; box-shadow: 0 0 0 6px #ffda4666, 0 0 14px 7px #ffd84c, 0 0 26px 10px var(--seat-color, var(--accent, #ffe681)); animation: game-personal-turn 1.1s ease-in-out infinite alternate; }
 @keyframes game-personal-turn { to { box-shadow: 0 0 0 8px #ffda4699, 0 0 22px 10px #ffe47b, 0 0 36px 14px var(--seat-color, var(--accent, #ffe681)); } }
