@@ -90,6 +90,9 @@ desktop.ini
 !/tests/shared_board_controller.mjs
 !/tests/table_inventory.gd
 !/tests/table_inventory.gd.uid
+!/tests/controller_viewport.gd
+!/tests/controller_viewport.gd.uid
+!/tests/controller_viewport.mjs
 
 # Synthetic skin lifecycle, editor and LAN regression (no local games required).
 !/tests/skin_packs_fixture.gd

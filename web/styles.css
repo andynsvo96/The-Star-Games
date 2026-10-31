@@ -288,6 +288,9 @@ button:disabled { opacity: .45; cursor: default; }
 /* Center a complete card-table composition, with independent connection chrome. */
 .playful-game .game-controller.game-centered-controller { align-content:center; padding-top:max(20px,env(safe-area-inset-top)); padding-bottom:max(20px,env(safe-area-inset-bottom)); }
 .game-centered-controller > header { position:absolute; top:max(4px,env(safe-area-inset-top)); left:12px; right:12px; z-index:20; pointer-events:none; }
+/* A fitted controller table can keep its roster at the top of the phone. */
+.playful-game .game-controller.game-top-controller { grid-template-columns:minmax(0,1fr); align-content:start; width:min(100%,96rem); padding:max(6px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom)); gap:0; }
+.game-top-controller > header { position:absolute; top:4px; left:12px; right:12px; z-index:20; pointer-events:none; }
 
 /* Shared party-table surfaces; modules own only playfield/card geometry. */
 .playful-game.game-party-table { color-scheme:dark; --ink:#eef8ff; --cream:#101b31; --panel:#101b31f2; --muted:#b6d6e8; --status-edge:#3997b9; --connection-panel:#101b31ed; --gold:#ffe47b; font-family:"Segoe UI",Arial,sans-serif; color:var(--ink); }
@@ -929,6 +932,22 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-modern-table .game-controller .group-count { position:absolute; top:-4px; right:-1px; z-index:3; font-size:10px; font-weight:800; background:var(--group-color); color:var(--group-ink,#fff); padding:3px 4px; border-radius:5px; border:1px solid #ffffffe0; box-shadow:0 2px 3px #0006; }
 .game-modern-table .game-controller .building-badge { position:absolute; bottom:-3px; left:-4px; width:23px; height:23px; padding:3px; border-radius:7px; background:#a8f2c3; color:#135237; border:1px solid #e3ffeb; z-index:4; box-shadow:0 2px 4px #0008; }
 .game-modern-table .game-controller .building-badge svg { width:16px; height:16px; stroke-width:2.4; }
+.game-rent-summary { display:flex; flex-wrap:wrap; align-items:center; gap:5px; font-size:14px; font-weight:700; }
+.game-rent-summary .game-rent-bonus { color:#8fefae; }
+.game-building-icon { display:inline-flex; align-items:center; color:#50c984; }
+.game-building-icon.is-hotel { color:#e95c69; }
+.game-building-icon svg,.game-building-icon img { width:24px; height:24px; object-fit:contain; fill:none; stroke:currentColor; stroke-width:2; }
+.game-public-player { position:relative; padding:14px; border:1px solid #258db6; border-radius:14px; background:linear-gradient(130deg,#0c3552,#041d31); }
+.game-modern-table .game-controller .game-public-player .player-heading { border-bottom:1px solid #3c6681; padding-bottom:12px; margin-bottom:12px; }
+.game-modern-table .game-controller .game-public-player .player-name { font-size:22px; font-weight:850; letter-spacing:.01em; color:#fff4cf; }
+.game-public-player .game-public-collections { display:flex; flex-wrap:wrap; gap:12px; }
+.game-property-collection { max-width:100%; padding:10px; border:1px solid #315a75; border-radius:10px; background:#031c30; }
+.game-property-collection > p { margin:0 0 8px; }
+.game-public-player .public-bank { margin-top:14px; border-top:1px solid #315a75; padding-top:10px; }
+.game-public-player .public-bank > p { font-size:17px; font-weight:800; margin:0 0 8px; }
+.has-payment-progress { position:relative; }
+.has-payment-progress > .group-grid { filter:brightness(.32); }
+.game-payment-progress { position:absolute; top:55%; left:8px; right:8px; z-index:5; margin:0; padding:12px 6px; text-align:center; border:1px solid #e2b854; border-radius:9px; background:#031a2bf0; color:#ffe298; font-size:15px; font-weight:800; pointer-events:none; }
 .game-modern-table .game-controller .group-name { font-size:11px; font-weight:650; white-space:nowrap; }
 .game-modern-table .game-controller .group-rent { font-size:10px; color:#b8d7e8; white-space:nowrap; }
 .game-modern-table .game-controller .group-rent.complete { color:#84e8b1; }
@@ -1315,7 +1334,7 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 
 /* Readable collections and explicit, dismissible card focus. */
 .game-modern-table .game-controller[data-view="phone"] .own-zone .group-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(76px,1fr)); gap:12px 10px; overflow:visible; align-content:start; max-width:760px; }
-.game-modern-table .game-controller .building-badges { position:absolute; right:-8px; top:22px; z-index:4; display:flex; flex-direction:column; gap:3px; }
+.game-modern-table .game-controller .building-badges { position:absolute; left:50%; right:auto; top:auto; bottom:-10px; transform:translateX(-50%); z-index:4; display:flex; flex-direction:row; gap:3px; }
 .game-modern-table .game-controller .building-badges .building-badge { position:static; display:flex; align-items:center; justify-content:center; width:20px; height:20px; padding:2px; }
 .game-modern-table .game-controller .building-badge.is-hotel { background:#f7adb7; color:#7a1c31; border-color:#ffdce0; }
 .game-modern-table .game-controller .building-badge .game-table-icon { width:16px; height:16px; }
@@ -1456,14 +1475,14 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .playful-game.game-casino .game-controller button:disabled { background:#41423e; color:#a1a49a; border-color:#6f7268; box-shadow:none; opacity:1; }
 .game-casino .game-dialog::backdrop { background:#000b; }
 .game-casino .game-identity-strip { color:#fff0cf; }
-.game-playing-card.game-standard-card { position:relative; display:block; overflow:hidden; container-type:inline-size; aspect-ratio:2/3; padding:0; min-width:0; border:1px solid #b98b4c; border-radius:7%; color:#171b19; background:linear-gradient(125deg,#fff9e9,#eddec2); box-shadow:0 3px 5px #0007; font-family:Georgia,'Times New Roman',serif; }
-.game-playing-card.game-standard-card.is-red { color:#a51b22; }
+.game-playing-card.game-standard-card { position:relative; display:block; overflow:hidden; container-type:inline-size; aspect-ratio:2/3; padding:0; min-width:0; border:1px solid #b98b4c; border-radius:7%; color:#171b19 !important; background:#fff1d9 !important; box-shadow:0 3px 5px #0007; font-family:Georgia,'Times New Roman',serif; }
+.game-playing-card.game-standard-card.is-red { color:#a51b22 !important; }
 .game-playing-card.game-standard-card.is-selected { outline:3px solid #ffdf75; outline-offset:2px; }
 .game-standard-card .game-card-corner { position:absolute; left:8%; top:3%; display:flex; align-items:center; flex-direction:column; line-height:1; font-size:28cqw; }
 .game-standard-card .game-card-corner span { font-size:21cqw; }
 .game-standard-card .game-card-corner.is-bottom { left:auto; top:auto; right:8%; bottom:3%; transform:rotate(180deg); }
 .game-standard-card .game-card-pip { position:absolute; inset:0; display:grid; place-items:center; font-size:65cqw; color:inherit; }
-.game-playing-card.game-standard-back { color:#cba361; background:repeating-linear-gradient(55deg,#2a2421 0 3px,#483925 3px 4px,#2a2421 4px 8px); border:3px double #bc9553; }
+.game-playing-card.game-standard-back { color:#cba361 !important; background:repeating-linear-gradient(55deg,#2a2421 0 3px,#483925 3px 4px,#2a2421 4px 8px) !important; border:3px double #bc9553; }
 .game-standard-back:before { content:''; position:absolute; inset:6%; border:1px solid #98713a; border-radius:5%; }
 .game-casino .game-playing-card.game-standard-card { min-height:0; }
 .game-casino .game-player-chip { color:#fff0cf; background:linear-gradient(130deg,#27241ef5,#11130ff5); border:2px solid #b68c46; border-radius:12px; }

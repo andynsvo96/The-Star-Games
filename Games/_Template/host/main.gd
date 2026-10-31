@@ -218,6 +218,10 @@ func _ready() -> void:
 	# Optional compact section and icon-only private inventory. Only pass values
 	# this viewer may see; connect pressed to the game's explicit detail view.
 	var inventory_section := GameSection.new(); inventory_section.caption = "Resources"; inventory_section.hide(); screen.content.add_child(inventory_section)
+	# Public collection headers may include the same identity avatar as the table.
+	inventory_section.set_identity({"display_name":"Example player", "color":"#2463eb", "pose":0})
+	var rent_summary := GameRentSummary.new(); inventory_section.content.add_child(rent_summary)
+	rent_summary.set_rent("Example set", 2, 7, ["house", "hotel"])
 	var inventory_example := GameResourceHand.new(); inventory_section.content.add_child(inventory_example)
 	var inventory_flip := Button.new(); inventory_flip.icon = RuntimeAssets.texture("res://ui/playful/control-rotate.svg"); inventory_flip.toggle_mode = true; inventory_flip.accessibility_name = "Show development cards"; inventory_section.set_header_action(inventory_flip)
 	# A card-face quickview shares all five resource slots and badge anchors.

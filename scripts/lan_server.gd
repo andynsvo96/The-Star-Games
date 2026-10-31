@@ -304,6 +304,7 @@ func _serve_http(peer: StreamPeerTCP, request: String) -> void:
 		"/ui/playful/table-flag.svg": resource_path = "res://ui/playful/table-flag.svg"
 		"/ui/playful/table-cards.svg": resource_path = "res://ui/playful/table-cards.svg"
 		"/ui/playful/table-house.svg": resource_path = "res://ui/playful/table-house.svg"
+		"/ui/playful/table-property.svg": resource_path = "res://ui/playful/table-property.svg"
 		"/ui/playful/table-crown-silver.svg": resource_path = "res://ui/playful/table-crown-silver.svg"
 		"/ui/playful/table-crown.svg": resource_path = "res://ui/playful/table-crown.svg"
 		"/ui/playful/rules-star.svg": resource_path = "res://ui/playful/rules-star.svg"
@@ -332,6 +333,8 @@ func _serve_http(peer: StreamPeerTCP, request: String) -> void:
 		"/ui/playful/clipboard.svg": resource_path = "res://ui/playful/clipboard.svg"
 		"/ui/playful/paper-clip.svg": resource_path = "res://ui/playful/paper-clip.svg"
 		"/controller-sdk.js": resource_path = "res://web/controller-sdk.js"
+		"/phone-frame.js": resource_path = "res://web/phone-frame.js"
+		"/phone-frame.css": resource_path = "res://web/phone-frame.css"
 		"/game-celebration.js": resource_path = "res://web/game-celebration.js"
 		"/card-ui.js": resource_path = "res://web/card-ui.js"
 		"/media-view.js": resource_path = "res://web/media-view.js"
@@ -341,6 +344,12 @@ func _serve_http(peer: StreamPeerTCP, request: String) -> void:
 	resource_path = RuntimeAssets.source(resource_path)
 	if resource_path.is_empty() or not FileAccess.file_exists(resource_path):
 		_write_http(peer, 404, "text/plain; charset=utf-8", "Not found".to_utf8_buffer())
+		return
+	# Give controllers a real phone-sized layout viewport. CSS width limits alone
+	# still let desktop media queries select a host-like layout on large screens.
+	var framed := str(parts[1]).get_slice("?", 1).split("&").has("sg-phone=1") or request.to_lower().contains("\r\nsec-fetch-dest: iframe")
+	if resource_path.get_extension() == "html" and path != "/debug.html" and not framed:
+		_write_http(peer, 200, "text/html; charset=utf-8", FileAccess.get_file_as_bytes("res://web/phone-frame.html"))
 		return
 	var file := FileAccess.open(resource_path, FileAccess.READ)
 	if file == null:

@@ -1,0 +1,2 @@
+html,body { width:100%; height:100%; margin:0; overflow:hidden; background:#070d19; }
+#phone { position:absolute; border:0; transform-origin:top left; background:#070d19; color-scheme:dark; }

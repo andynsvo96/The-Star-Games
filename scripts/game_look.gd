@@ -673,6 +673,13 @@ static func draw_table_building(canvas: Control, bounds: Rect2, kind: String) ->
 		canvas.draw_rect(Rect2(bounds.position + Vector2(8, 13), Vector2(3, 4)), Color("fff4d9"))
 
 
+static func draw_table_pending(canvas: Control, bounds: Rect2, caption: String, detail := "") -> void:
+	canvas.draw_style_box(box(Color("031a2be6"), Color("e2b854"), 8, 1), bounds)
+	var point := Vector2(bounds.position.x + 8, bounds.get_center().y - (5 if not detail.is_empty() else -5))
+	draw_table_text(canvas, caption, point, bounds.size.x - 16, 15, Color("ffe298"), true)
+	if not detail.is_empty(): draw_table_text(canvas, detail, point + Vector2(0, 20), bounds.size.x - 16, 12, Color("eef8ff"), true)
+
+
 static func draw_table_winner(canvas: Control, bounds: Rect2, elapsed: float, reduced: bool) -> void:
 	var font := canvas.get_theme_default_font(); var font_size := clampi(int(bounds.size.y * 0.8), 9, 20)
 	while font_size > 8 and font.get_string_size("WINNER", HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > bounds.size.x: font_size -= 1

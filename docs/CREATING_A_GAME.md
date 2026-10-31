@@ -156,6 +156,14 @@ finite sample must be replaced when implementing the real rules.
 
 ## 4. Implement the browser controller
 
+The shared HTTP server frames join/game documents in a scalable phone viewport:
+390 by 844 logical CSS pixels in portrait, or 844 by 390 in landscape. The output
+resolution is unrestricted; larger browser windows retain phone media queries
+and letterbox the frame. Native hosts retain the project's 16:9 canvas. This
+applies equally to LAN and forwarded internet URLs. Keep using ordinary SDK
+navigation, same-origin identity storage, and shared fitters inside the document;
+modules must not add another frame or their own aspect-ratio enforcement.
+
 Include `/controller-sdk.js` before the game script. The SDK owns connection, saved identity, heartbeat-compatible reconnection, and return-to-lobby routing.
 
 ```js
@@ -1604,8 +1612,7 @@ flights without accepting placement during movement; duplicate syncs preserve
 active effects and refresh restores settled art. Winning feedback and saved
 results wait until every final card and penalty lands.
 
-UNO shows shared avatars, literal names, exact card counts and opponents'
-card backs below their badges in public and playing views. Wide views arrange
+UNO shows shared avatars, literal names and exact card counts. Native host tables retain opponents' card backs; phones use a compact roster at the top with no opposing card fans. Phone avatars sit left of the name, with the card count underneath the name. Authorized Reveal Hands cards open from player badges in an explicit shared viewer. Wide views arrange
 slightly diagonal fans at the left and right; top and private hands use a gentle
 arc. Compact views keep opponents in a top row. In ordinary playing views the
 personal badge sits below the center piles and above the private hand; short
@@ -1653,8 +1660,7 @@ Refresh defaults to Color. Seven-card fan browsing retains hold, drag,
 wheel and keyboard handling; releasing a drag never plays a card.
 
 Draw and UNO stay visible in stable toolbar slots, grey and disabled until
-their validated actions are available. The UNO action stays disabled until
-eligible before playing. It enables with a red glow, then returns to grey after
+their validated actions are available. The UNO action stays disabled until a legal offered play can remove the penultimate card; merely holding two unplayable cards cannot enable it. It enables with a red glow, then returns to grey after
 declaration. The solo host uses equal-sized player badges and full-sized opponent
 fans; its top seat stays above the tabletop orbit. The bottom row replaces Sort
 with Play Again after a hand, using the shared embedded replay reservation.
@@ -3064,3 +3070,34 @@ icons. The helper owns no timers or rules. Put it inside `GameSection` or browse
 `GameLook.instruction_control(button)` and browser `game-text-instruction` keep
 a contextual instruction readable when disabled; an enabled instruction can
 reopen a required choice. Dismissal must never accept the choice.
+
+
+### Public collection refinements
+
+`GameSection.set_identity(public_identity)` adds the shared avatar beside its
+prominent section heading. `GameRentSummary.set_rent(label, base, bonus,
+building_kinds)` displays base rent, a green upgrade bonus, and green House/red
+Hotel icons. Browser `StarGamesTableUI.rent(label, base, bonus, buildings)` uses
+the same layout. Modules calculate all amounts from authoritative rules. Use
+the yellow `table-property.svg` / `StarGamesTableUI.stat("property", ...)` for
+completed-set counts, keeping green House artwork specific to upgrades.
+
+Native `GameLook.draw_table_pending(canvas, bounds, caption, detail)` and browser
+`has-payment-progress` / `game-payment-progress` present public pending payments
+above dimmed collections. Supply only public recipients and amounts; leave
+private payment choices in targeted snapshots. Building badges on compact
+browser stacks sit halfway beyond the bottom edge and do not occupy side slots.
+
+Target previews may start with selected index `-1` in the shared native/browser
+players or cards presentations. No target is highlighted until an explicit
+choice. Modules must disable Play until a valid selection exists and submit
+that complete offered command with the current revision. Preserve the choice
+across identical snapshots and invalidate it when its offered command changes.
+`game-top-controller` opts a fitted browser table into top alignment, with its
+independent connection header. The template includes hidden examples of these
+public collection components. Standard playing cards use fixed ivory faces and
+red/black suit inks in both renderers, independent of the surrounding theme.
+
+Run `tests/controller_viewport.gd` and `node tests/controller_viewport.mjs` for
+synthetic HTTP, explicit-choice, scaled-input, navigation/refresh and high-
+resolution phone-frame checks without any installed game modules.

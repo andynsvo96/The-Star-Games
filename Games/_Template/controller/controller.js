@@ -96,6 +96,9 @@
   const modernExample = document.querySelector('#example-modern-table');
   document.getElementById('example-table-decision-close')?.addEventListener('click',()=>document.getElementById('example-table-decision').close());
   if (modernExample && window.StarGamesTableUI) {
+    modernExample.append(StarGamesTableUI.rent('Example set',2,7,[{kind:'house'},{kind:'hotel'}]),StarGamesTableUI.stat('property','1/3','One of three complete sets'));
+    // Selected -1 in a players/cards preview requires an explicit target.
+    // Disable the module's Play action until onSelect supplies a valid index.
     modernExample.append(StarGamesTurnStrip(examplePlayers,0,{tracked:true}));
     // One shared surface may combine public assets, identity and a private hand.
     // Put .own-zone, .hand-topline, .private-hand and .action-bar inside the dock.
@@ -130,7 +133,7 @@
     // command; Play still validates.
     exampleReader.setPreview([{label:'Example action',summary:'Public consequences',players:[{...examplePlayers[1],amount:2}],cards:[]}]);
     // The optional players presentation shows all targets with public bank fans.
-    exampleReader.setPreview([{label:'Example player',players:[{...examplePlayers[1],bank_total:1}],cards:[StarGamesCard({id:1,name:'EXAMPLE',value:1})]}],{presentation:'players'});
+    exampleReader.setPreview([{label:'Example player',players:[{...examplePlayers[1],bank_total:1}],cards:[StarGamesCard({id:1,name:'EXAMPLE',value:1})]}],{presentation:'players',selected:-1});
     // Card choices group all candidates by owner and role without a dropdown.
     exampleReader.setPreview([{label:'Take card',summary:'Take a public card',players:[],groups:[{key:'take',value:1,owner:1,label:'Take',player:examplePlayers[1],cards:[StarGamesCard({id:1,name:'EXAMPLE',value:1})]}]}],{presentation:'cards'});
     // Reference readers include an accessible corner flip icon and dismiss on

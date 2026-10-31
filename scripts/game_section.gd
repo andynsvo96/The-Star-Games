@@ -14,6 +14,19 @@ var metric := HBoxContainer.new()
 var summary_icon := TextureRect.new()
 var inline_header := false
 var header_action: Button
+var identity_icon: Control
+
+class IdentityIcon extends Control:
+	var identity: Dictionary = {}
+	func _draw() -> void:
+		GameLook.draw_table_avatar(self, Rect2(Vector2.ZERO, size), Color(identity.get("color", "#58d6ff")), int(identity.get("pose", 0)))
+
+func set_identity(identity: Dictionary) -> void:
+	heading.clip_text = true; heading.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	if identity_icon == null:
+		identity_icon = IdentityIcon.new(); identity_icon.custom_minimum_size = Vector2(36, 36)
+		header.add_child(identity_icon); header.move_child(identity_icon, 1)
+	identity_icon.identity = identity.duplicate(); identity_icon.queue_redraw(); _layout_header()
 
 func set_header_action(button: Button) -> void:
 	if is_instance_valid(header_action) and header_action.get_parent() == metric: metric.remove_child(header_action)
@@ -29,7 +42,7 @@ func set_summary_metric(texture: Texture2D, value: Variant, description: String)
 
 func _layout_header() -> void:
 	leading.visible = center_heading and not inline_header
-	header.columns = 1 if inline_header else 3 if center_heading else 2
+	header.columns = (1 if inline_header else 3 if center_heading else 2) + (1 if identity_icon != null else 0)
 	leading.custom_minimum_size.x = metric.get_combined_minimum_size().x
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if center_heading else HORIZONTAL_ALIGNMENT_LEFT
 

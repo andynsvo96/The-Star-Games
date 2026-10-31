@@ -11,6 +11,7 @@ This public repository contains the launcher, shared host UI, browser controller
 - Solo play and computer opponents in supported games.
 - Saved profiles, scores, and host preferences.
 - Responsive layouts, reduced motion, and customizable artwork and audio.
+- A 16:9 host canvas and scalable phone controllers with a 19.5:9 aspect ratio in either orientation, including desktop browsers and internet-forwarded connections.
 - A Debug menu with autoplay sessions and selectable local browser controllers for testing.
 
 ## Current local game catalog

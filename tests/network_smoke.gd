@@ -68,10 +68,15 @@ func _run() -> void:
 		http.poll()
 		body.append_array(http.read_response_body_chunk())
 		await process_frame
-	if http.get_response_code() != 200 or not body.get_string_from_utf8().contains("THE STAR"):
+	if http.get_response_code() != 200 or not body.get_string_from_utf8().contains("phone-frame.js"):
 		return _finish(false, "HTTP controller page response was invalid")
 	var artwork := HTTPRequest.new()
 	root.add_child(artwork)
+	if artwork.request("http://127.0.0.1:%d/?sg-phone=1" % server.http_port) != OK:
+		return _finish(false, "Inner controller page request failed")
+	var inner_response: Array = await artwork.request_completed
+	if inner_response[1] != 200 or not inner_response[3].get_string_from_utf8().contains("THE STAR"):
+		return _finish(false, "Phone frame did not preserve the join document")
 	if artwork.request("http://127.0.0.1:%d/debug.html?width=390&height=844" % server.http_port) != OK:
 		return _finish(false, "Debug phone preview request failed")
 	var preview_response: Array = await artwork.request_completed

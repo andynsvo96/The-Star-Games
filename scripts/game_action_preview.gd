@@ -22,10 +22,10 @@ func _ready() -> void:
 	add_child(body); body.add_theme_constant_override("separation", 10)
 
 func set_options(items: Array, index := 0, mode := "default") -> void:
-	options = items; presentation = mode; selected = clampi(index, 0, maxi(0, items.size() - 1)); selector.clear()
+	options = items; presentation = mode; selected = clampi(index, -1, maxi(0, items.size() - 1)); selector.clear()
 	for item in items: selector.add_item(str(item.label))
 	selector.visible = items.size() > 1 and not presentation in ["players", "cards"]
-	if not items.is_empty(): selector.select(selected)
+	if not items.is_empty() and selected >= 0: selector.select(selected)
 	_render()
 
 func _render() -> void:
@@ -117,7 +117,7 @@ func _select_group(group: Dictionary) -> void:
 		var groups: Array = options[index].get("groups", [])
 		if not groups.any(func(item: Dictionary) -> bool: return item.key == group.key and item.value == group.value and item.owner == group.owner): continue
 		var matches := 0
-		for current in options[selected].get("groups", []):
+		for current in options[selected].get("groups", []) if selected >= 0 else []:
 			if groups.any(func(item: Dictionary) -> bool: return item.key == current.key and item.value == current.value and item.owner == current.owner): matches += 1
 		if matches > score: best = index; score = matches
 	if best < 0: return
@@ -125,7 +125,7 @@ func _select_group(group: Dictionary) -> void:
 
 
 func _group_selected(group: Dictionary) -> bool:
-	return group.key != "affected" and options[selected].get("groups", []).any(func(item: Dictionary) -> bool: return item.key == group.key and item.value == group.value and item.owner == group.owner)
+	return selected >= 0 and group.key != "affected" and options[selected].get("groups", []).any(func(item: Dictionary) -> bool: return item.key == group.key and item.value == group.value and item.owner == group.owner)
 
 
 func _update_cards() -> void:
@@ -137,6 +137,9 @@ func _update_cards() -> void:
 		entry.grid.set_selected(ids)
 	for entry in empty_choices: GameLook.table_action(entry.button, "play" if _group_selected(entry.group) else "bank")
 	for child in outcome.get_children(): outcome.remove_child(child); child.queue_free()
+	if selected < 0:
+		var prompt := Label.new(); prompt.text = "Choose the player or card for this action."; prompt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; outcome.add_child(prompt)
+		return
 	var item: Dictionary = options[selected]
 	var summary := Label.new(); summary.text = str(item.get("summary", "")); summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; outcome.add_child(summary)
 	for player in item.get("players", []):
