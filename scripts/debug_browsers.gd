@@ -10,9 +10,6 @@ const BROWSERS := [
 	{"id": "chromium", "name": "Chromium", "windows_path": "Chromium/Application/chrome.exe", "macos_app": "Chromium.app", "macos_executable": "Chromium", "commands": ["chromium", "chromium-browser"]},
 	{"id": "safari", "name": "Safari", "windows_path": "", "macos_app": "Safari.app", "macos_executable": "Safari", "commands": []},
 ]
-# iPhone 13/14 portrait dimensions in CSS pixels, rather than physical pixels.
-const PHONE_VIEWPORT := Vector2i(390, 844)
-const WINDOW_PADDING := Vector2i(32, 140)
 
 var platform_name := OS.get_name()
 
@@ -59,8 +56,6 @@ func open_controllers(url: String, selected: PackedStringArray) -> Dictionary:
 	var result := {"opened": PackedStringArray(), "missing": PackedStringArray(), "failed": PackedStringArray()}
 	if not is_supported() or selected.is_empty():
 		return result
-	var preview_url := url.trim_suffix("/") + "/debug.html?width=%d&height=%d" % [PHONE_VIEWPORT.x, PHONE_VIEWPORT.y]
-	var window_size := PHONE_VIEWPORT + WINDOW_PADDING
 	var available := {}
 	for browser: Dictionary in detect(): available[str(browser.id)] = browser
 	var handled := {}
@@ -76,16 +71,14 @@ func open_controllers(url: String, selected: PackedStringArray) -> Dictionary:
 		var browser: Dictionary = available[id]
 		var path: String = browser.path
 		# Launch directly so an already-running browser also receives new-window.
-		# The preview keeps an exact viewport if window sizing is ignored/clamped.
-		var arguments := PackedStringArray(["--new-window", "--window-size=%d,%d" % [window_size.x, window_size.y], preview_url])
-		if browser.id == "firefox":
-			arguments = PackedStringArray(["--width", str(window_size.x), "--height", str(window_size.y), "--new-window", preview_url])
-		elif browser.id == "safari":
-			arguments = PackedStringArray(["-a", path.get_base_dir().get_base_dir().get_base_dir(), preview_url])
+		# The ordinary controller owns phone fitting; debug does not size windows.
+		var arguments := PackedStringArray(["--new-window", url])
+		if browser.id == "safari":
+			arguments = PackedStringArray(["-a", path.get_base_dir().get_base_dir().get_base_dir(), url])
 			path = "/usr/bin/open"
 		elif str(browser.id).begins_with("registered-"):
 			# Unknown clients receive the URL alone, without Chromium-only flags.
-			arguments = PackedStringArray([preview_url])
+			arguments = PackedStringArray([url])
 		if _create_process(path, arguments) == -1:
 			result.failed.append(browser.name)
 		else:

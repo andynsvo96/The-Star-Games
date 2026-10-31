@@ -28,7 +28,7 @@ async function protocol(url) {
 	}};
 }
 
-const fixture=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/styles.css"></head><body class="playful-game game-modern-table"><main class="game-controller game-top-controller"><h1>Phone controller</h1><button id="tap">Tap target</button><button id="next">Next screen</button><div id="preview"></div><div id="rent"></div></main><script src="/card-ui.js"></script><script>
+const fixture=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/styles.css"></head><body class="playful-game game-modern-table"><main class="game-controller game-top-controller"><h1>Phone controller</h1><button id="tap">Tap target</button><button id="next">Next screen</button><div id="preview"></div><div id="rent"></div></main><script src="/card-ui.js"></script><script>
 localStorage.setItem('fixture-player',localStorage.getItem('fixture-player')||'same-player');
 document.getElementById('tap').onclick=()=>localStorage.setItem('fixture-taps',String(Number(localStorage.getItem('fixture-taps')||0)+1));
 document.getElementById('next').onclick=()=>location.href='/game/synthetic/?screen=next';
@@ -36,14 +36,25 @@ const options=[0,1].map(i=>({label:'Player '+i,players:[{display_name:'Player '+
 window.chosen=-1;document.getElementById('preview').append(StarGamesActionPreview(options,{presentation:'players',selected:-1,onSelect:index=>window.chosen=index}));
 document.getElementById('rent').append(StarGamesTableUI.rent('Brown',2,7,[{kind:'house'},{kind:'hotel'}]));
 </script></body></html>`;
+const lobbyBoot=`class FixtureSocket {
+ static OPEN=1;
+ constructor(){this.listeners={};this.readyState=1;setTimeout(()=>this.message({type:'hello',host_name:'Fixture Host',lobby_open:true}),0);}
+ addEventListener(type,callback){(this.listeners[type]??=[]).push(callback);}
+ message(payload){for(const callback of this.listeners.message||[])callback({data:JSON.stringify(payload)});}
+ send(value){const command=JSON.parse(value);if(command.type==='join'){
+  this.message({type:'joined',player:{id:'self',display_name:command.name,color:'#202020',pose:0},lobby_open:true,reconnect_token:'fixture-token'});
+  this.message({type:'roster',players:[{id:'self',display_name:command.name,color:'#202020',pose:0},{id:'other',display_name:'Other Player',color:'#ffffff',pose:1}]});
+ }}
+}window.WebSocket=FixtureSocket;`;
+const lobby=(await readFile(join(root,'web/index.html'),'utf8')).replace('<script src="/app.js" defer></script>','<script>'+lobbyBoot+'</script><script src="/app.js" defer></script>');
 const server=createServer(async(req,res)=>{try{
  const url=new URL(req.url,'http://localhost');
  if(url.pathname==='/'||url.pathname.startsWith('/game/')){
   res.setHeader('Content-Type','text/html');
-  res.end(url.searchParams.get('sg-phone')==='1'||req.headers['sec-fetch-dest']==='iframe'?fixture:await readFile(join(root,'web/phone-frame.html')));return;
+  res.end(url.searchParams.get('sg-phone')==='1'||req.headers['sec-fetch-dest']==='iframe'?(url.searchParams.get('fixture')==='lobby'?lobby:fixture):await readFile(join(root,'web/phone-frame.html')));return;
  }
  const name=url.pathname.startsWith('/ui/')?url.pathname.slice(1):'web/'+url.pathname.slice(1);
- res.setHeader('Content-Type',({'.js':'application/javascript','.css':'text/css','.svg':'image/svg+xml'})[extname(name)]||'application/octet-stream');res.end(await readFile(join(root,name)));
+ res.setHeader('Content-Type',({'.js':'application/javascript','.css':'text/css','.svg':'image/svg+xml','.html':'text/html; charset=utf-8'})[extname(name)]||'application/octet-stream');res.end(await readFile(join(root,name)));
 }catch{res.statusCode=404;res.end();}});
 await mkdir(output,{recursive:true});await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const child=spawn(chrome,['--headless','--no-sandbox','--disable-gpu','--no-first-run','--disable-background-networking','--remote-debugging-port=0','--user-data-dir='+join(output,'profile-'+process.pid)],{windowsHide:true,stdio:['ignore','ignore','pipe']});
@@ -60,8 +71,9 @@ try {
   for(let n=0;n<100;n++){if(await evaluate('Boolean(document.getElementById("phone")?.contentWindow.document.getElementById("tap"))'))break;await delay(30);}
   await delay(80);
   const result=await evaluate(`(()=>{const frame=document.getElementById('phone'),rect=frame.getBoundingClientRect(),child=frame.contentWindow;return{viewport:[child.innerWidth,child.innerHeight],rect:rect.toJSON(),frames:document.querySelectorAll('iframe').length,childFrames:child.document.querySelectorAll('iframe').length,overflow:child.document.documentElement.scrollWidth>child.innerWidth,selected:child.document.querySelectorAll('.game-preview-player-choice.is-selected').length,bonus:child.document.querySelector('.game-rent-bonus')?.textContent,icons:child.document.querySelectorAll('.game-building-icon').length};})()`);
-  const portrait=height>=width,w=portrait?390:844,h=portrait?844:390;
-  check(result.viewport[0]===w&&result.viewport[1]===h,width+' keeps a phone layout viewport at unlimited output resolution');
+  const w=390,h=844;
+  check(result.viewport[0]===w&&result.viewport[1]===h,width+' keeps a portrait phone layout at unlimited output resolution');
+  check(result.rect.width<result.rect.height,'Wide browser windows never turn controllers sideways');
   check(Math.abs(result.rect.width/result.rect.height-w/h)<.001&&Math.abs(result.rect.x*2+result.rect.width-width)<1,width+' fits and centers the phone ratio');
   check(result.rect.right<=width+1&&result.rect.bottom<=height+1&&!result.overflow,width+' has no clipping or sideways page overflow');
   check(result.frames===1&&result.childFrames===0,'Controllers have exactly one frame');
@@ -76,5 +88,21 @@ try {
   if(width<=1920){const png=await page.send('Page.captureScreenshot',{format:'png'});await writeFile(join(output,width+'x'+height+'.png'),Buffer.from(png.data,'base64'));}
   console.log(width+'x'+height+': passed');
  }
+ for(const [width,height] of [[390,844],[1920,1080],[3840,2160]]){
+  await page.send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});
+  await page.send('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/?fixture=lobby'});
+  for(let attempt=0;attempt<100;attempt++){if(await evaluate('Boolean(document.getElementById("phone")?.contentDocument.getElementById("join-form"))'))break;await delay(30);}
+  await evaluate(`(()=>{const doc=document.getElementById('phone').contentDocument;if(!doc.getElementById('join-form').hidden){doc.getElementById('player-name').value='Fixture Player';doc.getElementById('join-form').requestSubmit();}})()`);
+  for(let attempt=0;attempt<100;attempt++){if(await evaluate('document.getElementById("phone")?.contentDocument.getElementById("joined")?.hidden===false'))break;await delay(30);}
+  const joined=await evaluate(`(()=>{const child=document.getElementById('phone').contentWindow,doc=child.document;return{width:child.innerWidth,height:child.innerHeight,columns:child.getComputedStyle(doc.querySelector('.shell')).gridTemplateColumns,name:doc.getElementById('joined-name').textContent,colors:doc.querySelectorAll('#colors button').length,overflow:doc.documentElement.scrollWidth>child.innerWidth,stars:child.getComputedStyle(doc.body,'::before').content};})()`);
+  check(joined.width===390&&joined.height===844&&!joined.columns.includes(' '),'The real joined lobby stays in one portrait column on '+width+'x'+height);
+  check(joined.name==='Fixture Player'&&joined.colors===16&&!joined.overflow,'Real join controls, names and all avatar colors fit the phone width');
+  check(joined.stars.includes('\u2726')&&!joined.stars.includes('\u00e2'),'Lobby decorations render stars instead of garbled encoding');
+  await delay(400); // Let the join card's finite entrance settle before visual QA.
+  if(width<=1920){const png=await page.send('Page.captureScreenshot',{format:'png'});await writeFile(join(output,'join-'+width+'x'+height+'.png'),Buffer.from(png.data,'base64'));}
+ }
+ await page.send('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/debug.html?width=390&height=844'});
+ for(let attempt=0;attempt<100;attempt++){if(await evaluate('location.pathname==="/"&&Boolean(document.getElementById("phone")?.contentDocument.getElementById("tap"))'))break;await delay(30);}
+ check(await evaluate('location.pathname==="/"&&location.search===""&&document.getElementById("phone").contentWindow.innerWidth===390&&document.querySelectorAll("iframe").length===1'),'Old debug preview links redirect to the normal controller without resolution parameters');
 } finally {page?.socket.close();if(browser){await browser.send('Browser.close').catch(()=>{});browser.socket.close();}else child.kill();await new Promise(r=>server.close(r));}
 console.log('Controller viewport browser: '+checks+' checks, 0 failures');

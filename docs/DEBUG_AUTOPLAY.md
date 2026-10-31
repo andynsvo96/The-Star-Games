@@ -9,8 +9,10 @@ the browsers to use; the displayed player count is one controller per selected
 browser. Nothing opens until you choose **Open controllers** (shown with the
 selected count). **Rescan** refreshes detection and preserves available selections.
 
-Each selected browser opens the live lobby connection link in a phone-sized
-controller preview. Join with a different player name in each browser, then
+Each selected browser opens the normal live lobby connection URL. Debug adds no
+resolution query parameters or window-size flags. The shared controller keeps a
+portrait phone ratio at any browser window size, including maximized windows.
+Join with a different player name in each browser, then
 return through Debug and Settings to the lobby to choose a game. Browsers keep
 their ordinary profiles, so refresh and reconnection use the existing controller
 identity. Opening another window in the same browser does not create another

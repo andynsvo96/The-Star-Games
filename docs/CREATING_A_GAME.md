@@ -157,9 +157,10 @@ finite sample must be replaced when implementing the real rules.
 ## 4. Implement the browser controller
 
 The shared HTTP server frames join/game documents in a scalable phone viewport:
-390 by 844 logical CSS pixels in portrait, or 844 by 390 in landscape. The output
-resolution is unrestricted; larger browser windows retain phone media queries
-and letterbox the frame. Native hosts retain the project's 16:9 canvas. This
+390 by 844 logical CSS pixels, always in portrait (9:19.5 width to height). The
+output resolution is unrestricted; wide and maximized windows keep the tall
+phone layout centered with side gutters. Rotating the outer window never switches
+controllers to a landscape or host layout. Native hosts retain the project's 16:9 canvas. This
 applies equally to LAN and forwarded internet URLs. Keep using ordinary SDK
 navigation, same-origin identity storage, and shared fitters inside the document;
 modules must not add another frame or their own aspect-ratio enforcement.

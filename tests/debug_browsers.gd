@@ -201,7 +201,7 @@ func _run() -> void:
 	panel.open_button.pressed.emit()
 	check(app.debug_browsers.calls.size() == 2, "Open launches only the two selected browsers")
 	for call in app.debug_browsers.calls:
-		check(call.arguments[-1] == app.lan_server.controller_url() + "debug.html?width=390&height=844", "Debug uses the active LAN address and actual server port for the phone preview")
+		check(call.arguments[-1] == app.lan_server.controller_url(), "Debug opens the normal active LAN controller URL")
 	check(panel.notice.text.contains("Opened: Firefox, Brave"), "Launch feedback names the selected browsers")
 	var scans: int = app.debug_browsers.scans
 	app.debug_browsers.installed.remove_at(3)
@@ -250,13 +250,9 @@ func _run() -> void:
 
 func check_launch(call: Dictionary, browser_name: String, url: String) -> void:
 	var arguments: PackedStringArray = call.arguments
-	check(arguments[-1] == url + "debug.html?width=390&height=844", "%s receives the same complete phone-preview URL as one argument" % browser_name)
+	check(arguments[-1] == url, "%s receives the normal controller URL without resolution parameters" % browser_name)
 	check("--new-window" in arguments and not "--new-tab" in arguments, "%s explicitly opens a new window" % browser_name)
-	if browser_name == "Firefox":
-		check(arguments.slice(0, 4) == PackedStringArray(["--width", "422", "--height", "984"]), "Firefox requests phone dimensions with room for browser chrome")
-		check(arguments[arguments.find("--new-window") + 1] == arguments[-1], "Firefox receives the URL as the new-window parameter")
-	else:
-		check("--window-size=422,984" in arguments, "%s requests phone dimensions with room for browser chrome" % browser_name)
+	check(arguments == PackedStringArray(["--new-window", url]), "%s opens a normal window without forced dimensions" % browser_name)
 	check(not arguments.has("--incognito") and not arguments.has("--private-window") and not "--no-remote" in arguments, "%s preserves the normal profile and reconnect identity" % browser_name)
 
 

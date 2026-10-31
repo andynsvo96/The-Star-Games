@@ -22,7 +22,7 @@ body {
 }
 
 body::before {
-  content: "âœ¦  Â·  Â·  âœ¦  Â·  Â·  Â·  âœ¦  Â·  Â·  âœ¦";
+  content: "\2726  \00b7  \00b7  \2726  \00b7  \00b7  \00b7  \2726  \00b7  \00b7  \2726";
   position: fixed;
   inset: 4vh 4vw auto;
   color: rgba(255,255,255,.18);

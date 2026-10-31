@@ -5,17 +5,16 @@
   const destination=new URL(location.href);
   destination.searchParams.set('sg-phone','1');
   phone.src=destination.href;
+  // Keep the tall phone layout even in wide or maximized browser windows.
+  const logicalWidth=390,logicalHeight=844;
   function fit() {
     const width=innerWidth,height=innerHeight;
-    const touch=matchMedia('(pointer:coarse)').matches;
-    const landscape=touch&&screen.orientation ? screen.orientation.type.startsWith('landscape') : width>height;
-    const logicalWidth=landscape?844:390,logicalHeight=landscape?390:844;
     const scale=Math.min(width/logicalWidth,height/logicalHeight);
     phone.style.width=logicalWidth+'px';phone.style.height=logicalHeight+'px';
     phone.style.left=(width-logicalWidth*scale)/2+'px';phone.style.top=(height-logicalHeight*scale)/2+'px';
     phone.style.transform='scale('+scale+')';
   }
-  addEventListener('resize',fit);screen.orientation?.addEventListener('change',fit);
+  addEventListener('resize',fit);
   phone.addEventListener('load',()=>{
     try {
       const page=phone.contentWindow;

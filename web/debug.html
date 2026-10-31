@@ -3,37 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>The Star Games - iPhone Debug</title>
-  <style>
-    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #07102b; }
-    iframe { position: absolute; left: 50%; top: 50%; border: 0; transform-origin: center; }
-  </style>
+  <title>The Star Games Controller</title>
 </head>
 <body>
-  <iframe aria-label="Phone controller preview" allow="autoplay; fullscreen"></iframe>
-  <script>
-    (() => {
-      "use strict";
-      const params = new URLSearchParams(location.search);
-      const dimension = (name, fallback, maximum) => {
-        const value = Number(params.get(name));
-        return Number.isInteger(value) && value >= 200 && value <= maximum ? value : fallback;
-      };
-      const width = dimension("width", 390, 1200);
-      const height = dimension("height", 844, 2000);
-      const frame = document.querySelector("iframe");
-      frame.style.width = `${width}px`;
-      frame.style.height = `${height}px`;
-      const fit = () => {
-        // Scaling the preview leaves the controller's media queries and viewport intact.
-        const scale = Math.min(1, innerWidth / width, innerHeight / height);
-        frame.style.transform = `translate(-50%, -50%) scale(${scale})`;
-      };
-      addEventListener("resize", fit);
-      fit();
-      // Navigation, identity and reconnects stay inside the usual same-origin controller.
-      frame.src = "/";
-    })();
-  </script>
+  <a href="/">Open the controller</a>
+  <script>location.replace("/");</script>
 </body>
 </html>

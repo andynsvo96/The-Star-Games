@@ -78,10 +78,10 @@ func _run() -> void:
 	if inner_response[1] != 200 or not inner_response[3].get_string_from_utf8().contains("THE STAR"):
 		return _finish(false, "Phone frame did not preserve the join document")
 	if artwork.request("http://127.0.0.1:%d/debug.html?width=390&height=844" % server.http_port) != OK:
-		return _finish(false, "Debug phone preview request failed")
+		return _finish(false, "Legacy debug URL request failed")
 	var preview_response: Array = await artwork.request_completed
-	if preview_response[1] != 200 or not preview_response[3].get_string_from_utf8().contains("Phone controller preview"):
-		return _finish(false, "Debug phone preview was not served offline")
+	if preview_response[1] != 200 or not preview_response[3].get_string_from_utf8().contains('location.replace("/")') or preview_response[3].get_string_from_utf8().contains("<iframe"):
+		return _finish(false, "Legacy debug URL must return to the ordinary controller")
 	for asset in ["score-wood", "iron-chain", "scroll-closed", "assembly-avatar", "assembly-avatar-detail", "clipboard-board", "table-dice", "table-trade", "table-flag"]:
 		if artwork.request("http://127.0.0.1:%d/ui/playful/%s.svg" % [server.http_port, asset]) != OK:
 			return _finish(false, "Shared game artwork request failed")
