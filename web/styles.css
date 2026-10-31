@@ -835,6 +835,7 @@ body.playful-game { isolation: isolate; }
 .game-playing-card { margin:0 !important; letter-spacing:normal; }
 
 /* Full-screen card reading and two-sided reference cards, shared by card games. */
+html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-reader.has-reference-gallery[open]) { overflow:hidden; }
 .game-dialog.game-card-reader { position:fixed; inset:0; margin:0; width:100vw; max-width:none; height:100dvh; max-height:none; padding:max(12px,env(safe-area-inset-top)) 16px max(12px,env(safe-area-inset-bottom)); border:0; border-radius:0; background:#103f34; color:#fff4d9; box-shadow:inset 0 0 0 10px #67462e; }
 .game-dialog.game-card-reader[open] { display:grid; grid-template-rows:auto minmax(0,1fr) auto auto; gap:10px; }
 .game-card-reader > header { display:flex; align-items:center; gap:12px; }
@@ -1805,6 +1806,17 @@ body.playful-game { isolation: isolate; }
 .game-dialog.game-card-reader.has-reference-menu[open] { grid-template-rows: auto auto minmax(0,1fr) auto auto; }
 .game-dialog.game-card-reader.has-reference-menu.is-wide-reference[open] { grid-template-rows:auto minmax(0,1fr) auto auto; }
 .game-card-reader.is-wide-reference .game-reference-menu { flex:1; }
+.game-reference-collections { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
+.game-reference-collections[hidden] { display:none; }
+.game-reference-collections > button { width:auto; margin:0; min-height:44px; }
+.game-reference-collections > button[aria-pressed="true"] { border-color:#ffe36c; color:#ffeaa0; }
+.game-dialog.game-card-reader.has-reference-gallery[open] { grid-template-rows:auto minmax(0,1fr); overflow:hidden; }
+.game-dialog.game-card-reader.has-reference-collections[open] { grid-template-rows:auto auto minmax(0,1fr); }
+.game-card-reader.has-reference-gallery .game-card-reader-stage { display:flex; flex-direction:column; align-items:center; justify-content:safe center; min-width:0; overflow:hidden; padding:4px; }
+.game-card-reader .game-reference-gallery.game-card-grid { display:grid; flex:none; grid-template-columns:repeat(var(--reference-columns,1),var(--reference-width,100px)); gap:10px; justify-content:center; align-content:center; padding:0; width:100%; }
+.game-card-reader .game-reference-gallery > .game-card-tile { display:flex; flex-direction:column; align-items:center; gap:0; width:var(--reference-width,100px); max-width:none; min-width:0; min-height:44px; height:auto; margin:0; padding:0; border:0; background:transparent; color:#fff4d9; box-shadow:none; font:600 12px/1.2 "Segoe UI",Arial,sans-serif; letter-spacing:normal; }
+.game-reference-gallery > .game-card-tile > img { display:block; flex:none; width:100%; height:auto; aspect-ratio:2/3; object-fit:contain; }
+.game-reference-gallery .game-card-tile-caption { display:flex; align-items:center; justify-content:center; height:36px; width:100%; margin:0; padding:2px 0; font-size:12px; line-height:15px; white-space:normal; overflow:hidden; box-sizing:border-box; }
 .playful-game .game-controller button.game-text-instruction, .playful-game .game-controller button.game-text-instruction:disabled { min-height:44px; width:100%; padding:4px 8px; margin:0; color:inherit; background:transparent; border:0; box-shadow:none; opacity:1; font-size:.8rem; line-height:1.25; white-space:normal; }
 .game-text-instruction[hidden] { display:none; }
 .game-progress-track { position: relative; height: 62px; min-width: 180px; margin-inline: 2px; color:#fff4cf; }

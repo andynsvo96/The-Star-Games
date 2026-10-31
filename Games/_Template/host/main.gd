@@ -595,9 +595,11 @@ func _ready() -> void:
 	option_card_example.choice_selected.connect(func(_id: String, _index: int) -> void: pass) # Stage a preference; never start play here.
 	var guide_example := Button.new(); guide_example.text = "Read example guide"; guide_example.hide(); screen.content.add_child(guide_example)
 	guide_example.pressed.connect(func() -> void:
-		reader_example.show_reference_library([{"label":"Guide","pages":[{"label":"Overview","front":"res://Games/_Template/thumbnail.svg","back":"res://Games/_Template/thumbnail.svg","description":"Literal accessible rules."}]}])
+		reader_example.show_reference_gallery([{"label":"Guide","pages":[{"label":"Overview","front":"res://Games/_Template/thumbnail.svg","back":"res://Games/_Template/thumbnail.svg","description":"Literal accessible rules."}]}],"Rules & costs")
 	)
-	# Paths load only when selected; Texture2D values work too. Selectors are 44px.
+	# Filter pages to the active setup first. Tap a card to read/flip it; Back
+	# returns to the fitted gallery. Only Back exits this reference help.
+	# Optional browse=true adds compact collection buttons for setup libraries.
 	# GameLook.help_control(button) supplies a circular 44px question-mark action.
 	# GameLook.instruction_control(button) makes a readable contextual instruction
 	# that can reopen a dismissed required decision without another utility.

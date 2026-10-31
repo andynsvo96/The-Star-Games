@@ -7,6 +7,11 @@ func _init() -> void: call_deferred("_run")
 func check(ok: bool, message: String) -> void:
 	checks += 1
 	if not ok: failures += 1; printerr("FAIL: "+message)
+func tap(point: Vector2) -> void:
+	var motion := InputEventMouseMotion.new(); motion.position = point; Input.parse_input_event(motion)
+	for pressed in [true,false]:
+		var event := InputEventMouseButton.new(); event.button_index = MOUSE_BUTTON_LEFT; event.pressed = pressed; event.position = point; Input.parse_input_event(event)
+		await process_frame
 func _run() -> void:
 	root.min_size = Vector2i.ONE; root.content_scale_size = Vector2i(640,480); root.size = Vector2i(640,480)
 	var section := GameSection.new(); section.caption = "Players"; root.add_child(section); section.size = Vector2(300,220)
@@ -127,7 +132,29 @@ func _run() -> void:
 		reference._flip()
 		for unused in 6: await process_frame
 		check(reference.stage.get_global_rect().encloses(reference.card.get_global_rect()),"Flipping between portrait and landscape references preserves fitting")
+	var blocker := Control.new(); holder.add_child(blocker); blocker.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); blocker.mouse_filter = Control.MOUSE_FILTER_STOP
+	var gallery: Array = [{"id":"example","label":"Collection <literal>","pages":[{"id":"overview","label":"Overview","front":front,"back":back},{"id":"other","label":"Second topic","front":back,"back":front}]}]
+	reference.show_reference_gallery(gallery,"Rules <literal>")
+	for unused in 12: await process_frame
+	check(reference.get_index() > blocker.get_index() and reference.gallery_showing and not reference.reference_menu.visible,"Gallery rises above a previously opened blocking overlay without reference dropdowns")
+	check(reference.heading.text == "Rules <literal>" and reference.gallery_grid.get_child_count() == 2,"Gallery shows supplied reference cards and literal labels")
+	await tap(reference.gallery_grid.get_child(1).get_global_rect().get_center())
+	check(not reference.gallery_showing and reference.pages[0] == back,"Actual pointer input selects a card through the raised reader")
+	await tap(reference.flip.get_global_rect().get_center())
+	check(reference.page == 1,"Actual pointer input flips the enlarged reference")
+	await tap(Vector2(4,4)); check(reference.visible and not reference.gallery_showing,"Back-only references ignore outside taps")
+	var escape := InputEventKey.new(); escape.keycode = KEY_ESCAPE; escape.pressed = true; Input.parse_input_event(escape); await process_frame
+	check(reference.visible and not reference.gallery_showing,"Back-only references consume Escape without dismissing")
+	await tap(reference.top_back.get_global_rect().get_center()); check(reference.visible and reference.gallery_showing,"Back returns from the enlarged card to all supplied cards")
+	await tap(reference.top_back.get_global_rect().get_center()); check(not reference.visible,"Only the gallery Back button exits help")
+	check(gallery.size() == 1,"Gallery navigation preserves the caller's reference collection")
+	reference.show_reference_gallery(gallery+[{"label":"Other collection","pages":[{"label":"Another card","front":front,"back":back}]}],"Setup help",true,1)
+	for unused in 12: await process_frame
+	check(reference.gallery_tabs.visible and reference.gallery_grid.get_child_count() == 1,"Setup galleries restore a selected collection using compact buttons")
+	await tap(reference.gallery_tabs.get_child(0).get_global_rect().get_center()); check(reference.gallery_grid.get_child_count() == 2,"Actual collection-button input shows all cards in that collection")
+	await tap(Vector2(4,4)); check(reference.visible and reference.gallery_showing,"Background taps leave the gallery open too")
 	reference.show_card(symbol,front,Color.WHITE)
 	check(not reference.reference_menu.visible and reference.reference_library.is_empty(),"Ordinary card inspection clears the optional reference menu")
+	check(not reference.reference_back_only and reference.gallery_groups.is_empty(),"Ordinary card inspection retains its original dismissal behavior")
 	holder.queue_free(); for unused in 4: await process_frame
 	print("Shared table inventory: %d checks, %d failures" % [checks,failures]); quit(0 if failures == 0 else 1)

@@ -187,7 +187,10 @@
   progressExample.update({progress:2,steps:7,approaching:3,defending:4,label:'Two of seven steps. Incoming 3; defense 4.'});
   cameraWrapper.append(progressExample.element); // The wrapper remains hidden.
   const guideExample=document.createElement('button');guideExample.textContent='Read example guide';cameraWrapper.append(guideExample);
-  guideExample.addEventListener('click',()=>exampleReader.showReferenceLibrary([{label:'Guide',pages:[{label:'Overview',pages:[{src:'/game/replace-with-game-id/thumbnail.svg',alt:'Literal front rules'},{src:'/game/replace-with-game-id/thumbnail.svg',alt:'Literal back rules'}]}]}]));
+  guideExample.addEventListener('click',()=>exampleReader.showReferenceGallery([{label:'Guide',pages:[{label:'Overview',pages:[{src:'/game/replace-with-game-id/thumbnail.svg',alt:'Literal front rules'},{src:'/game/replace-with-game-id/thumbnail.svg',alt:'Literal back rules'}]}]}],{heading:'Rules & costs'}));
+  // Filter reference pages to the active setup. Galleries fit every card and
+  // use Back to return from a card, then Back to exit. Optional browse:true
+  // adds compact collection buttons when browsing a complete setup library.
   // game-text-instruction is a transparent 44px button for an explicit prompt;
   // keep its label readable while disabled and reopen required choices on tap.
   // Paragraph feeds opt into game-activity-separated/game-activity-bold-latest.

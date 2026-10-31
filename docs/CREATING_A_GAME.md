@@ -2997,6 +2997,27 @@ native/browser examples.
 
 ### Fitted reference libraries and public progress
 
+Use `GameCardReader.show_reference_gallery(groups, title, browse, selected_group)`
+or browser `showReferenceGallery(groups,{heading,browse,group})` for an overview
+of illustrated help cards. The group/page schemas match the library APIs below.
+The gallery fits all supplied thumbnails to the available screen, with named
+touch targets. Filter groups and pages to the authoritative active rules/scenario
+before opening in-game help. Setup libraries may opt into `browse=true` for compact
+collection buttons. Selecting a card opens its fitted front/back; Back returns to
+the gallery, and Back from the gallery exits. Background taps and Escape do not
+dismiss galleries or their enlarged cards. Keep collections small enough for
+usable targets on the smallest supported screen.
+
+The native gallery uses `GameCardGrid.caption_lines=2` for wrapped captions and
+`center_vertically=true` to center its fitted rows. These grid options default to
+the existing single-line captions and top alignment for other uses.
+
+Standalone `show_reference(front,back,fit_to_view,back_only)` and browser
+`showReference(pages,{fit,backOnly})` can also opt into explicit Back-only exit.
+Normal card inspection retains its existing outside-tap and Escape behavior.
+The native reader raises itself above earlier modal siblings when opened so
+visible controls receive pointer input even when help starts inside Settings.
+
 Reusable reference libraries can use native
 `GameCardReader.show_reference_library(groups, selected_group, selected_topic)`.
 Each group supplies literal `label` and `pages`; each page has `label`, `front`,

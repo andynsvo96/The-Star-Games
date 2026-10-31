@@ -33,6 +33,14 @@ var reference_header: HBoxContainer
 var reference_column: VBoxContainer
 var reference_selected: Dictionary = {}
 var reference_wide := false
+var reference_back_only := false
+var gallery_groups: Array = []
+var gallery_title := "Help"
+var gallery_browse := false
+var gallery_showing := false
+var gallery_group := 0
+var gallery_tabs := HFlowContainer.new()
+var gallery_grid := GameCardGrid.new()
 
 
 func _ready() -> void:
@@ -45,7 +53,7 @@ func _ready() -> void:
 	var header := HBoxContainer.new(); column.add_child(header)
 	reference_column = column; reference_header = header
 	reference_menu.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top_back.theme = theme; top_back.text = "Back"; top_back.add_theme_font_size_override("font_size", 14); GameLook.action(top_back, false); header.add_child(top_back); top_back.pressed.connect(close)
+	top_back.theme = theme; top_back.text = "Back"; top_back.add_theme_font_size_override("font_size", 14); GameLook.action(top_back, false); header.add_child(top_back); top_back.pressed.connect(_back)
 	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL; heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	heading.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS; heading.add_theme_font_size_override("font_size", 18); heading.add_theme_color_override("font_color", Color("fff4d9")); header.add_child(heading)
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -59,9 +67,13 @@ func _ready() -> void:
 	reference_group.accessibility_name = "Reference collection"; reference_topic.accessibility_name = "Reference topic"
 	reference_group.item_selected.connect(func(_index: int) -> void: _reference_topics())
 	reference_topic.item_selected.connect(func(_index: int) -> void: _reference_page())
+	column.add_child(gallery_tabs); gallery_tabs.alignment = FlowContainer.ALIGNMENT_CENTER; gallery_tabs.hide()
+	gallery_tabs.add_theme_constant_override("h_separation", 8); gallery_tabs.add_theme_constant_override("v_separation", 8)
 	flip.theme = theme; flip.icon = RuntimeAssets.texture("res://ui/playful/control-rotate.svg"); flip.custom_minimum_size = Vector2(44, 44); flip.accessibility_name = "Flip to back"; GameLook.action(flip, false); add_child(flip); flip.pressed.connect(_flip)
 	stage.size_flags_vertical = Control.SIZE_EXPAND_FILL; stage.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; column.add_child(stage)
 	center.size_flags_horizontal = Control.SIZE_EXPAND_FILL; center.size_flags_vertical = Control.SIZE_EXPAND_FILL; stage.add_child(center); center.add_child(composition)
+	stage.add_child(gallery_grid); gallery_grid.size_flags_vertical = Control.SIZE_EXPAND_FILL; gallery_grid.preferred_width = 240; gallery_grid.caption_lines = 2; gallery_grid.center_vertically = true; gallery_grid.hide()
+	gallery_grid.card_pressed.connect(_open_gallery_page)
 	composition.add_theme_constant_override("separation", 24); composition.add_child(card); card.size_flags_vertical = Control.SIZE_SHRINK_CENTER; composition.add_child(preview); preview.hide()
 	card.item_rect_changed.connect(_place_flip)
 	composition.item_rect_changed.connect(_place_flip)
@@ -77,8 +89,9 @@ func _ready() -> void:
 
 
 func show_card(data: Dictionary, texture: Texture2D, tint: Color, commands: Array = []) -> void:
+	_clear_gallery(); reference_back_only = false
 	reference_menu.hide(); reference_library.clear()
-	reference_selected.clear(); heading.show()
+	reference_selected = {}; heading.show()
 	if shown_id != int(data.get("id", -1)):
 		_cancel_rotation(); card.rotation = 0; rotation_side = 0
 	shown_id = int(data.get("id", -1)); rotate_row.hide()
@@ -87,7 +100,7 @@ func show_card(data: Dictionary, texture: Texture2D, tint: Color, commands: Arra
 	subtitle.text = ""; subtitle.hide()
 	card.card = data.duplicate(true); card.texture = texture; card.accent = tint; card.queue_redraw()
 	card.accessibility_name = heading.text; card.accessibility_description = str(data.get("detail", ""))
-	set_actions(commands); show(); _fit.call_deferred()
+	set_actions(commands); _show_reader(); _fit.call_deferred()
 
 
 func set_subtitle(text: String, color := Color.WHITE) -> void:
@@ -123,7 +136,20 @@ func set_actions(commands: Array, back := Callable()) -> void:
 	_fit.call_deferred()
 
 
-func show_reference(front: Texture2D, back: Texture2D, fit_to_view := false) -> void:
+func show_reference(front: Texture2D, back: Texture2D, fit_to_view := false, back_only := false) -> void:
+	_clear_gallery(); reference_selected = {}
+	_present_reference(front, back, fit_to_view, back_only)
+
+
+func _show_reader() -> void:
+	# Godot hit testing follows sibling order, including overlays opened earlier.
+	get_parent().move_child(self, get_parent().get_child_count() - 1)
+	outside_origin = Vector2.INF; show()
+
+
+func _present_reference(front: Texture2D, back: Texture2D, fit_to_view := false, back_only := false) -> void:
+	reference_back_only = back_only; gallery_showing = false
+	gallery_grid.hide(); gallery_tabs.hide(); center.show()
 	reference_menu.hide()
 	fit_reference = fit_to_view
 	_cancel_rotation(); shown_id = -1; card.rotation = 0; rotate_row.hide()
@@ -132,13 +158,67 @@ func show_reference(front: Texture2D, back: Texture2D, fit_to_view := false) -> 
 	pages.assign([front, back]); page = 0; heading.text = ""; top_back.show(); flip.show(); action_scroll.hide()
 	card.card = {"layout": "deal", "kind": "reference"}; card.texture = front; card.queue_redraw(); flip.accessibility_name = "Flip to back"
 	card.accessibility_name = "Quick Start Rules"; card.accessibility_description = ""
-	show(); _fit.call_deferred()
+	_show_reader(); _fit.call_deferred()
+
+
+# A fitted card gallery. Modules filter groups/pages to the current rules first.
+# Optional collection buttons let setup screens browse the complete library.
+func show_reference_gallery(groups: Array, title := "Help", browse := false, selected_group := 0) -> void:
+	if groups.is_empty(): return
+	reference_library.clear(); reference_selected = {}
+	gallery_groups = groups.duplicate(); gallery_title = title; gallery_browse = browse
+	gallery_group = clampi(selected_group, 0, groups.size() - 1)
+	for child in gallery_tabs.get_children(): gallery_tabs.remove_child(child); child.queue_free()
+	for index in groups.size():
+		var button := Button.new(); button.theme = theme; button.text = str(groups[index].label); button.toggle_mode = true
+		button.custom_minimum_size.y = 44; button.add_theme_font_size_override("font_size", 14)
+		GameLook.action(button, false); gallery_tabs.add_child(button)
+		button.pressed.connect(func() -> void: gallery_group = index; _present_gallery())
+	_present_gallery()
+
+
+func _present_gallery() -> void:
+	_cancel_rotation(); shown_id = -1; reference_back_only = true; gallery_showing = true
+	reference_selected = {}; pages.clear(); reference_menu.hide(); center.hide(); flip.hide(); rotate_row.hide(); action_scroll.hide()
+	set_subtitle(""); heading.show(); heading.text = gallery_title; top_back.show()
+	gallery_tabs.visible = gallery_browse and gallery_groups.size() > 1
+	for index in gallery_tabs.get_child_count(): gallery_tabs.get_child(index).set_pressed_no_signal(index == gallery_group)
+	var entries: Array = []
+	var groups: Array = [gallery_groups[gallery_group]] if gallery_browse else gallery_groups
+	for group: Dictionary in groups:
+		for topic: Dictionary in group.pages:
+			var label := str(group.label)+( " overview" if group.get("id","") != "base" else "") if str(topic.get("id", "")) == "overview" else str(topic.label)
+			var front: Variant = topic.front
+			entries.append({"card":{"id":str(group.get("id",group.label))+"/"+str(topic.get("id",topic.label)),"name":label,"layout":"art","reference":topic},"caption":label,"texture":GameCard.artwork(str(front)) if front is String else front})
+	gallery_grid.show(); gallery_grid.set_items(entries)
+	stage.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_show_reader(); _fit.call_deferred()
+
+
+func _open_gallery_page(data: Dictionary) -> void:
+	reference_wide = size.x >= 650 and size.y <= 540
+	var topic: Dictionary = data.reference
+	var faces := _reference_faces(topic, reference_wide)
+	_present_reference(faces[0], faces[1], true, true)
+	reference_selected = topic
+	card.accessibility_name = str(data.name); card.accessibility_description = str(topic.get("description", ""))
+
+
+func _clear_gallery() -> void:
+	gallery_groups.clear(); gallery_showing = false; gallery_grid.hide(); gallery_tabs.hide(); center.show()
+	stage.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+
+
+func _back() -> void:
+	if not gallery_groups.is_empty() and not gallery_showing: _present_gallery()
+	else: close()
 
 
 # Optional offline reference library. Each group supplies labelled two-sided pages.
 func show_reference_library(groups: Array, selected_group := 0, selected_topic := 0) -> void:
 	if groups.is_empty(): return
-	reference_library = groups
+	_clear_gallery()
+	reference_library = groups.duplicate()
 	reference_group.clear()
 	for group: Dictionary in groups: reference_group.add_item(str(group.label))
 	reference_group.select(clampi(selected_group, 0, groups.size() - 1))
@@ -158,7 +238,7 @@ func _reference_page() -> void:
 	var topic: Dictionary = reference_library[reference_group.selected].pages[reference_topic.selected]
 	reference_selected = topic; reference_wide = size.x >= 650 and size.y <= 540
 	var faces := _reference_faces(topic,reference_wide)
-	show_reference(faces[0], faces[1], true)
+	_present_reference(faces[0], faces[1], true)
 	reference_menu.show(); reference_topic.visible = reference_topic.item_count > 1
 	card.accessibility_name = str(topic.label); card.accessibility_description = str(topic.get("description", ""))
 	_layout_reference_menu()
@@ -173,13 +253,19 @@ func _reference_faces(topic: Dictionary, wide: bool) -> Array[Texture2D]:
 
 
 func _layout_reference_menu() -> void:
-	if not reference_menu.visible: heading.show(); return
+	if not reference_menu.visible:
+		heading.show(); _refresh_reference_orientation(); return
 	var wide := size.x >= 650 and size.y <= 540
 	var parent: Node = reference_header if wide else reference_column
 	if reference_menu.get_parent() != parent:
 		reference_menu.reparent(parent)
 		if not wide: reference_column.move_child(reference_menu,2)
 	heading.visible = not wide
+	_refresh_reference_orientation()
+
+
+func _refresh_reference_orientation() -> void:
+	var wide := size.x >= 650 and size.y <= 540
 	if wide != reference_wide and not reference_selected.is_empty():
 		reference_wide = wide; pages.assign(_reference_faces(reference_selected,wide)); card.texture = pages[page]; card.queue_redraw()
 
@@ -194,6 +280,8 @@ func _flip() -> void:
 func _fit() -> void:
 	if not is_inside_tree(): return
 	_layout_reference_menu()
+	if gallery_showing:
+		gallery_grid.maximum_height = maxf(1,stage.size.y-8); gallery_grid.queue_sort(); return
 	action_scroll.custom_minimum_size.y = minf(180, actions.get_combined_minimum_size().y)
 	var width := minf(maxf(0, size.x - 40), maxf(260, minf(500, stage.size.y * 2 / 3)))
 	if not pages.is_empty(): width = minf(500, maxf(160, size.x - 72))
@@ -225,6 +313,9 @@ func _contains_focus(point: Vector2) -> bool:
 
 func _input(event: InputEvent) -> void:
 	if not visible: return
+	if reference_back_only:
+		if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE: get_viewport().set_input_as_handled()
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed: outside_origin = event.position if not _contains_focus(event.position) else Vector2.INF
 		else:
@@ -248,4 +339,4 @@ func close() -> void:
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if visible and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE: close(); get_viewport().set_input_as_handled()
+	if visible and not reference_back_only and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE: close(); get_viewport().set_input_as_handled()
