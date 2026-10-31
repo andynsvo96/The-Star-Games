@@ -658,6 +658,26 @@ disclosure buttons hide until dismissal so they cannot cover settings inputs.
 Keep the form small enough to fit the viewport. The template documents these
 optional hooks; existing callers retain the original layout and scrolling.
 
+For grouped settings, create a modal disclosure with the seventh
+`add_corner_details` argument set to `true`, then pass its first body to
+`screen.add_settings_form(body, "Game settings")`. The returned shared
+`GameSettingsForm` supplies `add_section(caption)`, `add_choice(section, caption,
+choices)`, `add_toggle(section, caption, enabled)` and `add_number(section,
+caption, minimum, maximum, step, value, suffix)`. These return the normal
+`OptionButton`, `Button` and `SpinBox` controls. `add_action(caption, callback)`
+puts an Apply button below the scrolling fields. The title, Close and actions
+stay reachable on short screens; aligned fields, matte surfaces, readable focus
+outlines and 44px controls come from `GameLook`. Existing disclosure callers keep
+their current presentation. The hidden template example shows this opt-in form.
+
+The module still owns staged values, validation, visibility, pause behavior and
+Apply. Hide a returned field's parent row when unavailable, or hide its section.
+Restore values without signals as above; after restoring a toggle, call
+`GameLook.settings_toggle(button, enabled)` to refresh its explicit On/Off pill.
+Do not save staged edits or start a new game when opening or closing the form.
+`tests/table_inventory.gd` checks this presentation in desktop, portrait and short
+landscape layouts, including silent restoration and reachable actions.
+
 `GameLook.toggle_state(button, enabled)` optionally colors a shared rule toggle
 green for ON and red for OFF while preserving its padding, size and focus ring.
 Call after `compact_control`, on `toggled`, and after `set_pressed_no_signal`

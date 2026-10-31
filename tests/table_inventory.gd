@@ -98,6 +98,38 @@ func _run() -> void:
 	var entry: RichTextLabel = activity.entries.get_child(0)
 	check(not entry.bbcode_enabled and entry.accessibility_name == "Name <literal> paid $5 → Other" and entry.get_parsed_text().contains("Name <literal>"),"JSON-safe activity icons preserve literal names and complete accessible transfers")
 	activity.queue_free()
+	var form_holder := Control.new(); root.add_child(form_holder); form_holder.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var form_screen := GameScreen.new(); form_holder.add_child(form_screen); form_screen.configure("Shared settings"); form_screen.use_playful_style("", "modern-table")
+	var settings_body: VBoxContainer = form_screen.add_corner_details(["SETTINGS"],Callable(),true,false,false,true,true)[0]
+	var settings_form := form_screen.add_settings_form(settings_body)
+	var appearance := settings_form.add_section("Appearance"); var setting_theme := settings_form.add_choice(appearance,"Theme",["Default","A long custom theme label that must fit"])
+	var opponents := settings_form.add_section("Opponents"); var setting_difficulty := settings_form.add_choice(opponents,"Difficulty",["Easy","Medium","Hard"])
+	var timing := settings_form.add_section("Timing"); var setting_timer := settings_form.add_toggle(timing,"Turn timer",true); var setting_time := settings_form.add_number(timing,"Turn time",.1,60,.1,5," min")
+	var applied := [0]; var apply_settings := settings_form.add_action("Apply & New Game",func() -> void: applied[0]+=1)
+	var edited := [0]; setting_theme.item_selected.connect(func(_index: int) -> void: edited[0]+=1); setting_timer.toggled.connect(func(_on: bool) -> void: edited[0]+=1); setting_time.value_changed.connect(func(_value: float) -> void: edited[0]+=1)
+	setting_theme.select(1); setting_timer.set_pressed_no_signal(false); GameLook.settings_toggle(setting_timer,false); setting_time.set_value_no_signal(7.5)
+	check(edited[0] == 0 and applied[0] == 0,"Restoring grouped preferences never emits edits or applies a new game")
+	var settings_trigger: Button = settings_body.get_meta("toggle_button"); settings_trigger.button_pressed = true
+	for dimensions in [Vector2i(1280,720),Vector2i(390,844),Vector2i(844,390)]:
+		root.content_scale_size = dimensions; root.size = dimensions
+		for unused in 15: await process_frame
+		var sheet: PanelContainer = settings_body.get_meta("settings_panel"); var close_settings: Button = settings_body.get_meta("settings_close")
+		var settings_heading: Label = settings_body.get_meta("settings_heading")
+		check(settings_heading.text == "Game settings" and settings_heading.size.x>100 and settings_heading.size.y>=26 and settings_heading.is_visible_in_tree(),"Settings keep a visible, readable dialog title: %s %s" % [settings_heading.get_global_rect(),settings_heading.text])
+		check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(sheet.get_global_rect()) and sheet.get_global_rect().encloses(apply_settings.get_global_rect()) and sheet.get_global_rect().encloses(close_settings.get_global_rect()),"Settings keep heading, Close and Apply inside the viewport at %s" % dimensions)
+		check(absf(setting_theme.global_position.x-setting_difficulty.global_position.x)<1 and absf(setting_theme.size.x-setting_difficulty.size.x)<1 and absf(setting_time.global_position.x-setting_theme.global_position.x)<1,"Dropdowns and numeric fields share one aligned column")
+		check(close_settings.size.y>=44 and apply_settings.size.y>=44 and setting_timer.size.y>=44,"Settings retain accessible control sizes")
+		if DisplayServer.get_name() != "headless":
+			DirAccess.make_dir_recursive_absolute("res://.test_data/table-inventory/"); await RenderingServer.frame_post_draw; root.get_texture().get_image().save_png("res://.test_data/table-inventory/settings-%dx%d.png" % [dimensions.x,dimensions.y])
+		close_settings.grab_focus(); setting_time.get_line_edit().grab_focus(); for unused in 4: await process_frame
+		var settings_scroll: ScrollContainer = settings_body.get_meta("settings_scroll")
+		check(settings_scroll.get_global_rect().encloses(setting_time.get_global_rect()),"Keyboard focus scrolls the final field into view at %s" % dimensions)
+	check(setting_time.get_line_edit().get_theme_stylebox("normal").bg_color == setting_theme.get_theme_stylebox("normal").bg_color,"Time inputs share the same matte surface as selectors")
+	settings_body.get_meta("settings_close").pressed.emit(); check(not settings_body.get_meta("settings_panel").visible and setting_time.value == 7.5,"Closing settings keeps staged values without applying them")
+	settings_trigger.button_pressed = true; for unused in 4: await process_frame
+	apply_settings.pressed.emit(); check(applied[0] == 1,"Only explicit Apply invokes the supplied callback")
+	form_holder.queue_free(); for unused in 4: await process_frame
+	root.content_scale_size = Vector2i(640,480); root.size = Vector2i(640,480)
 	var store := ProfileStore.new("res://.test_data/table-inventory/profiles.json"); store.load_data()
 	var catalog := GameCatalog.new("res://tests/fixtures/Games"); catalog.scan()
 	var server := LanServer.new(); root.add_child(server); server.configure(store,catalog)

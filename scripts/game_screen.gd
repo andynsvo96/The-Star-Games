@@ -1029,6 +1029,7 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 		bodies.append(body)
 		if index == 0: body.add_child(settings_header)
 		body.set_meta("toggle_button", button)
+		body.set_meta("settings_panel", sheet); body.set_meta("settings_scroll", scroll)
 		if (fit_settings or modal_settings) and index == 0:
 			var heading := add_sidebar_text(settings_header, captions[0])
 			heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -1042,6 +1043,7 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 			close.shortcut = Shortcut.new()
 			close.shortcut.events = [escape]
 			close.pressed.connect(func() -> void: buttons[0].button_pressed = false)
+			body.set_meta("settings_header",settings_header); body.set_meta("settings_heading",heading); body.set_meta("settings_close",close)
 		button.toggled.connect(func(open: bool) -> void:
 			sheet.visible = open
 			button.text = _corner_detail_caption(captions[index], open)
@@ -1073,6 +1075,10 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 		if modal:
 			if modal_settings:
 				var content_size := bodies[0].get_combined_minimum_size() + Vector2(32, 32)
+				if bodies[0].has_meta("settings_form_root"):
+					var form_root: VBoxContainer = bodies[0].get_meta("settings_form_root")
+					var form_scroll: ScrollContainer = bodies[0].get_meta("settings_scroll")
+					content_size = Vector2(500, form_root.get_combined_minimum_size().y - form_scroll.get_combined_minimum_size().y + bodies[0].get_combined_minimum_size().y + sheets[0].get_theme_stylebox("panel").get_minimum_size().y)
 				sheets[0].size = Vector2(minf(maxf(360, content_size.x), bounds.x - 32), minf(content_size.y, bounds.y - 40))
 			else: sheets[0].size = sheets[0].get_combined_minimum_size()
 			sheets[0].position = (bounds - sheets[0].size) / 2
@@ -1095,7 +1101,9 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 						button.add_theme_stylebox_override(state, surface)
 				if _table_header_content != null or icon_only: button.add_theme_font_size_override("font_size", 24 if narrow else 12)
 				button.custom_minimum_size = Vector2(button_width, 44 if icon_only else 36); button.size = button.custom_minimum_size; button.position = Vector2(bounds.x - 60 - button_width, 12)
-				var sheet: PanelContainer = sheets[index]; sheet.size = Vector2(minf(320, bounds.x - 32), minf(440, bounds.y - 86)); sheet.position = Vector2(maxf(16, bounds.x - sheet.size.x - 60), 58)
+				var sheet: PanelContainer = sheets[index]
+				if not bodies[index].has_meta("settings_form_root"):
+					sheet.size = Vector2(minf(320, bounds.x - 32), minf(440, bounds.y - 86)); sheet.position = Vector2(maxf(16, bounds.x - sheet.size.x - 60), 58)
 			if modal_settings: fit_settings_sheet.call(bounds, 0)
 			return
 		var area: Rect2 = placement.call() if placement.is_valid() else Rect2()
@@ -1136,10 +1144,31 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 			buttons[0].button_pressed = false
 	layer.resized.connect(adapt)
 	for button in buttons: button.toggled.connect(func(_open: bool) -> void: adapt.call_deferred())
-	for body in bodies: body.minimum_size_changed.connect(func() -> void: adapt.call_deferred())
+	for body in bodies:
+		body.set_meta("settings_layout",adapt); body.minimum_size_changed.connect(func() -> void: adapt.call_deferred())
 	if placement.is_valid(): _floating_details_layouts.append(adapt)
 	adapt.call_deferred()
 	return bodies
+
+
+func add_settings_form(body: VBoxContainer, caption := "Game settings") -> GameSettingsForm:
+	assert(body.has_meta("settings_header"), "Settings forms require a modal Settings disclosure")
+	var sheet: PanelContainer = body.get_meta("settings_panel")
+	var scroll: ScrollContainer = body.get_meta("settings_scroll")
+	var header: HBoxContainer = body.get_meta("settings_header")
+	var heading: Label = body.get_meta("settings_heading")
+	var close: Button = body.get_meta("settings_close")
+	var root := VBoxContainer.new(); root.add_theme_constant_override("separation",16); sheet.add_child(root)
+	header.reparent(root); header.add_theme_constant_override("separation",12)
+	heading.text = caption; GameLook.settings_heading(heading)
+	close.text = "Close"; GameLook.settings_action(close)
+	scroll.reparent(root); scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL; scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO; scroll.follow_focus = true
+	body.add_theme_constant_override("separation",0)
+	var form := GameSettingsForm.new(); body.add_child(form); form.actions.reparent(root)
+	sheet.add_theme_stylebox_override("panel",GameLook.settings_sheet()); body.set_meta("settings_form_root",root)
+	var fit: Callable = body.get_meta("settings_layout")
+	root.minimum_size_changed.connect(func() -> void: fit.call_deferred()); fit.call_deferred()
+	return form
 
 
 # Modal owners block the board; keep its scroll chrome out of their backdrop.

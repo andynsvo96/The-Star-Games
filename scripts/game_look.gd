@@ -471,6 +471,62 @@ static func interface_font() -> SystemFont:
 	var font := SystemFont.new(); font.font_names = PackedStringArray(["Segoe UI","Arial","sans-serif"]); font.font_weight = 400
 	return font
 
+
+static func settings_sheet() -> StyleBoxFlat:
+	var style := box(Color("0c2233"), Color("36566d"), 16, 1)
+	style.set_content_margin_all(20); style.shadow_color = Color("000e1a99"); style.shadow_size = 16; style.shadow_offset = Vector2(0,6)
+	return style
+
+
+static func settings_heading(label: Label, prominent := true) -> void:
+	label.add_theme_font_override("font", interface_font()); label.add_theme_font_size_override("font_size", 22 if prominent else 11)
+	label.add_theme_color_override("font_color", Color("edf5fa") if prominent else Color("7fa3ba"))
+	label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	label.clip_text = true
+
+
+static func settings_action(button: Button, primary := false) -> void:
+	button.custom_minimum_size.y = 44
+	if not button.has_meta("settings_action_font"):
+		button.add_theme_font_override("font", interface_font()); button.add_theme_font_size_override("font_size", 15); button.set_meta("settings_action_font",true)
+	for state in ["normal","hover","pressed","disabled"]:
+		var fill := Color("2387cd") if primary else Color("142f44")
+		if state == "hover": fill = fill.lightened(.10)
+		elif state == "pressed": fill = fill.darkened(.10)
+		elif state == "disabled": fill = Color("1a3041")
+		var surface := box(fill, Color("4c9bc9") if primary and state != "disabled" else Color("35556c"), 8, 1); surface.content_margin_left = 14; surface.content_margin_right = 14; surface.content_margin_top = 8; surface.content_margin_bottom = 8
+		surface.shadow_size = 0
+		button.add_theme_stylebox_override(state,surface); button.add_theme_color_override("font_"+("color" if state == "normal" else state+"_color"),Color("728c9f") if state == "disabled" else Color("f1f7fb"))
+	var focus := box(Color.TRANSPARENT,Color("83cfff"),8,2); focus.shadow_size = 0
+	button.add_theme_stylebox_override("focus",focus)
+
+
+static func settings_control(control: Control) -> void:
+	var field: Control = control.get_line_edit() if control is SpinBox else control
+	field.add_theme_font_override("font",interface_font()); field.add_theme_font_size_override("font_size",15)
+	for state in ["normal","hover","pressed","disabled","read_only"]:
+		var surface := box(Color("102d42") if state == "hover" else Color("091c2c"),Color("48768f") if state == "hover" else Color("2d4e65"),8,1); surface.content_margin_left = 12; surface.content_margin_right = 12; surface.content_margin_top = 10; surface.content_margin_bottom = 10
+		surface.shadow_size = 0
+		field.add_theme_stylebox_override(state,surface)
+	var focus := box(Color.TRANSPARENT,Color("83cfff"),8,2); focus.shadow_size = 0
+	field.add_theme_stylebox_override("focus",focus)
+	field.add_theme_color_override("font_color",Color("e9f3f9")); field.add_theme_color_override("font_disabled_color",Color("728c9f")); field.add_theme_color_override("font_uneditable_color",Color("728c9f"))
+	control.custom_minimum_size.y = 44
+
+
+static func settings_toggle(button: Button, enabled: bool) -> void:
+	if int(button.get_meta("settings_toggle_state",-1)) == int(enabled): return
+	button.set_meta("settings_toggle_state",int(enabled))
+	settings_action(button)
+	button.text = "On" if enabled else "Off"; button.accessibility_name = str(button.get_meta("settings_caption","Enabled"))+": "+button.text
+	for state in ["normal","hover","pressed","disabled"]:
+		var surface := box(Color("1b4b44") if enabled else Color("263747"),Color("4c9a82") if enabled else Color("526b7d"),20,1); surface.content_margin_left = 16; surface.content_margin_right = 16; surface.content_margin_top = 8; surface.content_margin_bottom = 8
+		surface.shadow_size = 0
+		button.add_theme_stylebox_override(state,surface); button.add_theme_color_override("font_"+("color" if state == "normal" else state+"_color"),Color("b9f2d8") if enabled else Color("b8cad6"))
+	var focus := box(Color.TRANSPARENT,Color("83cfff"),20,2); focus.shadow_size = 0
+	button.add_theme_stylebox_override("focus",focus)
+
 static func modern_table_sheet(active := false) -> StyleBoxFlat:
 	var style := box(Color("05263df5"), Color("ffd447") if active else Color("258db6"), 15, 2 if active else 1)
 	style.shadow_color = Color("ffd44766") if active else Color("00101c66")

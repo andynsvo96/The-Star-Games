@@ -543,6 +543,17 @@ func _ready() -> void:
 	var settings_example := screen.add_phase_dialog(false, true)
 	settings_example.heading.text = "SETTINGS"
 	screen.add_number_control(settings_example.body, "ROUND LENGTH", 30, 180, 15, 60, "sec")
+	# A grouped settings sheet keeps its heading/Close and Apply outside the scroll.
+	# This example's whole disclosure layer stays hidden in the playable template.
+	var form_body := screen.add_corner_details(["SETTINGS"], Callable(), true, false, false, true, true)[0]
+	var form := screen.add_settings_form(form_body)
+	var form_section := form.add_section("Round options")
+	form.add_choice(form_section, "Mode", ["Practice", "Match"])
+	var form_timer := form.add_toggle(form_section, "Turn timer", true)
+	form.add_number(form_section, "Turn time", 0.1, 60, 0.1, 5, " min")
+	form.add_action("Apply", func() -> void: pass) # Validate and persist staged values here.
+	form_timer.set_pressed_no_signal(false); GameLook.settings_toggle(form_timer, false)
+	form_body.get_meta("toggle_button").get_parent().hide()
 	# Optional semantic result: screen.set_phase_dialog_tone(phase_dialog, "danger")
 	# or "success"; an empty tone restores the game's regular palette on replay.
 	# Winning avatars use the same identity colors and poses as the lobby:
