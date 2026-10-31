@@ -42,6 +42,11 @@ func _render() -> void:
 			var player: Dictionary = option.players[0]
 			var avatar := TextureRect.new(); avatar.texture = RuntimeAssets.texture("res://web/avatar-%d.svg" % int(player.get("pose", 0))); avatar.custom_minimum_size = Vector2(28, 32); avatar.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; avatar.modulate = Color(player.get("color", "#ffffff")); row.add_child(avatar)
 			var button := Button.new(); button.text = "%s · $%d" % [player.display_name, player.bank_total]; button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; button.toggle_mode = true; button.size_flags_horizontal = Control.SIZE_EXPAND_FILL; button.accessibility_name = "%s, Bank: $%d" % [player.display_name, player.bank_total]; row.add_child(button); player_buttons.append(button)
+			if player.has("property_total"):
+				button.text = ""; button.custom_minimum_size.y = 44
+				button.accessibility_name = "%s, Cash: $%d, payable properties and buildings: $%d" % [player.display_name, player.bank_total, player.property_total]
+				var content := HBoxContainer.new(); content.mouse_filter = Control.MOUSE_FILTER_IGNORE; button.add_child(content); content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); content.offset_left = 8; content.offset_right = -8
+				var name_label := Label.new(); name_label.text = str(player.display_name); name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL; name_label.clip_text = true; name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE; content.add_child(name_label); content.add_child(_asset_totals(player))
 			button.pressed.connect(func() -> void: _select_player(index))
 			if not option.get("items", []).is_empty():
 				var fan := GameCardFan.new(); group.add_child(fan); fan.set_items(option.items)
@@ -55,6 +60,7 @@ func _render() -> void:
 		var label := Label.new(); label.text = str(player.display_name); label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; label.size_flags_horizontal = Control.SIZE_EXPAND_FILL; row.add_child(label)
 		if player.has("amount"):
 			var amount := Label.new(); amount.text = "$%d" % player.amount; amount.add_theme_color_override("font_color", GameLook.table_owed_color()); row.add_child(amount)
+		if player.has("bank_total"): row.add_child(_asset_totals(player))
 	if not item.get("items", []).is_empty():
 		var grid := GameCardGrid.new(); grid.preferred_width = 72; body.add_child(grid); grid.set_items(item.items)
 	if not str(item.get("note", "")).is_empty():
@@ -94,6 +100,7 @@ func _render_cards() -> void:
 		var row := HBoxContainer.new(); row.add_theme_constant_override("separation", 8); body.add_child(row)
 		var avatar := TextureRect.new(); avatar.texture = RuntimeAssets.texture("res://web/avatar-%d.svg" % int(first.player.get("pose", 0))); avatar.custom_minimum_size = Vector2(28, 32); avatar.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; avatar.modulate = Color(first.player.get("color", "#ffffff")); row.add_child(avatar)
 		var label := Label.new(); label.text = str(first.player.display_name); label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; label.size_flags_horizontal = Control.SIZE_EXPAND_FILL; row.add_child(label)
+		if first.player.has("bank_total"): row.add_child(_asset_totals(first.player))
 		var items: Array = []
 		for group: Dictionary in groups:
 			for source: Dictionary in group.items:
@@ -144,3 +151,15 @@ func _update_cards() -> void:
 	var summary := Label.new(); summary.text = str(item.get("summary", "")); summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; outcome.add_child(summary)
 	for player in item.get("players", []):
 		var label := Label.new(); label.text = str(player.display_name) + (" · $%d" % player.amount if player.has("amount") else ""); label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; outcome.add_child(label)
+		if player.has("bank_total"): outcome.add_child(_asset_totals(player))
+
+
+func _asset_totals(player: Dictionary) -> HBoxContainer:
+	var row := HBoxContainer.new(); row.mouse_filter = Control.MOUSE_FILTER_IGNORE; row.alignment = BoxContainer.ALIGNMENT_CENTER; row.add_theme_constant_override("separation", 4)
+	var rich := RichTextLabel.new(); rich.fit_content = true; rich.scroll_active = false; rich.bbcode_enabled = false; rich.mouse_filter = Control.MOUSE_FILTER_IGNORE; rich.size_flags_vertical = Control.SIZE_SHRINK_CENTER; rich.add_theme_font_size_override("normal_font_size", 13); rich.add_theme_color_override("default_color", Color("eef8ff")); row.add_child(rich)
+	var values := "$%d + $%d " % [int(player.bank_total), int(player.property_total)] if player.has("property_total") else "$%d" % int(player.bank_total)
+	rich.custom_minimum_size = Vector2(rich.get_theme_font("normal_font").get_string_size(values, HORIZONTAL_ALIGNMENT_LEFT, -1, 13).x + (44 if player.has("property_total") else 22), 26)
+	rich.add_image(RuntimeAssets.texture("res://ui/playful/table-cash.svg"), 18, 18, Color.WHITE, INLINE_ALIGNMENT_CENTER); rich.add_text(" $%d" % int(player.bank_total))
+	if player.has("property_total"):
+		rich.add_text(" + $%d " % int(player.property_total)); rich.add_image(RuntimeAssets.texture("res://ui/playful/table-cards.svg"), 18, 18, Color.WHITE, INLINE_ALIGNMENT_CENTER)
+	return row

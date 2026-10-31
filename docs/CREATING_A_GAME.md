@@ -3095,6 +3095,38 @@ above dimmed collections. Supply only public recipients and amounts; leave
 private payment choices in targeted snapshots. Building badges on compact
 browser stacks sit halfway beyond the bottom edge and do not occupy side slots.
 
+Payment previews may include `bank_total` and optional `property_total` in each
+public player dictionary, including card-group owners. The latter is the printed
+payable value of public properties and buildings outside the bank, excluding
+zero-value cards. Native/browser action previews show cash plus this asset value
+with cash/card icons; modules calculate both from authoritative public state.
+`StarGamesTableUI.assets(player)` exposes the same browser summary independently.
+
+Browser `game-header-wide` on a modern phone's `game-header` fills the top surface
+through the shared gutters. `game-player-controls-header` groups an existing
+`player-heading` inspector and an `end-action` button at the top of the owner's
+controls, retaining separate click targets and 44px actions. The combined dock
+supports this sticky header without adding a second panel.
+
+For a horizontally scrolling private hand, wrap `.private-hand` and two real
+buttons in `.game-hand-window`, then create
+`StarGamesHandBrowse(hand, previous, next)`. It adds counted end chevrons using
+the shared party-hand cue, with tap/hold browsing and unchanged card targets.
+Call `update()` after replacing hand contents and `destroy()` on page exit;
+continue using `StarGamesDragScroll` on the hand itself. Modules own hand limits
+and may apply `game-danger-text` to counts above their limit. Native
+`draw_table_stats` metrics accept optional `color` for the same static feedback.
+
+`StarGamesActivityEntries(container, entries)` renders literal `text`/`parts`
+into existing shared activity surfaces, retaining scroll on repeated snapshots.
+Native `GameActivityLog` and browser entries accept JSON-safe part
+`icon:"bank"|"cards"|"property"|"house"` alongside text and readable
+identity colors. Keep a complete literal `text` for accessibility. Use directional
+arrows for accepted transfers and the shared separated/compact feed styles for
+long histories. Filter a personal history to its authoritative participants
+before `send_state`; omit unrelated history from public broadcast packets.
+The hidden template examples demonstrate these optional hooks.
+
 Target previews may start with selected index `-1` in the shared native/browser
 players or cards presentations. No target is highlighted until an explicit
 choice. Modules must disable Play until a valid selection exists and submit

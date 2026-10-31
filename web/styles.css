@@ -969,7 +969,7 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-public-player .public-bank { margin-top:14px; border-top:1px solid #315a75; padding-top:10px; }
 .game-public-player .public-bank > p { font-size:17px; font-weight:800; margin:0 0 8px; }
 .has-payment-progress { position:relative; }
-.has-payment-progress > .group-grid { filter:brightness(.32); }
+.has-payment-progress > .group-grid,.has-payment-progress > .game-public-collections,.has-payment-progress > .public-bank,.has-payment-progress > .game-card-strip { filter:brightness(.32); }
 .game-payment-progress { position:absolute; top:55%; left:8px; right:8px; z-index:5; margin:0; padding:12px 6px; text-align:center; border:1px solid #e2b854; border-radius:9px; background:#031a2bf0; color:#ffe298; font-size:15px; font-weight:800; pointer-events:none; }
 .game-modern-table .game-controller .group-name { font-size:11px; font-weight:650; white-space:nowrap; }
 .game-modern-table .game-controller .group-rent { font-size:10px; color:#b8d7e8; white-space:nowrap; }
@@ -1012,6 +1012,7 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-modern-table .game-controller .hand-topline { display:flex; align-items:center; gap:15px; min-height:30px; margin-bottom:4px; }
 .game-modern-table .game-controller .hand-label { font-size:11px; letter-spacing:1.8px; color:#bedce9; white-space:nowrap; }
 .game-modern-table .game-controller .hand-label b { font-size:11px; padding:2px 6px; margin-left:5px; border-radius:6px; background:#042338; color:white; }
+.game-modern-table .game-controller .hand-label b.game-danger-text { color:#ff777c; }
 .game-modern-table .game-controller .selected-name { font-size:13px; color:#e6f7ff; margin-left:auto; }
 .game-modern-table .game-controller .enlarge-button { font-size:12px; display:flex; align-items:center; gap:6px; color:#a9e4ff; border:0; background:#062c4299; padding:8px; border-radius:7px; min-height:44px; }
 .game-modern-table .game-controller .enlarge-button svg { width:16px; height:16px; }
@@ -1298,6 +1299,9 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-preview-player { display:flex; align-items:center; gap:8px; padding:8px 0; color:#eef8ff; }
 .game-preview-player > span:not(.avatar-badge) { flex:1; min-width:0; overflow-wrap:anywhere; }
 .game-preview-player .avatar-badge { width:30px; height:30px; }
+.game-preview-player > span.game-asset-totals { flex:0 1 auto; display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:4px; font-size:13px; }
+.game-preview-player .game-asset-totals .game-table-stat { display:inline-flex; align-items:center; gap:3px; white-space:nowrap; }
+.game-preview-player .game-asset-totals .game-table-icon { width:20px; height:20px; }
 .game-action-preview .game-preview-note { margin-top:12px; margin-bottom:0; color:#b5d6e7; font-size:13px; }
 .game-action-player-option { min-width:0; display:flex; flex-direction:column; gap:4px; }
 .game-action-player-options { gap:14px; width:100%; box-sizing:border-box; }
@@ -1455,9 +1459,32 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-modern-table .game-controller[data-view="phone"] .game-hand-dock-combined > .own-zone > .player-heading { position:sticky; top:0; z-index:4; background:#072d43; }
 .game-modern-table .game-controller[data-view="phone"] .game-hand-dock-combined > .own-zone > .group-grid { flex:0 0 auto; grid-auto-rows:max-content; }
 .game-modern-table .game-controller[data-view="phone"] .game-hand-dock-combined > .hand-topline,.game-modern-table .game-controller[data-view="phone"] .game-hand-dock-combined > .private-hand,.game-modern-table .game-controller[data-view="phone"] .game-hand-dock-combined > .action-bar { flex-shrink:0; }
+.game-modern-table .game-controller[data-view="phone"] .game-hand-dock-combined > .game-hand-window { flex-shrink:0; min-width:0; }
+.game-modern-table .game-controller[data-view="phone"] .game-hand-dock-combined > .own-zone > .game-player-controls-header { position:sticky; top:0; z-index:4; background:#072d43; }
+.game-player-controls-header { display:flex; align-items:flex-start; gap:8px; }
+.game-modern-table .game-controller .game-player-controls-header > .player-heading { flex:1; min-width:0; }
+.game-modern-table .game-controller .game-player-controls-header .player-name { white-space:normal; overflow-wrap:anywhere; }
+.game-modern-table .game-controller .game-player-controls-header > .end-action { flex:0 0 auto; max-width:112px; min-height:44px; padding:8px; font-size:12px; white-space:normal; }
+.game-modern-table .game-controller[data-view="phone"]:has(> .game-header-wide) { --game-table-header-height:55px; padding-top:calc(var(--game-table-header-height) + 7px); }
+.game-modern-table .game-controller[data-view="phone"] .game-header.game-header-wide { position:fixed; top:0; left:0; width:100%; height:var(--game-table-header-height); margin-inline:0; padding-inline:12px; box-sizing:border-box; box-shadow:none; z-index:6; }
+.game-modern-table .game-controller[data-view="phone"] .game-header-wide .brand { left:50%; transform:translateX(-50%); }
+.game-hand-window { position:relative; padding-inline:22px; }
+.game-modern-table .game-controller .game-hand-edge { position:absolute; top:14px; bottom:10px; z-index:3; display:flex; align-items:center; justify-content:center; width:44px; min-width:44px; min-height:44px; padding:0; border:0; border-radius:0; box-shadow:none; background:transparent; touch-action:none; }
+.game-hand-edge.is-previous { left:0; }
+.game-hand-edge.is-next { right:0; }
+.game-modern-table .game-hand-browse-cue { display:inline-flex; align-items:center; justify-content:center; width:44px; min-height:30px; border:1px solid #7195b3; border-radius:12px; background:#14253cf2; box-shadow:0 2px 5px #0006; color:#eef8ff; font:800 13px/1 "Segoe UI",Arial,sans-serif; white-space:nowrap; pointer-events:none; }
+@media(max-height:700px) and (max-width:600px) {
+ .game-modern-table .game-controller[data-view="phone"]:has(> .game-header-wide) { --game-table-header-height:48px; }
+}
+@media(orientation:landscape) and (max-height:550px) {
+ .game-modern-table .game-controller[data-view="phone"]:has(> .game-header-wide) { --game-table-header-height:49px; }
+ .game-modern-table .game-controller[data-view="phone"] .game-header-wide .brand { display:none; }
+ .game-modern-table .game-controller[data-view="phone"]:has(> .game-header-wide) > .phone-status { z-index:7; }
+}
 .game-modern-table.game-winner-table .game-controller[data-view="phone"] .hand-dock.game-hand-dock-combined { display:flex; }
 .game-modern-table.game-winner-table .game-controller[data-view="phone"] .game-hand-dock-combined > .own-zone { max-height:none; flex-basis:auto; }
 .game-modern-table.game-winner-table .game-controller[data-view="phone"] .game-hand-dock-combined > .hand-topline,.game-modern-table.game-winner-table .game-controller[data-view="phone"] .game-hand-dock-combined > .private-hand,.game-modern-table.game-winner-table .game-controller[data-view="phone"] .game-hand-dock-combined > .action-bar { display:none; }
+.game-modern-table.game-winner-table .game-controller[data-view="phone"] .game-hand-dock-combined > .game-hand-window { display:none; }
 @media(orientation:landscape) and (max-height:550px) {
  .game-modern-table .game-controller[data-view="phone"].game-hand-combined { padding-bottom:10px; }
  .game-modern-table .game-controller[data-view="phone"] .hand-dock.game-hand-dock-combined { max-height:calc(100dvh - 68px); }

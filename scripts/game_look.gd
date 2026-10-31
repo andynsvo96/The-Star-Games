@@ -757,7 +757,7 @@ static func draw_table_stats(canvas: Control, point: Vector2, width: float, stat
 		if texture != null: canvas.draw_texture_rect(texture, Rect2(Vector2(x, point.y - icon_size + 2), Vector2.ONE * icon_size), false)
 		x += icon_size + 3 * scale
 		var value := str(stat.value)
-		canvas.draw_string(font, Vector2(x, point.y), value, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted_size, Color.WHITE if prominent else canvas.get_theme_color("muted", "GamePalette"))
+		canvas.draw_string(font, Vector2(x, point.y), value, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted_size, stat.get("color", Color.WHITE if prominent else canvas.get_theme_color("muted", "GamePalette")))
 		x += font.get_string_size(value, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted_size).x + 4 * scale
 
 

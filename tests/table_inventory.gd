@@ -73,12 +73,24 @@ func _run() -> void:
 		var event := InputEventMouseButton.new(); event.button_index = MOUSE_BUTTON_LEFT; event.pressed = pressed; event.position = Vector2(42,442); Input.parse_input_event(event); await process_frame
 	check(clicked[0],"Empty toolbar space passes clicks to visible controls underneath")
 	actions.queue_free(); underlying.queue_free()
+	var preview := GameActionPreview.new(); root.add_child(preview); preview.size = Vector2(340,220)
+	preview.set_options([{"label":"Player", "players":[{"display_name":"Name <literal>", "bank_total":0, "property_total":7}], "items":[]}], -1, "players")
+	for unused in 4: await process_frame
+	check(preview.player_buttons.size() == 1 and preview.player_buttons[0].accessibility_name.contains("Cash: $0, payable properties and buildings: $7"),"A property-only payment target retains separate public values and a literal name")
+	var total: RichTextLabel = preview.find_children("*","RichTextLabel",true,false)[0]
+	check(total.get_parsed_text().contains("$0 + $7") and total.size.x > 90 and total.get_parent().get_global_rect().encloses(total.get_global_rect()),"Cash and property icons fit a real native payment-choice target")
+	preview.queue_free()
+	var activity := GameActivityLog.new(); root.add_child(activity); activity.size = Vector2(300,150)
+	activity.set_entries([{"id":1,"text":"Name <literal> paid $5 → Other","parts":[{"text":"Name <literal>","color":"#80c8ff"},{"text":" paid $5 "},{"icon":"bank"},{"text":" → Other"}]}],true)
+	var entry: RichTextLabel = activity.entries.get_child(0)
+	check(not entry.bbcode_enabled and entry.accessibility_name == "Name <literal> paid $5 → Other" and entry.get_parsed_text().contains("Name <literal>"),"JSON-safe activity icons preserve literal names and complete accessible transfers")
+	activity.queue_free()
 	var store := ProfileStore.new("res://.test_data/table-inventory/profiles.json"); store.load_data()
 	var catalog := GameCatalog.new("res://tests/fixtures/Games"); catalog.scan()
 	var server := LanServer.new(); root.add_child(server); server.configure(store,catalog)
 	check(server.start_server(),"Synthetic LAN server starts")
 	var http := HTTPRequest.new(); root.add_child(http)
-	for path in ["table-crown.svg","table-crown-silver.svg"]:
+	for path in ["table-crown.svg","table-crown-silver.svg","table-cash.svg","table-cards.svg","table-property.svg","table-house.svg"]:
 		http.request("http://127.0.0.1:%d/ui/playful/%s" % [server.http_port,path]); var response: Array = await http.request_completed
 		check(int(response[1]) == 200 and response[3].get_string_from_utf8().contains("<svg"),"Actual LAN route serves "+path)
 	server.stop_server(); http.queue_free(); server.queue_free(); section.queue_free(); for unused in 3: await process_frame

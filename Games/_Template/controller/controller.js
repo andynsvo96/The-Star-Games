@@ -133,7 +133,18 @@
     // command; Play still validates.
     exampleReader.setPreview([{label:'Example action',summary:'Public consequences',players:[{...examplePlayers[1],amount:2}],cards:[]}]);
     // The optional players presentation shows all targets with public bank fans.
-    exampleReader.setPreview([{label:'Example player',players:[{...examplePlayers[1],bank_total:1}],cards:[StarGamesCard({id:1,name:'EXAMPLE',value:1})]}],{presentation:'players',selected:-1});
+    exampleReader.setPreview([{label:'Example player',players:[{...examplePlayers[1],bank_total:1,property_total:6}],cards:[StarGamesCard({id:1,name:'EXAMPLE',value:1})]}],{presentation:'players',selected:-1});
+    // Optional public property_total adds Cash + payable property/building value.
+    // A scrollable hand can use the same counted end hints as party tables.
+    const handWindow=document.createElement('div'),handStrip=document.createElement('div'),previous=document.createElement('button'),next=document.createElement('button');
+    handStrip.className='private-hand';handStrip.tabIndex=0;handStrip.setAttribute('aria-label','Example hand');handWindow.append(handStrip,previous,next);modernExample.append(handWindow);
+    handStrip.append(...Array.from({length:9},(_,id)=>StarGamesCard({id,name:'Example card '+id,value:1})));
+    new StarGamesDragScroll(handStrip);const handBrowse=new StarGamesHandBrowse(handStrip,previous,next);addEventListener('pagehide',()=>handBrowse.destroy(),{once:true});
+    // Keep End Turn beside the player's inspection button in a shared
+    // game-player-controls-header, rather than in the independent title header.
+    const controlsHeader=document.createElement('div'),inspect=document.createElement('button'),endTurn=document.createElement('button');controlsHeader.className='game-player-controls-header';inspect.className='player-heading';inspect.textContent='Example player';endTurn.className='action-button end-action';endTurn.textContent='End Turn (3/3)';controlsHeader.append(inspect,endTurn);modernExample.prepend(controlsHeader);
+    const history=document.createElement('div');history.className='game-activity-paper game-activity-dark game-activity-separated game-activity-compact';modernExample.append(history);
+    StarGamesActivityEntries(history,[{id:1,text:'Example player paid $5 → Another player',parts:[{text:'Example player',color:'#80c8ff'},{text:' paid $5 '},{icon:'bank'},{text:' → '},{text:'Another player',color:'#ff9999'}]}]);
     // Card choices group all candidates by owner and role without a dropdown.
     exampleReader.setPreview([{label:'Take card',summary:'Take a public card',players:[],groups:[{key:'take',value:1,owner:1,label:'Take',player:examplePlayers[1],cards:[StarGamesCard({id:1,name:'EXAMPLE',value:1})]}]}],{presentation:'cards'});
     // Reference readers include an accessible corner flip icon and dismiss on

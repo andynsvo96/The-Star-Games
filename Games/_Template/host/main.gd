@@ -300,7 +300,7 @@ func _ready() -> void:
 	# After show_card, set_subtitle("Owned by …") adds explicit public ownership.
 	reader_example.set_preview([{"label":"Example action", "summary":"Public consequences", "players":[], "items":[]}])
 	# Optional player choices expose every target and a bounded, hold-to-browse bank.
-	reader_example.set_preview([{"players":[{"display_name":"Example player", "bank_total":1}], "label":"Example player", "items":[{"card":card_example.card, "texture":card_example.texture}]}], 0, "players")
+	reader_example.set_preview([{"players":[{"display_name":"Example player", "bank_total":1, "property_total":6}], "label":"Example player", "items":[{"card":card_example.card, "texture":card_example.texture}]}], 0, "players")
 	# Card choices show all public candidates per owner; matching keys preserve
 	# the other side of a multi-card exchange. Selection never submits a command.
 	reader_example.set_preview([{"label":"Take card", "summary":"Take a public card", "players":[], "groups":[{"key":"take", "value":1, "owner":1, "label":"Take", "player":{"display_name":"Example player"}, "items":[{"card":card_example.card, "texture":card_example.texture}]}]}], 0, "cards")
@@ -328,7 +328,7 @@ func _ready() -> void:
 	# When an outer panel supplies the heading, hide the duplicate inner caption.
 	activity_example.show_heading = false; activity_example.heading.hide(); activity_example.bold_latest = true
 	activity_example.entry_font_size = 17; activity_example.maximum_entries = 5; activity_example.separators = true
-	activity_example.set_entries([{"id":1, "text":"Example player banked a card","parts":[{"text":"Example player","color":GameLook.readable_text_color(Color("2463eb"),GameLook.CREAM)},{"text":" banked "},{"texture":RuntimeAssets.texture("res://ui/playful/table-cards.svg"),"width":20,"height":26}]}], true)
+	activity_example.set_entries([{"id":1, "text":"Example player banked a card","parts":[{"text":"Example player","color":GameLook.readable_text_color(Color("2463eb"),GameLook.CREAM)},{"text":" banked "},{"icon":"cards","width":20,"height":26}]}], true)
 	# Set expandable=true before adding a compact log; connect expand_requested to
 	# an enlarged phase dialog. show_reference(front,back,true) fits without scroll.
 	var sectioned_activity := GameActivityLog.new(); sectioned_activity.sectioned = true; sectioned_activity.expandable = true; sectioned_activity.maximum_entries = 6; sectioned_activity.entry_font_size = 14; sectioned_activity.dense = true

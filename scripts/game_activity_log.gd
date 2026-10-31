@@ -97,7 +97,10 @@ func set_entries(items: Array, reduced := false, paused := false) -> void:
 			if body_font != null: rich.add_theme_font_override("normal_font",body_font)
 			rich.add_theme_font_size_override("normal_font_size",entry_font_size); rich.add_theme_color_override("default_color",GameLook.SCROLL_INK if paper else GameLook.CREAM)
 			for part: Dictionary in items[index].parts:
-				if part.get("texture") is Texture2D: rich.add_image(part.texture,int(part.get("width",20)),int(part.get("height",26)),Color.WHITE,INLINE_ALIGNMENT_CENTER)
+				var texture: Texture2D = part.texture if part.get("texture") is Texture2D else null
+				if str(part.get("icon", "")) in ["bank", "cards", "property", "house"]:
+					texture = RuntimeAssets.texture("res://ui/playful/table-%s.svg" % ("cash" if part.icon == "bank" else part.icon))
+				if texture != null: rich.add_image(texture,int(part.get("width",20)),int(part.get("height",26)),Color.WHITE,INLINE_ALIGNMENT_CENTER)
 				else:
 					if part.has("color"): rich.push_color(part.color if part.color is Color else Color(str(part.color)))
 					rich.add_text(str(part.get("text","")))

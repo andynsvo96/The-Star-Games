@@ -32,9 +32,13 @@ const fixture=`<!doctype html><html><head><meta charset="utf-8"><meta name="view
 localStorage.setItem('fixture-player',localStorage.getItem('fixture-player')||'same-player');
 document.getElementById('tap').onclick=()=>localStorage.setItem('fixture-taps',String(Number(localStorage.getItem('fixture-taps')||0)+1));
 document.getElementById('next').onclick=()=>location.href='/game/synthetic/?screen=next';
-const options=[0,1].map(i=>({label:'Player '+i,players:[{display_name:'Player '+i,bank_total:i}],cards:[]}));
+const options=[0,1].map(i=>({label:'Player '+i,players:[{display_name:'Player '+i,bank_total:i,property_total:7-i}],cards:[]}));
 window.chosen=-1;document.getElementById('preview').append(StarGamesActionPreview(options,{presentation:'players',selected:-1,onSelect:index=>window.chosen=index}));
 document.getElementById('rent').append(StarGamesTableUI.rent('Brown',2,7,[{kind:'house'},{kind:'hotel'}]));
+const handWindow=document.createElement('div'),hand=document.createElement('div'),previous=document.createElement('button'),next=document.createElement('button');hand.className='private-hand';handWindow.append(hand,previous,next);document.querySelector('main').append(handWindow);
+hand.append(...Array.from({length:12},(_,id)=>StarGamesCard({id,name:'Card '+id,value:1})));window.browse=new StarGamesHandBrowse(hand,previous,next);window.hand=hand;window.handNext=next;
+const activity=document.createElement('div');activity.className='game-activity-paper game-activity-dark';document.querySelector('main').append(activity);window.activity=activity;
+window.entries=[{id:1,text:'Name <literal> paid $5 → Other',parts:[{text:'Name <literal>',color:'#80c8ff'},{text:' paid $5 '},{icon:'bank'},{text:' → Other'}]}];StarGamesActivityEntries(activity,entries);
 </script></body></html>`;
 const lobbyBoot=`class FixtureSocket {
  static OPEN=1;
@@ -78,6 +82,10 @@ try {
   check(result.rect.right<=width+1&&result.rect.bottom<=height+1&&!result.overflow,width+' has no clipping or sideways page overflow');
   check(result.frames===1&&result.childFrames===0,'Controllers have exactly one frame');
   check(result.selected===0&&result.bonus==='+ $7'&&result.icons===2,'Explicit choices start empty and rent shows the separate upgrade bonus');
+  const components=await evaluate(`(()=>{const child=document.getElementById('phone').contentWindow,doc=child.document,button=doc.querySelector('.game-preview-player-choice');const entry=child.activity.firstElementChild;child.StarGamesActivityEntries(child.activity,child.entries);const before=child.hand.scrollLeft;child.handNext.click();return{assets:button.querySelector('.game-asset-totals').textContent,icons:button.querySelectorAll('.game-asset-totals img').length,browsed:child.hand.scrollLeft>before,arrow:child.handNext.getBoundingClientRect().width,literal:entry.textContent.includes('Name <literal>'),stable:entry===child.activity.firstElementChild,accessible:entry.getAttribute('aria-label')};})()`);
+  check(components.assets.includes('$0 + $7')&&components.icons===2,'Synthetic public payment choices include distinct cash/property values');
+  check(components.browsed&&components.arrow>=44,'Shared counted hand arrows browse at full touch-target size');
+  check(components.literal&&components.stable&&components.accessible==='Name <literal> paid $5 → Other','Shared activity preserves literal names, complete transfers and rows on duplicate sync');
   const position=await evaluate(`(()=>{const frame=document.getElementById('phone'),rect=frame.getBoundingClientRect(),button=frame.contentWindow.document.getElementById('tap').getBoundingClientRect(),scale=rect.width/frame.contentWindow.innerWidth;return{x:rect.left+(button.left+button.width/2)*scale,y:rect.top+(button.top+button.height/2)*scale,before:Number(frame.contentWindow.localStorage.getItem('fixture-taps')||0)};})()`);
   await page.send('Input.dispatchMouseEvent',{type:'mousePressed',x:position.x,y:position.y,button:'left',clickCount:1});await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',x:position.x,y:position.y,button:'left',clickCount:1});
   check(await evaluate('Number(document.getElementById("phone").contentWindow.localStorage.getItem("fixture-taps"))')===position.before+1,'Scaled input reaches the correct phone control');

@@ -34,11 +34,16 @@
       const paths={cards:'M7 5 18 4l2 15-11 1ZM5 7H3v14h11',bank:'m3 9 9-6 9 6ZM4 21h16M6 11v7m6-7v7m6-7v7',house:'m3 11 9-8 9 8M5 10v11h14V10M10 21v-7h4v7',eye:'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12ZM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6',close:'m6 6 12 12M18 6 6 18',play:'m8 4 12 8-12 8Z',rotate:'M3 10a9 9 0 0 1 15-6l3 3M21 2v5h-5M21 14a9 9 0 0 1-15 6l-3-3m0 5v-5h5'};
       paths.hotel='M4 21V4h16v17ZM8 8h1m6 0h1M8 12h1m6 0h1M10 21v-5h4v5';
       paths.sort='M3 5h12M3 11h9M3 17h6M18 8v12m-4-4 4 4 4-4';
+      paths.history='M3 11a9 9 0 1 1 2 7M3 4v7h7M12 7v5l3 2';
       const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');
       const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',paths[kind]||paths.cards);svg.append(path);return svg;
     },
     stat(kind,value,label) {
       const stat=document.createElement('span');stat.className='game-table-stat';stat.setAttribute('aria-label',label);stat.append(this.icon(kind),document.createTextNode(String(value)));return stat;
+    },
+    assets(player) {
+      const row=document.createElement('span');row.className='game-asset-totals';row.append(this.stat('bank','$'+player.bank_total,'Cash: $'+player.bank_total));
+      if(player.property_total!==undefined){const properties=this.stat('cards','$'+player.property_total,'Payable properties and buildings: $'+player.property_total);properties.append(properties.firstChild);row.append(document.createTextNode(' + '),properties);}return row;
     },
     updateAvatar(badge,player) {
       badge.style.setProperty('--player-color',player.color||'#58d6ff');
@@ -63,6 +68,15 @@
     }
   };
   global.StarGamesCardPlaceholder=()=>{const node=document.createElement('span');node.className='game-card-empty';node.setAttribute('aria-label','Missing property slot');return node;};
+  global.StarGamesActivityEntries=(container,entries)=>{
+    const signature=JSON.stringify(entries);if(container.dataset.activity===signature)return;container.dataset.activity=signature;
+    const scroll=container.closest('.dialog-body'),offset=scroll?.scrollTop||0;container.replaceChildren();
+    for(const entry of entries){const row=document.createElement('p');row.setAttribute('aria-label',entry.text);for(const part of entry.parts||[{text:entry.text}]){
+      if(['bank','cards','property','house'].includes(part.icon)){const icon=global.StarGamesTableUI.icon(part.icon);icon.classList.add('game-activity-icon');row.append(icon);}
+      else{const run=document.createElement('span');run.textContent=part.text||'';if(part.color&&/^#[a-f0-9]{6}$/i.test(part.color))run.style.color=part.color;row.append(run);}
+    }container.append(row);}
+    if(!entries.length){const empty=document.createElement('p');empty.textContent='No activity yet';container.append(empty);}if(scroll)scroll.scrollTop=offset;
+  };
   global.StarGamesCardGrid=(nodes,{slots=0,cardWidth=108}={})=>{const grid=document.createElement('div');grid.className='game-card-grid';grid.style.setProperty('--card-width',Math.max(76,Math.min(220,Number(cardWidth)||108))+'px');if(slots){grid.classList.add('game-card-grid-fixed');grid.style.setProperty('--card-columns',slots);}grid.append(...nodes);return grid;};
   global.StarGamesCardStrip=(nodes,{cardWidth=108,visibleCards=4,label='Public cards'}={})=>{const strip=document.createElement('div');strip.className='game-card-strip';strip.style.setProperty('--card-width',Math.max(76,Math.min(220,Number(cardWidth)||108))+'px');strip.style.setProperty('--strip-visible',Math.max(1,Math.min(6,Number(visibleCards)||4)));strip.tabIndex=0;strip.setAttribute('role','group');strip.setAttribute('aria-label',label);strip.append(...nodes);new global.StarGamesDragScroll(strip);return strip;};
   global.StarGamesCardTile=(face,{label='',caption='',selected=false,onSelect}={})=>{const tile=document.createElement('button');tile.type='button';tile.className='game-card-tile';tile.setAttribute('aria-label',label);tile.setAttribute('aria-pressed',String(selected));tile.classList.toggle('is-selected',selected);tile.append(face);if(caption){const words=document.createElement('span');words.className='game-card-tile-caption';words.textContent=caption;tile.append(words);}tile.addEventListener('click',onSelect);return tile;};
@@ -95,11 +109,11 @@
       for(const item of items)for(const group of item.groups||[])if(!groups.some(prior=>same(prior,group)))groups.push(group);
       const exchange=groups.some(group=>group.key==='give'),categories=new Map();if(exchange)groups.sort((a,b)=>Number(b.key==='give')-Number(a.key==='give'));
       const outcome=document.createElement('div');outcome.className='game-preview-outcome';
-      const select=index=>{selected=index;const item=items[selected];for(const {tile,group}of tiles){const active=!!item&&group.key!=='affected'&&(item.groups||[]).some(other=>same(other,group));tile.classList.toggle('is-selected',active);tile.setAttribute('aria-pressed',String(active));}outcome.replaceChildren();const summary=document.createElement('p');summary.textContent=item?.summary||'Choose the player or card for this action.';outcome.append(summary);for(const player of item?.players||[]){const row=document.createElement('div'),name=document.createElement('span');row.className='game-preview-player';name.textContent=player.display_name;row.append(global.StarGamesTableUI.avatar(player),name);if(player.amount!==undefined){const amount=document.createElement('b');amount.className='game-owed';amount.textContent='$'+player.amount;row.append(amount);}outcome.append(row);}};
+      const select=index=>{selected=index;const item=items[selected];for(const {tile,group}of tiles){const active=!!item&&group.key!=='affected'&&(item.groups||[]).some(other=>same(other,group));tile.classList.toggle('is-selected',active);tile.setAttribute('aria-pressed',String(active));}outcome.replaceChildren();const summary=document.createElement('p');summary.textContent=item?.summary||'Choose the player or card for this action.';outcome.append(summary);for(const player of item?.players||[]){const row=document.createElement('div'),name=document.createElement('span');row.className='game-preview-player';name.textContent=player.display_name;row.append(global.StarGamesTableUI.avatar(player),name);if(player.bank_total!==undefined)row.append(global.StarGamesTableUI.assets(player));if(player.amount!==undefined){const amount=document.createElement('b');amount.className='game-owed';amount.textContent='$'+player.amount;row.append(amount);}outcome.append(row);}};
       const choose=group=>{if(group.key==='affected')return;let best=-1,score=-1;items.forEach((item,index)=>{if(!(item.groups||[]).some(other=>same(other,group)))return;const matches=(items[selected]?.groups||[]).filter(current=>(item.groups||[]).some(other=>same(current,other))).length;if(matches>score){best=index;score=matches;}});if(best>=0){select(best);onSelect?.(best);}};
       for(const group of groups){const key=group.key+':'+group.owner;if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(group);}
       for(const list of buckets.values()){
-        const first=list[0],section=document.createElement('section'),heading=document.createElement('div'),name=document.createElement('span');section.className='game-preview-card-group';heading.className='game-preview-player';name.textContent=first.player.display_name;heading.append(global.StarGamesTableUI.avatar(first.player),name);section.append(heading);
+        const first=list[0],section=document.createElement('section'),heading=document.createElement('div'),name=document.createElement('span');section.className='game-preview-card-group';heading.className='game-preview-player';name.textContent=first.player.display_name;heading.append(global.StarGamesTableUI.avatar(first.player),name);if(first.player.bank_total!==undefined)heading.append(global.StarGamesTableUI.assets(first.player));section.append(heading);
         const nodes=[];for(const group of list){for(const face of group.cards||[]){const tile=global.StarGamesCardTile(face,{label:group.label+', '+face.getAttribute('aria-label'),caption:group.label,onSelect:()=>choose(group)});tiles.push({tile,group});nodes.push(tile);}if(!group.cards?.length){const tile=document.createElement('button');tile.type='button';tile.className='game-preview-empty-choice';tile.textContent=group.label+' · No bank cards';tile.addEventListener('click',()=>choose(group));tiles.push({tile,group});section.append(tile);}}
         if(nodes.length)section.append(global.StarGamesCardGrid(nodes));if(exchange){if(!categories.has(first.key)){const category=document.createElement('section'),title=document.createElement('h4');category.className='game-preview-category';category.dataset.previewCategory=first.key;title.textContent=first.key==='give'?'Your cards to give':"Opponents' cards to take";category.append(title);categories.set(first.key,category);panel.append(category);}categories.get(first.key).append(section);}else panel.append(section);
       }
@@ -108,15 +122,15 @@
     if(presentation==='players'){
       panel.classList.add('game-action-player-options');const buttons=[],fans=[];
       const select=index=>{selected=index;buttons.forEach((button,slot)=>{button.setAttribute('aria-pressed',String(slot===index));button.classList.toggle('is-selected',slot===index);});};
-      items.forEach((item,index)=>{const player=item.players[0],group=document.createElement('section'),button=document.createElement('button');group.className='game-action-player-option';button.type='button';button.className='game-preview-player game-preview-player-choice';button.setAttribute('aria-label',player.display_name+', Bank: $'+player.bank_total);
-        const name=document.createElement('span');name.textContent=player.display_name;button.append(global.StarGamesTableUI.avatar(player),name,global.StarGamesTableUI.stat('bank','$'+player.bank_total,'Bank: $'+player.bank_total));
+      items.forEach((item,index)=>{const player=item.players[0],group=document.createElement('section'),button=document.createElement('button');group.className='game-action-player-option';button.type='button';button.className='game-preview-player game-preview-player-choice';button.setAttribute('aria-label',player.display_name+', Cash: $'+player.bank_total+(player.property_total===undefined?'':', payable properties and buildings: $'+player.property_total));
+        const name=document.createElement('span');name.textContent=player.display_name;button.append(global.StarGamesTableUI.avatar(player),name,global.StarGamesTableUI.assets(player));
         button.addEventListener('click',()=>{select(index);onSelect?.(index);});buttons.push(button);group.append(button);
         if(item.cards?.length){const fan=global.StarGamesCardFan(item.cards,{label:player.display_name+' bank cards'});fans.push(fan);group.append(fan);}panel.append(group);
       });
       panel.stop=()=>fans.forEach(fan=>fan.stop());panel.dispose=()=>fans.forEach(fan=>fan.dispose());select(selected);return panel;
     }
     const choice=document.createElement('select');choice.className='game-choice';choice.setAttribute('aria-label','Action option');items.forEach(item=>{const option=document.createElement('option');option.textContent=item.label;choice.append(option);});choice.value=String(selected);choice.selectedIndex=selected;choice.hidden=items.length<2;panel.append(choice);
-    const body=document.createElement('div');panel.append(body);const render=()=>{body.replaceChildren();const item=items[choice.selectedIndex]||items[0];if(!item)return;const summary=document.createElement('p');summary.textContent=item.summary;body.append(summary);for(const player of item.players||[]){const row=document.createElement('div');row.className='game-preview-player';const name=document.createElement('span');name.textContent=player.display_name;row.append(global.StarGamesTableUI.avatar(player),name);if(player.amount!==undefined){const amount=document.createElement('b');amount.className='game-owed';amount.textContent='$'+player.amount;row.append(amount);}body.append(row);}if(item.cards?.length)body.append(global.StarGamesCardGrid(item.cards));if(item.note){const note=document.createElement('p');note.className='game-preview-note';note.textContent=item.note;body.append(note);}};
+    const body=document.createElement('div');panel.append(body);const render=()=>{body.replaceChildren();const item=items[choice.selectedIndex]||items[0];if(!item)return;const summary=document.createElement('p');summary.textContent=item.summary;body.append(summary);for(const player of item.players||[]){const row=document.createElement('div');row.className='game-preview-player';const name=document.createElement('span');name.textContent=player.display_name;row.append(global.StarGamesTableUI.avatar(player),name);if(player.bank_total!==undefined)row.append(global.StarGamesTableUI.assets(player));if(player.amount!==undefined){const amount=document.createElement('b');amount.className='game-owed';amount.textContent='$'+player.amount;row.append(amount);}body.append(row);}if(item.cards?.length)body.append(global.StarGamesCardGrid(item.cards));if(item.note){const note=document.createElement('p');note.className='game-preview-note';note.textContent=item.note;body.append(note);}};
     choice.addEventListener('change',()=>{render();onSelect?.(choice.selectedIndex);});render();return panel;
   };
   global.StarGamesTurnStrip=(players,active,{tracked=false,actions=[]}={})=>{
@@ -196,6 +210,24 @@
     if(options.onSelect)card.addEventListener('click',options.onSelect);
     card.disabled=!!options.disabled;
     return card;
+  };
+  // Scrollable hands retain the same cards and expose hidden ends at 44px targets.
+  global.StarGamesHandBrowse = class {
+    constructor(strip,previous,next) {
+      this.strip=strip;this.buttons=[previous,next];this.timer=0;
+      strip.parentElement.classList.add('game-hand-window');
+      this.stop=()=>{clearInterval(this.timer);this.timer=0;};
+      this.shift=direction=>{strip.scrollLeft+=direction*Math.max(44,strip.clientWidth*.7);this.update();};
+      this.update=()=>{const bounds=strip.getBoundingClientRect();this.buttons.forEach((button,index)=>{const direction=index?1:-1,available=direction<0?strip.scrollLeft>1:strip.scrollLeft<strip.scrollWidth-strip.clientWidth-1;const amount=available?[...strip.children].filter(card=>{const rect=card.getBoundingClientRect();return direction<0?rect.left<bounds.left-1:rect.right>bounds.right+1;}).length:0;button.hidden=!amount;global.StarGamesTableUI.handBrowse(button,direction,amount);});};
+      this.buttons.forEach((button,index)=>{const direction=index?1:-1;button.classList.add('game-hand-edge',index?'is-next':'is-previous');
+        button.addEventListener('pointerdown',event=>{if(event.button!==0||!event.isPrimary)return;this.stop();event.preventDefault();event.stopPropagation();button.setPointerCapture(event.pointerId);this.shift(direction);this.timer=setInterval(()=>{if(!strip.isConnected||!strip.getClientRects().length){this.stop();return;}this.shift(direction);},310);});
+        for(const type of ['pointerup','pointercancel','lostpointercapture'])button.addEventListener(type,this.stop);
+        button.addEventListener('click',event=>{event.preventDefault();if(event.detail===0)this.shift(direction);});
+      });
+      this.hidden=()=>{if(document.hidden)this.stop();};strip.addEventListener('scroll',this.update);window.addEventListener('blur',this.stop);document.addEventListener('visibilitychange',this.hidden);
+      this.observer=new ResizeObserver(this.update);this.observer.observe(strip);this.update();
+    }
+    destroy(){this.stop();this.observer.disconnect();this.strip.removeEventListener('scroll',this.update);window.removeEventListener('blur',this.stop);document.removeEventListener('visibilitychange',this.hidden);}
   };
   global.StarGamesHandDock = class {
     // A single dock may contain the owner's public assets above private cards.
