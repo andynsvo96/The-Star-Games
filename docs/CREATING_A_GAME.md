@@ -3008,6 +3008,18 @@ the gallery, and Back from the gallery exits. Background taps and Escape do not
 dismiss galleries or their enlarged cards. Keep collections small enough for
 usable targets on the smallest supported screen.
 
+For large cards that flip directly in the gallery, pass `inline_flip=true` as
+the fifth native argument, or `{inlineFlip:true}` in browsers. Each face has
+its own 44px flip button; tapping artwork does not open an inspector. Cards
+stay readable and the collection scrolls on small screens instead of shrinking
+every face into a thumbnail. Orientation changes retain each card's side and
+use its optional wide artwork. Back exits directly. The template demonstrates
+this opt-in; existing thumbnail galleries retain their navigation.
+Modules may merge an expansion overview front with its selected scenario back
+before supplying pages. Use native `gallery_label`, `front_label`, `back_label`,
+`front_description` and `back_description`, or browser `galleryLabel` on the
+topic and `label`/`alt` on its faces, for literal captions and accessible flips.
+
 The native gallery uses `GameCardGrid.caption_lines=2` for wrapped captions and
 `center_vertically=true` to center its fitted rows. These grid options default to
 the existing single-line captions and top alignment for other uses.

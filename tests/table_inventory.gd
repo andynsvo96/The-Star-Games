@@ -153,6 +153,29 @@ func _run() -> void:
 	check(reference.gallery_tabs.visible and reference.gallery_grid.get_child_count() == 1,"Setup galleries restore a selected collection using compact buttons")
 	await tap(reference.gallery_tabs.get_child(0).get_global_rect().get_center()); check(reference.gallery_grid.get_child_count() == 2,"Actual collection-button input shows all cards in that collection")
 	await tap(Vector2(4,4)); check(reference.visible and reference.gallery_showing,"Background taps leave the gallery open too")
+	# Readable inline galleries retain independent faces through layout changes.
+	reference.show_reference_gallery(gallery,"Large rules",false,0,true)
+	for unused in 12: await process_frame
+	var inline_gallery: GameReferenceGallery = reference.reference_gallery
+	var first: Control = inline_gallery.get_child(0)
+	var second: Control = inline_gallery.get_child(1)
+	check(inline_gallery.visible and not reference.gallery_grid.visible,"Inline help uses readable faces instead of selectable thumbnails")
+	await tap(first.get_node("Flip").get_global_rect().get_center())
+	check(first.get_meta("side") == "back" and second.get_meta("side") == "front","Each reference flips independently through actual pointer input")
+	await tap(first.get_node("Face").get_global_rect().get_center())
+	check(reference.gallery_showing and reference.pages.is_empty(),"Artwork taps never open an enlarged card in inline mode")
+	for viewport: Vector2i in [Vector2i(390,844),Vector2i(844,390),Vector2i(1280,720)]:
+		root.content_scale_size = viewport; root.size = viewport
+		for unused in 12: await process_frame
+		check(first.get_meta("side") == "back" and first.get_node("Face").texture == back,"Rotation preserves the flipped side")
+		check(first.size.x >= minf(350,reference.stage.size.x-24),"Large reference faces retain readable widths")
+		for tile: Control in inline_gallery.get_children():
+			var button: Button = tile.get_node("Flip")
+			check(button.size.y >= 44 and button.tooltip_text.is_empty(),"Independent flip controls retain named 44px targets without tooltips")
+		reference.stage.scroll_vertical = int(second.position.y)
+		for unused in 4: await process_frame
+		check(reference.stage.get_global_rect().encloses(second.get_node("Flip").get_global_rect()),"Scrolling reaches later card actions on small screens %s stage=%s flip=%s scroll=%s" % [viewport,reference.stage.get_global_rect(),second.get_node("Flip").get_global_rect(),reference.stage.scroll_vertical])
+	await tap(reference.top_back.get_global_rect().get_center()); check(not reference.visible,"Inline Back exits Help directly")
 	reference.show_card(symbol,front,Color.WHITE)
 	check(not reference.reference_menu.visible and reference.reference_library.is_empty(),"Ordinary card inspection clears the optional reference menu")
 	check(not reference.reference_back_only and reference.gallery_groups.is_empty(),"Ordinary card inspection retains its original dismissal behavior")

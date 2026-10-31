@@ -41,6 +41,8 @@ var gallery_showing := false
 var gallery_group := 0
 var gallery_tabs := HFlowContainer.new()
 var gallery_grid := GameCardGrid.new()
+var gallery_inline := false
+var reference_gallery := GameReferenceGallery.new()
 
 
 func _ready() -> void:
@@ -74,6 +76,7 @@ func _ready() -> void:
 	center.size_flags_horizontal = Control.SIZE_EXPAND_FILL; center.size_flags_vertical = Control.SIZE_EXPAND_FILL; stage.add_child(center); center.add_child(composition)
 	stage.add_child(gallery_grid); gallery_grid.size_flags_vertical = Control.SIZE_EXPAND_FILL; gallery_grid.preferred_width = 240; gallery_grid.caption_lines = 2; gallery_grid.center_vertically = true; gallery_grid.hide()
 	gallery_grid.card_pressed.connect(_open_gallery_page)
+	stage.add_child(reference_gallery); reference_gallery.hide()
 	composition.add_theme_constant_override("separation", 24); composition.add_child(card); card.size_flags_vertical = Control.SIZE_SHRINK_CENTER; composition.add_child(preview); preview.hide()
 	card.item_rect_changed.connect(_place_flip)
 	composition.item_rect_changed.connect(_place_flip)
@@ -149,7 +152,7 @@ func _show_reader() -> void:
 
 func _present_reference(front: Texture2D, back: Texture2D, fit_to_view := false, back_only := false) -> void:
 	reference_back_only = back_only; gallery_showing = false
-	gallery_grid.hide(); gallery_tabs.hide(); center.show()
+	gallery_grid.hide(); reference_gallery.hide(); gallery_tabs.hide(); center.show()
 	reference_menu.hide()
 	fit_reference = fit_to_view
 	_cancel_rotation(); shown_id = -1; card.rotation = 0; rotate_row.hide()
@@ -163,10 +166,11 @@ func _present_reference(front: Texture2D, back: Texture2D, fit_to_view := false,
 
 # A fitted card gallery. Modules filter groups/pages to the current rules first.
 # Optional collection buttons let setup screens browse the complete library.
-func show_reference_gallery(groups: Array, title := "Help", browse := false, selected_group := 0) -> void:
+func show_reference_gallery(groups: Array, title := "Help", browse := false, selected_group := 0, inline_flip := false) -> void:
 	if groups.is_empty(): return
 	reference_library.clear(); reference_selected = {}
 	gallery_groups = groups.duplicate(); gallery_title = title; gallery_browse = browse
+	gallery_inline = inline_flip
 	gallery_group = clampi(selected_group, 0, groups.size() - 1)
 	for child in gallery_tabs.get_children(): gallery_tabs.remove_child(child); child.queue_free()
 	for index in groups.size():
@@ -188,10 +192,18 @@ func _present_gallery() -> void:
 	for group: Dictionary in groups:
 		for topic: Dictionary in group.pages:
 			var label := str(group.label)+( " overview" if group.get("id","") != "base" else "") if str(topic.get("id", "")) == "overview" else str(topic.label)
+			if gallery_inline:
+				entries.append({"id":str(group.get("id",group.label))+"/"+str(topic.get("id",topic.label)),"label":str(topic.get("gallery_label",label)),"topic":topic})
+				continue
 			var front: Variant = topic.front
 			entries.append({"card":{"id":str(group.get("id",group.label))+"/"+str(topic.get("id",topic.label)),"name":label,"layout":"art","reference":topic},"caption":label,"texture":GameCard.artwork(str(front)) if front is String else front})
-	gallery_grid.show(); gallery_grid.set_items(entries)
-	stage.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	gallery_grid.visible = not gallery_inline; reference_gallery.visible = gallery_inline
+	if gallery_inline:
+		reference_gallery.wide = size.x >= 650 and size.y <= 540
+		reference_gallery.set_items(entries)
+	else: gallery_grid.set_items(entries)
+	stage.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO if gallery_inline else ScrollContainer.SCROLL_MODE_DISABLED
+	stage.set_deferred("scroll_vertical",0)
 	_show_reader(); _fit.call_deferred()
 
 
@@ -205,7 +217,7 @@ func _open_gallery_page(data: Dictionary) -> void:
 
 
 func _clear_gallery() -> void:
-	gallery_groups.clear(); gallery_showing = false; gallery_grid.hide(); gallery_tabs.hide(); center.show()
+	gallery_groups.clear(); gallery_showing = false; gallery_grid.hide(); reference_gallery.hide(); gallery_tabs.hide(); center.show()
 	stage.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 
 
@@ -281,7 +293,11 @@ func _fit() -> void:
 	if not is_inside_tree(): return
 	_layout_reference_menu()
 	if gallery_showing:
-		gallery_grid.maximum_height = maxf(1,stage.size.y-8); gallery_grid.queue_sort(); return
+		if gallery_inline:
+			reference_gallery.wide = size.x >= 650 and size.y <= 540
+			reference_gallery.card_height_limit = maxf(1,stage.size.y-52); reference_gallery.queue_sort()
+		else: gallery_grid.maximum_height = maxf(1,stage.size.y-8); gallery_grid.queue_sort()
+		return
 	action_scroll.custom_minimum_size.y = minf(180, actions.get_combined_minimum_size().y)
 	var width := minf(maxf(0, size.x - 40), maxf(260, minf(500, stage.size.y * 2 / 3)))
 	if not pages.is_empty(): width = minf(500, maxf(160, size.x - 72))
