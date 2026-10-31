@@ -89,6 +89,7 @@ func _run() -> void:
 	for index in 5: entries.append({"card":symbol.duplicate(),"texture":RuntimeAssets.scalable_texture("res://ui/playful/stat-resources.svg")})
 	cards.set_items(entries); dialog.overlay.show()
 	for unused in 20: await process_frame
+	check(screen.content_scroll.get_v_scroll_bar().modulate.a == 0,"Modal dialogs hide board scroll chrome without changing its layout gutter")
 	check(dialog.scroll.vertical_scroll_mode == ScrollContainer.SCROLL_MODE_RESERVE,"Fitted dialogs reserve their scroll gutter before card wrapping")
 	check(cards.get_child(0).accessibility_name.contains("Pick any two tokens") and not cards.get_child(0).accessibility_name.contains("$0"),"Symbol cards expose literal instructions without monetary fields")
 	var fitted: Rect2 = dialog.panel.get_global_rect()
@@ -99,5 +100,34 @@ func _run() -> void:
 		await RenderingServer.frame_post_draw; root.get_texture().get_image().save_png("res://.test_data/table-inventory/symbol-dialog.png")
 	var hidden_symbol: Dictionary = symbol.duplicate(); hidden_symbol.back = true
 	cards.set_items([{"card":hidden_symbol,"texture":entries[0].texture}]); check(cards.get_child(0).accessibility_name == "Card back","Symbol backs omit private names and rules from their accessible label")
+	var chosen := {"id":"","index":-1,"toggled":false}
+	cards.selectable = true
+	cards.choice_selected.connect(func(id: String, index: int) -> void: chosen.id = id; chosen.index = index)
+	cards.selection_changed.connect(func(_ids: Array) -> void: chosen.toggled = true)
+	cards.set_items([{"card":symbol,"texture":entries[0].texture,"inline_choice":{"options":["First","Second"],"label":"Scenario choice"}}])
+	for unused in 4: await process_frame
+	var inline_choice: OptionButton = cards.get_child(0).get_node("InlineChoice")
+	inline_choice.select(1); inline_choice.item_selected.emit(1)
+	check(chosen.id == "symbol" and chosen.index == 1 and not chosen.toggled,"Changing an embedded option emits its card ID without toggling its card")
+	check(inline_choice.size.y >= 43.9 and inline_choice.accessibility_name == "Scenario choice" and inline_choice.tooltip_text.is_empty(),"Embedded options retain a named 44px touch target")
+	dialog.overlay.hide()
+	check(screen.content_scroll.get_v_scroll_bar().modulate.a == 1,"Closing the last modal restores board scroll chrome")
+	var track := GameProgressTrack.new(); holder.add_child(track); track.theme = screen.theme
+	track.set_progress(20,7,4,6,"Public attack 4; public defense 6")
+	check(track.progress == 7 and track.accessibility_name == "Public attack 4; public defense 6","Public progress is bounded and has explicit non-color meaning")
+	var reference := GameCardReader.new(); reference.theme = screen.theme; holder.add_child(reference)
+	var tall := Image.create(120,180,false,Image.FORMAT_RGBA8); tall.fill(Color("e8d6a7")); var front := ImageTexture.create_from_image(tall)
+	var wide := Image.create(240,120,false,Image.FORMAT_RGBA8); wide.fill(Color("b8d6d7")); var back := ImageTexture.create_from_image(wide)
+	reference.show_reference_library([{"label":"Collection <literal>","pages":[{"label":"First topic","front":front,"back":back,"description":"Accessible rules"},{"label":"Second topic","front":back,"back":front}]}],0,1)
+	for viewport: Vector2i in [Vector2i(390,844),Vector2i(844,390)]:
+		root.content_scale_size = viewport; root.size = viewport
+		for unused in 12: await process_frame
+		check(reference.reference_menu.visible and reference.reference_topic.selected == 1 and reference.reference_group.get_item_text(0) == "Collection <literal>","Reference library restores a literal collection and selected topic")
+		check(reference.reference_group.size.y >= 43.9 and reference.stage.get_global_rect().encloses(reference.card.get_global_rect()),"Fitted reference selectors and card fit "+str(viewport))
+		reference._flip()
+		for unused in 6: await process_frame
+		check(reference.stage.get_global_rect().encloses(reference.card.get_global_rect()),"Flipping between portrait and landscape references preserves fitting")
+	reference.show_card(symbol,front,Color.WHITE)
+	check(not reference.reference_menu.visible and reference.reference_library.is_empty(),"Ordinary card inspection clears the optional reference menu")
 	holder.queue_free(); for unused in 4: await process_frame
 	print("Shared table inventory: %d checks, %d failures" % [checks,failures]); quit(0 if failures == 0 else 1)

@@ -179,6 +179,17 @@
   const softPrompt=document.createElement('dialog');softPrompt.className='game-dialog game-dialog-soft';cameraWrapper.append(softPrompt);
   StarGamesButtonBadge(rowExample.element,2);
   // showReference(pages,{fit:true}) fits both faces without a reader scrollbar.
+  // reader.showReferenceLibrary([{label:'Guide',pages:[{label:'Overview',pages:[
+  // {src:'/game/replace-with-game-id/thumbnail.svg',alt:'Literal front rules'},
+  // {src:'/game/replace-with-game-id/thumbnail.svg',alt:'Literal back rules'}]}]}])
+  // adds 44px collection/topic selectors and loads only the selected two faces.
+  const progressExample=new StarGamesProgressTrack();
+  progressExample.update({progress:2,steps:7,approaching:3,defending:4,label:'Two of seven steps. Incoming 3; defense 4.'});
+  cameraWrapper.append(progressExample.element); // The wrapper remains hidden.
+  const guideExample=document.createElement('button');guideExample.textContent='Read example guide';cameraWrapper.append(guideExample);
+  guideExample.addEventListener('click',()=>exampleReader.showReferenceLibrary([{label:'Guide',pages:[{label:'Overview',pages:[{src:'/game/replace-with-game-id/thumbnail.svg',alt:'Literal front rules'},{src:'/game/replace-with-game-id/thumbnail.svg',alt:'Literal back rules'}]}]}]));
+  // game-text-instruction is a transparent 44px button for an explicit prompt;
+  // keep its label readable while disabled and reopen required choices on tap.
   // Paragraph feeds opt into game-activity-separated/game-activity-bold-latest.
   addEventListener('pagehide',()=>exampleCamera.destroy(),{once:true});
   const rulesExample=document.getElementById('example-rules-dialog');

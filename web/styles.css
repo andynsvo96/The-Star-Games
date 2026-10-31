@@ -1798,3 +1798,21 @@ body.playful-game { isolation: isolate; }
 .game-player-row.has-headline.is-compact.is-dense .game-player-row-stats { gap:0 2px; }
 .game-player-row.has-headline.is-compact.is-dense .game-player-row-stats img { height:12px; width:11px; }
 .game-player-row.has-headline.is-compact.is-dense .game-player-row-avatar, .game-player-row.has-headline.is-compact.is-dense .game-player-row-avatar > * { width:16px !important; height:16px !important; }
+/* Optional fitted reference collections and static public progress tracks. */
+.game-reference-menu { display: flex; flex: 0 0 auto; gap: 8px; min-width: 0; }
+.game-reference-menu > select { flex: 1 1 0; min-width: 0; min-height: 44px; margin: 0; }
+.game-reference-menu[hidden] { display: none; }
+.game-dialog.game-card-reader.has-reference-menu[open] { grid-template-rows: auto auto minmax(0,1fr) auto auto; }
+.game-dialog.game-card-reader.has-reference-menu.is-wide-reference[open] { grid-template-rows:auto minmax(0,1fr) auto auto; }
+.game-card-reader.is-wide-reference .game-reference-menu { flex:1; }
+.playful-game .game-controller button.game-text-instruction, .playful-game .game-controller button.game-text-instruction:disabled { min-height:44px; width:100%; padding:4px 8px; margin:0; color:inherit; background:transparent; border:0; box-shadow:none; opacity:1; font-size:.8rem; line-height:1.25; white-space:normal; }
+.game-text-instruction[hidden] { display:none; }
+.game-progress-track { position: relative; height: 62px; min-width: 180px; margin-inline: 2px; color:#fff4cf; }
+.game-progress-dots { position: absolute; inset: 30px 24px auto; display: flex; align-items: center; justify-content: space-between; height: 3px; background: var(--control-edge, #42758c); }
+.game-progress-dots i { display: block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity:.65; }
+.game-progress-dots i.is-passed { background: var(--gold, #ffda72); opacity:1; }
+.game-progress-marker { position: absolute; top: 6px; width: 44px; height: 50px; border: 2px solid currentColor; border-radius: 18px; background: #0b1d2c; color:inherit; display: grid; place-items: center; box-sizing: border-box; line-height: 1; }
+.game-progress-marker img { width: 30px; height: 23px; object-fit: contain; }
+.game-progress-marker strong { font-size: 17px; }
+.game-progress-marker.is-goal { right: 2px; }
+.game-progress-marker.is-approaching { left: min(calc(2px + (100% - 48px) * var(--progress, 0)),calc(100% - 96px)); border-color: var(--gold, #ffda72); color: var(--gold, #ffda72); }

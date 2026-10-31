@@ -4,6 +4,7 @@ extends Container
 # Shared selectable card tiles and fixed spaces for missing properties.
 signal card_pressed(card: Dictionary)
 signal selection_changed(ids: Array)
+signal choice_selected(card_id: String, index: int)
 var fixed_columns := 0
 var preferred_width := 108.0
 var maximum_columns := 6
@@ -48,6 +49,17 @@ func set_items(items: Array) -> void:
 			if entry.has("caption"):
 				var label := Label.new(); label.text = str(entry.caption); label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; label.add_theme_font_size_override("font_size", 12); label.clip_text = true; label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 				button.add_child(label); label.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE); label.offset_top = -24; label.offset_bottom = -3; label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			if entry.has("inline_choice"):
+				var options: Dictionary = entry.inline_choice
+				var choice := OptionButton.new()
+				choice.name = "InlineChoice"; choice.custom_minimum_size.y = 44
+				choice.fit_to_longest_item = false; choice.clip_text = true
+				choice.accessibility_name = str(options.get("label", "Card option"))
+				for option: String in options.get("options", []): choice.add_item(option)
+				choice.select(int(options.get("selected", 0)))
+				choice.disabled = button.disabled; button.add_child(choice)
+				GameLook.compact_control(choice, true)
+				choice.item_selected.connect(func(index: int) -> void: choice_selected.emit(str(data.id), index))
 			button.pressed.connect(func() -> void:
 				if selectable:
 					if selected.has(data.id): selected.erase(data.id)
@@ -80,7 +92,7 @@ func _fit() -> void:
 		for candidate in range(1, mini(maximum_columns, entries.size()) + 1):
 			var rows := ceili(float(entries.size()) / candidate)
 			var fitted := minf(preferred_width, minf((available - (candidate - 1) * gap) / candidate, ((maximum_height - maxi(0, rows - 1) * gap) / rows - caption_height) / 1.5))
-			if fitted > best: best = fitted; columns = candidate
+			if fitted > best or is_equal_approx(fitted,best) and candidate > columns: best = fitted; columns = candidate
 		width = maxf(4, best)
 	var row_height := width * 1.5 + (22 if entries.any(func(entry: Dictionary) -> bool: return entry.has("caption")) else 0)
 	var left := 0.0 if left_aligned else maxf(0, (available - columns * width - (columns - 1) * gap) / 2)
@@ -93,6 +105,9 @@ func _fit() -> void:
 			if child is GameCard:
 				child.offset_left = inset; child.offset_top = inset; child.offset_right = -inset
 				child.offset_bottom = -inset - (22 if entries[index].has("caption") else 0)
+			elif child is OptionButton and child.name == "InlineChoice":
+				child.position = Vector2(inset + 5, row_height * .57)
+				child.size = Vector2(maxf(44, width - inset * 2 - 10), 44)
 	var rows := ceili(float(entries.size()) / columns)
 	var height := rows * row_height + maxi(0, rows - 1) * gap
 	if not is_equal_approx(height, grid_height): grid_height = height; update_minimum_size()

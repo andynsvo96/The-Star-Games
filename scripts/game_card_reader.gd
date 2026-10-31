@@ -25,6 +25,14 @@ var rotation_side := 0
 var composition := HBoxContainer.new()
 var preview := GameActionPreview.new()
 var outside_origin := Vector2.INF
+var reference_menu := HBoxContainer.new()
+var reference_group := OptionButton.new()
+var reference_topic := OptionButton.new()
+var reference_library: Array = []
+var reference_header: HBoxContainer
+var reference_column: VBoxContainer
+var reference_selected: Dictionary = {}
+var reference_wide := false
 
 
 func _ready() -> void:
@@ -35,11 +43,22 @@ func _ready() -> void:
 	for side in ["left", "right", "top", "bottom"]: margin.add_theme_constant_override("margin_" + side, 16)
 	var column := VBoxContainer.new(); column.add_theme_constant_override("separation", 10); margin.add_child(column)
 	var header := HBoxContainer.new(); column.add_child(header)
+	reference_column = column; reference_header = header
+	reference_menu.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top_back.theme = theme; top_back.text = "Back"; top_back.add_theme_font_size_override("font_size", 14); GameLook.action(top_back, false); header.add_child(top_back); top_back.pressed.connect(close)
 	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL; heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	heading.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS; heading.add_theme_font_size_override("font_size", 18); heading.add_theme_color_override("font_color", Color("fff4d9")); header.add_child(heading)
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	subtitle.add_theme_font_size_override("font_size", 16); column.add_child(subtitle); subtitle.hide()
+	column.add_child(reference_menu); reference_menu.add_theme_constant_override("separation", 8); reference_menu.hide()
+	for choice: OptionButton in [reference_group, reference_topic]:
+		choice.size_flags_horizontal = Control.SIZE_EXPAND_FILL; choice.custom_minimum_size.y = 44
+		choice.fit_to_longest_item = false; choice.clip_text = true; reference_menu.add_child(choice)
+		GameLook.compact_control(choice, true)
+		choice.custom_minimum_size.y = 44
+	reference_group.accessibility_name = "Reference collection"; reference_topic.accessibility_name = "Reference topic"
+	reference_group.item_selected.connect(func(_index: int) -> void: _reference_topics())
+	reference_topic.item_selected.connect(func(_index: int) -> void: _reference_page())
 	flip.theme = theme; flip.icon = RuntimeAssets.texture("res://ui/playful/control-rotate.svg"); flip.custom_minimum_size = Vector2(44, 44); flip.accessibility_name = "Flip to back"; GameLook.action(flip, false); add_child(flip); flip.pressed.connect(_flip)
 	stage.size_flags_vertical = Control.SIZE_EXPAND_FILL; stage.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; column.add_child(stage)
 	center.size_flags_horizontal = Control.SIZE_EXPAND_FILL; center.size_flags_vertical = Control.SIZE_EXPAND_FILL; stage.add_child(center); center.add_child(composition)
@@ -58,6 +77,8 @@ func _ready() -> void:
 
 
 func show_card(data: Dictionary, texture: Texture2D, tint: Color, commands: Array = []) -> void:
+	reference_menu.hide(); reference_library.clear()
+	reference_selected.clear(); heading.show()
 	if shown_id != int(data.get("id", -1)):
 		_cancel_rotation(); card.rotation = 0; rotation_side = 0
 	shown_id = int(data.get("id", -1)); rotate_row.hide()
@@ -103,6 +124,7 @@ func set_actions(commands: Array, back := Callable()) -> void:
 
 
 func show_reference(front: Texture2D, back: Texture2D, fit_to_view := false) -> void:
+	reference_menu.hide()
 	fit_reference = fit_to_view
 	_cancel_rotation(); shown_id = -1; card.rotation = 0; rotate_row.hide()
 	preview.hide()
@@ -111,6 +133,55 @@ func show_reference(front: Texture2D, back: Texture2D, fit_to_view := false) -> 
 	card.card = {"layout": "deal", "kind": "reference"}; card.texture = front; card.queue_redraw(); flip.accessibility_name = "Flip to back"
 	card.accessibility_name = "Quick Start Rules"; card.accessibility_description = ""
 	show(); _fit.call_deferred()
+
+
+# Optional offline reference library. Each group supplies labelled two-sided pages.
+func show_reference_library(groups: Array, selected_group := 0, selected_topic := 0) -> void:
+	if groups.is_empty(): return
+	reference_library = groups
+	reference_group.clear()
+	for group: Dictionary in groups: reference_group.add_item(str(group.label))
+	reference_group.select(clampi(selected_group, 0, groups.size() - 1))
+	_reference_topics(selected_topic)
+
+
+func _reference_topics(selected := 0) -> void:
+	if reference_library.is_empty(): return
+	reference_topic.clear()
+	for topic: Dictionary in reference_library[reference_group.selected].pages: reference_topic.add_item(str(topic.label))
+	reference_topic.select(clampi(selected, 0, reference_topic.item_count - 1))
+	_reference_page()
+
+
+func _reference_page() -> void:
+	if reference_library.is_empty() or reference_topic.selected < 0: return
+	var topic: Dictionary = reference_library[reference_group.selected].pages[reference_topic.selected]
+	reference_selected = topic; reference_wide = size.x >= 650 and size.y <= 540
+	var faces := _reference_faces(topic,reference_wide)
+	show_reference(faces[0], faces[1], true)
+	reference_menu.show(); reference_topic.visible = reference_topic.item_count > 1
+	card.accessibility_name = str(topic.label); card.accessibility_description = str(topic.get("description", ""))
+	_layout_reference_menu()
+
+
+func _reference_faces(topic: Dictionary, wide: bool) -> Array[Texture2D]:
+	var result: Array[Texture2D] = []
+	for side in ["front","back"]:
+		var face: Variant = topic.get(side+"_wide",topic[side]) if wide else topic[side]
+		result.append(GameCard.artwork(str(face)) if face is String else face)
+	return result
+
+
+func _layout_reference_menu() -> void:
+	if not reference_menu.visible: heading.show(); return
+	var wide := size.x >= 650 and size.y <= 540
+	var parent: Node = reference_header if wide else reference_column
+	if reference_menu.get_parent() != parent:
+		reference_menu.reparent(parent)
+		if not wide: reference_column.move_child(reference_menu,2)
+	heading.visible = not wide
+	if wide != reference_wide and not reference_selected.is_empty():
+		reference_wide = wide; pages.assign(_reference_faces(reference_selected,wide)); card.texture = pages[page]; card.queue_redraw()
 
 
 func _flip() -> void:
@@ -122,6 +193,7 @@ func _flip() -> void:
 
 func _fit() -> void:
 	if not is_inside_tree(): return
+	_layout_reference_menu()
 	action_scroll.custom_minimum_size.y = minf(180, actions.get_combined_minimum_size().y)
 	var width := minf(maxf(0, size.x - 40), maxf(260, minf(500, stage.size.y * 2 / 3)))
 	if not pages.is_empty(): width = minf(500, maxf(160, size.x - 72))
@@ -146,7 +218,7 @@ func _place_flip() -> void:
 
 
 func _contains_focus(point: Vector2) -> bool:
-	for control in [card, preview, top_back, flip, rotate_button, rotate_label] + actions.get_children():
+	for control in [card, preview, top_back, flip, rotate_button, rotate_label, reference_menu] + actions.get_children():
 		if control.is_visible_in_tree() and control.get_global_rect().has_point(point): return true
 	return false
 

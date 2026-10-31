@@ -586,6 +586,21 @@ func _ready() -> void:
 	# compact=true omits the caption and fits a 42px table-header progress row.
 	phase_example.compact = true
 	phase_example.hide(); screen.content.add_child(phase_example); phase_example.set_current(1)
+	# A static voyage/count track is separate from the phase tracker. Values and
+	# its accessible description come from an authorized public snapshot.
+	var progress_example := GameProgressTrack.new(); progress_example.hide(); screen.content.add_child(progress_example)
+	progress_example.set_progress(2,7,3,4,"Two of seven steps. Incoming 3; defense 4.")
+	var option_card_example := GameCardGrid.new(); option_card_example.hide(); screen.content.add_child(option_card_example)
+	option_card_example.set_items([{"card":{"id":"example","layout":"symbol","name":"Example option","detail":"","foot":"Active"},"texture":RuntimeAssets.texture("res://Games/_Template/thumbnail.svg"),"inline_choice":{"options":["First option","Second option"],"selected":0,"label":"Example card option"}}])
+	option_card_example.choice_selected.connect(func(_id: String, _index: int) -> void: pass) # Stage a preference; never start play here.
+	var guide_example := Button.new(); guide_example.text = "Read example guide"; guide_example.hide(); screen.content.add_child(guide_example)
+	guide_example.pressed.connect(func() -> void:
+		reader_example.show_reference_library([{"label":"Guide","pages":[{"label":"Overview","front":"res://Games/_Template/thumbnail.svg","back":"res://Games/_Template/thumbnail.svg","description":"Literal accessible rules."}]}])
+	)
+	# Paths load only when selected; Texture2D values work too. Selectors are 44px.
+	# GameLook.help_control(button) supplies a circular 44px question-mark action.
+	# GameLook.instruction_control(button) makes a readable contextual instruction
+	# that can reopen a dismissed required decision without another utility.
 	# use_table_header(null, true) centers the title above progress. Optional
 	# use_table_header(null, false, true) keeps title/progress in one compact row.
 	# center_board(..., 0.53) can lower a private-card table within the shared fitter.

@@ -384,7 +384,7 @@ island and docks for at least a tile's width, fading through a cached native
 mesh or SVG mask into that exact solid color. The map paints behind the UI
 across the whole viewport, retaining its initial fit through shared anchors.
 Localized waves approach the island, break into foam and recede around rocks.
-The native coastline draws in a separate layer in board coordinates; browser
+The native coastline caches beaches/rocks and animates a bounded wave mesh with an explicitly paused shader phase; terrain drawing is cached independently of moving pieces. All layers remain in board coordinates; browser
 SVG groups use finite cached geometry and local transform/opacity animations.
 Camera navigation carries the beach, foam and rocks together. Pause, reduced
 motion and page exit freeze or clear water effects. No full-screen animation
@@ -444,8 +444,8 @@ Host signed feedback uses the live amount's font beside each affected resource o
 public counter; VP feedback remains outside the roster card. Phones omit these
 floating deltas and keep Players first, with resources and the four
 History/Trade/Development/Help actions in a shared bottom dock. End Turn appears
-outside the controls panel above resources after rolling. Phones omit quick
-instruction/status captions; the optional turn clock shares the End Turn row.
+outside the controls panel above resources after rolling. Base-game phones omit quick
+instruction/status captions; expansion games place their current instruction above controls and use it to reopen dismissed choices; the optional turn clock shares the End Turn row.
 Compact inventory headers use smaller titles/icons and dense card spacing, with
 44px touch targets and the same card/count positions on both sides. Solo hosts place End Turn
 above their other actions too. Build previews use CANCEL/BUILD; development
@@ -1235,6 +1235,8 @@ constructs a hidden example. Spyfall uses it without local centering overrides.
 Phase dialogs reserve their vertical scrollbar gutter before wrapping content.
 This keeps content-fitted card grids stable when their height is near the scroll
 threshold, avoiding repeated width/height changes as the scrollbar appears.
+While a phase dialog or modal Settings is open, the board's scroll chrome fades
+out behind it. Its reserved gutter and board position remain unchanged.
 
 Pass `true` to `add_phase_dialog(true)` to fit its height to the heading, body
 and actions, avoiding empty space below short results. Wrapped content refits
@@ -2991,3 +2993,41 @@ beside its owned/required quantity in a small horizontal chip. This keeps purcha
 previews compact while retaining accessible resource names and availability.
 Normal material cards keep their existing layout. The template includes hidden
 native/browser examples.
+
+
+### Fitted reference libraries and public progress
+
+Reusable reference libraries can use native
+`GameCardReader.show_reference_library(groups, selected_group, selected_topic)`.
+Each group supplies literal `label` and `pages`; each page has `label`, `front`,
+`back` and an optional accessible `description`. Faces can be `Texture2D` values
+or offline resource paths, loaded only when that topic is selected. The reader
+adds collection/topic selectors, retains the Back/Flip controls and fits both
+faces without scrolling. Browser `showReferenceLibrary(groups,{group,topic})`
+uses `{label,pages:[{label,pages:[{src,alt},{src,alt}]}]}`. Keep reference artwork
+and descriptions consistent with the implemented rules. Ordinary readers retain
+their existing behavior. Hidden template examples show both APIs.
+
+Topics may also supply native `front_wide`/`back_wide`, or browser `wideSrc` on
+each face. Short landscape libraries use these alternate illustrations and move
+the existing selectors beside Back, retaining the current topic and flipped side
+through rotation. Other references retain their original faces.
+
+For a native selectable symbol card with an embedded 44px dropdown, supply
+`inline_choice:{options:["First","Second"],selected:0,label:"Card option"}` in
+its `GameCardGrid` entry and leave the card's `detail` empty. The shared grid
+emits `choice_selected(card_id,index)` separately from card selection. Modules
+own validation, staging and compatibility. A height-limited grid prefers fewer
+rows when the same card size fits multiple column counts.
+
+`GameProgressTrack.set_progress(value,total,incoming,defense,description)` and
+browser `StarGamesProgressTrack.update({progress,steps,approaching,defending,label})`
+render a static public dot track with separate count markers. Optional native
+`marker_texture`/`goal_texture` and browser constructor `marker`/`goal` use offline
+icons. The helper owns no timers or rules. Put it inside `GameSection` or browser
+`game-table-section`; modules filter all values to public information.
+
+`GameLook.help_control(button)` creates a circular 44px question-mark control.
+`GameLook.instruction_control(button)` and browser `game-text-instruction` keep
+a contextual instruction readable when disabled; an enabled instruction can
+reopen a required choice. Dismissal must never accept the choice.

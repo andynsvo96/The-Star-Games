@@ -29,6 +29,7 @@ static func outline_disabled(button: Button) -> void:
 # Opt-in shared toy-box presentation. Game rules never depend on this theme.
 const INK := Color("243653")
 const CREAM := Color("fff4cf")
+const GOLD := Color("ffe36c")
 const RED := Color("ff4262")
 const BLUE := Color("00b9ef")
 const SCROLL_INK := Color("56351f")
@@ -1004,3 +1005,17 @@ static func tile(button: Button) -> void:
 static func highlight_tile(button: Button, winning: bool) -> void:
 	for state in ["normal", "hover", "pressed", "disabled"]:
 		button.add_theme_stylebox_override(state, surface("gold" if winning else "tile"))
+
+
+static func help_control(button: Button) -> void:
+	button.text = "?"; button.custom_minimum_size = Vector2(44,44)
+	button.add_theme_font_size_override("font_size",22)
+	for state in ["normal","hover","pressed","disabled"]:
+		button.add_theme_stylebox_override(state,box(button.get_theme_color("panel","GamePalette"),button.get_theme_color("panel_edge","GamePalette"),22,1))
+
+
+static func instruction_control(button: Button) -> void:
+	button.flat = true; button.custom_minimum_size.y = 44
+	button.add_theme_font_size_override("font_size",14)
+	for state in ["normal","hover","pressed","disabled"]: button.add_theme_stylebox_override(state,StyleBoxEmpty.new())
+	button.add_theme_color_override("font_color",CREAM); button.add_theme_color_override("font_disabled_color",CREAM)

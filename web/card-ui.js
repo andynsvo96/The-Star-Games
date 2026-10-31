@@ -212,17 +212,24 @@
       this.dialog=document.createElement('dialog');this.dialog.className='game-dialog game-card-reader';this.dialog.setAttribute('aria-label','Card reader');
       this.header=document.createElement('header');this.topBack=this.button('Back',()=>this.close());this.heading=document.createElement('h2');this.flip=this.button('Flip to back',()=>this.flipPage());this.flip.dataset.readerFlip='';this.header.append(this.topBack,this.heading,this.flip);
       this.subtitle=document.createElement('p');this.subtitle.className='game-reader-subtitle';this.subtitle.hidden=true;
+      this.referenceMenu=document.createElement('div');this.referenceMenu.className='game-reference-menu';this.referenceMenu.hidden=true;
+      this.referenceGroup=document.createElement('select');this.referenceGroup.className='game-choice';this.referenceGroup.setAttribute('aria-label','Reference collection');
+      this.referenceTopic=document.createElement('select');this.referenceTopic.className='game-choice';this.referenceTopic.setAttribute('aria-label','Reference topic');
+      this.referenceMenu.append(this.referenceGroup,this.referenceTopic);
+      this.referenceGroup.addEventListener('change',()=>this.referenceTopics());this.referenceTopic.addEventListener('change',()=>this.referencePage());
       this.stage=document.createElement('div');this.stage.className='game-card-reader-stage';this.footer=document.createElement('footer');
       this.rotateRow=document.createElement('div');this.rotateRow.className='game-card-rotate';this.rotateRow.hidden=true;
       this.rotate=this.button('',()=>this.onRotate?.());this.rotate.setAttribute('aria-label','Rotate card');this.rotate.dataset.readerRotate='';
       const icon=document.createElement('img');icon.src='/ui/playful/control-rotate.svg';icon.alt='';this.rotate.append(icon);this.rotateLabel=document.createElement('span');this.rotateRow.append(this.rotate,this.rotateLabel);
-      this.dialog.append(this.header,this.subtitle,this.stage,this.rotateRow,this.footer);document.body.append(this.dialog);
-      global.StarGamesDismissOnOutside(this.dialog,{contains:target=>!!target.closest('.game-reader-card,.game-action-preview,button,.game-card-rotate')});
+      this.dialog.append(this.header,this.subtitle,this.referenceMenu,this.stage,this.rotateRow,this.footer);document.body.append(this.dialog);
+      global.StarGamesDismissOnOutside(this.dialog,{contains:target=>!!target.closest('.game-reader-card,.game-action-preview,button,.game-card-rotate,.game-reference-menu')});
       this.dialog.addEventListener('close',onClose);this.dialog.addEventListener('cancel',event=>{event.preventDefault();this.close();});
       this.referenceObserver=new ResizeObserver(()=>this.fitReference());this.referenceObserver.observe(this.stage);
     }
     button(label,callback,primary=false){const node=document.createElement('button');node.textContent=label;node.className=(primary?'game-primary':'game-secondary')+' game-compact-control';node.addEventListener('click',callback);return node;}
     showCard(node,{heading='',actions=[],back}={}){
+      this.referenceMenu.hidden=true;this.referenceLibrary=null;this.dialog.classList.remove('has-reference-menu');
+      this.heading.hidden=false;this.dialog.classList.remove('is-wide-reference');
       this.clearPreview();
       this.setSubtitle('');
       this.dialog.classList.remove('has-action-preview','has-reference','has-fitted-reference');this.previewIndex=0;
@@ -234,9 +241,13 @@
     clearPreview(){const preview=this.stage.querySelector('.game-action-preview');preview?.dispose?.();preview?.remove();}
     setPreview(items,{selected=0,presentation='default',onSelect}={}){this.clearPreview();this.previewIndex=selected;this.dialog.classList.toggle('has-action-preview',!!items.length);if(items.length)this.stage.append(global.StarGamesActionPreview(items,{selected,presentation,onSelect:index=>{this.previewIndex=index;onSelect?.(index);}}));}
     setRotation({side=0,label='',onRotate,reduced=false,animate=false}={}){this.rotateRow.hidden=false;this.rotateLabel.textContent=label;this.onRotate=onRotate;const node=this.stage.firstElementChild;if(!node)return;node.style.transition='none';node.style.transform='rotate('+side*180+'deg)';if(animate&&!reduced&&!matchMedia('(prefers-reduced-motion: reduce)').matches)node.animate([{transform:'rotate('+(side*180-180)+'deg)'},{transform:'rotate('+side*180+'deg)'}],{duration:380,easing:'cubic-bezier(.65,0,.35,1)'});}
-    showReference(pages,{fit=false}={}){this.clearPreview();this.setSubtitle('');this.dialog.classList.remove('has-action-preview');this.dialog.classList.add('has-reference');this.dialog.classList.toggle('has-fitted-reference',fit);this.rotateRow.hidden=true;this.pages=pages;this.page=0;this.topBack.hidden=false;this.flip.hidden=false;this.heading.textContent='';this.footer.hidden=true;this.renderPage();if(!this.dialog.open)this.dialog.showModal();requestAnimationFrame(()=>{this.stage.scrollTop=0;this.fitReference();});}
+    showReference(pages,{fit=false}={}){this.referenceMenu.hidden=true;this.dialog.classList.remove('has-reference-menu');this.clearPreview();this.setSubtitle('');this.dialog.classList.remove('has-action-preview');this.dialog.classList.add('has-reference');this.dialog.classList.toggle('has-fitted-reference',fit);this.rotateRow.hidden=true;this.pages=pages;this.page=0;this.topBack.hidden=false;this.flip.hidden=false;this.heading.textContent='';this.footer.hidden=true;this.renderPage();if(!this.dialog.open)this.dialog.showModal();requestAnimationFrame(()=>{this.stage.scrollTop=0;this.fitReference();});}
+    showReferenceLibrary(groups,{group=0,topic=0}={}){if(!groups?.length)return;this.referenceLibrary=groups;this.referenceGroup.replaceChildren(...groups.map(item=>{const option=document.createElement('option');option.textContent=item.label;return option;}));this.referenceGroup.selectedIndex=Math.max(0,Math.min(group,groups.length-1));this.referenceTopics(topic);}
+    referenceTopics(selected=0){const group=this.referenceLibrary?.[this.referenceGroup.selectedIndex];if(!group)return;this.referenceTopic.replaceChildren(...group.pages.map(item=>{const option=document.createElement('option');option.textContent=item.label;return option;}));this.referenceTopic.selectedIndex=Math.max(0,Math.min(selected,group.pages.length-1));this.referencePage();}
+    referencePage(){const topic=this.referenceLibrary?.[this.referenceGroup.selectedIndex]?.pages[this.referenceTopic.selectedIndex];if(!topic)return;this.referenceTopicData=topic;this.referenceWide=innerWidth>=650&&innerHeight<=540;this.showReference(topic.pages.map(face=>({...face,src:this.referenceWide?(face.wideSrc||face.src):face.src})),{fit:true});this.referenceMenu.hidden=false;this.dialog.classList.add('has-reference-menu');this.referenceTopic.hidden=this.referenceTopic.options.length<2;this.layoutReferenceMenu();requestAnimationFrame(()=>this.fitReference());}
+    layoutReferenceMenu(){if(this.referenceMenu.hidden){this.heading.hidden=false;this.dialog.classList.remove('is-wide-reference');return;}const wide=innerWidth>=650&&innerHeight<=540;this.dialog.classList.toggle('is-wide-reference',wide);this.heading.hidden=wide;if(wide){if(this.referenceMenu.parentElement!==this.header)this.header.append(this.referenceMenu);}else if(this.referenceMenu.parentElement!==this.dialog)this.dialog.insertBefore(this.referenceMenu,this.stage);if(wide!==this.referenceWide&&this.referenceTopicData){this.referenceWide=wide;this.pages=this.referenceTopicData.pages.map(face=>({...face,src:wide?(face.wideSrc||face.src):face.src}));this.renderPage();}}
     renderPage(){const wrap=document.createElement('div'),img=document.createElement('img');wrap.className='game-reader-card game-reader-reference-wrap';img.className='game-reader-reference';img.onload=()=>this.fitReference();img.src=this.pages[this.page].src;img.alt=this.pages[this.page].alt;this.flip.replaceChildren(global.StarGamesTableUI.icon('rotate'));this.flip.setAttribute('aria-label',this.page===0?'Flip to back':'Flip to front');wrap.append(img,this.flip);this.stage.replaceChildren(wrap);this.stage.scrollTop=0;}
-    fitReference(){if(!this.dialog.open||!this.dialog.classList.contains('has-reference')||!this.dialog.classList.contains('has-fitted-reference'))return;const wrap=this.stage.querySelector('.game-reader-reference-wrap'),img=wrap?.firstChild;if(!img?.naturalHeight)return;const ratio=img.naturalWidth/img.naturalHeight,width=Math.max(1,Math.min(ratio>1?880:500,this.stage.clientWidth-48,(this.stage.clientHeight-48)*ratio));wrap.style.width=width+'px';wrap.style.height=width/ratio+'px';this.stage.scrollTop=0;}
+    fitReference(){if(!this.dialog.open||!this.dialog.classList.contains('has-reference')||!this.dialog.classList.contains('has-fitted-reference'))return;this.layoutReferenceMenu();const wrap=this.stage.querySelector('.game-reader-reference-wrap'),img=wrap?.firstChild;if(!img?.naturalHeight)return;const ratio=img.naturalWidth/img.naturalHeight,width=Math.max(1,Math.min(ratio>1?880:500,this.stage.clientWidth-48,(this.stage.clientHeight-48)*ratio));wrap.style.width=width+'px';wrap.style.height=width/ratio+'px';this.stage.scrollTop=0;}
     flipPage(){if(this.pages){this.page=1-this.page;this.renderPage();}}
     close(){this.stage.querySelector('.game-action-preview')?.stop?.();this.dialog.close();}
     get open(){return this.dialog.open;}
@@ -438,5 +449,20 @@
       this.prompt.style.left=best.x+'px';this.prompt.style.top=best.y+'px';
     }
     destroy(){cancelAnimationFrame(this.frame);this.element.remove();}
+  };
+  global.StarGamesProgressTrack = class {
+    constructor({marker='',goal=''}={}){
+      this.element=document.createElement('div');this.element.className='game-progress-track';this.element.setAttribute('role','img');
+      this.dots=document.createElement('div');this.dots.className='game-progress-dots';
+      const make=(icon,kind)=>{const box=document.createElement('span');box.className='game-progress-marker '+kind;const image=document.createElement('img');image.src=icon;image.alt='';image.hidden=!icon;const count=document.createElement('strong');box.append(image,count);return box;};
+      this.marker=make(marker,'is-approaching');this.goal=make(goal,'is-goal');this.element.append(this.dots,this.marker,this.goal);
+    }
+    update({progress=0,steps=7,approaching=0,defending=0,label=''}){
+      steps=Math.max(1,steps);progress=Math.max(0,Math.min(steps,progress));
+      if(this.dots.children.length!==steps+1)this.dots.replaceChildren(...Array.from({length:steps+1},()=>document.createElement('i')));
+      [...this.dots.children].forEach((dot,index)=>dot.classList.toggle('is-passed',index<progress));
+      this.marker.style.setProperty('--progress',progress/steps);this.marker.classList.toggle('is-arrived',progress===steps);
+      this.marker.lastChild.textContent=approaching;this.goal.lastChild.textContent=defending;this.element.setAttribute('aria-label',label);
+    }
   };
 })(window);

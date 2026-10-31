@@ -12,6 +12,7 @@ var instruction_label: Label
 var back_button: Button
 var background_media: Control
 var content_scroll: ScrollContainer
+var _modal_scrollbars := {}
 var board_anchor: Control
 var _centered: VBoxContainer
 var _board_layout: Control
@@ -543,6 +544,7 @@ func add_phase_dialog(fit_contents := false, full_screen := false, compact := fa
 	overlay.theme = theme
 	overlay.z_index = 1
 	get_parent().add_child(overlay)
+	_track_modal_scrollbar(overlay)
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var shade := ColorRect.new()
 	shade.color = Color("171022bb")
@@ -995,6 +997,7 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 	settings_backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	settings_backdrop.hide()
 	layer.add_child(settings_backdrop)
+	_track_modal_scrollbar(settings_backdrop)
 	var settings_header := HBoxContainer.new()
 	settings_header.hide()
 	var buttons: Array[Button] = []
@@ -1136,6 +1139,24 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 	if placement.is_valid(): _floating_details_layouts.append(adapt)
 	adapt.call_deferred()
 	return bodies
+
+
+# Modal owners block the board; keep its scroll chrome out of their backdrop.
+# Opacity preserves the fitter's reserved gutter and the board's position.
+func _track_modal_scrollbar(owner: CanvasItem) -> void:
+	var key := owner.get_instance_id()
+	_modal_scrollbars[key] = weakref(owner)
+	owner.visibility_changed.connect(_update_modal_scrollbar)
+	owner.tree_exited.connect(func() -> void: _modal_scrollbars.erase(key); _update_modal_scrollbar())
+
+
+func _update_modal_scrollbar() -> void:
+	if not is_instance_valid(content_scroll): return
+	var blocking := false
+	for reference: WeakRef in _modal_scrollbars.values():
+		var owner: CanvasItem = reference.get_ref()
+		if is_instance_valid(owner) and owner.is_visible_in_tree(): blocking = true; break
+	content_scroll.get_v_scroll_bar().modulate.a = 0.0 if blocking else 1.0
 
 
 func _corner_detail_caption(caption: String, open: bool, compact := false) -> String:

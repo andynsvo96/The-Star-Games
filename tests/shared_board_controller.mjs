@@ -57,6 +57,19 @@ const assertions = `
 	const unchanged = (before, after, caption) => check(['x','y','width','height'].every(key => Math.abs(before[key] - after[key]) < 1), caption + ' ' + JSON.stringify({before,after,controls:document.querySelector('.game-board-controls').getBoundingClientRect().toJSON()}));
 	try {
 		await document.fonts.ready;
+		const reference=new StarGamesCardReader();
+		const referenceFace=(width,height)=>'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="'+width+'" height="'+height+'"><rect width="100%" height="100%" fill="#ead7a8"/></svg>');
+		const referencePages=[{src:referenceFace(120,180),alt:'Literal front <rules>'},{src:referenceFace(240,120),alt:'Literal back rules'}];
+		reference.showReferenceLibrary([{label:'Collection <literal>',pages:[{label:'Overview',pages:referencePages},{label:'Other topic',pages:referencePages}]}],{topic:1});
+		await reference.stage.querySelector('img').decode();await settle();
+		check(reference.referenceGroup.options[0].textContent==='Collection <literal>'&&reference.referenceTopic.selectedIndex===1,'Reference library restores literal collection and topic');
+		const referenceFits=()=>{const image=reference.stage.querySelector('img').getBoundingClientRect(),stage=reference.stage.getBoundingClientRect();return image.left>=stage.left-1&&image.right<=stage.right+1&&image.top>=stage.top-1&&image.bottom<=stage.bottom+1&&reference.stage.scrollHeight<=reference.stage.clientHeight+1;};
+		check(reference.referenceGroup.getBoundingClientRect().height>=44&&referenceFits(),'Reference menu touch targets and portrait page fit without scrolling');
+		reference.flipPage();await reference.stage.querySelector('img').decode();await settle();check(referenceFits(),'Landscape reference back refits without scrolling');
+		reference.referenceTopic.selectedIndex=0;reference.referenceTopic.dispatchEvent(new Event('change'));await reference.stage.querySelector('img').decode();await settle();check(reference.page===0&&referenceFits(),'Changing a reference topic resets to its fitted front');
+		reference.showCard(StarGamesCard({layout:'symbol',name:'Ordinary card',detail:'Literal rules'}));check(reference.referenceMenu.hidden&&!reference.dialog.classList.contains('has-reference-menu'),'Ordinary readers clear optional reference selectors');reference.close();reference.referenceObserver.disconnect();reference.dialog.remove();
+		const publicTrack=new StarGamesProgressTrack();publicTrack.update({progress:20,steps:7,approaching:4,defending:6,label:'Public attack 4; defense 6'});
+		check(publicTrack.dots.children.length===8&&publicTrack.element.getAttribute('aria-label')==='Public attack 4; defense 6'&&publicTrack.marker.style.getPropertyValue('--progress')==='1','Public progress track clamps position and exposes both counts without color alone');
 		window.qaLayout = new StarGamesBoardLayout(board, replay);
 		await settle();
 		check(footer.children.length === count, 'Synthetic roster contains requested seat count');
