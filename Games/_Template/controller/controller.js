@@ -218,7 +218,16 @@
   if(rulesExample){document.getElementById('example-rules-close').addEventListener('click',()=>rulesExample.close());StarGamesDismissOnOutside(rulesExample);}
   const rankedExample=document.getElementById('example-ranked-results');
   const casinoRange=document.getElementById('example-casino-range');
-  if(casinoRange&&window.StarGamesTableUI){const badge=document.createElement('div');badge.className='game-casino-player';badge.append(StarGamesTableUI.avatar(examplePlayers[0]),document.createTextNode('Example player'));casinoRange.parentElement.append(badge);}
+  if(casinoRange&&window.StarGamesTableUI){
+    const badge=document.createElement('button');badge.type='button';badge.className='game-casino-player';badge.setAttribute('aria-label','Example player: open public history');
+    badge.append(StarGamesTableUI.avatar(examplePlayers[0]),document.createTextNode('Example player'));casinoRange.parentElement.append(badge);
+    const history=document.createElement('dialog');history.className='game-dialog game-scroll-dialog';
+    const heading=document.createElement('h2');heading.className='dialog-heading';heading.textContent='Example player · History';
+    const body=document.createElement('div');body.className='dialog-body game-activity-paper game-activity-dark game-activity-separated';
+    StarGamesActivityEntries(body,[{id:1,text:'Public accepted action'}]);
+    const actions=document.createElement('div'),close=document.createElement('button');actions.className='dialog-actions';close.type='button';close.textContent='Close';close.addEventListener('click',()=>history.close());actions.append(close);
+    history.append(heading,body,actions);casinoRange.parentElement.append(history);badge.addEventListener('click',()=>history.showModal());history.addEventListener('close',()=>badge.focus());StarGamesDismissOnOutside(history);
+  }
   if(casinoRange&&window.StarGamesTableUI){StarGamesTableUI.range(casinoRange);casinoRange.addEventListener('input',()=>StarGamesTableUI.range(casinoRange));}
   if(rankedExample&&window.StarGamesRankedResults){
     const ranked=new StarGamesRankedResults(rankedExample,{amountIcon:'/ui/playful/table-cash.svg'});

@@ -1925,6 +1925,14 @@ The active plaque uses a thin gold outline; screen frames have near-black
 interiors and no border glow. Hidden
 template examples demonstrate both host and browser variants.
 
+An inspectable casino plaque may be a real `button.game-casino-player`. It keeps
+the same shared plaque surface and active outline, has keyboard focus and a
+44px minimum target, and does not shift when pressed. Open a shared
+`dialog.game-dialog.game-scroll-dialog` with `StarGamesActivityEntries` for public
+player history; return focus to the plaque on Close. The hidden browser template
+demonstrates this. Modules filter accepted public entries on the host and send
+only requested history, keeping private cards and unrelated logs out of packets.
+
 Keep dense casino identities to name, balance and avatar. Put accepted public
 actions in a separate banner beneath the plaque with
 `GameLook.draw_casino_status(canvas, bounds, caption, raised)` or browser

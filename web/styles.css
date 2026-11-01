@@ -1513,8 +1513,9 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-casino .game-controller { background:transparent; border:0; box-shadow:none; }
 .playful-game.game-casino .game-controller { grid-template-columns:minmax(0,1fr); }
 .game-casino .surface,.game-casino .game-paper,.game-casino .game-status,.game-casino .game-dialog { background:radial-gradient(circle at 9px 9px,#927b55 0 1px,transparent 1.8px),radial-gradient(circle at calc(100% - 9px) 9px,#927b55 0 1px,transparent 1.8px),radial-gradient(circle at 9px calc(100% - 9px),#927b55 0 1px,transparent 1.8px),radial-gradient(circle at calc(100% - 9px) calc(100% - 9px),#927b55 0 1px,transparent 1.8px),linear-gradient(130deg,#191a15fa,#10130ffa); color:#fff0cf; border:1px solid #877450; border-radius:12px; box-shadow:inset 0 0 0 3px #090d0b88,inset 0 0 0 4px #8a765428,0 5px 16px #0008; }
-.game-casino .game-casino-player { background:linear-gradient(#333b40,#22292d 48%,#151b1e); border:1px solid #92764f; border-radius:14px; box-shadow:inset 0 0 0 2px #bac6c81a,0 3px 5px #0005; color:#f4f5ef; }
-.game-casino .game-casino-player.is-current { border-color:#f4cb69; box-shadow:inset 0 0 0 1px #f4cb69,0 3px 5px #0005; }
+.game-casino .game-casino-player,.playful-game.game-casino .game-controller button.game-casino-player { background:linear-gradient(#333b40,#22292d 48%,#151b1e); border:1px solid #92764f; border-radius:14px; box-shadow:inset 0 0 0 2px #bac6c81a,0 3px 5px #0005; color:#f4f5ef; }
+.game-casino .game-casino-player.is-current,.playful-game.game-casino .game-controller button.game-casino-player.is-current { border-color:#f4cb69; box-shadow:inset 0 0 0 1px #f4cb69,0 3px 5px #0005; }
+.playful-game.game-casino .game-controller button.game-casino-player:active { transform:none; }
 .game-casino .game-casino-status { display:block; width:fit-content; max-width:100%; box-sizing:border-box; margin:4px auto 0; padding:3px 8px; border:1px solid #68716e; border-radius:5px; background:#333b40; color:#f4f5ef; font-size:12px; font-weight:700; line-height:1.2; text-align:center; overflow-wrap:anywhere; }
 .game-casino .game-casino-status.is-raised { background:#214534; border-color:#70b989; color:#b6f2c9; }
 .game-casino .game-casino-status:empty { visibility:hidden; }

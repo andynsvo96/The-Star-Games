@@ -42,6 +42,10 @@ The development installation currently has 16 menu entries covering the 19 games
 
 Player limits and solo options vary by game. Checkers, Monopoly, and Poker each have a chooser for their two games or variants.
 
+The local Poker variants include optional cinematic community-card reveals,
+all-in win odds, and individual player histories opened from their stat plaques
+on the host or browser controller. Cinematic Reveals defaults on in Table Settings.
+
 Game-specific menu icons and their source artwork also remain local.
 
 ## Run locally
