@@ -531,6 +531,19 @@ func _ready() -> void:
 	# scrolls; actions and Back to Games stay reachable. The module owns visibility.
 	# Pass true to fit short results to their contents, with scrolling when needed.
 	phase_dialog = screen.add_phase_dialog(true, false, true)
+	# Quiet drawing/social games can select "studio-modern" with the normal
+	# extensionless background and add_social_layout(.66) for canvas-left UI.
+	# Public standings accept caller-ranked entries; ties/rules stay in the game.
+	var standings_example := GameLeaderboard.new()
+	standings_example.name = "ModernStandingsExample"
+	standings_example.theme = GameLook.make_theme("studio-modern")
+	screen.content.add_child(standings_example)
+	standings_example.set_entries([{"seat":0, "display_name":"Example player", "color":"#286ac2", "pose":0, "score":100, "rank":1, "medal":"gold", "delta":100}])
+	standings_example.player_selected.connect(func(_seat: int) -> void:
+		# Populate with host-filtered completed history, never an active secret.
+		phase_dialog.heading.text = "Example player's statistics"
+		phase_dialog.overlay.show())
+	standings_example.hide()
 	var player_header_example := screen.add_phase_dialog(true,false,true)
 	# Pass true to expand a compact sheet for a larger card-choice grid.
 	screen.set_phase_dialog_width(player_header_example, 840, true)

@@ -2824,66 +2824,102 @@ It preserves control identity and held pointer targets; games without the target
 keep their existing placement and board fitter. Continue using shared `#board`
 and `#replay`, not a module-owned viewport fitter.
 
+### Modern studio and inspectable standings
+
+`screen.use_playful_style(background_stem, "studio-modern")` selects a quiet
+lavender/white palette with sans-serif text, flat controls, thin borders and
+rounded panels. Browser bodies use `playful-game game-studio-modern`. The
+existing `studio` presentation keeps its ivory/walnut appearance. Use
+`GameLook.modern_studio_sheet()` and `GameLook.drawing_sheet(true)` for shared
+surfaces; keep artwork and playfield geometry inside the module. The usual
+background resolver, offline media and reduced-motion behavior still apply.
+
+For a canvas on the left and scores/feedback on the right, use the existing
+`add_social_layout(.66)` composition and `use_table_header()`. The shared layout
+reserves the table header and stacks the columns on narrow hosts. Keep feedback
+and toolbar heights stable across phases so the canvas does not shift.
+
+`GameLeaderboard.set_entries(entries, active_seat=-1)` presents already-ranked
+public entries. Each supplies `seat`, literal `display_name`, `color`, `pose`,
+`score`, and optional `rank`, `medal` (`gold`, `silver`, `bronze`), positive
+`delta`, `note` and guess `quality`. Set `compact=true` for live scores. Connect
+`player_selected(seat)` to an explicit shared phase-dialog inspector. Browser
+`new StarGamesLeaderboard(onSelect)` exposes `element` and `update(entries,
+active_seat=-1)` with the same identity, score, rank, medal and delta fields.
+Rows preserve their input nodes and focus on repeated snapshots. The components
+never sort, award points, infer ties or fetch history: the host supplies those
+values. Empty ranks omit medals; tie policy belongs to the module.
+
+Put final standings inside the shared phase dialog and its single Play Again
+button inside `actions`. This keeps the actual button outside scrolling results
+without overlapping it with a separate replay layer. Browser results can use
+`game-match-results`, `game-achievements` and `game-achievement`. Use
+`game-personal-history` with literal article contents in a `game-scroll-dialog`,
+and `game-stat-summary` for a multiline summary. These surfaces scroll long
+histories while leaving Close/page actions reachable. Hidden host/controller
+examples are wired into the template. `tests/table_inventory.gd` covers the
+shared standings, flat action inheritance, literal names and stable real input.
+
+Drawing controllers can use `game-ink-palette` for a grid of 44px swatches plus
+an explicit Canvas action. A double click/tap and keyboard-accessible button
+must submit the same validated module command. `--drawing-paper` and
+`--drawing-ink` on `game-drawing-sheet` color the paper and readable hint; the
+module retains transparent eraser strokes rather than baking in a paper color.
+The normal SDK fitter and toolbar relocation continue to own phone layout.
+
 ### Pictionary reference module
 
-`Games/pictionary` supports 3–16 players and separates pure rules, validated word
-bank, host UI, canvas renderer and controller presentation. It uses the studio
-hooks above, with the approved UI mockup and original sources preserved in
-`asset/pictionary/`. The background remains the extensionless `art/studio` stem.
-See [`Games/pictionary/README.md`](../Games/pictionary/README.md) for the complete
-rules, win/replay policy, category editor and artwork/audio provenance.
+`Games/pictionary` supports 3-16 human phones and separates rules, word bank,
+host UI, canvas renderer and controller presentation. Its modern studio uses
+`art/modern-studio`, an interchangeable extensionless background stem. Original
+studio artwork remains local. See the module README for full rules and checks.
 
-The drawer's word and choices are targeted private state. Public snapshots omit
-guess feeds and results until match completion, with only short-lived non-correct
-guesses published as scoreboard speech bubbles. The host validates turn/revision,
-normalized ink coordinates, brush indexes, bounded chunks, epochs, sequences and
-rate limits. Full drawing snapshots restore reconnects; clock packets and small
-ink deltas keep held phone controls stable. Disconnects pause clocks and input.
-Only completed matches award points/results through `BaseGame` APIs.
+Only the drawer receives the active word and choices. Host-only sources and the
+answer bank use manifest `private_paths`. Every accepted draw, canvas color and
+guess validates identity, phase, turn/revision, bounds, epochs and rate limits.
+Orange joins the brush palette; double-tapping any paint or choosing Canvas sets
+the paper color without deleting strokes. Semantic erasers expose the current
+paper color. Each new drawing resets to white. Refresh restores color and ink.
 
-Its full-screen settings modal stages option changes and word-bank edits
-independently. Category IDs remain stable across renames. Transactional module
-settings persist the bank without editing bundled sources or profile saves.
-Saving or applying starts a fresh match while retaining completed session wins
-and internal history. Phones omit individual points and guessed-player counts;
-they also omit the bottom player status strip. Labelled Brush and Eraser buttons
-each cycle three circle sizes. The large square canvas uses the shared thin-border surface, with the
-same normalized coordinates on host and phones. The host omits Help and History
-controls. Reveal answers stay on the canvas,
-with a short status and readable timer.
+The host puts the canvas on the left, scores above guesses on the right. Live
+correct indications and four-second non-correct feedback stay in the guesses
+panel, with no checkmarks on scores. Non-final drawing conclusions show Name,
+Last Guess and Time rows: exact/alias green, misspelled orange, incorrect red.
+The score list shows positive turn gains beside cumulative totals. Next Round
+can advance the six-second recap. The final drawing opens centered standings
+immediately, on host and phones, omitting the redundant last-guess recap.
 
-Correct guessers share one fixed pool per completed drawing turn (default 100,
-adjustable from 15 to 10,000), using descending linear or squared rank weights.
-Integer awards conserve the pool and give every correct guesser at least one
-point. Incorrect/missing guesses and the drawer earn zero; an unsuccessful turn
-awards nothing. Host elapsed times exclude word selection and disconnect pauses,
-and repeated guesses do not reset them. Unsuccessful results use the full turn
-duration. The host classifies exact
-answers/aliases as green, limited spelling edits as orange, and unrelated guesses
-as red. Orange/red never score or consume a rank. Only sanitized feedback is
-sent privately during drawing: no answer field or successful guess text.
-The turn table retains public correct-guess indications without successful word
-text; incorrect words appear only in four-second scoreboard bubbles. Last-guess
-results remain hidden through turn reveals; finished results publish each
-player's most recent completed guessing turn, including full-duration No guess
-rows. The host renders Name, Last Guess and Time columns, correct guesses first
-in increasing elapsed time. Scoreboards descend by cumulative points. Replays
-clear these guesses along with match scores.
+Correct guessers share a fixed turn pool (default 100, configurable 15-10,000)
+using linear or squared rank weights, conserving the exact pool and awarding at
+least one point per successful guesser. Misses and the drawer earn zero. Timing
+excludes choosing, disconnects and Settings. Successful times freeze at the
+accepted answer; unsuccessful recap rows use the full allowance. History retains
+each attempt's actual time. Tied scores share competition ranks/medals and tied
+positive leaders share a match win; all-zero matches draw. The final screen
+shows fastest correct guess, fewest misses (requires a correct guess), most
+correct guesses and the drawer whose pictures inspired the most correct guesses.
 
-Labelled Brush/Eraser controls retain independent sizes, with solid/hollow circle
-indicators and the selected ink restored on returning to Brush. New turns and
-correct guesses use the original mallet cues. Accepted non-correct guesses use
-one short host-only tone, with a 400 ms cooldown, no queue or overlapping playback,
-and priority given to other cues. Phones never echo it.
-Studio expiry/completion cues remain. Final ten-second drawing clocks blink red and play one host-owned
-wooden tick per second. Reduced motion keeps static red. Audio, blinking and
-speech pause/clear appropriately on disconnect, reveal, replay and exit.
+Every score/standings identity opens personal match statistics and a paginated
+completed-turn session log; phones also open their own log from the header.
+Requested private replies include at most 40 entries and never active words or
+attempts. Logs include all accepted correct/incorrect/misspelled submissions,
+actual elapsed times, points and drawn words. Current-match summaries reset on
+replay; up to 96 completed turns remain in session history. Navigation clears
+this transient history. Only completed matches call BaseGame scoring APIs once.
+
+Settings and the category/word editor use the shared full-screen modal with
+staged independent Apply/Save. Settings pauses input, clocks and sound. Accepted
+preferences persist through the existing settings API, separately from gameplay
+and history. Disconnects pause play; reconnect restores state. Host-only replay
+rotates the starter, preserves completed session wins/history, and lives in the
+result dialog's persistent action row. Urgent clocks, deduplicated offline audio,
+reduced motion and clean shared return navigation remain supported.
 
 Verification: `tests/pictionary.gd`, `tests/pictionary_network.gd`, rendered
 `tests/pictionary_visual.gd`, and `node tests/pictionary_controller.mjs`, plus
-the standard import, core, network and UI smoke commands. The controller tests
-exercise portrait, landscape, small screens, reduced motion, private state,
-held-pointer streaming, pause/reconnect, offline assets and clean page exits.
+the standard import, core, network and UI checks. Native/browser suites cover
+small screens, 16 players, held drawing/replay targets, coloring, privacy,
+refresh/reconnection, literal history, settings pauses and final results.
 
 ### Compact public feeds and costs
 

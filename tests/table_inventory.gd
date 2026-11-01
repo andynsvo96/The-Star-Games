@@ -13,6 +13,39 @@ func tap(point: Vector2) -> void:
 		var event := InputEventMouseButton.new(); event.button_index = MOUSE_BUTTON_LEFT; event.pressed = pressed; event.position = point; Input.parse_input_event(event)
 		await process_frame
 func _run() -> void:
+	root.min_size = Vector2i.ONE; root.content_scale_size = Vector2i(640,480); root.size = Vector2i(640,480)
+	var standings := GameLeaderboard.new()
+	standings.theme = GameLook.make_theme("studio-modern")
+	root.add_child(standings)
+	var standings_entries: Array = []
+	for seat in 16:
+		standings_entries.append({"seat":seat, "display_name":"Literal <player> [name] %d" % seat, "score":1600 - seat * 100, "color":"#286ac2", "rank":seat + 1, "medal":["gold","silver","bronze"][seat] if seat < 3 else "", "delta":100 if seat == 0 else 0})
+	standings.set_entries(standings_entries, 0)
+	var standings_first: Button = standings.rows[0].button
+	var standings_selected: Array = []
+	standings.player_selected.connect(func(seat: int) -> void: standings_selected.append(seat))
+	for width in [320, 640]:
+		standings.size.x = width
+		for frame in 4: await process_frame
+		check(standings.rows.size() == 16 and standings.rows[0].player.text == "Literal <player> [name] 0", "Standings preserve all public seats and literal names")
+		check(standings.rows[0].rank.text == "1st" and standings.rows[1].rank.text == "2nd" and standings.rows[2].rank.text == "3rd", "Standings supply ordinal medal captions")
+		check(standings.rows[0].rank.get_theme_color("font_color") == GameLook.medal_color("gold") and standings.rows[2].rank.get_theme_color("font_color") == GameLook.medal_color("bronze"), "Standings use shared medal colors")
+		check(standings.rows[0].delta.visible and not standings.rows[1].delta.visible, "Only positive accepted awards have a delta")
+		check(standings.rows[0].button.get_theme_stylebox("normal").shadow_size == 0, "Modern studio omits decorative panel shadows")
+		standings_first.grab_focus()
+		standings.set_entries(standings_entries, 0)
+		check(standings.rows[0].button == standings_first and standings_first.has_focus(), "Identical standings snapshots retain keyboard focus and targets")
+	await tap(standings_first.get_global_rect().get_center())
+	check(standings_selected == [0], "A real standings name/avatar press opens the selected seat")
+	standings_entries.reverse()
+	standings.set_entries(standings_entries, 0)
+	check(standings.rows[-1].button == standings_first and standings.rows[-1].seat == 0, "Reordering scores keeps each native input target attached to its own identity")
+	standings.rows[-1].button.pressed.emit()
+	check(standings_selected == [0, 0], "A reordered identity cannot open another player's history")
+	var modern_action := Button.new(); standings.add_child(modern_action); modern_action.text = "Play Again"; GameLook.action(modern_action)
+	check(modern_action.theme_type_variation == "GamePrimaryButton" and modern_action.get_theme_stylebox("normal") is StyleBoxFlat and modern_action.get_theme_stylebox("normal").shadow_size == 0, "Modern studio actions inherit the flat shared palette")
+	standings.queue_free()
+	await process_frame
 	for sample in [[0,0],[1,1],[10,1],[11,2],[50,2],[51,3],[100,3],[101,4],[999,4],[1000,5],[1000000,5]]:
 		check(GameLook.chip_pile_stage(sample[0]) == sample[1], "Chip pile stage respects amount boundary %d" % sample[0])
 	root.min_size = Vector2i.ONE; root.content_scale_size = Vector2i(640,480); root.size = Vector2i(640,480)

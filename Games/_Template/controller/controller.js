@@ -217,6 +217,14 @@
   playerFocusExample.update({targets:[],prompt:'Choose a player.'});
   if(rulesExample){document.getElementById('example-rules-close').addEventListener('click',()=>rulesExample.close());StarGamesDismissOnOutside(rulesExample);}
   const rankedExample=document.getElementById('example-ranked-results');
+  const studioExample=document.getElementById('example-studio-results');
+  const studioStandings=new StarGamesLeaderboard(seat=>{
+    // Request only this player's completed history through the module's normal
+    // host handler; the SDK still owns identity, sockets and navigation.
+    studioExample.dataset.selectedSeat=seat;
+  });
+  studioStandings.update([{seat:0,display_name:'Example player',color:'#286ac2',pose:0,score:100,rank:1,medal:'gold',delta:100}]);
+  studioExample.append(studioStandings.element);
   const casinoRange=document.getElementById('example-casino-range');
   if(casinoRange&&window.StarGamesTableUI){
     const badge=document.createElement('button');badge.type='button';badge.className='game-casino-player';badge.setAttribute('aria-label','Example player: open public history');

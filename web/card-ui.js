@@ -524,6 +524,41 @@
     }
     destroy(){cancelAnimationFrame(this.frame);this.element.remove();}
   };
+  // Caller-ranked public standings. Existing rows survive clock/sync packets so
+  // keyboard focus and held identity targets remain intact.
+  global.StarGamesLeaderboard = class {
+    constructor(onSelect = () => {}) {
+      this.element = document.createElement('div'); this.element.className = 'game-leaderboard';
+      this.rows = new Map(); this.onSelect = onSelect;
+    }
+    update(entries, active = -1) {
+      const wanted = new Set(entries.map(entry => entry.seat));
+      for (const [seat,row] of this.rows) if (!wanted.has(seat)) { row.button.remove(); this.rows.delete(seat); }
+      entries.forEach((entry,index) => {
+        let row = this.rows.get(entry.seat);
+        if (!row) {
+          const button = document.createElement('button'); button.type = 'button'; button.className = 'game-leaderboard-row';
+          const rank = document.createElement('span'); rank.className = 'game-leaderboard-rank';
+          const avatar = global.StarGamesTableUI.avatar(entry);
+          const name = document.createElement('span'); name.className = 'game-leaderboard-name';
+          const delta = document.createElement('span'); delta.className = 'game-leaderboard-delta';
+          const score = document.createElement('strong'); score.className = 'game-leaderboard-score';
+          button.append(rank,avatar,name,delta,score); button.addEventListener('click', () => this.onSelect(entry.seat));
+          row = {button,rank,avatar,name,delta,score}; this.rows.set(entry.seat,row);
+        }
+        if (this.element.children[index] !== row.button) this.element.insertBefore(row.button,this.element.children[index] || null);
+        const suffix = entry.rank === 1 ? 'st' : entry.rank === 2 ? 'nd' : entry.rank === 3 ? 'rd' : 'th';
+        row.rank.hidden = entry.rank === undefined; row.rank.textContent = entry.rank + suffix;
+        row.button.dataset.medal = ['gold','silver','bronze'].includes(entry.medal) ? entry.medal : '';
+        row.button.classList.toggle('is-current',entry.seat === active);
+        row.button.dataset.seat = entry.seat;
+        global.StarGamesTableUI.updateAvatar(row.avatar,entry);
+        row.name.textContent = entry.display_name; row.score.textContent = entry.score;
+        row.delta.hidden = !(entry.delta > 0); row.delta.textContent = '+' + entry.delta;
+        row.button.setAttribute('aria-label',`${entry.display_name}, ${entry.score} points${entry.rank === undefined ? '' : ', ' + entry.rank + suffix + ' place'}. Open player statistics and history`);
+      });
+    }
+  };
   global.StarGamesProgressTrack = class {
     constructor({marker='',goal=''}={}){
       this.element=document.createElement('div');this.element.className='game-progress-track';this.element.setAttribute('role','img');

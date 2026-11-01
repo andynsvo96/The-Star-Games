@@ -225,7 +225,8 @@ func use_table_header(title_art: Texture2D = null, centered_title := false, left
 	# Header chrome must not intercept the sibling Back button underneath it.
 	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	header.theme = theme
-	var header_style: StyleBox = GameLook.casino_frame() if get_theme_constant("casino", "GamePalette") == 1 else GameLook.modern_table_sheet()
+	var modern := get_theme_constant("modern_studio", "GamePalette") == 1
+	var header_style: StyleBox = GameLook.modern_studio_sheet() if modern else GameLook.casino_frame() if get_theme_constant("casino", "GamePalette") == 1 else GameLook.modern_table_sheet()
 	header_style.set_content_margin_all(4)
 	header.add_theme_stylebox_override("panel", header_style)
 	get_parent().add_child(header)
@@ -234,7 +235,7 @@ func use_table_header(title_art: Texture2D = null, centered_title := false, left
 	var layer := Control.new(); layer.mouse_filter = Control.MOUSE_FILTER_IGNORE; layer.custom_minimum_size.y = _table_header_height - 8; header.add_child(layer)
 	_table_header_layer = layer
 	title_label.reparent(layer); title_label.text = title_label.text.to_upper(); title_label.autowrap_mode = TextServer.AUTOWRAP_OFF; title_label.clip_text = true
-	title_label.add_theme_color_override("font_color", Color("ffd447"))
+	title_label.add_theme_color_override("font_color", get_theme_color("ink", "GamePalette") if modern else Color("ffd447"))
 	if title_art != null:
 		title_label.hide(); table_title_art = TextureRect.new(); table_title_art.texture = title_art; table_title_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; table_title_art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; layer.add_child(table_title_art)
 	status.reparent(layer); status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -242,7 +243,7 @@ func use_table_header(title_art: Texture2D = null, centered_title := false, left
 	status.fit_content = false; status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; status.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	status.add_theme_font_size_override("normal_font_size", 17)
 	status.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
-	status.add_theme_color_override("default_color", Color("e5f4ff"))
+	status.add_theme_color_override("default_color", get_theme_color("ink", "GamePalette") if modern else Color("e5f4ff"))
 	back_button.text = "‹"; back_button.accessibility_name = "Back to Games"; back_button.position = Vector2(12, 8); back_button.custom_minimum_size = Vector2(44, 44); back_button.size = Vector2(44, 44)
 	# The opaque header is a later sibling. Keep navigation above its artwork.
 	back_button.z_index = 2
@@ -438,6 +439,8 @@ func add_card(parent: Control, presentation := "", artwork: Texture2D = null) ->
 	var edge := get_theme_color("panel_edge", "GamePalette") if has_theme_color("panel_edge", "GamePalette") else Color("c58d49")
 	var paper := get_theme_constant("story", "GamePalette") == 1 or get_theme_constant("royal", "GamePalette") == 1 or presentation == "clipboard"
 	panel.add_theme_stylebox_override("panel", GameLook.paper_sheet(presentation == "clipboard") if paper else GameLook.box(fill, edge))
+	if get_theme_constant("modern_studio", "GamePalette") == 1:
+		panel.add_theme_stylebox_override("panel", GameLook.modern_studio_sheet())
 	if paper:
 		panel.theme = GameLook.paper_theme(theme)
 		var adapt_paper := func() -> void:
@@ -487,6 +490,11 @@ func add_card(parent: Control, presentation := "", artwork: Texture2D = null) ->
 
 # Decorative rules frame a real, accessible label without adding a control.
 func add_section_heading(parent: Control, caption: String, font_size := 22) -> Label:
+	if get_theme_constant("modern_studio", "GamePalette") == 1:
+		var label := add_sidebar_text(parent, caption)
+		label.add_theme_font_size_override("font_size", mini(font_size, 14))
+		label.add_theme_color_override("font_color", Color("77718f"))
+		return label
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 	parent.add_child(row)
@@ -555,6 +563,8 @@ func add_phase_dialog(fit_contents := false, full_screen := false, compact := fa
 			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed: overlay.hide(); shade.accept_event())
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", GameLook.box(get_theme_color("panel", "GamePalette"), get_theme_color("panel_edge", "GamePalette")))
+	if get_theme_constant("modern_studio", "GamePalette") == 1:
+		panel.add_theme_stylebox_override("panel", GameLook.modern_studio_sheet())
 	if get_theme_constant("story", "GamePalette") == 1:
 		panel.theme = GameLook.paper_theme(theme)
 		panel.add_theme_stylebox_override("panel", GameLook.paper_sheet())
@@ -1610,7 +1620,7 @@ func add_social_layout(primary_ratio := 0.7) -> Dictionary:
 		primary.custom_minimum_size.x = width if narrow else (width - 16) * clampf(primary_ratio, 0.5, 0.75)
 		history.custom_minimum_size.x = width if narrow else (width - 16) - primary.custom_minimum_size.x
 		if center.is_visible_in_tree():
-			add_theme_constant_override("margin_top", 72 if bounds.x < 700 else 16)
+			add_theme_constant_override("margin_top", int(_table_header_height + 16) if _table_header else 72 if bounds.x < 700 else 16)
 			add_theme_constant_override("margin_bottom", 16)
 	resized.connect(adapt)
 	get_parent_control().resized.connect(adapt)
