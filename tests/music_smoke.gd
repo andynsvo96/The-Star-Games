@@ -49,8 +49,10 @@ func _run() -> void:
 	assert(music.player.stream_paused and music.toggle.icon == music.icons["play"])
 	music.next.pressed.emit()
 	assert(music.player.stream_paused, "Skipping should preserve pause")
+	var before_lobby: String = music.history[music.history_index]
 	app._show_lobby()
 	assert(music.player.stream_paused and music.visible)
+	assert(music.history[music.history_index] != before_lobby, "Entering the lobby draws a fresh song while preserving manual pause")
 	music.toggle.pressed.emit()
 	assert(not music.player.stream_paused and music.toggle.icon == music.icons["pause"])
 	var stream: AudioStream = music.player.stream
@@ -58,7 +60,31 @@ func _run() -> void:
 	app._replace_screen()
 	assert(music.player.stream_paused and not music.visible)
 	app._show_title()
-	assert(not music.player.stream_paused and music.player.stream == stream)
+	assert(not music.player.stream_paused and music.player.stream != stream, "Returning to the splash screen starts a new song")
+	for destination in [app._show_lobby, app._show_game_menu, app._show_title]:
+		var previous_song: String = music.history[music.history_index]
+		music.player.seek(2.0)
+		await create_timer(0.1).timeout
+		assert(music.player.get_playback_position() >= 2.0)
+		destination.call()
+		assert(music.history[music.history_index] != previous_song, "Navigating between the splash, lobby, and game selection draws a fresh song")
+		assert(music.player.get_playback_position() < 0.5, "Menu entry starts playback at the beginning")
+		if app.current_state == "game_menu":
+			var selection_stream: AudioStream = music.player.stream
+			app._set_game_view("icons")
+			app._set_game_view("list")
+			app._scan_games()
+			app._on_roster_changed([])
+			assert(music.player.stream == selection_stream, "Game selection controls and catalog/roster refreshes keep the current song")
+	stream = music.player.stream
+	music.player.seek(2.0)
+	await create_timer(0.1).timeout
+	app._show_title()
+	assert(music.player.stream == stream and music.player.get_playback_position() >= 2.0, "Rebuilding the current screen must not restart music")
+	app._show_settings("title")
+	assert(music.player.stream == stream, "Opening settings preserves the current menu song")
+	app._return_from_settings()
+	assert(music.player.stream != stream and music.player.get_playback_position() < 0.5, "Returning to the splash screen from settings starts a fresh song")
 	music.trigger.mouse_entered.emit()
 	await process_frame
 	assert(music.panel.visible)
@@ -119,7 +145,7 @@ func _run() -> void:
 		controller.player.stop()
 		controller.player.stream = null
 	await create_timer(0.1).timeout
-	print("PASS: music shuffle, fresh game entries, history, pause, empty/single-song libraries, controls, and marquee")
+	print("PASS: music shuffle, fresh splash/menu/game entries and exits, history, pause, empty/single-song libraries, controls, and marquee")
 	app.queue_free()
 	await process_frame
 	quit()
@@ -127,6 +153,7 @@ func _run() -> void:
 
 func _check_game_entries(app: Control, folder: String) -> bool:
 	var music = app.game_music
+	var menu = app.menu_music
 	music.song_dir = folder.path_join("songs")
 	music.reload_assets()
 	assert(music.history.is_empty() and music.player.stream == null, "Inactive game music must not consume the shuffle before the first entry")
@@ -138,6 +165,10 @@ func _check_game_entries(app: Control, folder: String) -> bool:
 	var game := {"id": "music-test", "host_scene_path": folder.path_join("host.tscn"), "modes": ["singleplayer"], "min_players": 1, "max_players": 1}
 	var cycle: Array[String] = []
 	for entry in 4:
+		var previous_menu: String = menu.history[menu.history_index]
+		menu.player.seek(2.0)
+		if entry == 2:
+			menu.toggle_pause()
 		app._launch_game(game)
 		assert(app.active_game != null and music.active and music.visible)
 		assert(music.player.playing and not music.player.stream_paused)
@@ -154,6 +185,11 @@ func _check_game_entries(app: Control, folder: String) -> bool:
 		app._return_from_game()
 		assert(not music.active and music.player.stream_paused)
 		assert(app.menu_music.active)
+		assert(menu.history[menu.history_index] != previous_menu, "Exiting a game starts a new shuffled menu song")
+		assert(menu.player.get_playback_position() < 0.5, "Returning from a game starts menu music at the beginning")
+		assert(menu.player.stream_paused == (entry == 2), "Manual menu pause survives a game and the fresh song on exit")
+		if entry == 2:
+			menu.toggle_pause()
 		await process_frame
 	app._launch_game(game)
 	assert(music.history[music.history_index] != cycle.back(), "Shuffle rollover avoids the song heard on the previous visit")

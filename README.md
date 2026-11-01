@@ -65,6 +65,11 @@ beginning instead of resuming the previous track. Songs do not repeat until the
 shuffle is exhausted, and consecutive tracks differ when multiple songs are
 available. A manual music pause remains in effect across navigation.
 
+The splash screen, lobby, and game selection use the same shuffled behavior for
+`asset/lobby_songs/`. Entering one of those screens or exiting a game starts a
+fresh menu song from the beginning. Menu refreshes and view toggles keep playing
+the current song.
+
 Every installed local game and collection chooser supports named cosmetic skins.
 In **Asset Editor > Themes**, choose a game, duplicate its protected **Default**
 skin (called **Classic** in Monopoly Classic), and replace artwork or sounds.

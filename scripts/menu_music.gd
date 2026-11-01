@@ -382,7 +382,7 @@ func toggle_pause() -> void:
 func play_shuffled_song() -> void:
 	if playlist.is_empty():
 		return
-	# New game entries draw from the shuffle rather than resume or replay forward history.
+	# Screen entries draw from the shuffle rather than resume or replay forward history.
 	if history_index >= 0:
 		remaining.erase(history[history_index])
 	history.resize(history_index + 1)

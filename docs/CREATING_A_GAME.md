@@ -732,6 +732,11 @@ manual pause is preserved across navigation. Games need no music player or
 lifecycle hooks. Shared Master/Music volume and music controls apply; keep game
 sound effects on the Effects bus. An empty music folder is supported.
 
+The menu playlist from `asset/lobby_songs` follows the same shuffle and pause
+rules. Entering the splash screen, lobby, or game selection starts a fresh song
+from the beginning, including after exiting a game. Redrawing the current screen,
+refreshing the roster/catalog, and switching List/Icons do not skip tracks.
+
 
 ### Shared playful presentation
 

@@ -27,6 +27,7 @@ var screen_root: Control
 var title_background: Control
 var menu_music: Control
 var game_music: Control
+var music_screen := "title"
 var settings_caller := "title"
 var game_settings_store := GameSettingsStore.new()
 var current_state := "title"
@@ -1244,7 +1245,12 @@ func _replace_screen() -> void:
 	screen_root.modulate = Color.WHITE
 	screen_root.position = Vector2.ZERO
 	if menu_music != null:
-		menu_music.set_active(current_state in ["title", "lobby", "game_menu", "settings", "debug_setup", "debug_browsers"])
+		var menu_active := current_state in ["title", "lobby", "game_menu", "settings", "debug_setup", "debug_browsers"]
+		var entered_menu := current_state in ["title", "lobby", "game_menu"] and current_state != music_screen
+		if menu_active and (entered_menu or not menu_music.active):
+			menu_music.play_shuffled_song()
+		menu_music.set_active(menu_active)
+	music_screen = current_state
 	if game_music != null:
 		game_music.set_active(current_state in ["game", "debug_game"])
 	if title_background != null:
