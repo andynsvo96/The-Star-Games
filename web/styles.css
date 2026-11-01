@@ -1518,6 +1518,7 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-casino .game-casino-status { display:block; width:fit-content; max-width:100%; box-sizing:border-box; margin:4px auto 0; padding:3px 8px; border:1px solid #68716e; border-radius:5px; background:#333b40; color:#f4f5ef; font-size:12px; font-weight:700; line-height:1.2; text-align:center; overflow-wrap:anywhere; }
 .game-casino .game-casino-status.is-raised { background:#214534; border-color:#70b989; color:#b6f2c9; }
 .game-casino .game-casino-status:empty { visibility:hidden; }
+.game-casino .game-casino-status.is-attached { width:auto; margin:0 6px 0 var(--casino-status-inset,36px); border-top:0; border-radius:0 0 5px 5px; }
 .game-casino h1,.game-casino h2,.game-casino h3,.game-casino strong,.game-casino output { color:#ffda79; }
 .playful-game.game-casino .game-controller button,.game-casino .game-choice,.game-casino input[type=number] { --casino-glow:#ddaa4840; background:linear-gradient(#3c3222,#131713); color:#fff1ce; border:2px solid #c79a50; border-radius:9px; min-height:44px; box-shadow:inset 0 0 0 2px #fff0bb18,inset 0 2px 8px #fff2c411,0 0 13px var(--casino-glow),0 3px 7px #0006; font-family:inherit; text-shadow:0 1px 2px #000b; }
 .game-casino button:focus-visible,.game-casino input:focus-visible { outline:3px solid #ffe99c; outline-offset:3px; }
@@ -1548,6 +1549,9 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 
 /* Snapshot-ranked, compact public hands; callers own ordering and privacy. */
 .game-ranked-results { display:grid; gap:6px 8px; min-width:0; }
+.game-ranked-cards .is-dimmed { opacity:.22; filter:grayscale(1); }
+.game-ranked-results.is-guide .game-ranked-category { display:none; }
+.game-ranked-results.is-guide:not(.is-compact) .game-ranked-name { top:50%; transform:translateY(-50%); }
 .game-ranked-card-mark { position:absolute; left:2px; right:2px; top:67%; padding:1px 0; border-radius:2px; background:#ffe18a; color:#24251e; font-size:clamp(6px,calc(var(--result-card-width,46px) * .20),9px); font-weight:700; line-height:1; text-align:center; }
 .game-ranked-results .game-ranked-result { position:relative; height:var(--result-height,80px); min-width:0; padding:0; margin:0; box-sizing:border-box; overflow:hidden; }
 .game-ranked-result .game-ranked-rank { position:absolute; left:8px; top:50%; width:25px; transform:translateY(-50%); text-align:center; font-size:21px; }

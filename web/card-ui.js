@@ -432,9 +432,9 @@
     }
   };
   global.StarGamesRankedResults=class{
-    constructor(element,{renderCard=card=>global.StarGamesCard(card),amountIcon=''}={}){
-      this.element=element;this.renderCard=renderCard;this.amountIcon=amountIcon;this.entries=[];this.maximumHeight=420;
-      element.classList.add('game-ranked-results');this.observer=new ResizeObserver(()=>this.fit());this.observer.observe(element);
+    constructor(element,{renderCard=card=>global.StarGamesCard(card),amountIcon='',showDetails=true}={}){
+      this.element=element;this.renderCard=renderCard;this.amountIcon=amountIcon;this.showDetails=showDetails;this.entries=[];this.maximumHeight=420;
+      element.classList.add('game-ranked-results');element.classList.toggle('is-guide',!showDetails);this.observer=new ResizeObserver(()=>this.fit());this.observer.observe(element);
     }
     setEntries(entries){
       this.entries=entries;this.element.replaceChildren();
@@ -442,10 +442,10 @@
         const row=document.createElement('section'),rank=document.createElement('strong'),name=document.createElement('h3'),category=document.createElement('p'),cards=document.createElement('div');
         row.className='game-ranked-result surface';row.dataset.rank=entry.rank;row.dataset.seat=entry.seat;rank.className='game-ranked-rank';rank.textContent=entry.rank;
         name.className='game-ranked-name';name.textContent=entry.name;category.className='game-ranked-category';category.textContent=entry.category;
-        row.append(rank,name,category);
+        row.append(rank,name);if(this.showDetails)row.append(category);
         if(entry.amount){const amount=document.createElement('strong');amount.className='game-ranked-amount';amount.classList.toggle('is-loss',entry.amount<0);if(this.amountIcon){const icon=document.createElement('img');icon.src=this.amountIcon;icon.alt='';amount.append(icon);}amount.append(document.createTextNode(entry.amount_text||(entry.amount>0?'+':'')+Number(entry.amount).toLocaleString('en-US')));row.append(amount);}
         cards.className='game-ranked-cards';cards.setAttribute('aria-label','Best five cards');
-        cards.append(...entry.cards.map((card,index)=>{const node=this.renderCard(card);if(entry.marked_cards?.includes(index)){node.classList.add('is-selected','is-marked');if(entry.card_mark){const mark=document.createElement('span');mark.className='game-ranked-card-mark';mark.textContent=entry.card_mark;node.append(mark);node.setAttribute('aria-label',(node.getAttribute('aria-label')||card.name||'Card')+' · '+entry.card_mark);}}return node;}));
+        cards.append(...entry.cards.map((card,index)=>{const node=this.renderCard(card);if(entry.dimmed_cards?.includes(index))node.classList.add('is-dimmed');if(entry.marked_cards?.includes(index)){node.classList.add('is-selected','is-marked');if(entry.card_mark){const mark=document.createElement('span');mark.className='game-ranked-card-mark';mark.textContent=entry.card_mark;node.append(mark);node.setAttribute('aria-label',(node.getAttribute('aria-label')||card.name||'Card')+' · '+entry.card_mark);}}return node;}));
         row.append(cards);this.element.append(row);
       }
       this.fit();
@@ -453,9 +453,10 @@
     fit(maximumHeight=this.maximumHeight){
       this.maximumHeight=maximumHeight;const width=this.element.clientWidth,count=this.entries.length;
       let columns=count<=4?1:2;if(width>=1000&&maximumHeight<360&&count>6)columns=3;
-      const rows=Math.ceil(count/columns),cellWidth=(width-(columns-1)*8)/columns,compact=cellWidth<310;
-      const height=Math.min(compact?86:80,Math.max(56,(maximumHeight-Math.max(0,rows-1)*6)/Math.max(1,rows)));
-      const cardWidth=compact?Math.min(34,(cellWidth-24)/5,Math.max(12,height-50)/1.5):Math.min(46,(height-14)/1.5,(cellWidth*.49-12)/5);
+      if(!this.showDetails)while(columns<5&&Math.ceil(count/columns)*56+(Math.ceil(count/columns)-1)*6>maximumHeight&&width/(columns+1)>=142)columns++;
+      const rows=Math.ceil(count/columns),cellWidth=(width-(columns-1)*8)/columns,compact=cellWidth<(this.showDetails?310:500);
+      const height=Math.min(!this.showDetails?80:compact?86:80,Math.max(56,(maximumHeight-Math.max(0,rows-1)*6)/Math.max(1,rows)));
+      const cardWidth=compact?Math.min(this.showDetails?34:46,(cellWidth-24)/5,Math.max(12,height-(this.showDetails?50:28))/1.5):Math.min(46,(height-14)/1.5,(cellWidth*.49-12)/5);
       this.element.style.gridTemplateColumns='repeat('+columns+', minmax(0,1fr))';
       this.element.style.setProperty('--result-height',height+'px');this.element.style.setProperty('--result-card-width',Math.max(8,cardWidth)+'px');this.element.classList.toggle('is-compact',compact);
     }

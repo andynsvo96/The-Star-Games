@@ -163,7 +163,7 @@
   <section class="game-modern-table" hidden aria-label="Asset score example"><div class="game-controller game-asset-controller"><section class="surface game-asset-surface game-asset-score is-current" style="--score-color:#2463eb"><div class="game-asset-identity"><img class="game-asset-token" src="/ui/playful/table-house.svg" alt=""><strong>Example player</strong></div><div class="game-asset-stats"><span class="game-asset-balance">$1,500</span><span>Public asset summary</span></div></section><button class="game-asset-action game-asset-primary game-icon-control" type="button"><img src="/ui/playful/table-dice.svg" alt=""><span>ROLL DICE</span></button></div></section>
   <!-- game-casino on body provides engraved frames, static action glows and a
        metallic range thumb. Update range progress after snapshots and edits. -->
-  <section class="game-casino" hidden aria-label="Casino controls example"><div class="game-casino-player">Example player · $2,000</div><p class="game-casino-status is-raised">RAISED $40</p><div class="surface"><button type="button" class="game-success">BET</button><input id="example-casino-range" type="range" min="0" max="100" value="40" aria-label="Example bet amount"></div></section>
+  <section class="game-casino" hidden aria-label="Casino controls example"><div class="game-casino-player">Example player · $2,000</div><p class="game-casino-status is-raised is-attached">RAISED $40</p><div class="surface"><button type="button" class="game-success">BET</button><input id="example-casino-range" type="range" min="0" max="100" value="40" aria-label="Example bet amount"></div></section>
   <!-- Asset/decision controllers can add game-asset-controller to main, with
        game-modern-table on body. Use surface game-asset-surface for sections.
        --game-asset-columns and --game-asset-width are layout-only hooks.
@@ -188,6 +188,7 @@
   <section id="example-standard-cards" hidden aria-label="Standard playing cards"><ol class="game-phase-track" aria-label="Phase progress"><li class="is-current" aria-current="step">First phase</li><li>Second phase</li></ol></section>
   <dialog id="example-rules-dialog" class="game-dialog game-rules-dialog" aria-labelledby="example-rules-heading"><h2 id="example-rules-heading">Active rules / effects</h2><div class="game-rules-panel"><div class="game-rules-list"><h3 class="game-rule-section">House Rules</h3><div class="game-rule-item"><img src="/ui/playful/table-cards.svg" alt=""><div><strong>Example rule</strong><small>A short public explanation</small></div></div></div></div><button id="example-rules-close" type="button">Close</button></dialog>
   <section id="example-ranked-results" class="game-casino" hidden aria-label="Public ranked result example"></section>
+  <section id="example-combination-guide" class="game-casino" hidden aria-label="Compact named card guide example"></section>
   <script src="/game-celebration.js"></script><script src="controller.js"></script>
   <!-- Shared paper feeds use literal public text. Labelled utilities retain
        a 44px action target and a visible caption alongside their icon. -->

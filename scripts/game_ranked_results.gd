@@ -8,11 +8,13 @@ var amount_icon: Texture2D
 var columns := 1
 var row_height := 78.0
 var fitted_height := 0.0
+var show_details := true
 
 
 class ResultRow extends Control:
 	var entry: Dictionary = {}
 	var amount_icon: Texture2D
+	var show_details := true
 
 	func _ready() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -21,9 +23,9 @@ class ResultRow extends Control:
 	func card_rects() -> Array[Rect2]:
 		var result: Array[Rect2] = []
 		if entry.get("cards", []).is_empty(): return result
-		var wide := size.x >= 310
+		var wide := size.x >= (310 if show_details else 500)
 		var gap := 3.0 if wide else 2.0
-		var width := minf(46, minf((size.y - 14) / 1.5, (size.x * .49 - gap * 4) / 5)) if wide else minf(34, minf((size.x - 16 - gap * 4) / 5, maxf(12, size.y - 50) / 1.5))
+		var width := minf(46, minf((size.y - 14) / 1.5, (size.x * .49 - gap * 4) / 5)) if wide else minf(34 if show_details else 46, minf((size.x - 16 - gap * 4) / 5, maxf(12, size.y - (50 if show_details else 28)) / 1.5))
 		var left := size.x - 8 - width * 5 - gap * 4 if wide else (size.x - width * 5 - gap * 4) / 2
 		var top := (size.y - width * 1.5) / 2 if wide else size.y - 6 - width * 1.5
 		for index in entry.cards.size(): result.append(Rect2(Vector2(left + index * (width + gap), top), Vector2(width, width * 1.5)))
@@ -35,24 +37,27 @@ class ResultRow extends Control:
 		var ink := get_theme_color("font_color", "Label")
 		var gold := get_theme_color("gold", "GamePalette")
 		var name_color := GameLook.readable_text_color(Color(str(entry.get("color", "#fff0cf"))), get_theme_color("panel", "GamePalette"))
-		var wide := size.x >= 310
+		var wide := size.x >= (310 if show_details else 500)
 		var faces := card_rects()
 		if wide:
 			var font_size := 14 if size.y < 72 else 17
 			var name_width := (faces[0].position.x - 46 if not faces.is_empty() else size.x - 48)
 			GameLook.draw_table_text(self, str(entry.rank), Vector2(9, size.y / 2 + 7), 25, 21, gold, true)
-			var top := (size.y - (51 if int(entry.get("amount", 0)) != 0 else 35)) / 2
+			var top := (size.y - (51 if int(entry.get("amount", 0)) != 0 else 35 if show_details else 16)) / 2
 			GameLook.draw_table_text(self, str(entry.name), Vector2(42, top + 16), name_width, font_size, name_color)
-			GameLook.draw_table_text(self, str(entry.category), Vector2(42, top + 34), name_width, 12 if size.y < 72 else 14, ink)
+			if show_details: GameLook.draw_table_text(self, str(entry.category), Vector2(42, top + 34), name_width, 12 if size.y < 72 else 14, ink)
 			if int(entry.get("amount", 0)) != 0: _amount(Vector2(42, top + 39), name_width, 13)
 		else:
 			GameLook.draw_table_text(self, str(entry.rank), Vector2(6, 16), 18, 14, gold, true)
 			GameLook.draw_table_text(self, str(entry.name), Vector2(28, 16), size.x - 34, 12, name_color)
-			GameLook.draw_table_text(self, str(entry.category), Vector2(6, 29), size.x - 12, 11, ink, true)
+			if show_details: GameLook.draw_table_text(self, str(entry.category), Vector2(6, 29), size.x - 12, 11, ink, true)
 			if int(entry.get("amount", 0)) != 0: _amount(Vector2(6, 31), size.x - 12, 11)
 		for index in faces.size():
 			var marked: bool = entry.get("marked_cards", []).has(index)
 			GameCard.paint(self, faces[index], entry.cards[index], null, Color.WHITE, marked)
+			if entry.get("dimmed_cards", []).has(index):
+				var shade := GameLook.casino_sheet(false, true).bg_color; shade.a = .78
+				draw_style_box(GameLook.box(shade, shade, 7, 0), faces[index])
 			if marked and not str(entry.get("card_mark", "")).is_empty():
 				var mark := Rect2(faces[index].position + Vector2(2, faces[index].size.y * .67), Vector2(faces[index].size.x - 4, maxf(9, faces[index].size.x * .24)))
 				draw_style_box(GameLook.box(gold, gold, 2, 0), mark)
@@ -77,12 +82,14 @@ func _notification(what: int) -> void:
 
 
 func set_entries(value: Array) -> void:
-	entries = value
+	entries = value.duplicate(true)
+	for entry in entries:
+		entry.dimmed_cards = entry.get("dimmed_cards", []).map(func(index: Variant) -> int: return int(index))
 	for child in get_children(): remove_child(child); child.queue_free()
 	for entry in entries:
-		var row := ResultRow.new(); row.entry = entry; row.amount_icon = amount_icon
+		var row := ResultRow.new(); row.entry = entry; row.amount_icon = amount_icon; row.show_details = show_details
 		row.set_meta("result_seat", entry.get("seat", -1)); row.set_meta("result_rank", entry.rank)
-		row.accessibility_name = "%s. %s. %s. %s chips." % [entry.rank, entry.name, entry.category, entry.get("amount", 0)]
+		row.accessibility_name = "%s. %s. %s. %s chips." % [entry.rank, entry.name, entry.get("category", ""), entry.get("amount", 0)] if show_details else "%s. %s." % [entry.rank, entry.name]
 		for index in entry.get("marked_cards", []):
 			if int(index) >= 0 and int(index) < entry.get("cards", []).size(): row.accessibility_name += " %s: %s." % [entry.get("card_mark", "Highlighted card"), entry.cards[int(index)].get("name", "Card")]
 		add_child(row)
@@ -93,8 +100,10 @@ func _fit() -> void:
 	if entries.is_empty(): fitted_height = 0; update_minimum_size(); return
 	columns = 1 if entries.size() <= 4 else 2
 	if size.x >= 1000 and maximum_height < 360 and entries.size() > 6: columns = 3
+	if not show_details:
+		while columns < 5 and ceili(float(entries.size()) / columns) * 62 - 6 > maximum_height and size.x / (columns + 1) >= 142: columns += 1
 	var rows := ceili(float(entries.size()) / columns)
-	row_height = minf(86 if size.x / columns < 310 else 80, maxf(56, (maximum_height - (rows - 1) * 6) / rows))
+	row_height = minf(80 if not show_details else 86 if size.x / columns < 310 else 80, maxf(56, (maximum_height - (rows - 1) * 6) / rows))
 	var width := maxf(0, (size.x - (columns - 1) * 8) / columns)
 	for index in get_child_count():
 		var row: Control = get_child(index)

@@ -1935,6 +1935,12 @@ both examples. `GameLook.draw_chip_pile(canvas, bounds, amount)` draws static,
 fitted chip artwork in five sizes: 1–10, 11–50, 51–100, 101–999 and 1000+;
 zero omits the pile. This helper owns no game rules or animation.
 
+Browser status banners can add `is-attached` to touch the plaque above them.
+Set `--casino-status-inset` to the avatar's right edge plus a small inset; the
+shared variant removes the top gap and rounds only the lower corners. Reserve
+its height and animate the banner behind the plaque, never the identity/input
+target. The template demonstrates attached host/browser geometry.
+
 Set `GamePhaseTrack.compact = true` before adding it to omit the extra caption
 and fit the track in a 42-pixel table-header row. Combine it with a turn label
 through `set_table_header_content`; board centering and shared navigation stay
@@ -1967,6 +1973,12 @@ an optional short literal `card_mark`, such as `HOLE`. Both views highlight thos
 faces and show the label without changing card geometry; native accessibility
 names and browser card labels also identify them. The module must derive these
 indices from cards already authorized for public display.
+For a compact named card guide, set native `show_details=false` before
+`set_entries`, or pass browser `{showDetails:false}`. It omits descriptions and
+fits more columns when necessary to keep a complete short guide on screen.
+An entry's optional `dimmed_cards` contains zero-based card indices to fade
+outside its named combination. These are presentation hints; all five cards
+retain their identities. Both template views demonstrate the opt-ins.
 `GameLook.casino_sheet(active, true)` selects its shared six-pixel compact insets.
 Phase dialogs accept an optional fifth `maximum_width`; use
 `set_phase_dialog_width(dialog, width)` when the result count changes the preferred

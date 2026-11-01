@@ -593,7 +593,7 @@ func _ready() -> void:
 		GameLook.draw_table_avatar(casino_badge, Rect2(0, 2, 60, 60), Color("2463eb"), 0)
 		GameLook.draw_table_text(casino_badge, "Example player", Vector2(68, 28), 120, 14, Color.WHITE)
 		GameLook.draw_table_text(casino_badge, "$2,000", Vector2(68, 48), 120, 14, Color.WHITE)
-		GameLook.draw_casino_status(casino_badge, Rect2(28, 68, 166, 24), "RAISED $40", true))
+		GameLook.draw_casino_status(casino_badge, Rect2(64, 62, 130, 24), "RAISED $40", true))
 	var chip_example := Control.new(); chip_example.custom_minimum_size = Vector2(180, 80); casino_controls.add_child(chip_example)
 	chip_example.draw.connect(func() -> void: GameLook.draw_chip_pile(chip_example, Rect2(16, 7, 148, 66), 1000))
 	var casino_bet := Button.new(); casino_bet.text = "BET"; GameLook.casino_action(casino_bet, "raise"); casino_controls.add_child(casino_bet)
@@ -640,6 +640,11 @@ func _ready() -> void:
 	ranked_example.maximum_height = 160; ranked_example.amount_icon = RuntimeAssets.texture("res://ui/playful/table-cash.svg")
 	ranked_example.hide(); screen.content.add_child(ranked_example)
 	ranked_example.set_entries([{"rank": 1, "seat": 0, "name": "Example winner", "color": "#2463eb", "category": "Royal Flush", "amount": 100, "marked_cards": [0], "card_mark": "HOLE", "cards": [{"layout":"standard", "rank":"A", "suit":"spades", "name":"Ace of spades"}]}, {"rank": 2, "seat": 1, "name": "Example loss", "category": "One Pair", "amount": -100, "cards": []}])
+	# Compact named card guides can set show_details=false before set_entries.
+	# dimmed_cards:[zero_based_index,...] fades cards outside a combination.
+	var combination_example := GameRankedResults.new(); combination_example.show_details = false
+	combination_example.hide(); screen.content.add_child(combination_example)
+	combination_example.set_entries([{"rank":1,"name":"One Pair","category":"","dimmed_cards":[2],"cards":[{"layout":"standard","rank":"A","suit":"spades"},{"layout":"standard","rank":"A","suit":"hearts"},{"layout":"standard","rank":"2","suit":"clubs"}]}])
 
 
 func initialize_session(context: GameSessionContext) -> void:

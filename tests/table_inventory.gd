@@ -16,6 +16,14 @@ func _run() -> void:
 	for sample in [[0,0],[1,1],[10,1],[11,2],[50,2],[51,3],[100,3],[101,4],[999,4],[1000,5],[1000000,5]]:
 		check(GameLook.chip_pile_stage(sample[0]) == sample[1], "Chip pile stage respects amount boundary %d" % sample[0])
 	root.min_size = Vector2i.ONE; root.content_scale_size = Vector2i(640,480); root.size = Vector2i(640,480)
+	var combinations := GameRankedResults.new(); combinations.show_details = false; root.add_child(combinations)
+	var example: Dictionary = JSON.parse_string('{"rank":1,"name":"Three of a Kind","category":"Hidden description","dimmed_cards":[3,4],"cards":[{"layout":"standard","rank":"J","suit":"hearts"},{"layout":"standard","rank":"J","suit":"clubs"},{"layout":"standard","rank":"J","suit":"spades"},{"layout":"standard","rank":"4","suit":"spades"},{"layout":"standard","rank":"2","suit":"diamonds"}]}')
+	combinations.set_entries(range(10).map(func(_index: int) -> Dictionary: return example.duplicate(true)))
+	for bounds in [Vector2(360,420),Vector2(800,240)]:
+		combinations.size.x = bounds.x; combinations.maximum_height = bounds.y; combinations._fit()
+		check(combinations.fitted_height <= bounds.y and combinations.card_rects().all(func(rect: Rect2) -> bool: return Rect2(Vector2.ZERO, Vector2(bounds.x, combinations.fitted_height)).grow(.01).encloses(rect)), "Compact card guides fit all ten examples and complete faces in %s" % bounds)
+	check(combinations.entries[0].dimmed_cards == [3,4] and not combinations.get_child(0).show_details, "JSON dimming indices select the two kickers while the compact guide omits descriptions")
+	combinations.queue_free()
 	var section := GameSection.new(); section.caption = "Players"; root.add_child(section); section.size = Vector2(300,220)
 	var inventory := GameResourceHand.new(); section.content.add_child(inventory)
 	var items: Array = []

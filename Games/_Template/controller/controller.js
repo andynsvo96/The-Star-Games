@@ -224,5 +224,13 @@
     const ranked=new StarGamesRankedResults(rankedExample,{amountIcon:'/ui/playful/table-cash.svg'});
     ranked.setEntries([{rank:1,seat:0,name:'Example winner',category:'Royal Flush',amount:100,marked_cards:[0],card_mark:'HOLE',cards:[{layout:'standard',rank:'A',suit:'spades',name:'Ace of spades'}]},{rank:2,seat:1,name:'Example loss',category:'One Pair',amount:-100,cards:[]}]);
     ranked.fit(160);
+    // Named card guides use {showDetails:false}; entry.dimmed_cards contains
+    // zero-based indices to fade without changing the semantic card identities.
+  }
+  const combinationExample=document.getElementById('example-combination-guide');
+  if(combinationExample&&window.StarGamesRankedResults){
+    const guide=new StarGamesRankedResults(combinationExample,{showDetails:false});
+    guide.setEntries([{rank:1,name:'Three of a Kind',dimmed_cards:[3,4],cards:['J','J','J','4','2'].map((rank,index)=>({layout:'standard',rank,suit:['hearts','clubs','spades','spades','diamonds'][index]}))}]);
+    guide.fit(160);
   }
 })();
