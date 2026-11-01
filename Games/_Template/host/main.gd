@@ -587,11 +587,15 @@ func _ready() -> void:
 	var casino_example := PanelContainer.new(); casino_example.theme = GameLook.make_theme("casino")
 	casino_example.add_theme_stylebox_override("panel", GameLook.casino_frame()); casino_example.hide(); screen.content.add_child(casino_example)
 	var casino_controls := VBoxContainer.new(); casino_example.add_child(casino_controls)
-	var casino_badge := Control.new(); casino_badge.custom_minimum_size = Vector2(200, 64); casino_controls.add_child(casino_badge)
+	var casino_badge := Control.new(); casino_badge.custom_minimum_size = Vector2(200, 96); casino_controls.add_child(casino_badge)
 	casino_badge.draw.connect(func() -> void:
 		casino_badge.draw_style_box(GameLook.casino_player_sheet(true), Rect2(24, 2, 176, 60))
 		GameLook.draw_table_avatar(casino_badge, Rect2(0, 2, 60, 60), Color("2463eb"), 0)
-		GameLook.draw_table_text(casino_badge, "Example player", Vector2(68, 28), 120, 14, Color.WHITE))
+		GameLook.draw_table_text(casino_badge, "Example player", Vector2(68, 28), 120, 14, Color.WHITE)
+		GameLook.draw_table_text(casino_badge, "$2,000", Vector2(68, 48), 120, 14, Color.WHITE)
+		GameLook.draw_casino_status(casino_badge, Rect2(28, 68, 166, 24), "RAISED $40", true))
+	var chip_example := Control.new(); chip_example.custom_minimum_size = Vector2(180, 80); casino_controls.add_child(chip_example)
+	chip_example.draw.connect(func() -> void: GameLook.draw_chip_pile(chip_example, Rect2(16, 7, 148, 66), 1000))
 	var casino_bet := Button.new(); casino_bet.text = "BET"; GameLook.casino_action(casino_bet, "raise"); casino_controls.add_child(casino_bet)
 	var casino_slider := HSlider.new(); casino_slider.custom_minimum_size.y = 44; casino_slider.accessibility_name = "Example bet amount"; casino_controls.add_child(casino_slider)
 	# A table can keep one replay Button inside its persistent auxiliary action

@@ -13,6 +13,8 @@ func tap(point: Vector2) -> void:
 		var event := InputEventMouseButton.new(); event.button_index = MOUSE_BUTTON_LEFT; event.pressed = pressed; event.position = point; Input.parse_input_event(event)
 		await process_frame
 func _run() -> void:
+	for sample in [[0,0],[1,1],[10,1],[11,2],[50,2],[51,3],[100,3],[101,4],[999,4],[1000,5],[1000000,5]]:
+		check(GameLook.chip_pile_stage(sample[0]) == sample[1], "Chip pile stage respects amount boundary %d" % sample[0])
 	root.min_size = Vector2i.ONE; root.content_scale_size = Vector2i(640,480); root.size = Vector2i(640,480)
 	var section := GameSection.new(); section.caption = "Players"; root.add_child(section); section.size = Vector2(300,220)
 	var inventory := GameResourceHand.new(); section.content.add_child(inventory)

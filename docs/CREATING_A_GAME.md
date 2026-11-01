@@ -1914,13 +1914,23 @@ hidden casino-control examples.
 For rounded charcoal seat plaques, use `GameLook.casino_player_sheet(active)`
 and `GameLook.draw_table_avatar(canvas, bounds, identity_color, pose)`.
 The original profile avatar overlaps the plaque's left edge; retain its identity
-color, render the name as literal ivory text and put any public wager on the right.
+color, render the name as literal ivory text and place the remaining balance below it.
 Browsers use the shared
 `game-casino-player` class (`is-current` for the active seat) and
 `StarGamesTableUI.avatar(player)`, preserving the saved pose.
 The active plaque uses a thin gold outline; screen frames have near-black
 interiors and no border glow. Hidden
 template examples demonstrate both host and browser variants.
+
+Keep dense casino identities to name, balance and avatar. Put accepted public
+actions in a separate banner beneath the plaque with
+`GameLook.draw_casino_status(canvas, bounds, caption, raised)` or browser
+`game-casino-status` plus `is-raised`. Reserve the banner's space even when its
+caption is empty; dim the identity and banner together for folded/eliminated
+players. Supply literal captions and host-accepted amounts. The template includes
+both examples. `GameLook.draw_chip_pile(canvas, bounds, amount)` draws static,
+fitted chip artwork in five sizes: 1–10, 11–50, 51–100, 101–999 and 1000+;
+zero omits the pile. This helper owns no game rules or animation.
 
 Set `GamePhaseTrack.compact = true` before adding it to omit the extra caption
 and fit the track in a 42-pixel table-header row. Combine it with a turn label

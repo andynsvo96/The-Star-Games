@@ -414,6 +414,49 @@ static func casino_player_sheet(active := false) -> StyleBoxTexture:
 	return style
 
 
+static func casino_status_sheet(raised := false) -> StyleBoxFlat:
+	var style := box(Color("214534") if raised else Color("333b40"), Color("70b989") if raised else Color("68716e"), 5, 1)
+	style.set_content_margin_all(4); style.shadow_size = 0
+	return style
+
+
+static func draw_casino_status(canvas: Control, bounds: Rect2, caption: String, raised := false) -> void:
+	if caption.is_empty(): return
+	canvas.draw_style_box(casino_status_sheet(raised), bounds)
+	var font := canvas.get_theme_default_font()
+	var font_size := mini(14, int(bounds.size.y * .65))
+	while font_size > 8 and font.get_string_size(caption, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > bounds.size.x - 10: font_size -= 1
+	var baseline := bounds.get_center().y + (font.get_ascent(font_size) - font.get_descent(font_size)) / 2
+	draw_table_text(canvas, caption, Vector2(bounds.position.x + 5, baseline), bounds.size.x - 10, font_size, Color("b6f2c9") if raised else Color("f4f5ef"), true)
+
+
+# Static table artwork; callers retain ownership of amounts and animation.
+static func chip_pile_stage(amount: int) -> int:
+	return 0 if amount <= 0 else 1 if amount <= 10 else 2 if amount <= 50 else 3 if amount <= 100 else 4 if amount <= 999 else 5
+
+
+static func draw_chip_pile(canvas: CanvasItem, bounds: Rect2, amount: int) -> void:
+	var stage := chip_pile_stage(amount)
+	if stage == 0: return
+	var piles: Array = [[2], [3, 2], [4, 3, 2], [6, 4, 3, 4, 2], [8, 6, 5, 6, 4, 3, 4]][stage - 1]
+	var scale_factor := minf(bounds.size.x / 148, bounds.size.y / 66)
+	var colors := [Color("2878a8"), Color("b53c43"), Color("368265"), Color("ad792f"), Color("655096")]
+	var center := Vector2(bounds.get_center().x, bounds.end.y - 9 * scale_factor)
+	for pile in piles.size():
+		var origin := center + Vector2((pile - (piles.size() - 1) / 2.0) * 18, -5 if pile % 2 else 0) * scale_factor
+		for layer in int(piles[pile]):
+			var point := origin - Vector2(0, layer * 5) * scale_factor
+			canvas.draw_set_transform(point, 0, Vector2(1, .44))
+			canvas.draw_circle(Vector2(0, 3) * scale_factor, 14 * scale_factor, Color("171c22"))
+			canvas.draw_circle(Vector2.ZERO, 14 * scale_factor, Color("ead4a3"))
+			canvas.draw_circle(Vector2.ZERO, 11 * scale_factor, colors[pile % colors.size()])
+			for stripe in 8:
+				var direction := Vector2.from_angle(stripe * TAU / 8)
+				canvas.draw_line(direction * 10 * scale_factor, direction * 14 * scale_factor, Color("fff1ce"), 3 * scale_factor, true)
+			canvas.draw_arc(Vector2.ZERO, 7 * scale_factor, 0, TAU, 24, Color("fff1ce99"), scale_factor, true)
+	canvas.draw_set_transform(Vector2.ZERO)
+
+
 static func casino_button(kind := "neutral", state := "normal") -> StyleBox:
 	if state == "disabled":
 		var disabled := box(Color("32362f"), Color("6e7163"), 9, 1)
