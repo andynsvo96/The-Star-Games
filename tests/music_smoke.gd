@@ -52,7 +52,10 @@ func _run() -> void:
 	var before_lobby: String = music.history[music.history_index]
 	app._show_lobby()
 	assert(music.player.stream_paused and music.visible)
-	assert(music.history[music.history_index] != before_lobby, "Entering the lobby draws a fresh song while preserving manual pause")
+	assert(music.history[music.history_index] == before_lobby, "Entering the lobby preserves the song and manual pause")
+	app._show_settings("lobby")
+	app._return_from_settings()
+	assert(music.history[music.history_index] == before_lobby and music.player.stream_paused, "Host settings preserves a manually paused menu song")
 	music.toggle.pressed.emit()
 	assert(not music.player.stream_paused and music.toggle.icon == music.icons["pause"])
 	var stream: AudioStream = music.player.stream
@@ -63,12 +66,20 @@ func _run() -> void:
 	assert(not music.player.stream_paused and music.player.stream != stream, "Returning to the splash screen starts a new song")
 	for destination in [app._show_lobby, app._show_game_menu, app._show_title]:
 		var previous_song: String = music.history[music.history_index]
+		var previous_history: Array = music.history.duplicate()
+		stream = music.player.stream
 		music.player.seek(2.0)
 		await create_timer(0.1).timeout
 		assert(music.player.get_playback_position() >= 2.0)
 		destination.call()
-		assert(music.history[music.history_index] != previous_song, "Navigating between the splash, lobby, and game selection draws a fresh song")
-		assert(music.player.get_playback_position() < 0.5, "Menu entry starts playback at the beginning")
+		assert(music.history[music.history_index] == previous_song and music.history == previous_history, "The title, lobby, and game selection share one shuffle session")
+		assert(music.player.stream == stream and music.player.get_playback_position() >= 2.0, "Menu navigation preserves playback without restarting")
+		var caller: String = app.current_state
+		app._show_settings(caller)
+		assert(music.active and music.player.stream == stream and not music.player.stream_paused, "Opening Host Settings keeps menu music playing")
+		app._return_from_settings()
+		assert(app.current_state == caller and music.history == previous_history, "Returning from Host Settings preserves the menu shuffle")
+		assert(music.player.stream == stream and music.player.get_playback_position() >= 2.0, "Returning from Host Settings preserves playback position")
 		if app.current_state == "game_menu":
 			var selection_stream: AudioStream = music.player.stream
 			app._set_game_view("icons")
@@ -84,7 +95,7 @@ func _run() -> void:
 	app._show_settings("title")
 	assert(music.player.stream == stream, "Opening settings preserves the current menu song")
 	app._return_from_settings()
-	assert(music.player.stream != stream and music.player.get_playback_position() < 0.5, "Returning to the splash screen from settings starts a fresh song")
+	assert(music.player.stream == stream and music.player.get_playback_position() >= 2.0, "Returning to the splash screen from settings keeps the current song")
 	music.trigger.mouse_entered.emit()
 	await process_frame
 	assert(music.panel.visible)
@@ -145,7 +156,7 @@ func _run() -> void:
 		controller.player.stop()
 		controller.player.stream = null
 	await create_timer(0.1).timeout
-	print("PASS: music shuffle, fresh splash/menu/game entries and exits, history, pause, empty/single-song libraries, controls, and marquee")
+	print("PASS: music shuffle, continuous menus/settings, fresh game boundaries, history, pause, empty/single-song libraries, controls, and marquee")
 	app.queue_free()
 	await process_frame
 	quit()
@@ -182,6 +193,25 @@ func _check_game_entries(app: Control, folder: String) -> bool:
 		assert(music.player.get_playback_position() >= 2.0)
 		music.set_active(true)
 		assert(music.history[music.history_index] == current, "Ordinary activation must not skip songs")
+		if entry == 0:
+			var screen := GameScreen.new()
+			app.active_game.add_child(screen)
+			screen.configure("Music test")
+			screen.use_playful_style()
+			var settings: VBoxContainer = screen.add_corner_details(["Host Settings"], Callable(), false, false, false, true, true)[0]
+			var game_stream: AudioStream = music.player.stream
+			var game_history: Array = music.history.duplicate()
+			for paused in [false, true]:
+				if paused: music.toggle_pause()
+				var settings_button: Button = settings.get_meta("toggle_button")
+				settings_button.button_pressed = true
+				await process_frame
+				assert(settings.is_visible_in_tree() and music.active and not menu.active, "In-game Host Settings stays in the game music session")
+				(settings.get_meta("settings_close") as Button).pressed.emit()
+				assert(not settings.is_visible_in_tree(), "In-game Host Settings closes normally")
+				assert(music.player.stream == game_stream and music.history == game_history, "Opening and closing in-game Host Settings preserves the song and shuffle")
+				assert(music.player.get_playback_position() >= 2.0 and music.player.stream_paused == paused, "In-game Host Settings preserves playback position and manual pause")
+			music.toggle_pause()
 		app._return_from_game()
 		assert(not music.active and music.player.stream_paused)
 		assert(app.menu_music.active)
@@ -209,9 +239,12 @@ func _check_game_entries(app: Control, folder: String) -> bool:
 	var last: String = music.history[music.history_index]
 	var other := game.duplicate(true)
 	other.id = "music-other"
+	var game_stream: AudioStream = music.player.stream
+	music.player.seek(2.0)
+	await create_timer(0.1).timeout
 	app._launch_game(other)
-	assert(music.history[music.history_index] != last, "Selecting another game while music is active also starts a fresh song")
-	assert(music.player.get_playback_position() < 0.5)
+	assert(music.history[music.history_index] == last and music.player.stream == game_stream, "Switching games or collection variants within the game session keeps the song")
+	assert(music.player.get_playback_position() >= 2.0, "Only crossing the menu/game boundary restarts playback")
 	app._return_from_game()
 	await process_frame
 	# A song prepared or added while outside a game waits until the next entry.

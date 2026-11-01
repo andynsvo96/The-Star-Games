@@ -59,16 +59,15 @@ Allow local-network access if your firewall prompts you. No controller app is re
 
 Host Settings includes sound, reduced motion, and other preferences. On desktop, **Settings > Asset Editor** lets you replace artwork, backgrounds, and audio, with previous files saved in `Backups/`.
 
-Game music from `asset/music/` plays in shuffled order. Every game selection,
-including returning to a game or choosing a variant, starts a fresh song from the
-beginning instead of resuming the previous track. Songs do not repeat until the
-shuffle is exhausted, and consecutive tracks differ when multiple songs are
-available. A manual music pause remains in effect across navigation.
+The title screen, lobby, and game selection share one shuffled playlist from
+`asset/lobby_songs/`. Moving between these menus or opening and closing Host
+Settings keeps the current song playing at its current position.
 
-The splash screen, lobby, and game selection use the same shuffled behavior for
-`asset/lobby_songs/`. Entering one of those screens or exiting a game starts a
-fresh menu song from the beginning. Menu refreshes and view toggles keep playing
-the current song.
+Entering a game from the menus starts a fresh shuffled song from `asset/music/`;
+returning to game selection starts a fresh menu song. In-game settings, replays,
+and collection variant changes keep the current game song. Songs do not repeat
+until the shuffle is exhausted, and consecutive tracks differ when multiple songs
+are available. A manual music pause remains in effect across navigation.
 
 Every installed local game and collection chooser supports named cosmetic skins.
 In **Asset Editor > Themes**, choose a game, duplicate its protected **Default**

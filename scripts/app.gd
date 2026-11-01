@@ -27,7 +27,7 @@ var screen_root: Control
 var title_background: Control
 var menu_music: Control
 var game_music: Control
-var music_screen := "title"
+var music_in_game := false
 var settings_caller := "title"
 var game_settings_store := GameSettingsStore.new()
 var current_state := "title"
@@ -624,7 +624,6 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 		choice["can_launch"] = _can_launch_for_count(choice, count)
 		context.game_choices.append(choice)
 	current_state = "debug_game" if debug else "game"
-	game_music.play_shuffled_song()
 	_replace_screen()
 	active_game = instance
 	active_game_id = game["id"]
@@ -1244,15 +1243,18 @@ func _replace_screen() -> void:
 	entering_lobby = false
 	screen_root.modulate = Color.WHITE
 	screen_root.position = Vector2.ZERO
+	# Menu navigation and settings belong to the same music session.
+	var in_game := current_state in ["game", "debug_game"]
+	if in_game != music_in_game:
+		var next_music := game_music if in_game else menu_music
+		if next_music != null:
+			next_music.play_shuffled_song()
+	music_in_game = in_game
 	if menu_music != null:
 		var menu_active := current_state in ["title", "lobby", "game_menu", "settings", "debug_setup", "debug_browsers"]
-		var entered_menu := current_state in ["title", "lobby", "game_menu"] and current_state != music_screen
-		if menu_active and (entered_menu or not menu_music.active):
-			menu_music.play_shuffled_song()
 		menu_music.set_active(menu_active)
-	music_screen = current_state
 	if game_music != null:
-		game_music.set_active(current_state in ["game", "debug_game"])
+		game_music.set_active(in_game)
 	if title_background != null:
 		title_background.modulate = Color.WHITE
 		title_background.scale = Vector2.ONE

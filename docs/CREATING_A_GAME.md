@@ -724,18 +724,21 @@ difficulty, host-versus-phone input, reconnect, replay, and scoring checks.
 
 The launcher plays a shuffled host playlist from `asset/music` during all game
 sessions, including template-based games, and restores `asset/lobby_songs` music
-on return to the menus. Each game selection (including collection variants and
-reentry) starts a fresh song at the beginning from the shuffled queue. Songs do
-not repeat until the queue is exhausted, and the next shuffle avoids the last
-song when more than one is available. A one-song library restarts that song;
-manual pause is preserved across navigation. Games need no music player or
-lifecycle hooks. Shared Master/Music volume and music controls apply; keep game
-sound effects on the Effects bus. An empty music folder is supported.
+on return to the menus. Crossing from the menus into a game or back starts a fresh
+song at the beginning from the destination's shuffled queue. In-game settings,
+replays, and collection variant changes preserve the current game song and
+playback position. Songs do not repeat until the queue is exhausted, and the next
+shuffle avoids the last song when more than one is available. A one-song library
+restarts that song at each menu/game boundary; manual pause is preserved across
+navigation. Games need no music player or lifecycle hooks. Shared Master/Music
+volume and music controls apply; keep game sound effects on the Effects bus.
+An empty music folder is supported.
 
 The menu playlist from `asset/lobby_songs` follows the same shuffle and pause
-rules. Entering the splash screen, lobby, or game selection starts a fresh song
-from the beginning, including after exiting a game. Redrawing the current screen,
-refreshing the roster/catalog, and switching List/Icons do not skip tracks.
+rules. The title screen, lobby, and game selection are one music session: moving
+between them or opening and closing Host Settings preserves the current song and
+playback position. Redrawing the current screen, refreshing the roster/catalog,
+and switching List/Icons also do not skip tracks.
 
 
 ### Shared playful presentation
