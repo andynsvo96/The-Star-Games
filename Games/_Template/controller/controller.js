@@ -225,6 +225,10 @@
   });
   studioStandings.update([{seat:0,display_name:'Example player',color:'#286ac2',pose:0,score:100,rank:1,medal:'gold',delta:100}]);
   studioExample.append(studioStandings.element);
+  const blueStudioExample=document.getElementById('example-blue-studio-results');
+  const blueStudioStandings=new StarGamesLeaderboard(seat=>{blueStudioExample.dataset.selectedSeat=seat;});
+  blueStudioStandings.update([{seat:0,display_name:'Example player',color:'#286ac2',score:100,rank:1,medal:'gold'}]);
+  blueStudioExample.append(blueStudioStandings.element);
   const casinoRange=document.getElementById('example-casino-range');
   if(casinoRange&&window.StarGamesTableUI){
     const badge=document.createElement('button');badge.type='button';badge.className='game-casino-player';badge.setAttribute('aria-label','Example player: open public history');

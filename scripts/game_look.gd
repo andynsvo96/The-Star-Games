@@ -113,21 +113,21 @@ static func drawing_sheet(modern := false) -> StyleBoxFlat:
 	return modern_studio_sheet() if modern else box(Color("fff7e8"), WOOD_EDGE, 4, 3)
 
 
-static func modern_studio_sheet() -> StyleBoxFlat:
-	var style := box(Color.WHITE, Color("e1ddec"), 18, 1)
+static func modern_studio_sheet(blue := false) -> StyleBoxFlat:
+	var style := box(Color("1c3e60") if blue else Color.WHITE, Color("40638a") if blue else Color("e1ddec"), 18, 1)
 	style.set_content_margin_all(16)
 	style.shadow_size = 0
 	return style
 
 
-static func medal_color(medal: String) -> Color:
-	return Color({"gold": "946415", "silver": "606d82", "bronze": "9a5737"}.get(medal, "72718a"))
+static func medal_color(medal: String, blue := false) -> Color:
+	return Color({"gold": "f4d181", "silver": "d5e2ef", "bronze": "efb38b"}.get(medal, "b5cae0")) if blue else Color({"gold": "946415", "silver": "606d82", "bronze": "9a5737"}.get(medal, "72718a"))
 
 
-static func standings_row(active := false, medal := "", hovered := false) -> StyleBoxFlat:
-	var fill := Color({"gold": "fff7e2", "silver": "f0f3f8", "bronze": "fbede5"}.get(medal, "f7f6fc"))
-	if active or hovered: fill = Color("eae5fa")
-	var style := box(fill, Color("aa98de") if active else fill, 10, 1)
+static func standings_row(active := false, medal := "", hovered := false, blue := false) -> StyleBoxFlat:
+	var fill := Color({"gold": "485148", "silver": "364b65", "bronze": "4b454a"}.get(medal, "24496d")) if blue else Color({"gold": "fff7e2", "silver": "f0f3f8", "bronze": "fbede5"}.get(medal, "f7f6fc"))
+	if active or hovered: fill = Color("315e86") if blue else Color("eae5fa")
+	var style := box(fill, Color("8cc6f0") if blue and active else Color("aa98de") if active else fill, 10, 1)
 	style.set_content_margin_all(6)
 	style.shadow_size = 0
 	return style
@@ -146,7 +146,9 @@ static func card_table_frame() -> StyleBoxFlat:
 	return style
 
 
-static func guess_color(quality: String) -> Color:
+static func guess_color(quality: String, blue := false) -> Color:
+	if blue:
+		return Color({"correct":"8ce3ac", "close":"ffca7b", "wrong":"ff9d9f"}.get(quality, "e6effa"))
 	match quality:
 		"correct": return Color("18773b")
 		"close": return Color("9a5700")
@@ -364,8 +366,8 @@ static func make_theme(presentation := "") -> Theme:
 	if presentation == "studio":
 		_apply_classic_palette(result, "royal")
 		_apply_studio_palette(result)
-	if presentation == "studio-modern":
-		_apply_modern_studio_palette(result)
+	if presentation in ["studio-modern", "studio-blue"]:
+		_apply_modern_studio_palette(result, presentation == "studio-blue")
 	if presentation in ["modern-table", "party-table"]:
 		_apply_modern_table_palette(result)
 	if presentation == "casino":
@@ -948,45 +950,50 @@ static func _apply_studio_palette(result: Theme) -> void:
 	result.set_color("font_placeholder_color", "LineEdit", Color("756149"))
 
 
-static func _apply_modern_studio_palette(result: Theme) -> void:
+static func _apply_modern_studio_palette(result: Theme, blue := false) -> void:
 	result.set_constant("modern_studio", "GamePalette", 1)
+	result.set_constant("blue_studio", "GamePalette", int(blue))
 	result.default_font = interface_font()
 	result.default_font_size = 16
-	var ink := Color("30324a")
+	var ink := Color("e6effa") if blue else Color("30324a")
 	for key in ["ink", "text", "title"]: result.set_color(key, "GamePalette", ink)
-	result.set_color("panel", "GamePalette", Color.WHITE)
-	result.set_color("panel_edge", "GamePalette", Color("e1ddec"))
-	result.set_color("status", "GamePalette", Color("eeebf8"))
-	result.set_color("status_edge", "GamePalette", Color("e1ddec"))
+	result.set_color("panel", "GamePalette", Color("1c3e60") if blue else Color.WHITE)
+	result.set_color("panel_edge", "GamePalette", Color("40638a") if blue else Color("e1ddec"))
+	result.set_color("status", "GamePalette", Color("24496d") if blue else Color("eeebf8"))
+	result.set_color("status_edge", "GamePalette", Color("40638a") if blue else Color("e1ddec"))
 	result.set_color("font_color", "Label", ink)
 	result.set_color("default_color", "RichTextLabel", ink)
 	result.set_type_variation("GamePrimaryButton", "Button")
 	for type in ["Button", "OptionButton", "GamePrimaryButton"]:
 		for state in ["normal", "hover", "pressed", "disabled"]:
 			var primary: bool = type == "GamePrimaryButton"
-			var fill := Color("7860cc") if primary else Color("eeebf8")
+			var fill := (Color("286d9f") if primary else Color("2a537c")) if blue else Color("7860cc") if primary else Color("eeebf8")
 			if state == "hover": fill = fill.lightened(.08)
 			if state == "pressed": fill = fill.darkened(.08)
-			if state == "disabled": fill = Color("e5e3ed")
+			if state == "disabled": fill = Color("2b435c") if blue else Color("e5e3ed")
 			var style := box(fill, fill, 10, 0)
 			style.shadow_size = 0
 			style.content_margin_top = 10; style.content_margin_bottom = 10
 			result.set_stylebox(state, type, style)
-			result.set_color("font_" + ("color" if state == "normal" else state + "_color"), type, Color("767588") if state == "disabled" else Color.WHITE if primary else ink)
+			result.set_color("font_" + ("color" if state == "normal" else state + "_color"), type, (Color("a5b8c9") if blue else Color("767588")) if state == "disabled" else Color.WHITE if primary else ink)
 		result.set_color("font_focus_color", type, Color.WHITE if type == "GamePrimaryButton" else ink)
-		result.set_stylebox("focus", type, box(Color.TRANSPARENT, Color("7860cc"), 10, 2))
+		var focus := box(Color.TRANSPARENT, Color("9cd5ff") if blue else Color("7860cc"), 10, 2)
+		focus.shadow_size = 0
+		result.set_stylebox("focus", type, focus)
 	for state in ["normal", "focus", "read_only"]:
-		result.set_stylebox(state, "LineEdit", box(Color.WHITE, Color("7860cc") if state == "focus" else Color("d6d1e5"), 10, 1))
+		var field := box(Color("16334f") if blue else Color.WHITE, (Color("9cd5ff") if blue else Color("7860cc")) if state == "focus" else Color("40638a") if blue else Color("d6d1e5"), 10, 1)
+		field.shadow_size = 0
+		result.set_stylebox(state, "LineEdit", field)
 	result.set_color("font_color", "LineEdit", ink)
-	result.set_color("font_placeholder_color", "LineEdit", Color("77758d"))
+	result.set_color("font_placeholder_color", "LineEdit", Color("afc5dc") if blue else Color("77758d"))
 	for state in ["background", "fill"]:
-		var style := box(Color("eeebf8") if state == "background" else Color("c6b6f0"), Color.TRANSPARENT, 3, 0)
+		var style := box((Color("15314e") if state == "background" else Color("78b7e1")) if blue else Color("eeebf8") if state == "background" else Color("c6b6f0"), Color.TRANSPARENT, 3, 0)
 		style.shadow_size = 0
 		style.set_content_margin_all(0)
 		result.set_stylebox(state, "ProgressBar", style)
-	result.set_stylebox("panel", "PopupMenu", modern_studio_sheet())
+	result.set_stylebox("panel", "PopupMenu", modern_studio_sheet(blue))
 	result.set_color("font_color", "PopupMenu", ink)
-	result.set_stylebox("hover", "PopupMenu", standings_row(true))
+	result.set_stylebox("hover", "PopupMenu", standings_row(true, "", false, blue))
 	result.set_color("font_hover_color", "PopupMenu", ink)
 
 

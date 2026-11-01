@@ -226,7 +226,7 @@ func use_table_header(title_art: Texture2D = null, centered_title := false, left
 	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	header.theme = theme
 	var modern := get_theme_constant("modern_studio", "GamePalette") == 1
-	var header_style: StyleBox = GameLook.modern_studio_sheet() if modern else GameLook.casino_frame() if get_theme_constant("casino", "GamePalette") == 1 else GameLook.modern_table_sheet()
+	var header_style: StyleBox = GameLook.modern_studio_sheet(get_theme_constant("blue_studio", "GamePalette") == 1) if modern else GameLook.casino_frame() if get_theme_constant("casino", "GamePalette") == 1 else GameLook.modern_table_sheet()
 	header_style.set_content_margin_all(4)
 	header.add_theme_stylebox_override("panel", header_style)
 	get_parent().add_child(header)
@@ -440,7 +440,7 @@ func add_card(parent: Control, presentation := "", artwork: Texture2D = null) ->
 	var paper := get_theme_constant("story", "GamePalette") == 1 or get_theme_constant("royal", "GamePalette") == 1 or presentation == "clipboard"
 	panel.add_theme_stylebox_override("panel", GameLook.paper_sheet(presentation == "clipboard") if paper else GameLook.box(fill, edge))
 	if get_theme_constant("modern_studio", "GamePalette") == 1:
-		panel.add_theme_stylebox_override("panel", GameLook.modern_studio_sheet())
+		panel.add_theme_stylebox_override("panel", GameLook.modern_studio_sheet(get_theme_constant("blue_studio", "GamePalette") == 1))
 	if paper:
 		panel.theme = GameLook.paper_theme(theme)
 		var adapt_paper := func() -> void:
@@ -493,7 +493,7 @@ func add_section_heading(parent: Control, caption: String, font_size := 22) -> L
 	if get_theme_constant("modern_studio", "GamePalette") == 1:
 		var label := add_sidebar_text(parent, caption)
 		label.add_theme_font_size_override("font_size", mini(font_size, 14))
-		label.add_theme_color_override("font_color", Color("77718f"))
+		label.add_theme_color_override("font_color", Color("b6cfe6") if get_theme_constant("blue_studio", "GamePalette") == 1 else Color("77718f"))
 		return label
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
@@ -564,7 +564,7 @@ func add_phase_dialog(fit_contents := false, full_screen := false, compact := fa
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", GameLook.box(get_theme_color("panel", "GamePalette"), get_theme_color("panel_edge", "GamePalette")))
 	if get_theme_constant("modern_studio", "GamePalette") == 1:
-		panel.add_theme_stylebox_override("panel", GameLook.modern_studio_sheet())
+		panel.add_theme_stylebox_override("panel", GameLook.modern_studio_sheet(get_theme_constant("blue_studio", "GamePalette") == 1))
 	if get_theme_constant("story", "GamePalette") == 1:
 		panel.theme = GameLook.paper_theme(theme)
 		panel.add_theme_stylebox_override("panel", GameLook.paper_sheet())

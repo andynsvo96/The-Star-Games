@@ -2834,6 +2834,21 @@ existing `studio` presentation keeps its ivory/walnut appearance. Use
 surfaces; keep artwork and playfield geometry inside the module. The usual
 background resolver, offline media and reduced-motion behavior still apply.
 
+Select `"studio-blue"` for the darker blue variation. Controllers add
+`game-studio-blue` alongside `game-studio-modern`. Panels, controls, dialogs,
+standings, medal text and semantic feedback use contrast-safe blue surfaces;
+`GameLook.modern_studio_sheet(true)` supplies the native panel. Drawing paper
+stays independent and light through `drawing_sheet(true)` / `--drawing-paper`.
+Both variations have hidden template examples; other palettes keep their defaults.
+
+Native standings entries may also supply `speech` with literal temporary guess
+text and `quality`. The shared bubble hugs its name, wraps before the score and
+ignores pointer input. The module owns expiry, pause, reconnect and answer
+filtering. Speech changes retain the same identity button and focus. Keep live
+misspelling hints out of permanent public panels when the module uses this
+short-lived feedback. `game-ready-controls` supplies an optional browser ready
+row; readiness and host overrides must still be validated by module rules.
+
 For a canvas on the left and scores/feedback on the right, use the existing
 `add_social_layout(.66)` composition and `use_table_header()`. The shared layout
 reserves the table header and stacks the columns on narrow hosts. Keep feedback
@@ -2870,9 +2885,10 @@ The normal SDK fitter and toolbar relocation continue to own phone layout.
 ### Pictionary reference module
 
 `Games/pictionary` supports 3-16 human phones and separates rules, word bank,
-host UI, canvas renderer and controller presentation. Its modern studio uses
-`art/modern-studio`, an interchangeable extensionless background stem. Original
-studio artwork remains local. See the module README for full rules and checks.
+host UI, canvas renderer and controller presentation. It uses shared `studio-blue`
+chrome and an original blue children's doodle pattern at extensionless
+`art/doodle-studio`. The canvas stays white by default. Earlier studio artwork
+remains local. See the module README for full rules, artwork prompts and checks.
 
 Only the drawer receives the active word and choices. Host-only sources and the
 answer bank use manifest `private_paths`. Every accepted draw, canvas color and
@@ -2881,13 +2897,22 @@ Orange joins the brush palette; double-tapping any paint or choosing Canvas sets
 the paper color without deleting strokes. Semantic erasers expose the current
 paper color. Each new drawing resets to white. Refresh restores color and ink.
 
-The host puts the canvas on the left, scores above guesses on the right. Live
-correct indications and four-second non-correct feedback stay in the guesses
-panel, with no checkmarks on scores. Non-final drawing conclusions show Name,
+The host puts the canvas on the left, scores above guesses on the right, with
+the round counter at the right of the Scores heading. Guesses shows only live
+correct indications. Four-second non-correct speech bubbles sit beside score
+names; persistent panels do not reveal live spelling hints. Scores have no
+redundant correct marks. Non-final drawing conclusions show Name,
 Last Guess and Time rows: exact/alias green, misspelled orange, incorrect red.
 The score list shows positive turn gains beside cumulative totals. Next Round
-can advance the six-second recap. The final drawing opens centered standings
-immediately, on host and phones, omitting the redundant last-guess recap.
+can advance the six-second recap when Automatic Start is on (the default).
+With it off, initial play and each recap wait until every admitted player presses
+Ready or the host selects Start. Readiness is public, scoped to the current
+turn/revision, cleared at each boundary and invalidated for a disconnected seat.
+Waiting does not consume game time or expose word choices. Host Settings pauses
+Ready too. At final results in manual mode, all Ready buttons or host Start can
+begin a replay. Automatic mode keeps final standings until host Play Again.
+The final drawing opens centered standings immediately on host and phones,
+omitting the redundant last-guess recap.
 
 Correct guessers share a fixed turn pool (default 100, configurable 15-10,000)
 using linear or squared rank weights, conserving the exact pool and awarding at
@@ -2910,9 +2935,10 @@ this transient history. Only completed matches call BaseGame scoring APIs once.
 Settings and the category/word editor use the shared full-screen modal with
 staged independent Apply/Save. Settings pauses input, clocks and sound. Accepted
 preferences persist through the existing settings API, separately from gameplay
-and history. Disconnects pause play; reconnect restores state. Host-only replay
-rotates the starter, preserves completed session wins/history, and lives in the
-result dialog's persistent action row. Urgent clocks, deduplicated offline audio,
+and history. Disconnects pause play; reconnect restores state. Replay
+rotates the starter and preserves completed session wins/history. Its host Start
+or Play Again control lives in the result dialog's persistent action row.
+Urgent clocks, deduplicated offline audio,
 reduced motion and clean shared return navigation remain supported.
 
 Verification: `tests/pictionary.gd`, `tests/pictionary_network.gd`, rendered

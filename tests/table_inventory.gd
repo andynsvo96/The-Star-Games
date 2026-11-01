@@ -44,6 +44,21 @@ func _run() -> void:
 	check(standings_selected == [0, 0], "A reordered identity cannot open another player's history")
 	var modern_action := Button.new(); standings.add_child(modern_action); modern_action.text = "Play Again"; GameLook.action(modern_action)
 	check(modern_action.theme_type_variation == "GamePrimaryButton" and modern_action.get_theme_stylebox("normal") is StyleBoxFlat and modern_action.get_theme_stylebox("normal").shadow_size == 0, "Modern studio actions inherit the flat shared palette")
+	var blue_standings := GameLeaderboard.new()
+	blue_standings.theme = GameLook.make_theme("studio-blue")
+	blue_standings.compact = true
+	root.add_child(blue_standings)
+	blue_standings.size.x = 320
+	blue_standings.set_entries([{"seat":0,"display_name":"Name","color":"#286ac2","score":100,"speech":"a literal guess","quality":"close"}])
+	for frame in 6: await process_frame
+	var blue_row: Dictionary = blue_standings.rows[0]
+	check(blue_row.bubble.panel.visible and blue_row.bubble.label.text == "a literal guess" and blue_row.bubble.panel.mouse_filter == Control.MOUSE_FILTER_IGNORE, "Blue standings retain input-transparent literal speech bubbles")
+	check(GameLook.text_contrast(blue_row.player.get_theme_color("font_color"), blue_row.button.get_theme_stylebox("normal").bg_color) >= 4.5, "Dark blue score rows keep readable names")
+	check(GameLook.drawing_sheet(true).bg_color == Color.WHITE and GameLook.modern_studio_sheet(true).bg_color == Color("1c3e60"), "Blue UI surfaces preserve white drawing paper")
+	var speech_target: Button = blue_row.button
+	blue_standings.set_entries([{"seat":0,"display_name":"Name","score":100}])
+	check(not blue_row.bubble.panel.visible and blue_standings.rows[0].button == speech_target, "Expiring speech preserves the player's existing input target")
+	blue_standings.queue_free()
 	standings.queue_free()
 	await process_frame
 	for sample in [[0,0],[1,1],[10,1],[11,2],[50,2],[51,3],[100,3],[101,4],[999,4],[1000,5],[1000000,5]]:

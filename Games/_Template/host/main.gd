@@ -544,6 +544,15 @@ func _ready() -> void:
 		phase_dialog.heading.text = "Example player's statistics"
 		phase_dialog.overlay.show())
 	standings_example.hide()
+	# "studio-blue" is a darker opt-in with white drawing paper. Speech is
+	# temporary literal feedback beside a name; the caller owns its lifetime.
+	var blue_standings_example := GameLeaderboard.new()
+	blue_standings_example.name = "BlueStandingsExample"
+	blue_standings_example.theme = GameLook.make_theme("studio-blue")
+	blue_standings_example.compact = true
+	screen.content.add_child(blue_standings_example)
+	blue_standings_example.set_entries([{"seat":0,"display_name":"Example player","color":"#286ac2","score":100,"speech":"A literal guess","quality":"close"}])
+	blue_standings_example.hide()
 	var player_header_example := screen.add_phase_dialog(true,false,true)
 	# Pass true to expand a compact sheet for a larger card-choice grid.
 	screen.set_phase_dialog_width(player_header_example, 840, true)
