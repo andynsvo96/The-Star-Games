@@ -623,6 +623,7 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 		choice["can_launch"] = _can_launch_for_count(choice, count)
 		context.game_choices.append(choice)
 	current_state = "debug_game" if debug else "game"
+	game_music.play_shuffled_song()
 	_replace_screen()
 	active_game = instance
 	active_game_id = game["id"]

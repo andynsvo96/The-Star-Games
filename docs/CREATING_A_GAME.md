@@ -724,9 +724,13 @@ difficulty, host-versus-phone input, reconnect, replay, and scoring checks.
 
 The launcher plays a shuffled host playlist from `asset/music` during all game
 sessions, including template-based games, and restores `asset/lobby_songs` music
-on return to the menus. Games need no music player or lifecycle hooks. Shared
-Master/Music volume and music controls apply; keep game sound effects on the
-Effects bus. An empty music folder is supported.
+on return to the menus. Each game selection (including collection variants and
+reentry) starts a fresh song at the beginning from the shuffled queue. Songs do
+not repeat until the queue is exhausted, and the next shuffle avoids the last
+song when more than one is available. A one-song library restarts that song;
+manual pause is preserved across navigation. Games need no music player or
+lifecycle hooks. Shared Master/Music volume and music controls apply; keep game
+sound effects on the Effects bus. An empty music folder is supported.
 
 
 ### Shared playful presentation

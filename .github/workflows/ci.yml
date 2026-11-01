@@ -23,6 +23,8 @@ jobs:
         run: godot --headless --path . --script res://tests/session_media.gd
       - name: Run launcher navigation smoke test
         run: godot --headless --path . --script res://tests/ui_smoke.gd
+      - name: Run shuffled music and game-entry tests with synthetic audio
+        run: godot --headless --path . --script res://tests/music_smoke.gd
       - name: Run isolated autoplay debug tests
         run: godot --headless --path . --script res://tests/debug_autoplay.gd
       - name: Run Debug browser detection and selection tests

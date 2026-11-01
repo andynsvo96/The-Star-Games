@@ -59,6 +59,12 @@ Allow local-network access if your firewall prompts you. No controller app is re
 
 Host Settings includes sound, reduced motion, and other preferences. On desktop, **Settings > Asset Editor** lets you replace artwork, backgrounds, and audio, with previous files saved in `Backups/`.
 
+Game music from `asset/music/` plays in shuffled order. Every game selection,
+including returning to a game or choosing a variant, starts a fresh song from the
+beginning instead of resuming the previous track. Songs do not repeat until the
+shuffle is exhausted, and consecutive tracks differ when multiple songs are
+available. A manual music pause remains in effect across navigation.
+
 Every installed local game and collection chooser supports named cosmetic skins.
 In **Asset Editor > Themes**, choose a game, duplicate its protected **Default**
 skin (called **Classic** in Monopoly Classic), and replace artwork or sounds.
@@ -93,6 +99,7 @@ godot --headless --editor --path . --quit
 godot --headless --path . --script res://tests/run_tests.gd
 godot --headless --path . --script res://tests/network_smoke.gd
 godot --headless --path . --script res://tests/ui_smoke.gd
+godot --headless --path . --script res://tests/music_smoke.gd
 godot --headless --path . --script res://tests/session_media.gd
 godot --headless --path . --script res://tests/asset_editor_fixture.gd
 ```

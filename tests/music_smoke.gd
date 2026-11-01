@@ -6,19 +6,31 @@ func _init() -> void:
 
 
 func _run() -> void:
+	create_timer(30).timeout.connect(func() -> void: printerr("FAIL: music smoke watchdog"); quit(1))
+	var folder := "res://.test_data/music-smoke-%d-%d" % [OS.get_process_id(), Time.get_ticks_usec()]
+	DirAccess.make_dir_recursive_absolute(folder.path_join("songs"))
+	var audio := AudioStreamWAV.new()
+	audio.format = AudioStreamWAV.FORMAT_8_BITS
+	audio.mix_rate = 8000
+	var samples := PackedByteArray()
+	samples.resize(80000)
+	samples.fill(128)
+	audio.data = samples
+	for index in 4:
+		assert(audio.save_to_wav(folder.path_join("songs/track%d.wav" % index)) == OK)
 	var app := (load("res://Main.tscn") as PackedScene).instantiate()
+	app.profile_store = ProfileStore.new(folder.path_join("profiles.json"))
+	app.game_settings_store = preload("res://tests/game_settings_fixture.gd").new()
+	app.game_catalog = GameCatalog.new("res://tests/fixtures/Games")
 	root.add_child(app)
 	await process_frame
 	await process_frame
 	var music = app.menu_music
-	var deadline := Time.get_ticks_msec() + 60000
-	while music.playlist.size() < 4 and Time.get_ticks_msec() < deadline:
-		await process_frame
-	assert(music.playlist.size() == 4, "All supplied songs should load")
+	music.song_dir = folder.path_join("songs")
+	music.reload_assets()
+	assert(music.playlist.size() == 4, "Synthetic songs load without local media or FFmpeg")
 	for source in music.playlist:
-		assert(source.ends_with(".mp4"), "Playlist should scan original MP4 files")
-		assert(music.playable_paths[source].begins_with("user://menu_music/"), "Prepared audio belongs in the private cache")
-		assert(not FileAccess.file_exists(source.get_basename() + ".ogg"), "Do not generate siblings in the source folder")
+		assert(music.playable_paths[source] == source, "Native audio uses the original file")
 	assert(music.player.playing and music.player.bus == "Music")
 	var cycle: Array[String] = [music.history.back()]
 	for index in 3:
@@ -78,7 +90,7 @@ func _run() -> void:
 	music._process(0.01)
 	assert(music.volume_slider.visible, "Volume control must stay available while dragging")
 	music.volume_slider.value = 0.37
-	var restored := ProfileStore.new()
+	var restored := ProfileStore.new(app.profile_store.data_path)
 	assert(restored.load_data())
 	assert(is_equal_approx(float(restored.get_settings()["music_volume"]), 0.37), "Music volume must be saved to disk")
 	var music_bus := AudioServer.get_bus_index("Music")
@@ -99,7 +111,91 @@ func _run() -> void:
 		await process_frame
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://.test_data/music_icon.png")
-	print("PASS: music shuffle, looping, history, pause, screen lifecycle, controls, and marquee")
+	if not await _check_game_entries(app, folder):
+		app.queue_free()
+		quit(1)
+		return
+	for controller in [app.menu_music, app.game_music]:
+		controller.player.stop()
+		controller.player.stream = null
+	await create_timer(0.1).timeout
+	print("PASS: music shuffle, fresh game entries, history, pause, empty/single-song libraries, controls, and marquee")
 	app.queue_free()
 	await process_frame
 	quit()
+
+
+func _check_game_entries(app: Control, folder: String) -> bool:
+	var music = app.game_music
+	music.song_dir = folder.path_join("songs")
+	music.reload_assets()
+	assert(music.history.is_empty() and music.player.stream == null, "Inactive game music must not consume the shuffle before the first entry")
+	var host := BaseGame.new()
+	var scene := PackedScene.new()
+	assert(scene.pack(host) == OK)
+	assert(ResourceSaver.save(scene, folder.path_join("host.tscn")) == OK)
+	host.free()
+	var game := {"id": "music-test", "host_scene_path": folder.path_join("host.tscn"), "modes": ["singleplayer"], "min_players": 1, "max_players": 1}
+	var cycle: Array[String] = []
+	for entry in 4:
+		app._launch_game(game)
+		assert(app.active_game != null and music.active and music.visible)
+		assert(music.player.playing and not music.player.stream_paused)
+		assert(not app.menu_music.active and app.menu_music.player.stream_paused)
+		var current: String = music.history[music.history_index]
+		assert(not cycle.has(current), "Repeated game entries draw without repeats until every song has played")
+		cycle.append(current)
+		assert(music.player.get_playback_position() < 0.5, "Each game entry starts its song at the beginning")
+		music.player.seek(2.0)
+		await create_timer(0.1).timeout
+		assert(music.player.get_playback_position() >= 2.0)
+		music.set_active(true)
+		assert(music.history[music.history_index] == current, "Ordinary activation must not skip songs")
+		app._return_from_game()
+		assert(not music.active and music.player.stream_paused)
+		assert(app.menu_music.active)
+		await process_frame
+	app._launch_game(game)
+	assert(music.history[music.history_index] != cycle.back(), "Shuffle rollover avoids the song heard on the previous visit")
+	var first: String = music.history[music.history_index]
+	music.next.pressed.emit()
+	var forward: String = music.history[music.history_index]
+	music.previous.pressed.emit()
+	assert(music.history[music.history_index] == first)
+	music.toggle_pause()
+	app._return_from_game()
+	await process_frame
+	app._launch_game(game)
+	assert(music.history[music.history_index] not in [first, forward], "Reentry draws a fresh shuffled song instead of replaying forward history")
+	assert(music.user_paused and music.player.stream_paused, "Manual pause survives selecting a fresh song")
+	music.toggle_pause()
+	assert(not music.player.stream_paused and music.player.get_playback_position() < 0.5)
+	var last: String = music.history[music.history_index]
+	var other := game.duplicate(true)
+	other.id = "music-other"
+	app._launch_game(other)
+	assert(music.history[music.history_index] != last, "Selecting another game while music is active also starts a fresh song")
+	assert(music.player.get_playback_position() < 0.5)
+	app._return_from_game()
+	await process_frame
+	# A song prepared or added while outside a game waits until the next entry.
+	var single := folder.path_join("single")
+	DirAccess.make_dir_recursive_absolute(single)
+	music.song_dir = single
+	music.reload_assets()
+	app._launch_game(game)
+	assert(music.playlist.is_empty() and music.player.stream == null, "An empty music library does not prevent launching")
+	app._return_from_game()
+	await process_frame
+	assert(DirAccess.copy_absolute(folder.path_join("songs/track0.wav"), single.path_join("only.wav")) == OK)
+	music._scan()
+	assert(music.history.is_empty() and music.player.stream == null, "Background scans leave newly available game songs unplayed")
+	for entry in 2:
+		app._launch_game(game)
+		assert(music.player.playing and not music.player.stream_paused, "A one-song library can be selected repeatedly")
+		assert(music.player.get_playback_position() < 0.5, "A lone song restarts instead of resuming")
+		music.player.seek(2.0)
+		await create_timer(0.1).timeout
+		app._return_from_game()
+		await process_frame
+	return true

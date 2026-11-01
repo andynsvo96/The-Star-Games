@@ -94,7 +94,7 @@ func _scan() -> void:
 	if playlist.is_empty():
 		player.stop()
 		player.stream = null
-	elif player.stream == null or not player.playing:
+	elif active and (player.stream == null or not player.playing):
 		play_next()
 	_update_controls()
 
@@ -369,12 +369,24 @@ func set_active(value: bool) -> void:
 	player.stream_paused = user_paused or not active
 	if not active:
 		_dismiss(true)
+	elif player.stream == null:
+		play_next()
 
 
 func toggle_pause() -> void:
 	user_paused = not user_paused
 	player.stream_paused = user_paused or not active
 	_update_controls()
+
+
+func play_shuffled_song() -> void:
+	if playlist.is_empty():
+		return
+	# New game entries draw from the shuffle rather than resume or replay forward history.
+	if history_index >= 0:
+		remaining.erase(history[history_index])
+	history.resize(history_index + 1)
+	play_next()
 
 
 func play_next() -> void:
