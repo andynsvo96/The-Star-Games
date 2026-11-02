@@ -337,6 +337,9 @@ and settings freeze while a seated human is disconnected. Replay retains the lin
 Wall previews are presentation-only: host snapshots expose legal anchors and
 orientations. Phones rotate their own starting edge to the bottom, rotating wall
 geometry too without rotating authoritative indexes or orientations.
+Holding a wall junction for 450 ms rotates its preview without placing it.
+A separate tap previews a wall; Rotate and keyboard R remain alternatives.
+Dragging, cancellation, page hiding, reconnects and changed turns cancel holds.
 Explicit Place submits an integer anchor and `h`/`v` orientation through
 the normal SDK, with admitted identity, revision, turn and movement validation.
 Disconnects preserve seats and cancel stale worker replies. Reduced motion settles
@@ -350,8 +353,9 @@ a small gap and 44px touch targets for board decisions. The template documents
 this optional hook. It keeps Move/Wall/Rotate/Place reachable on small phones
 without local overrides of shared controls or board fitting. Quoridor also opts
 into `game-status-reserved` to retain two status lines across turn/result changes.
-Other callers retain existing layouts. Settings and detailed history are host-only.
-Quoridor labels the latter panel History. Its compact heading reserves a fixed
+Other callers retain existing layouts. Host-only Settings opens beside music in a
+centered popup over the shared dim backdrop; the History button is omitted.
+Its compact heading reserves a fixed
 two-line status height, including during human-to-computer messages; layout
 must remain stable on every rendered frame, not just after it settles.
 Carved icon controls and ornate laurel/wall counters use the shared garden hooks
@@ -532,19 +536,29 @@ local. The extensionless background stem is `art/ship-bridge`.
 Battleship's module-owned bridge monitors show known damage and public wrecks,
 never secret enemy ship positions or damage assignments. They align with the
 covered background when visible and wrap into readable panels otherwise.
-Setup uses only the player monitor: ship selection, Auto Place, then Clear and
-READY side by side. Compact layouts return the complete group to the shared
-reserved action slot. Play Again retains the shared board navigation. How to
-Play is omitted. Session & History is host-only; controllers omit its panel and
-rendering code. The 424×456 casing encloses the square grid and its coordinates.
+Setup groups ship selection, Auto Place, then Clear and READY side by side in
+the player monitor. The enemy monitor remains visible, with AI Difficulty editable
+only during zero-phone solo setup. Changing difficulty preserves deployed ships
+and session totals; battle and finished phases reject edits. One-phone opponent
+selection also lives in the enemy monitor before deployment. Compact layouts
+return the deployment group to the shared reserved action slot and keep the
+monitor rows readable in the supplementary scroll area. Play Again retains the
+shared board navigation. Settings, Session & History and
+How to Play buttons are omitted on host and controllers; authoritative session
+wins and private reconnect snapshots are retained. The 424×456 casing encloses the square grid and its coordinates.
 Press and hold for 450 ms rotates the preview without placing an unplaced ship;
-a separate tap deploys it. Existing ships rotate around their original start,
+a separate tap deploys it. Tap a placed ship to select it with a static outline,
+then tap a clear position to move it; invalid placement preserves the original.
+Repositioning keeps that ship selected and never adds another ship.
+Existing ships rotate around their original start,
 without adding a ship or advancing selection. The host validates the `rotate`
 action from its own fleet. Cancelled touches, scrolling, reconnection and locked fleets
 cannot trigger a delayed placement. Invalid rotations preserve the ship.
 Keyboard R is available without a direction toggle. Recorded CC0 cannon, water
 and steel effects use the shared Effects bus; raw archives remain in `asset/`.
 
+Run rendered `tests/board_controls_update.gd` for the local board-game popup,
+ship-reselection, hold-cancellation and delayed-AI regressions across host sizes.
 Run `tests/battleship.gd` for placement, rules, AI, privacy, replay and scoring;
 `tests/battleship_motion.gd` for animation locks, hold gestures and cancellation;
 `tests/battleship_network.gd` for actual sockets, private routing, refresh and
@@ -594,11 +608,13 @@ may instead use `add_social_layout` for a wide public area and permanent history
 keep layout positioning inside the shared helper.
 Equal side columns preserve the board's center; narrow screens stack playfield,
 scoreboard, then history. The template demonstrates this layout.
-Tic Tac Toe and Four in a Row put
-independent Session details in `left_sidebar` and History details in `sidebar`,
-using `add_details`. Four in a Row also keeps Settings on the host;
-Tic Tac Toe shows applicable difficulty/opponent selectors directly without a
-Settings disclosure. Controllers add
+Tic Tac Toe, Four in a Row, Chess, regular Checkers, Chinese Checkers and
+Quoridor omit Session/History buttons while retaining their authoritative totals.
+Their host Settings uses `add_corner_details(["SETTINGS"], Callable(), false,
+false, false, true, true)` to dock beside music and open a centered popup above
+the shared dim backdrop. Close, Escape and outside clicks dismiss it without
+moving the board. Modules retain their existing preference and Apply policies.
+Controllers add
 `.game-centered-layout` and `.game-left-sidebar` to the existing shared classes.
 Shared `scores` and `status` are now fit-content RichTextLabels; `.text` assignment
 remains supported. `add_formatted_text` and `set_text_parts` support colored runs
@@ -705,6 +721,10 @@ difficulty at any time immediately resets the board, session wins, ties, and
 history. The host starts at round 1; the state
 revision advances to invalidate stale input. Selecting the current difficulty
 leaves the game unchanged. Play Again still preserves session totals and history.
+For host-only solo play, the computer waits 0.35 seconds before each move,
+including its opening move after replay. Repeated syncs do not restart the delay;
+difficulty resets and shutdown cancel a pending reply. Phone-versus-computer
+play retains its existing response behavior.
 A disconnected browser player still occupies their seat and never enables solo
 difficulty or an AI replacement.
 
@@ -1368,7 +1388,7 @@ Disconnects freeze clocks; sync restores `clock_seconds`, `remaining` and
 `clock_running`. Browser interpolation is display-only. Editing locks during
 play and reopens between boards. Replay resets both clocks, and replay/difficulty
 changes preserve the setting. Enabled clocks use shared score-card text on both
-screens; detailed Session & History is only on the host.
+screens; detailed Session & History controls are omitted.
 The board's module-owned movement queues slides and capture hops without moving
 click targets. Promotion and win feedback follow the landing. Duplicate snapshots
 preserve active movement; resets, reconnects and reduced motion restore static
@@ -1451,9 +1471,10 @@ guidance, clocks, result reason, session wins and history. Input validates admit
 identity, color, turn, integer values, revision and legal moves. Public player
 snapshots omit profile IDs and reconnect tokens.
 
-Chess stats sit inside shared ivory ledgers framed in walnut. Settings and Session &
-History use walnut disclosures with textured paper cards on the host only. Controllers
-omit these options/history panels, the perspective note and the extra launcher
+Chess stats sit inside shared ivory ledgers framed in walnut. Host Settings opens
+from the top right beside music in the shared dimmed popup. Session & History
+controls are omitted. Controllers omit options/history panels, the perspective
+note and the extra launcher
 heading above the game title. The host alone can change Move Guidance; removed
 controller option actions are ignored. Moves & Help, draw claims,
 draw offers and resignation controls are omitted from both host and controllers;
