@@ -2909,8 +2909,9 @@ With it off, initial play and each recap wait until every admitted player presse
 Ready or the host selects Start. Readiness is public, scoped to the current
 turn/revision, cleared at each boundary and invalidated for a disconnected seat.
 Waiting does not consume game time or expose word choices. Host Settings pauses
-Ready too. At final results in manual mode, all Ready buttons or host Start can
-begin a replay. Automatic mode keeps final standings until host Play Again.
+Ready too. Automatic Start controls drawing-round transitions only. Final
+standings always remain until the host selects Play Again, with either setting;
+Ready is unavailable after the last drawing and cannot start another match.
 The final drawing opens centered standings immediately on host and phones,
 omitting the redundant last-guess recap.
 
@@ -2936,8 +2937,8 @@ Settings and the category/word editor use the shared full-screen modal with
 staged independent Apply/Save. Settings pauses input, clocks and sound. Accepted
 preferences persist through the existing settings API, separately from gameplay
 and history. Disconnects pause play; reconnect restores state. Replay
-rotates the starter and preserves completed session wins/history. Its host Start
-or Play Again control lives in the result dialog's persistent action row.
+rotates the starter and preserves completed session wins/history. Its host
+Play Again control lives in the result dialog's persistent action row.
 Urgent clocks, deduplicated offline audio,
 reduced motion and clean shared return navigation remain supported.
 
