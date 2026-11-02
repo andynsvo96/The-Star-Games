@@ -4,18 +4,25 @@ extends VBoxContainer
 # Shared, staged settings presentation. The module owns validation and Apply.
 var actions := VBoxContainer.new()
 var fields: Array[Dictionary] = []
+var compact := false:
+	set(value):
+		compact = value
+		add_theme_constant_override("separation", 8 if compact else 20)
+		for section in get_children():
+			if section is VBoxContainer and section != actions:
+				section.add_theme_constant_override("separation", 4 if compact else 10)
 
 
 func _ready() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	add_theme_constant_override("separation", 20)
+	add_theme_constant_override("separation", 8 if compact else 20)
 	add_child(actions)
 	resized.connect(_fit_fields)
 
 
 func add_section(caption: String) -> VBoxContainer:
 	var group := VBoxContainer.new()
-	group.add_theme_constant_override("separation", 10)
+	group.add_theme_constant_override("separation", 4 if compact else 10)
 	add_child(group)
 	if actions.get_parent() == self:
 		move_child(group, actions.get_index())

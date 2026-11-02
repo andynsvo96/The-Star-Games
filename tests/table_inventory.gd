@@ -54,7 +54,20 @@ func _run() -> void:
 	var blue_row: Dictionary = blue_standings.rows[0]
 	check(blue_row.bubble.panel.visible and blue_row.bubble.label.text == "a literal guess" and blue_row.bubble.panel.mouse_filter == Control.MOUSE_FILTER_IGNORE, "Blue standings retain input-transparent literal speech bubbles")
 	check(GameLook.text_contrast(blue_row.player.get_theme_color("font_color"), blue_row.button.get_theme_stylebox("normal").bg_color) >= 4.5, "Dark blue score rows keep readable names")
-	check(GameLook.drawing_sheet(true).bg_color == Color.WHITE and GameLook.modern_studio_sheet(true).bg_color == Color("1c3e60"), "Blue UI surfaces preserve white drawing paper")
+	check(GameLook.drawing_sheet(true).bg_color == Color.WHITE and GameLook.modern_studio_sheet(true).bg_color == Color("102b46"), "Blue UI surfaces preserve white drawing paper with stronger panel separation")
+	var prompt_board := Control.new()
+	prompt_board.theme = blue_standings.theme
+	root.add_child(prompt_board)
+	prompt_board.size = Vector2(320, 240)
+	var prompt := GameCanvasOverlay.new()
+	prompt_board.add_child(prompt)
+	prompt.set_message("Literal <player> is choosing")
+	for frame in 4: await process_frame
+	check(prompt.visible and prompt.heading.text == "Literal <player> is choosing" and prompt.get_rect().size.is_equal_approx(prompt_board.size), "Canvas prompts dim the complete board and keep literal text")
+	check(prompt_board.get_global_rect().encloses(prompt.panel.get_global_rect()) and prompt.panel.get_global_rect().get_center().distance_to(prompt_board.get_global_rect().get_center()) < 1, "Canvas prompt panels stay centered inside the playfield: %s / %s" % [prompt.panel.get_global_rect(), prompt_board.get_global_rect()])
+	prompt.set_message("")
+	check(not prompt.visible, "Clearing a phase prompt restores canvas input")
+	prompt_board.queue_free()
 	var speech_target: Button = blue_row.button
 	blue_standings.set_entries([{"seat":0,"display_name":"Name","score":100}])
 	check(not blue_row.bubble.panel.visible and blue_standings.rows[0].button == speech_target, "Expiring speech preserves the player's existing input target")
@@ -160,9 +173,11 @@ func _run() -> void:
 	var form_screen := GameScreen.new(); form_holder.add_child(form_screen); form_screen.configure("Shared settings"); form_screen.use_playful_style("", "modern-table")
 	var settings_body: VBoxContainer = form_screen.add_corner_details(["SETTINGS"],Callable(),true,false,false,true,true)[0]
 	var settings_form := form_screen.add_settings_form(settings_body)
+	settings_form.compact = true
 	var appearance := settings_form.add_section("Appearance"); var setting_theme := settings_form.add_choice(appearance,"Theme",["Default","A long custom theme label that must fit"])
 	var opponents := settings_form.add_section("Opponents"); var setting_difficulty := settings_form.add_choice(opponents,"Difficulty",["Easy","Medium","Hard"])
 	var timing := settings_form.add_section("Timing"); var setting_timer := settings_form.add_toggle(timing,"Turn timer",true); var setting_time := settings_form.add_number(timing,"Turn time",.1,60,.1,5," min")
+	check(settings_form.get_theme_constant("separation") == 8 and timing.get_theme_constant("separation") == 4, "Compact settings use closer shared spacing after mounting")
 	var applied := [0]; var apply_settings := settings_form.add_action("Apply & New Game",func() -> void: applied[0]+=1)
 	var edited := [0]; setting_theme.item_selected.connect(func(_index: int) -> void: edited[0]+=1); setting_timer.toggled.connect(func(_on: bool) -> void: edited[0]+=1); setting_time.value_changed.connect(func(_value: float) -> void: edited[0]+=1)
 	setting_theme.select(1); setting_timer.set_pressed_no_signal(false); GameLook.settings_toggle(setting_timer,false); setting_time.set_value_no_signal(7.5)

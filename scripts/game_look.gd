@@ -114,8 +114,8 @@ static func drawing_sheet(modern := false) -> StyleBoxFlat:
 
 
 static func modern_studio_sheet(blue := false) -> StyleBoxFlat:
-	var style := box(Color("1c3e60") if blue else Color.WHITE, Color("40638a") if blue else Color("e1ddec"), 18, 1)
-	style.set_content_margin_all(16)
+	var style := box(Color("102b46") if blue else Color.WHITE, Color("6083a5") if blue else Color("e1ddec"), 12 if blue else 18, 1)
+	style.set_content_margin_all(10 if blue else 16)
 	style.shadow_size = 0
 	return style
 
@@ -534,8 +534,8 @@ static func _apply_modern_table_palette(result: Theme) -> void:
 		result.set_font_size("font_size", type, 16)
 
 
-static func interface_font() -> SystemFont:
-	var font := SystemFont.new(); font.font_names = PackedStringArray(["Segoe UI","Arial","sans-serif"]); font.font_weight = 400
+static func interface_font(weight := 400) -> SystemFont:
+	var font := SystemFont.new(); font.font_names = PackedStringArray(["Segoe UI","Arial","sans-serif"]); font.font_weight = weight
 	return font
 
 
@@ -957,8 +957,8 @@ static func _apply_modern_studio_palette(result: Theme, blue := false) -> void:
 	result.default_font_size = 16
 	var ink := Color("e6effa") if blue else Color("30324a")
 	for key in ["ink", "text", "title"]: result.set_color(key, "GamePalette", ink)
-	result.set_color("panel", "GamePalette", Color("1c3e60") if blue else Color.WHITE)
-	result.set_color("panel_edge", "GamePalette", Color("40638a") if blue else Color("e1ddec"))
+	result.set_color("panel", "GamePalette", Color("102b46") if blue else Color.WHITE)
+	result.set_color("panel_edge", "GamePalette", Color("6083a5") if blue else Color("e1ddec"))
 	result.set_color("status", "GamePalette", Color("24496d") if blue else Color("eeebf8"))
 	result.set_color("status_edge", "GamePalette", Color("40638a") if blue else Color("e1ddec"))
 	result.set_color("font_color", "Label", ink)

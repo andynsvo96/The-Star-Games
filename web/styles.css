@@ -645,7 +645,7 @@ body.playful-game { isolation: isolate; }
 
 /* Optional quiet studio presentation. Surfaces and typography stay shared. */
 .playful-game.game-studio-modern { --ink:#30324a; --muted:#72718a; --cream:#fff; --panel:#fff; --panel-edge:#e1ddec; --focus-color:#7860cc; --game-danger-text:#b02535; --connection-panel:#eeebf8; color:var(--ink); background-color:#f1eff9; font-family:Inter,"Segoe UI",Arial,sans-serif; }
-.game-studio-modern .game-controller h1 { margin:0; font-size:22px; font-weight:650; letter-spacing:-.03em; }
+.game-studio-modern .game-controller h1 { margin:0; font-size:20px; font-weight:750; letter-spacing:-.025em; line-height:1.2; }
 .game-studio-modern .game-controller h2 { font-size:24px; letter-spacing:-.025em; }
 .game-studio-modern .game-paper,.game-studio-modern .game-dialog,.game-studio-modern .game-drawing-sheet { color:var(--ink); background:var(--drawing-paper,#fff); border:1px solid var(--panel-edge); border-image:none; border-radius:18px; box-shadow:none; }
 .game-studio-modern .game-controller .game-status { background:#eeebf8; border:0; border-radius:12px; font-weight:500; font-size:14px; }
@@ -658,6 +658,7 @@ body.playful-game { isolation: isolate; }
 .game-studio-modern .game-dialog::backdrop { background:#30324a66; }
 .game-studio-modern .game-private-word-inline { padding:6px 12px; }
 .game-studio-modern .game-private-word-inline p,.game-studio-modern .game-section-label,.game-section-label { color:var(--muted,#72718a); font-size:11px; font-weight:600; letter-spacing:.1em; }
+.game-studio-modern .game-private-word-inline p,.game-studio-modern .game-section-label { font-weight:750; letter-spacing:.08em; }
 .game-studio-header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .playful-game .game-controller button.game-identity-control { display:flex; align-items:center; gap:6px; width:auto; max-width:60%; padding:4px 8px; font-size:12px; text-align:left; }
 .game-identity-control .avatar-badge,.game-leaderboard .avatar-badge { flex:none; position:relative; width:32px; height:32px; border-radius:50%; background:color-mix(in srgb,var(--player-color,#7860cc) 18%,white); border:1px solid color-mix(in srgb,var(--player-color,#7860cc) 45%,white); }
@@ -690,8 +691,8 @@ body.playful-game { isolation: isolate; }
 .game-studio-modern .game-dialog .dialog-actions > span { flex:1; }
 .game-studio-modern .game-supporting-text { color:var(--muted); }
 .game-stat-summary { white-space:pre-line; }
-.playful-game.game-studio-blue { color-scheme:dark; --ink:#e6effa; --muted:#b6cfe6; --cream:#1c3e60; --panel:#1c3e60; --panel-edge:#40638a; --focus-color:#9cd5ff; --connection-panel:#24496d; background-color:#173b67; }
-.game-studio-blue .game-paper,.game-studio-blue .game-dialog { background:#1c3e60; border-color:#40638a; }
+.playful-game.game-studio-blue { color-scheme:dark; --ink:#e6effa; --muted:#c2d7eb; --cream:#102b46; --panel:#102b46; --panel-edge:#6083a5; --focus-color:#9cd5ff; --connection-panel:#24496d; background-color:#173b67; }
+.game-studio-blue .game-paper,.game-studio-blue .game-dialog { background:#102b46; border-color:#6083a5; border-radius:12px; }
 .game-studio-blue .game-controller .game-status { background:#24496d; }
 .game-studio-blue .game-status strong { color:#a3d7ff; }
 .playful-game.game-studio-blue .game-controller button,.playful-game.game-studio-blue .game-dialog button { color:#e6effa; background:#2a537c; }
@@ -715,6 +716,16 @@ body.playful-game { isolation: isolate; }
 .game-ready-controls { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px; }
 .game-ready-controls p { flex:1 1 140px; margin:0; font-size:12px; color:var(--muted); }
 .game-ready-controls > button { flex:0 0 auto; width:auto; min-width:100px; padding:8px 14px; }
+/* Playfield-local phase prompts retain board geometry and real input targets. */
+.game-canvas-overlay { position:absolute; inset:0; z-index:3; display:grid; place-items:center; padding:12px; overflow:auto; background:#071324b8; border-radius:inherit; }
+.game-canvas-overlay[hidden] { display:none; }
+.game-canvas-message { width:min(340px,100%); max-height:100%; overflow:auto; padding:12px; text-align:center; }
+.game-canvas-message > h2,.game-studio-modern .game-canvas-message > h2 { margin:0; font-size:18px; font-weight:750; line-height:1.25; overflow-wrap:anywhere; }
+.game-canvas-message .game-action-stack { margin-top:10px; }
+.game-reaction-controls { display:flex; justify-content:center; align-items:center; gap:8px; margin:6px 0 0; }
+.game-reaction-controls > span { color:var(--muted); font-size:12px; font-weight:700; }
+.playful-game .game-controller .game-reaction-controls > button { width:auto; min-width:64px; padding:6px 10px; font-size:18px; }
+.playful-game .game-controller .game-reaction-controls > button[aria-pressed="true"] { outline:2px solid var(--focus-color,var(--ink)); outline-offset:1px; }
 @media (max-height:700px) and (orientation:portrait) {
   .playful-game.game-studio-modern .game-controller { gap:6px; padding-top:8px; padding-bottom:8px; }
   .game-studio-modern .game-controller > header { display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; gap:4px; }

@@ -194,6 +194,11 @@
   <!-- Add game-studio-blue to body alongside game-studio-modern for dark blue
        panels/controls. Drawing sheets keep --drawing-paper independent. -->
   <section id="example-blue-studio-results" class="game-studio-modern game-studio-blue" hidden aria-label="Blue standings example"></section>
+  <!-- Put a phase prompt inside the positioned board. Keep private choices
+       inside the owner's targeted snapshot and retain existing button nodes. -->
+  <div class="game-drawing-sheet" hidden style="position:relative;min-height:240px">
+    <div class="game-canvas-overlay"><div class="game-canvas-message game-paper"><h2>Waiting for a choice</h2></div></div>
+  </div>
   <section id="example-combination-guide" class="game-casino" hidden aria-label="Compact named card guide example"></section>
   <script src="/game-celebration.js"></script><script src="controller.js"></script>
   <!-- Shared paper feeds use literal public text. Labelled utilities retain

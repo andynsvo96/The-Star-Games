@@ -24,7 +24,7 @@ static func _with_defaults(defaults: Dictionary, saved: Dictionary) -> Dictionar
 		if fallback is Dictionary and value is Dictionary:
 			values[key] = _with_defaults(fallback, value)
 		elif fallback is int and (value is int or value is float):
-			if is_finite(float(value)) and float(value) == floor(float(value)) and absf(float(value)) <= 2147483647:
+			if is_finite(float(value)) and float(value) == floor(float(value)) and absf(float(value)) <= 9007199254740991:
 				values[key] = int(value)
 		elif fallback is float and (value is int or value is float):
 			if is_finite(float(value)):

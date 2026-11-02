@@ -672,6 +672,8 @@ their current presentation. The hidden template example shows this opt-in form.
 
 The module still owns staged values, validation, visibility, pause behavior and
 Apply. Hide a returned field's parent row when unavailable, or hide its section.
+Set `GameSettingsForm.compact=true` before adding sections for tighter vertical
+spacing with unchanged 44px controls. The template demonstrates this option.
 Restore values without signals as above; after restoring a toggle, call
 `GameLook.settings_toggle(button, enabled)` to refresh its explicit On/Off pill.
 Do not save staged edits or start a new game when opening or closing the form.
@@ -2841,6 +2843,18 @@ standings, medal text and semantic feedback use contrast-safe blue surfaces;
 stays independent and light through `drawing_sheet(true)` / `--drawing-paper`.
 Both variations have hidden template examples; other palettes keep their defaults.
 
+`screen.add_canvas_overlay(canvas)` returns a shared `GameCanvasOverlay` with
+`set_message(literal_text)`, `heading` and `content`. It centers a compact prompt
+over dimmed paper without changing the board's size. Empty text hides it; modules
+own pause/input rules and may put authorized choice controls inside `content`.
+Browser boards use `game-canvas-overlay` containing `game-canvas-message game-paper`
+and a literal heading/choices. Keep the overlay inside the positioned board and
+preserve choice button nodes on clock packets. Hide private choices when the
+page hides or disconnects. Both template views include hidden examples.
+`game-reaction-controls` supplies a compact row of 44px rating buttons with
+`aria-pressed`; modules validate votes, phases and sender eligibility.
+Blue studio panels use darker surfaces, stronger edges and bold section titles.
+
 Native standings entries may also supply `speech` with literal temporary guess
 text and `quality`. The shared bubble hugs its name, wraps before the score and
 ignores pointer input. The module owns expiry, pause, reconnect and answer
@@ -2915,15 +2929,22 @@ Ready is unavailable after the last drawing and cannot start another match.
 The final drawing opens centered standings immediately on host and phones,
 omitting the redundant last-guess recap.
 
-Correct guessers share a fixed turn pool (default 100, configurable 15-10,000)
+Correct guessers share a fixed turn pool (default 100, any positive whole number)
 using linear or squared rank weights, conserving the exact pool and awarding at
-least one point per successful guesser. Misses and the drawer earn zero. Timing
+least one point per successful guesser when the pool covers everyone. Smaller
+pools can give later correct guessers zero. Misses and the drawer earn zero. Timing
 excludes choosing, disconnects and Settings. Successful times freeze at the
 accepted answer; unsuccessful recap rows use the full allowance. History retains
 each attempt's actual time. Tied scores share competition ranks/medals and tied
 positive leaders share a match win; all-zero matches draw. The final screen
 shows fastest correct guess, fewest misses (requires a correct guess), most
 correct guesses and the drawer whose pictures inspired the most correct guesses.
+Guessers can give one thumbs up/down per live drawing, change it or withdraw it;
+only aggregate counts and the viewer's own vote appear in snapshots. Votes do
+not affect points or ink revisions. Completed matches also award Most liked
+drawing and Most disliked drawing (highest count on a single drawing), plus
+Worst Artist (fewest correct guesses inspired across their drawings). Ties share
+awards; a reaction award requires at least one qualifying vote.
 
 Every score/standings identity opens personal match statistics and a paginated
 completed-turn session log; phones also open their own log from the header.
@@ -2941,6 +2962,16 @@ rotates the starter and preserves completed session wins/history. Its host
 Play Again control lives in the result dialog's persistent action row.
 Urgent clocks, deduplicated offline audio,
 reduced motion and clean shared return navigation remain supported.
+
+Pictionary's turn time, laps and points have no game-defined upper caps; they
+accept positive whole numbers within the exact JSON integer range. Difficulty
+is removed and legacy difficulty preferences are ignored. The word editor also
+supports staged inline edits, rejecting empty/duplicate words until corrected.
+Choosing and pause messages sit in the shared canvas overlay; private choices
+appear there only for the drawer. Host Start/Next Round sits inside the canvas's
+bottom edge. `drawing_remaining` preserves the drawing's stopped timer through
+recaps, independently of automatic advancement, including zero after expiry.
+Full-match statistics remain accurate beyond the 96-turn session-log window.
 
 Verification: `tests/pictionary.gd`, `tests/pictionary_network.gd`, rendered
 `tests/pictionary_visual.gd`, and `node tests/pictionary_controller.mjs`, plus

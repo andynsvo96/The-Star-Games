@@ -10,6 +10,7 @@ func _init() -> void:
 	_test_private_game_paths()
 	_test_qr_generation()
 	_test_readable_names()
+	_test_wide_preferences()
 	if failures.is_empty():
 		print("PASS: %d assertions" % assertions)
 		quit(0)
@@ -18,6 +19,17 @@ func _init() -> void:
 			printerr("FAIL: %s" % failure)
 		printerr("%d failure(s) across %d assertions" % [failures.size(), assertions])
 		quit(1)
+
+
+func _test_wide_preferences() -> void:
+	var folder := "res://.test_data/wide-preferences-%d" % OS.get_process_id()
+	var store := GameSettingsStore.new(folder)
+	_expect(store.save_settings("fixture", {"count":5000000000}), "Large exact integer preferences save")
+	_expect(GameSettingsStore.new(folder).load_settings("fixture", {"count":1}).count == 5000000000, "Large exact integer preferences survive reload")
+	for invalid in [true, 1.5, INF, 9007199254740992.0]:
+		_expect(GameSettingsStore._with_defaults({"count":1}, {"count":invalid}).count == 1, "Malformed or inexact integer preferences use typed defaults")
+	DirAccess.remove_absolute(folder.path_join("fixture.json"))
+	DirAccess.remove_absolute(folder)
 
 
 func _test_readable_names() -> void:

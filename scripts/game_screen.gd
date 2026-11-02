@@ -236,6 +236,7 @@ func use_table_header(title_art: Texture2D = null, centered_title := false, left
 	_table_header_layer = layer
 	title_label.reparent(layer); title_label.text = title_label.text.to_upper(); title_label.autowrap_mode = TextServer.AUTOWRAP_OFF; title_label.clip_text = true
 	title_label.add_theme_color_override("font_color", get_theme_color("ink", "GamePalette") if modern else Color("ffd447"))
+	if modern: title_label.add_theme_font_override("font", GameLook.interface_font(700))
 	if title_art != null:
 		title_label.hide(); table_title_art = TextureRect.new(); table_title_art.texture = title_art; table_title_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; table_title_art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; layer.add_child(table_title_art)
 	status.reparent(layer); status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -259,6 +260,7 @@ func use_table_header(title_art: Texture2D = null, centered_title := false, left
 		var right_reserve := 112.0 if _table_header_content != null and compact else reserve
 		header_content.position = Vector2(left_reserve, 0); header_content.size = Vector2(maxf(0, width - left_reserve - right_reserve), layer.size.y)
 		title_label.position = Vector2(66, 0); title_label.size = Vector2(140, layer.size.y); title_label.visible = title_art == null and not compact
+		if modern: title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		if table_title_art != null:
 			table_title_art.position = Vector2(66, 0); table_title_art.size = Vector2(140, layer.size.y)
 			table_title_art.visible = not compact
@@ -493,7 +495,8 @@ func add_section_heading(parent: Control, caption: String, font_size := 22) -> L
 	if get_theme_constant("modern_studio", "GamePalette") == 1:
 		var label := add_sidebar_text(parent, caption)
 		label.add_theme_font_size_override("font_size", mini(font_size, 14))
-		label.add_theme_color_override("font_color", Color("b6cfe6") if get_theme_constant("blue_studio", "GamePalette") == 1 else Color("77718f"))
+		label.add_theme_font_override("font", GameLook.interface_font(700))
+		label.add_theme_color_override("font_color", Color("e6effa") if get_theme_constant("blue_studio", "GamePalette") == 1 else Color("77718f"))
 		return label
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
@@ -576,6 +579,7 @@ func add_phase_dialog(fit_contents := false, full_screen := false, compact := fa
 	heading.reparent(heading_row); heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	heading.add_theme_font_size_override("font_size", 22 if compact else 28)
+	if get_theme_constant("modern_studio", "GamePalette") == 1: heading.add_theme_font_override("font", GameLook.interface_font(700))
 	var header_metric := HBoxContainer.new(); header_metric.size_flags_vertical = Control.SIZE_SHRINK_CENTER; header_metric.add_theme_constant_override("separation",6); heading_row.add_child(header_metric); header_metric.hide()
 	var header_icon := TextureRect.new(); header_icon.custom_minimum_size = Vector2(27,30); header_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; header_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; header_metric.add_child(header_icon)
 	var header_value := Label.new(); header_value.add_theme_font_size_override("font_size",24); header_metric.add_child(header_value)
@@ -1568,6 +1572,12 @@ func add_number_control(parent: Control, title: String, minimum: float, maximum:
 	input.get_line_edit().virtual_keyboard_type = LineEdit.KEYBOARD_TYPE_NUMBER_DECIMAL
 	group.add_child(input)
 	return input
+
+
+func add_canvas_overlay(canvas: Control) -> GameCanvasOverlay:
+	var overlay := GameCanvasOverlay.new()
+	canvas.add_child(overlay)
+	return overlay
 
 
 func add_history_log(sidebar: VBoxContainer, parent_scrolling := false) -> RichTextLabel:

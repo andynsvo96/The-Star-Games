@@ -553,6 +553,16 @@ func _ready() -> void:
 	screen.content.add_child(blue_standings_example)
 	blue_standings_example.set_entries([{"seat":0,"display_name":"Example player","color":"#286ac2","score":100,"speech":"A literal guess","quality":"close"}])
 	blue_standings_example.hide()
+	# Canvas-local choosing/pause prompts dim only the playfield. Modules own
+	# visibility and add any authorized choices to overlay.content.
+	var canvas_prompt_example := Control.new()
+	canvas_prompt_example.name = "CanvasPromptExample"
+	canvas_prompt_example.theme = GameLook.make_theme("studio-blue")
+	canvas_prompt_example.custom_minimum_size = Vector2(320, 240)
+	screen.content.add_child(canvas_prompt_example)
+	var canvas_prompt := screen.add_canvas_overlay(canvas_prompt_example)
+	canvas_prompt.set_message("Waiting for a choice")
+	canvas_prompt_example.hide()
 	var player_header_example := screen.add_phase_dialog(true,false,true)
 	# Pass true to expand a compact sheet for a larger card-choice grid.
 	screen.set_phase_dialog_width(player_header_example, 840, true)
@@ -569,6 +579,8 @@ func _ready() -> void:
 	# This example's whole disclosure layer stays hidden in the playable template.
 	var form_body := screen.add_corner_details(["SETTINGS"], Callable(), true, false, false, true, true)[0]
 	var form := screen.add_settings_form(form_body)
+	# Set compact before adding fields for closer rows with the same 44px controls.
+	form.compact = true
 	var form_section := form.add_section("Round options")
 	form.add_choice(form_section, "Mode", ["Practice", "Match"])
 	var form_timer := form.add_toggle(form_section, "Turn timer", true)
