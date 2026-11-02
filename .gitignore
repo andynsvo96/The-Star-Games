@@ -86,6 +86,8 @@ desktop.ini
 # Synthetic shared board/controller layout regression (no local games required).
 !/tests/board_camera.gd
 !/tests/board_camera.gd.uid
+!/tests/board_feedback.gd
+!/tests/board_feedback.gd.uid
 !/tests/shared_board_controller.mjs
 !/tests/table_inventory.gd
 !/tests/table_inventory.gd.uid

@@ -2007,3 +2007,24 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-progress-marker strong { font-size: 17px; }
 .game-progress-marker.is-goal { right: 2px; }
 .game-progress-marker.is-approaching { left: min(calc(2px + (100% - 48px) * var(--progress, 0)),calc(100% - 96px)); border-color: var(--gold, #ffda72); color: var(--gold, #ffda72); }
+
+/* Optional score identity tokens and compact rule disclosures. */
+.game-score-identity { display:flex; align-items:center; gap:.4rem; min-width:0; }
+.game-score-identity > p { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.game-seat-token { display:inline-grid; place-items:center; flex:none; width:28px; height:28px; border:2px solid #fff1d9; border-radius:50%; background:var(--seat-token-color,#527bc3); color:#fff; font:bold 16px sans-serif; text-shadow:1px 1px #171717,-1px -1px #171717,1px -1px #171717,-1px 1px #171717; }
+.game-board-stats .game-score-identity { grid-column:1 / -1; }
+.game-board-stats .game-seat-token { width:22px; height:22px; font-size:14px; }
+.game-rules-panel.game-rules-small > summary { min-height:44px; font-size:11px; gap:6px; }
+.game-rules-panel.game-rules-small > summary > img { width:18px; height:18px; }
+.game-rules-panel.game-rules-quiet > summary:focus-visible { outline:none; }
+.game-rules-panel.game-rules-quiet:has(> summary:focus-visible) { outline:2px solid #7fd4ff; outline-offset:2px; }
+
+.game-score-card .game-score-feedback { grid-column:1 / -1; min-height:1.2em; margin:.2rem 0 0; font-size:.8rem; line-height:1.2; }
+
+.game-board-stats .game-session-score > .game-score-detail { grid-column:2; text-align:right; font-size:.7rem; color:var(--muted); }
+.game-board-stats .game-session-score > .game-score-clock { grid-column:1 / -1; text-align:center; }
+@media (max-width:400px) {
+ .game-board-stats .game-session-score:has(.game-score-identity) { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .game-board-stats .game-session-score:has(.game-score-identity) > .game-score-detail { grid-column:2; text-align:right; font-size:.7rem; line-height:1.2; }
+ .game-board-stats .game-session-score:has(.game-score-identity) > output:not(.game-score-clock) { font-size:.7rem; }
+}

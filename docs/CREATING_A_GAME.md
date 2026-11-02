@@ -547,11 +547,12 @@ shared board navigation. Settings, Session & History and
 How to Play buttons are omitted on host and controllers; authoritative session
 wins and private reconnect snapshots are retained. The 424×456 casing encloses the square grid and its coordinates.
 Press and hold for 450 ms rotates the preview without placing an unplaced ship;
-a separate tap deploys it. Tap a placed ship to select it with a static outline,
-then tap a clear position to move it; invalid placement preserves the original.
-Repositioning keeps that ship selected and never adds another ship.
-Existing ships rotate around their original start,
-without adding a ship or advancing selection. The host validates the `rotate`
+a separate tap deploys it. Press a placed ship and drag to pick it up with an
+outline; release over a legal position to relocate it, preserving the grabbed
+segment. Invalid or canceled drops preserve the original fleet. Short taps do
+not select placed ships. After relocation or rotation, deployment resumes with
+the next unplaced ship when one remains; a stationary hold still rotates once.
+Existing ships rotate around their original start without adding a ship. The host validates the `rotate`
 action from its own fleet. Cancelled touches, scrolling, reconnection and locked fleets
 cannot trigger a delayed placement. Invalid rotations preserve the ship.
 Keyboard R is available without a direction toggle. Recorded CC0 cannon, water
@@ -629,8 +630,10 @@ It preserves readable colors and lightens or darkens other colors until they
 meet the default 4.5 contrast ratio; the optional third argument sets the ratio.
 Use the returned color for name text only, preserving the roster's identity
 color for avatars. The template demonstrates this shared helper.
-Tic Tac Toe colors every mark label, including score
-and turn indicators, red for X and blue for O.
+Tic Tac Toe colors every mark label red for X and blue for O. Its ordinary
+turn plaque is hidden on host and phones. The active stats card instead has a
+shared breathing glow; reduced motion retains a static highlight. Pause and
+result feedback stays visible in the player cards.
 
 ### Host settings and local-versus-phone play
 
@@ -961,6 +964,17 @@ static. Canvas playfields use `GameLook.draw_turn_glow(canvas, rect, accent, pul
 Apply these to the owning player's active identity, or to eligible name targets
 on the hand-swap chooser's view. Hide highlights on pause/disconnect or after a
 winner; other viewers never receive another player's choice highlights. The template documents the pattern.
+`screen.set_score_card_turn_glow(card, active, reduced_motion)` adds whole-card
+breathing feedback without changing layout or input targets. Clear it on pause,
+results and exit; reduced motion keeps its static rim. Browser stats can use the
+existing `game-turn-glow` class on the complete card, plus `has-reduced-motion`
+when the host requests it. Keep disconnect/result text in `game-score-feedback`.
+`screen.set_score_card_seat(card, number, identity_color)` adds a reusable numbered
+color token beside the literal name. Browser equivalents are `game-score-identity`
+containing a `game-seat-token` with `--seat-token-color` and the name. Native and
+browser template examples are hidden; `tests/board_feedback.gd` is a synthetic
+framework regression that requires no playable modules.
+
 Game controls omit Godot `tooltip_text` and browser `title` attributes. Keep
 browser `aria-label` descriptions and visible context instead of hover popups.
 `add_details(parent, caption)` returns an initially collapsed content container
@@ -1384,9 +1398,12 @@ Checkers also has an optional host-only Turn Timer, off by default, with the
 same custom time-per-player model as Chess (0.1 to 1440 decimal minutes). The
 first legal move starts it; a multiple jump keeps charging the same player.
 Host monotonic time decides expiry, immediately recording one opponent win.
-Disconnects freeze clocks; sync restores `clock_seconds`, `remaining` and
-`clock_running`. Browser interpolation is display-only. Editing locks during
-play and reopens between boards. Replay resets both clocks, and replay/difficulty
+The host can edit the timer at any time, including a capture chain or disconnect.
+An accepted change restarts the current board, cancels stale AI/movement and
+resets clocks while preserving completed wins/history. No result is awarded for
+the abandoned board. Unchanged settings do not restart. Disconnects freeze clocks;
+sync restores `clock_seconds`, `remaining` and `clock_running`. Browser
+interpolation is display-only. Replay resets both clocks, and replay/difficulty
 changes preserve the setting. Enabled clocks use shared score-card text on both
 screens; detailed Session & History controls are omitted.
 The board's module-owned movement queues slides and capture hops without moving
@@ -1429,17 +1446,25 @@ opposite it an advantage. A blocked seat passes; three repeated positions draw.
 One full target is one immediate win. Replay rotates starters and preserves
 session wins/history. Only an all-phone table changes saved standings.
 
-Host preferences stage total seats, computer count, host participation and
-bounded AI difficulty until Apply. Accepted preferences use the existing settings
-API. Applying abandons the board and starts a fresh session; replay keeps the
-lineup. Disconnects pause seated humans without substituting computers; extra
+Host preferences stage total seats, computer count, host participation, bounded
+AI difficulty and the optional turn timer until Apply. The timer defaults off
+with one minute per turn; expiration passes to the next legal seat without
+moving a marble, awarding a win or counting toward repetition draws. Disconnects
+and marble movement freeze the countdown. Timer edits remain available during
+a disconnect. Apply restarts the board and preserves completed wins by identity.
+Accepted preferences use the existing settings API. Applying abandons the board
+without results; replay keeps the lineup and timer. Disconnects pause seated
+humans without substituting computers; extra
 phones are spectators. Snapshots omit profile metadata and reconnect tokens.
 
 Both views inherit shared royal controls, selection rings and celebrations.
-Hosts use a larger shared centered board, compact score cards and a static gold
-name highlight for the current seat; ordinary host turn plaques are omitted.
-Phones keep a compact top turn status and shared session scores below the board
-through the SDK's measured footer. Help stays in host Settings; phones retain Zoom. The shared scrolling dialog opens an enlarged board with 58px
+Hosts use a larger shared centered board, compact score cards, matching numbered
+identity-color tokens, and a static gold name highlight for the current seat.
+Ordinary host turn plaques are omitted.
+Phones keep a compact top turn status, matching numbered color tokens, and shared
+session scores/countdowns below the board through the SDK's measured footer. Help
+stays in host Settings; phones retain Zoom. The shared scrolling dialog opens an
+enlarged board with 58px
 hole spacing and reachable Close; keyboard selection also works. Reduced motion
 settles marbles immediately; other moves lock input until host and local motion
 finish. Duplicate syncs preserve movement, while reconnect restores settled art.
@@ -1483,10 +1508,14 @@ retain their internal move history for clocks and draw detection.
 
 Participants swap colors on replay while their wins remain attached to the same
 identity; White always moves first. A completed board is one game. Draws award no
-win and only decisive two-phone boards update saved points/results. Solo
-difficulty changes reset the session but preserve guidance and clock settings.
+win and only decisive two-phone boards update saved points/results. Accepted
+Chess settings changes restart the current board, canceling old
+workers, promotion choices and motion while preserving completed session wins
+and unchanged preferences. Clocks reset to the accepted allowance. The host may change applicable options at any
+time. Opponent-mode changes keep wins attached to retained identities.
 The clock is off by default; custom decimal minutes are entered on the host
-before the first move or between boards. It starts after the first legal move,
+at any time. A change restarts the board; the clock starts after the first
+legal move,
 uses host monotonic time, keeps running through promotion and computer thinking,
 and freezes on any admitted-player disconnect. Browser countdown interpolation
 is display-only; the host alone decides timeout results.
@@ -1701,7 +1730,11 @@ the list from its heading. `art/rules/catalog.json` supplies the same offline
 labels and icons to host and controller; `active_rule_items` contains only
 public presentation data. Each house rule has a distinct bundled SVG icon.
 Public hosts omit this panel; phones retain it. Solo hosts always use the shared
-compact disclosure, including on wide screens. Its list starts collapsed and
+compact disclosure, including on wide screens. Its list starts collapsed. The
+smaller disclosure uses shared
+`GameRulesPanel.small_heading` and `quiet_heading` (browser `game-rules-small` /
+`game-rules-quiet`), leaving room beside Draw and retaining a 44px target. Keyboard
+focus follows the outer blue surface instead of an inner yellow rectangle. It
 opens in `GameScreen.add_phase_dialog` (browser `dialog.game-dialog`) without
 changing board centering or covering the toolbar with an expanded footer.
 A public `latest_play` contains only the

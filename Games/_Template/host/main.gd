@@ -361,6 +361,14 @@ func _ready() -> void:
 	money_example.resolve_font_size = func(_seat: int) -> int: return screen.get_theme_font_size("font_size","Label")
 	money_example.resolve_font = func(_seat: int) -> Font: return screen.get_theme_font("font","Label")
 	money_example.update({"revision":0, "money":[], "active":false}, false, false)
+	# Optional whole-card breathing turn cue and numbered identity token.
+	var cue_example := screen.add_score_card(layout.left_sidebar, null)
+	cue_example.player.text = "Example player"
+	screen.set_score_card_seat(cue_example, 1, Color("527bc3"))
+	screen.set_score_card_turn_glow(cue_example, false, true)
+	cue_example.panel.hide()
+	# GameRulesPanel.small_heading / quiet_heading compact the caption and keep
+	# keyboard focus on the outer panel, without an inner yellow rectangle.
 	var modal_example := screen.add_corner_details(["SETTINGS"], Callable(), true, false, false, true, true)
 	screen.add_sidebar_text(modal_example[0], "Module-owned settings")
 	# Opt in deliberately; keep the demonstration layer hidden in the template.

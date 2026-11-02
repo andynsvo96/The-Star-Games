@@ -6,6 +6,8 @@ signal layout_changed
 var items: Array = []
 var compact := false
 var expanded := false
+var small_heading := false
+var quiet_heading := false
 var heading: Button
 var body: ScrollContainer
 var rows: VBoxContainer
@@ -18,7 +20,11 @@ var text := ""
 func _init() -> void:
 	add_theme_stylebox_override("panel", GameLook.rules_sheet())
 	accessibility_name = "Active rules and effects"
-	draw.connect(func() -> void: draw_style_box(GameLook.party_sheen(), Rect2(Vector2.ZERO, size).grow(-1)))
+	draw.connect(func() -> void:
+		draw_style_box(GameLook.party_sheen(), Rect2(Vector2.ZERO, size).grow(-1))
+		if quiet_heading and heading != null and heading.has_focus():
+			draw_style_box(GameLook.box(Color.TRANSPARENT, Color("7fd4ff"), 20, 2), Rect2(Vector2.ZERO, size).grow(-1))
+	)
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 5)
 	add_child(column)
@@ -34,6 +40,8 @@ func _init() -> void:
 		heading.add_theme_stylebox_override(mode, StyleBoxEmpty.new())
 	heading.add_theme_stylebox_override("focus", GameLook.box(Color.TRANSPARENT, Color("ffe47b"), 6, 2))
 	column.add_child(heading)
+	heading.focus_entered.connect(queue_redraw)
+	heading.focus_exited.connect(queue_redraw)
 	heading.pressed.connect(func() -> void:
 		if compact:
 			expanded = not expanded
@@ -144,11 +152,13 @@ func _scale_rows() -> void:
 func _fit() -> void:
 	body.visible = not compact or expanded
 	divider.visible = body.visible
-	heading.custom_minimum_size.y = (32 if not compact else 30) * visual_scale
-	var caption := "RULES / EFFECTS" if compact and size.x < 240 else "ACTIVE RULES / EFFECTS"
+	heading.custom_minimum_size.y = (44 if small_heading else 32 if not compact else 30) * visual_scale
+	var short_caption := compact and (small_heading or size.x < 240)
+	heading.add_theme_stylebox_override("focus", StyleBoxEmpty.new() if quiet_heading else GameLook.box(Color.TRANSPARENT, Color("ffe47b"), 6, 2))
+	var caption := "RULES / EFFECTS" if short_caption else "ACTIVE RULES / EFFECTS"
 	heading.text = caption + ("  -" if expanded else "  +") if compact else caption
-	heading.add_theme_font_size_override("font_size", int((11 if compact and size.x < 240 else 14) * visual_scale))
-	heading.add_theme_constant_override("icon_max_width", int((18 if compact and size.x < 240 else 24) * visual_scale))
+	heading.add_theme_font_size_override("font_size", int((11 if short_caption else 14) * visual_scale))
+	heading.add_theme_constant_override("icon_max_width", int((18 if short_caption else 24) * visual_scale))
 	heading.focus_mode = Control.FOCUS_ALL if compact else Control.FOCUS_NONE
 	heading.accessibility_name = "Active rules and effects" + (", collapse" if expanded else ", expand") if compact else "Active rules and effects"
 	var room := maxf(40 * visual_scale, maximum_height - 60 * visual_scale)

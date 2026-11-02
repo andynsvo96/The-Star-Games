@@ -1374,12 +1374,14 @@ func set_score_card_compact(card: Dictionary, compact: bool, minimal_decoration 
 		surface.set_content_margin(side, 24 if compact else 30)
 	for side in [SIDE_TOP, SIDE_BOTTOM]:
 		surface.set_texture_margin(side, 18 if compact else 54)
-		surface.set_content_margin(side, (16 if minimal_decoration else 30) if compact else 60)
+		surface.set_content_margin(side, ((24 if side == SIDE_BOTTOM else 16) if minimal_decoration else 30) if compact else 60)
 	card.panel.add_theme_stylebox_override("panel", surface)
 	card.panel.clip_contents = compact
 	card.content.add_theme_constant_override("separation", 3 if compact else 10)
 	card.player.add_theme_font_size_override("font_size", 15 if compact else 21)
 	card.score.add_theme_font_size_override("font_size", 16 if compact else 23)
+	if card.has("seat_token"):
+		card.seat_token.custom_minimum_size = Vector2.ONE * (24 if compact else 32)
 	for child in card.content.get_children():
 		if child.has_meta("score_decoration"):
 			child.visible = not (compact and minimal_decoration)
@@ -1411,6 +1413,36 @@ func set_score_card_active(card: Dictionary, active: bool, prominent := false) -
 	if card.get("presentation", "") == "asset":
 		card.active = active
 		card.panel.add_theme_stylebox_override("panel", GameLook.asset_player_sheet(card.identity, active, card.compact))
+
+
+# These opt-ins preserve the score card's layout and identity colors.
+func set_score_card_turn_glow(card: Dictionary, active: bool, reduced_motion: bool) -> void:
+	if not card.has("turn_glow"):
+		var glow := GameTurnGlow.new()
+		glow.target = card.panel
+		card.player.add_child(glow)
+		card.turn_glow = glow
+	card.turn_glow.active = active
+	card.turn_glow.reduced_motion = reduced_motion
+	card.turn_glow.queue_redraw()
+
+
+func set_score_card_seat(card: Dictionary, seat: int, identity: Color) -> void:
+	if not card.has("seat_token"):
+		var name_column: Control = card.player.get_parent()
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+		card.name_panel.add_child(row)
+		var token := GameSeatToken.new()
+		row.add_child(token)
+		name_column.reparent(row)
+		name_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		card.seat_token = token
+	card.seat_token.seat = seat
+	card.seat_token.identity = identity
+	card.seat_token.custom_minimum_size = Vector2.ONE * (24 if card.get("compact", false) else 32)
+	card.seat_token.accessibility_name = "Player %d" % seat
+	card.seat_token.queue_redraw()
 
 
 # Optional illustrated heading keeps shared navigation above the artwork.
