@@ -526,6 +526,9 @@ Battleship uses five ships (5/4/3/3/2) on a 10×10 board, permits touching, reje
 overlap and row wrapping, locks ready fleets, and alternates shots after hits
 and misses. One completed battle counts as one win. Replay alternates starters
 and preserves session totals. Only two-phone battles update saved standings.
+During setup, Ready changes to Unready until the opposing captain is ready.
+Unready preserves deployed ships, restores editing and advances the authoritative
+revision; stale requests and requests after battle begins cannot unlock a fleet.
 Its `animating` snapshot field locks firing until the host's complete 1.25-second
 shot effect finishes; controllers additionally wait for their own effect to end.
 Duplicate snapshots preserve active effects; initial sync, refresh and reconnect
@@ -537,13 +540,19 @@ Battleship's module-owned bridge monitors show known damage and public wrecks,
 never secret enemy ship positions or damage assignments. They align with the
 covered background when visible and wrap into readable panels otherwise.
 Setup groups ship selection, Auto Place, then Clear and READY side by side in
-the player monitor. The enemy monitor remains visible, with AI Difficulty editable
+the player monitor. The host's enemy monitor remains visible, with AI Difficulty editable
 only during zero-phone solo setup. Changing difficulty preserves deployed ships
 and session totals; battle and finished phases reject edits. One-phone opponent
 selection also lives in the enemy monitor before deployment. Compact layouts
-return the deployment group to the shared reserved action slot and keep the
-monitor rows readable in the supplementary scroll area. Play Again retains the
-shared board navigation. Settings, Session & History and
+return the host deployment group to the shared reserved action slot. Phones use
+the shared compact `game-board-controller` header and put fleet monitors first
+inside the measured `.game-board-controls`, directly below the board and above
+deployment/replay actions. Only the player's monitor appears during setup.
+Connected phones omit the connection caption and short setup instructions;
+reconnect, placement errors and battle status remain visible. The shared fitter
+reserves the entire footer, and a stable replay slot keeps the board fitted
+through battle/results without page scrolling. Direct short landscape views use
+the existing SDK side-control relocation. Settings, Session & History and
 How to Play buttons are omitted on host and controllers; authoritative session
 wins and private reconnect snapshots are retained. The 424×456 casing encloses the square grid and its coordinates.
 Press and hold for 450 ms rotates the preview without placing an unplaced ship;
