@@ -548,10 +548,18 @@ return the host deployment group to the shared reserved action slot. Phones use
 the shared compact `game-board-controller` header and put fleet monitors first
 inside the measured `.game-board-controls`, directly below the board and above
 deployment/replay actions. Only the player's monitor appears during setup.
-Connected phones omit the connection caption and short setup instructions;
-reconnect, placement errors and battle status remain visible. The shared fitter
-reserves the entire footer, and a stable replay slot keeps the board fitted
-through battle/results without page scrolling. Direct short landscape views use
+Connected phones omit the connection caption. Both screens omit visible routine
+status captions below the logo, including setup, ready-waiting, hit/miss and turn
+text. Explicit reconnect/placement feedback uses the shared reserved board footer;
+phones retain turn status for screen readers. A loaded cannonball marks the active
+fleet on the public host and the owner's turn in the phone's visible single-board
+view. Both host and local movement locks, awaiting input, pause/disconnect and
+results clear it; reduced motion and reconnect restore a static authoritative cue.
+Fleet monitor rows have right-aligned names, no colored circle indicators, and
+matching ship/name dimming for public wrecks. Smaller native monitors leave room
+for larger fitted boards. Native board/monitor headings use literal captain names.
+The shared fitter reserves the entire footer, and a stable replay slot keeps the
+board fitted through battle/results without page scrolling. Direct short landscape views use
 the existing SDK side-control relocation. Settings, Session & History and
 How to Play buttons are omitted on host and controllers; authoritative session
 wins and private reconnect snapshots are retained. The 424×456 casing encloses the square grid and its coordinates.
