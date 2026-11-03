@@ -565,8 +565,17 @@ Two visible boards aim inward and carry one foreground flight between shooter
 and target; a single-board view launches from its visible cannon. Live geometry
 keeps launches/targets attached after resize. Flight still lasts 0.48 seconds,
 with the full 1.25-second authoritative/local movement locks retained.
-Native shader water and browser inner-water highlights animate independently of
-boards and click targets. Ambient motion never locks gameplay; pause/disconnect,
+Natural ocean-surface artwork animates through native UV displacement and gentle
+browser surface drift, independently of boards and click targets. The same offline
+image is registered as the module's water-art theme slot. Host title and boards
+use the shared `center_heading` composition to fit more of the available area,
+with native side monitors capped at 220 pixels. Short landscape deployment
+controls share one compact row to retain board space. Player one's host cannon
+sits on the right header edge; player two's stays on the left. Muzzle/load/flight
+geometry follows these placements, including after resize. A distinct 2.2-second steel
+break and rushing-water cue plays once per confirmed sinking impact on the host
+Effects bus; repeated sync/impact callbacks do not restart it.
+Ambient motion never locks gameplay; pause/disconnect,
 page hiding and reduced motion freeze it, and exit cancels it. Reduced motion
 skips flight while retaining static impact/turn feedback. Secret ships never
 enter public movement or water artwork.
