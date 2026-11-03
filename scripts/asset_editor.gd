@@ -33,7 +33,7 @@ var save_button: Button
 var discard_button: Button
 var restore_button: Button
 var play_button: Button
-var chooser := FileDialog.new()
+var chooser: FileDialog
 var folders: Dictionary = {}
 var theme_editor: Control
 var content: MarginContainer
@@ -41,6 +41,17 @@ var skins := Label.new()
 var skin_section: PanelContainer
 var skin_button: Button
 var themes_button: Button
+var categories: Array[Dictionary] = []
+var category_cache: Dictionary = {}
+var dirty_categories: Dictionary = {}
+var collapsed_folders: Dictionary = {}
+var scan_queue: Array[String] = []
+var scanner: Thread
+var loading_category := ""
+var tree_pending: Array[Dictionary] = []
+var rebuilding_tree := false
+var populate_scheduled := false
+var expand_all_sections := false
 
 
 func _ready() -> void:
@@ -79,17 +90,21 @@ func _ready() -> void:
 	left.add_theme_constant_override("separation", 8)
 	browser.add_child(left)
 	left.add_child(EditorStyle.label("ASSET BROWSER", 12, EditorStyle.ACCENT))
-	search.placeholder_text = "Search assets"
+	search.placeholder_text = "Search loaded assets"
 	search.text_changed.connect(func(_value: String) -> void: _populate())
 	left.add_child(search)
 	var sections := HFlowContainer.new()
 	left.add_child(sections)
 	sections.add_child(_button("Collapse All", func() -> void: _set_sections_collapsed(true)))
 	sections.add_child(_button("Expand All", func() -> void: _set_sections_collapsed(false)))
+	var browser_help := EditorStyle.label("Expand a category to load its assets.", 12, EditorStyle.ACCENT)
+	browser_help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	left.add_child(browser_help)
 	tree.hide_root = true
 	tree.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	tree.add_theme_stylebox_override("panel", EditorStyle.box(Color("111c2a"), 4))
 	tree.item_selected.connect(_select_item)
+	tree.item_collapsed.connect(_section_toggled)
 	left.add_child(tree)
 	var scroll := ScrollContainer.new()
 	scroll.custom_minimum_size.x = 140
@@ -147,55 +162,134 @@ func _ready() -> void:
 			audio_preview_target = ""
 			_notice("Could not prepare this music preview. Install FFmpeg or choose a WAV, OGG, or MP3 replacement.", true)
 	)
-	chooser.title = "Choose replacement media"
-	chooser.access = FileDialog.ACCESS_FILESYSTEM
-	chooser.file_mode = FileDialog.FILE_MODE_OPEN_FILE
-	chooser.use_native_dialog = true
-	chooser.file_selected.connect(_stage)
-	add_child(chooser)
-	store.scan()
+	categories = store.categories()
+	# Resolve the small replacement index before background category scans use it.
+	RuntimeAssets.replacements()
 	_populate()
 	_update_actions()
 
 
 func _populate() -> void:
+	populate_scheduled = false
+	rebuilding_tree = true
+	for key: String in folders:
+		collapsed_folders[key] = folders[key].collapsed
+	tree_pending.clear()
 	tree.clear()
 	folders.clear()
 	var root_item := tree.create_item()
-	for entry in store.entries:
-		if not search.text.is_empty() and not str(entry.path).to_lower().contains(search.text.to_lower()):
-			continue
-		var parts := str(entry.path).split("/")
-		var parent := root_item
-		var key := ""
-		var group := "Games" if parts[0] == "Games" else "Launcher"
-		if not folders.has(group):
-			var item := tree.create_item(root_item)
-			item.set_text(0, group)
-			item.set_selectable(0, false)
-			folders[group] = item
-		parent = folders[group]
-		key = group
-		var start := 1 if group == "Games" else 0
-		for index in range(start, parts.size() - 1):
-			key += "/" + parts[index]
-			if not folders.has(key):
-				var folder := tree.create_item(parent)
-				folder.set_text(0, parts[index])
-				folder.set_selectable(0, false)
-				folder.collapsed = search.text.is_empty() and index > start
-				folders[key] = folder
-			parent = folders[key]
-		var item := tree.create_item(parent)
-		item.set_text(0, parts[-1])
-		item.set_metadata(0, entry)
-		if not selected.is_empty() and selected.path == entry.path:
-			item.select(0)
+	var query := search.text.strip_edges().to_lower()
+	for category in categories:
+		var id := str(category.id)
+		var folder := tree.create_item(root_item)
+		folder.set_text(0, str(category.label))
+		folder.set_metadata(0, id)
+		folder.set_selectable(0, false)
+		folder.collapsed = bool(collapsed_folders.get(id, true))
+		folders[id] = folder
+		var matches: Array[Dictionary] = []
+		if category_cache.has(id) and not folder.collapsed:
+			for entry: Dictionary in category_cache[id]:
+				if query.is_empty() or str(entry.path).to_lower().contains(query):
+					matches.append(entry)
+		if not matches.is_empty():
+			tree_pending.append_array(matches)
+		else:
+			var hint := tree.create_item(folder)
+			hint.set_selectable(0, false)
+			if not category_cache.has(id):
+				hint.set_text(0, "Loading assets…" if id == loading_category or scan_queue.has(id) else "Expand to load assets")
+			else:
+				hint.set_text(0, "%d assets" % category_cache[id].size() if folder.collapsed else "No matching assets" if not query.is_empty() else "No assets found")
+	rebuilding_tree = false
+
+
+func _append_entry(entry: Dictionary) -> void:
+	var category := str(entry.category)
+	var parent: TreeItem = folders[category]
+	var parts := str(entry.path).split("/")
+	var key := category
+	var start := 2 if str(entry.path).begins_with(category + "/") else 0
+	for index in range(start, parts.size() - 1):
+		key += "/" + parts[index]
+		if not folders.has(key):
+			var folder := tree.create_item(parent)
+			folder.set_text(0, parts[index])
+			folder.set_metadata(0, key)
+			folder.set_selectable(0, false)
+			folder.collapsed = bool(collapsed_folders.get(key, not expand_all_sections))
+			folders[key] = folder
+		parent = folders[key]
+	var item := tree.create_item(parent)
+	item.set_text(0, parts[-1])
+	item.set_metadata(0, entry)
+	if not selected.is_empty() and selected.path == entry.path and selected.get("category", category) == category:
+		item.select(0)
+
+
+func _schedule_populate() -> void:
+	if not populate_scheduled:
+		populate_scheduled = true
+		_populate.call_deferred()
+
+
+func _section_toggled(item: TreeItem) -> void:
+	if rebuilding_tree or not item.get_metadata(0) is String:
+		return
+	var id := str(item.get_metadata(0))
+	collapsed_folders[id] = item.collapsed
+	if not categories.any(func(category: Dictionary) -> bool: return category.id == id):
+		return
+	if item.collapsed:
+		scan_queue.erase(id)
+	else:
+		_request_category(id)
+	_schedule_populate()
+
+
+func _request_category(id: String) -> void:
+	if id == loading_category or scan_queue.has(id):
+		return
+	if dirty_categories.has(id):
+		dirty_categories.erase(id)
+		category_cache.erase(id)
+		store.entries = store.entries.filter(func(entry: Dictionary) -> bool: return entry.get("category", "") != id)
+	if category_cache.has(id): return
+	scan_queue.append(id)
+	_start_category_scan()
+
+
+func _start_category_scan() -> void:
+	if scanner != null or scan_queue.is_empty():
+		return
+	loading_category = scan_queue.pop_front()
+	var category := loading_category
+	var definitions := store.definitions_root
+	scanner = Thread.new()
+	var error := scanner.start(func() -> Array[Dictionary]:
+		var category_store := AssetStore.new()
+		category_store.definitions_root = definitions
+		return category_store.scan_category(category)
+	)
+	if error != OK:
+		scanner = null
+		loading_category = ""
+		_notice("Could not load assets. Collapse and reopen the category to retry.", true)
 
 
 func _set_sections_collapsed(collapsed: bool) -> void:
+	expand_all_sections = not collapsed
+	rebuilding_tree = true
 	for folder: TreeItem in folders.values():
 		folder.collapsed = collapsed
+	for key: String in collapsed_folders:
+		collapsed_folders[key] = collapsed
+	for category in categories:
+		collapsed_folders[category.id] = collapsed
+		if not collapsed: _request_category(str(category.id))
+	if collapsed: scan_queue.clear()
+	rebuilding_tree = false
+	_schedule_populate()
 
 
 func _select_item() -> void:
@@ -203,7 +297,7 @@ func _select_item() -> void:
 	if item == null or not item.get_metadata(0) is Dictionary:
 		return
 	var entry: Dictionary = item.get_metadata(0)
-	if not selected.is_empty() and entry.path == selected.path:
+	if not selected.is_empty() and entry.path == selected.path and entry.get("category", "") == selected.get("category", ""):
 		return
 	var change := func() -> void:
 		selected = entry
@@ -255,6 +349,16 @@ func _show_preview(path: String) -> void:
 
 
 func _choose() -> void:
+	# FileDialog's filesystem setup can query slow Windows drives. Do this only
+	# when a replacement is requested, never while opening the asset browser.
+	if chooser == null:
+		chooser = FileDialog.new()
+		chooser.title = "Choose replacement media"
+		chooser.use_native_dialog = true
+		chooser.access = FileDialog.ACCESS_FILESYSTEM
+		chooser.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+		chooser.file_selected.connect(_stage)
+		add_child(chooser)
 	var allowed: Array = BackgroundMedia.IMAGE_EXTENSIONS
 	var media_kind := str(selected.get("kind", AssetStore.kind(RuntimeAssets.source("res://" + str(selected.path)))))
 	if selected.background:
@@ -296,6 +400,29 @@ func _process(_delta: float) -> void:
 		else:
 			_notice(str(result.error), true)
 		_update_actions()
+	if scanner != null and not scanner.is_alive() and worker == null:
+		var loaded: Array[Dictionary] = scanner.wait_to_finish()
+		scanner = null
+		var category := loading_category
+		loading_category = ""
+		if dirty_categories.has(category):
+			if not bool(collapsed_folders.get(category, true)): _request_category(category)
+		else:
+			category_cache[category] = loaded
+			store.entries.append_array(loaded)
+			for entry in loaded:
+				if selected.get("path", "") == entry.path and selected.get("category", category) == category:
+					selected = entry
+		_start_category_scan()
+		_schedule_populate()
+	if not is_visible_in_tree() or populate_scheduled:
+		return
+	var deadline := Time.get_ticks_usec() + 3000
+	rebuilding_tree = true
+	for index in mini(64, tree_pending.size()):
+		_append_entry(tree_pending.pop_front())
+		if Time.get_ticks_usec() >= deadline: break
+	rebuilding_tree = false
 
 
 func _confirm_save() -> void:
@@ -329,11 +456,9 @@ func _save() -> void:
 		return
 	var path := str(selected.path)
 	_clear_pending()
-	store.scan()
-	for entry in store.entries:
-		if entry.path == path:
-			selected = entry
-			break
+	# Replacement files are hidden from the catalog; only this source changed.
+	selected.source = RuntimeAssets.source("res://" + path)
+	selected.kind = "audio" if path.begins_with("asset/lobby_songs/") or path.begins_with("asset/music/") else AssetStore.kind(str(selected.source))
 	_discard()
 	_populate()
 	_notice("Saved. Previous version: %s" % str(result.backup))
@@ -460,6 +585,9 @@ func _exit_tree() -> void:
 		if result.has("staged"):
 			DirAccess.remove_absolute(str(result.staged))
 		worker = null
+	if scanner != null:
+		scanner.wait_to_finish()
+		scanner = null
 	_clear_pending()
 
 
@@ -471,7 +599,13 @@ func _close_themes() -> void:
 	theme_editor.suspend_previews()
 	theme_editor.hide()
 	content.show()
-	store.scan()
+	# Themes may add immutable media. Refresh only previously loaded, open games;
+	# collapsed games wait until the host chooses to open them again.
+	if loading_category.begins_with("Games/"): dirty_categories[loading_category] = true
+	for id: String in category_cache.keys():
+		if not id.begins_with("Games/"): continue
+		dirty_categories[id] = true
+		if not bool(collapsed_folders.get(id, true)): _request_category(id)
 	_populate()
 	_discard()
 

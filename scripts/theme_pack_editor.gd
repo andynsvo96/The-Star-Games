@@ -20,7 +20,7 @@ var invalid_label := false
 var games: Array[String] = []
 var packs: Array = []
 var search := LineEdit.new()
-var chooser := FileDialog.new()
+var chooser: FileDialog
 var reduced_motion := false
 var preview_audio := AudioStreamPlayer.new()
 var preview_video: Control
@@ -104,8 +104,6 @@ func _ready() -> void:
 	discard_button = _button("Discard", func() -> void: _apply_theme(str(original.id))); footer.add_child(discard_button)
 	use_button = _button("Use skin", _use_skin); footer.add_child(use_button)
 	skin_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; body.add_child(skin_status)
-	chooser.access = FileDialog.ACCESS_FILESYSTEM; chooser.file_mode = FileDialog.FILE_MODE_OPEN_FILE; chooser.use_native_dialog = true; add_child(chooser)
-	chooser.file_selected.connect(_replace)
 	add_child(preview_audio); preview_audio.bus = "Effects"
 	if not games.is_empty(): _request_game(maxi(0, games.find(initial_game_id)))
 	else:
@@ -367,6 +365,13 @@ func _gallery() -> void:
 
 
 func _choose() -> void:
+	if chooser == null:
+		chooser = FileDialog.new()
+		chooser.use_native_dialog = true
+		chooser.access = FileDialog.ACCESS_FILESYSTEM
+		chooser.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+		chooser.file_selected.connect(_replace)
+		add_child(chooser)
 	var allowed: Array = BackgroundMedia.IMAGE_EXTENSIONS + BackgroundMedia.VIDEO_EXTENSIONS if selected.kind == "background" else RuntimeAssets.AUDIO_EXTENSIONS if selected.kind == "audio" else BackgroundMedia.IMAGE_EXTENSIONS
 	chooser.filters = PackedStringArray([",".join(allowed.map(func(extension: String) -> String: return "*." + extension)) + ";Supported media"]); chooser.popup_centered_ratio(0.8)
 

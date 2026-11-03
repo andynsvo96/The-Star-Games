@@ -8,13 +8,62 @@ var definitions_root := "res://Games"
 
 
 func scan() -> Array[Dictionary]:
+	return _scan(["asset", "Games", "ui", "web"], Array(DirAccess.get_directories_at(definitions_root)))
+
+
+# Category discovery reads only directory names and small game manifests, never
+# artwork, skin definitions, or the contents of a game's asset folders.
+func categories() -> Array[Dictionary]:
+	var result: Array[Dictionary] = [{"id": "Launcher", "label": "Launcher"}]
+	var games: Dictionary = {}
+	for directory: String in [definitions_root, RuntimeAssets.root_folder().path_join("Games")]:
+		for id: String in DirAccess.get_directories_at(directory):
+			if not ThemePacks.valid_id(id) or _is_link(directory.path_join(id)):
+				continue
+			var manifest := directory.path_join(id).path_join("game.json")
+			if not FileAccess.file_exists(manifest):
+				continue
+			var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(manifest))
+			if parsed is Dictionary:
+				var label := str(parsed.get("title", id.capitalize())).strip_edges()
+				games["Games/" + id] = label if not label.is_empty() else id.capitalize()
+	var ids := games.keys()
+	ids.sort_custom(func(a: String, b: String) -> bool:
+		var order := str(games[a]).naturalnocasecmp_to(str(games[b]))
+		return a.naturalnocasecmp_to(b) < 0 if order == 0 else order < 0
+	)
+	var labels: Dictionary = {}
+	for label: String in games.values(): labels[label] = int(labels.get(label, 0)) + 1
+	for id: String in ids:
+		var label := str(games[id])
+		if int(labels[label]) > 1: label += " (%s)" % id.trim_prefix("Games/")
+		result.append({"id": id, "label": label})
+	return result
+
+
+func scan_category(category: String) -> Array[Dictionary]:
+	if category == "Launcher":
+		var excluded: Array[String] = []
+		for game in categories():
+			if str(game.id).begins_with("Games/"):
+				excluded.append("asset/" + str(game.id).trim_prefix("Games/"))
+		return _scan(["asset", "ui", "web"], [], category, excluded)
+	if category.begins_with("Games/") and ThemePacks.valid_id(category.trim_prefix("Games/")):
+		var id := category.trim_prefix("Games/")
+		return _scan([category, "asset/" + id], [id], category)
+	entries.clear()
+	background_stems.clear()
+	return entries
+
+
+func _scan(bases: Array, game_ids: Array, category := "", excluded: Array[String] = []) -> Array[Dictionary]:
 	entries.clear()
 	background_stems.clear()
 	var paths: Dictionary = {}
-	for base in ["asset", "Games", "ui", "web"]:
-		_collect("res://" + base, base, paths)
+	for base: String in bases:
+		_collect("res://" + base, base, paths, excluded)
 		if RuntimeAssets.root_folder().simplify_path() != ProjectSettings.globalize_path("res://").trim_suffix("/").simplify_path():
-			_collect(RuntimeAssets.root_folder().path_join(base), base, paths)
+			_collect(RuntimeAssets.root_folder().path_join(base), base, paths, excluded)
 	for relative: String in paths:
 		if relative.ends_with("/game.json"):
 			var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(str(paths[relative])))
@@ -24,7 +73,7 @@ func scan() -> Array[Dictionary]:
 					background_stems.append(stem)
 	var skin_slots: Dictionary = {}
 	var skin_backgrounds: Dictionary = {}
-	for id in DirAccess.get_directories_at(definitions_root):
+	for id: String in game_ids:
 		if FileAccess.file_exists(definitions_root.path_join(id).path_join("theme-slots.json")) and not id.begins_with("_"):
 			for slot in ThemePacks.new(id, definitions_root).slots:
 				var skin := {"game_id": id, "slot_id": slot.id, "protected": true}
@@ -36,6 +85,17 @@ func scan() -> Array[Dictionary]:
 						skin_backgrounds[str(slot.path).get_basename()] = skin
 					if not background_stems.has(str(slot.path).get_basename()):
 						background_stems.append(str(slot.path).get_basename())
+				# A variant can use declared shared artwork without scanning the
+				# rest of the source game's library.
+				if not category.is_empty() and not str(slot.path).begins_with(category + "/"):
+					var candidates: Array = [slot.path]
+					if slot.kind == "background":
+						for extension: String in BackgroundMedia.IMAGE_EXTENSIONS + BackgroundMedia.VIDEO_EXTENSIONS:
+							candidates.append(str(slot.path).get_basename() + "." + extension)
+					for candidate: String in candidates:
+						var source := RuntimeAssets.root_folder().path_join(candidate)
+						if not FileAccess.file_exists(source): source = "res://" + candidate
+						if FileAccess.file_exists(source): paths[candidate] = source
 	var sorted := paths.keys()
 	sorted.sort()
 	for relative: String in sorted:
@@ -45,6 +105,7 @@ func scan() -> Array[Dictionary]:
 		var source := RuntimeAssets.source("res://" + relative)
 		var music := relative.begins_with("asset/lobby_songs/") or relative.begins_with("asset/music/")
 		var entry := {"path": relative, "background": background or relative.begins_with("asset/splash_background/"), "source": source, "kind": "audio" if music else kind(source), "skin": "Default"}
+		if not category.is_empty(): entry["category"] = category
 		entry.merge(skin_slots.get(relative, skin_backgrounds.get(relative.get_basename(), {})), true)
 		# Content-addressed skin media is visible too, but must remain immutable.
 		var parts := relative.split("/")
@@ -54,8 +115,8 @@ func scan() -> Array[Dictionary]:
 	return entries
 
 
-func _collect(directory: String, relative: String, paths: Dictionary) -> void:
-	if not DirAccess.dir_exists_absolute(directory):
+func _collect(directory: String, relative: String, paths: Dictionary, excluded: Array[String] = []) -> void:
+	if relative in excluded or _is_link(directory) or not DirAccess.dir_exists_absolute(directory):
 		return
 	var names := Array(DirAccess.get_files_at(directory))
 	if directory.begins_with("res://"):
@@ -66,8 +127,8 @@ func _collect(directory: String, relative: String, paths: Dictionary) -> void:
 		if name == "game.json" or RuntimeAssets.safe_media_path(relative.path_join(name)):
 			paths[relative.path_join(name)] = directory.path_join(name)
 	for name in DirAccess.get_directories_at(directory):
-		if not name.begins_with(".") and name != "_Template" and not _is_link(directory.path_join(name)):
-			_collect(directory.path_join(name), relative.path_join(name), paths)
+		if not name.begins_with(".") and name != "_Template":
+			_collect(directory.path_join(name), relative.path_join(name), paths, excluded)
 
 
 static func kind(path: String) -> String:

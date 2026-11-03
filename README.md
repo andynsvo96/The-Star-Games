@@ -82,7 +82,12 @@ top-right **Skin** dropdown, beside music, applies saved skins immediately on th
 host and connected phones, preserving the current battle. Monopoly's existing
 in-game skin selectors remain available. Skin choices are saved per game.
 
-The asset browser lists game artwork and sounds alongside launcher media. Each
+The asset browser opens with **Launcher** and each detected game collapsed.
+Expanding a category scans only that library in the background, then adds its
+asset rows progressively. Older `asset/<game-id>/` source folders also appear
+under their detected game. Reopening a loaded category reuses its inventory for
+that editor session. **Search loaded assets** filters those loaded libraries;
+**Expand All** explicitly loads every category. Each
 asset has a **Skin** section, with existing source artwork shown as **Skins:
 Default**. Protected game artwork opens its matching slot through **Edit skins
 in Themes**. The **Themes** button is at the right of the editor header. Themes

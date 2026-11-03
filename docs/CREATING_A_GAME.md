@@ -1942,7 +1942,14 @@ The main launcher's desktop Asset Editor previews and replaces module media.
 It lists theme-managed source media too, with a per-asset Skin section showing
 `Skins: Default`. Protected slots open directly in Themes for skin duplication
 and editing; they are never replaced by synthetic "Theme packs" tree entries.
-Skin validation runs off the UI thread, and browser previews load progressively.
+The browser starts with Launcher and every detected game collapsed. Opening a
+category scans only its library off the UI thread and adds rows progressively;
+declared shared skin slots are included without scanning another game's library.
+Legacy `asset/<game-id>/` source media belongs to that game's category too.
+Loaded inventories are cached for the editor session. Search covers loaded
+categories; Expand All explicitly loads them all. Saving a replacement updates
+that asset without rescanning, and returning from Themes refreshes only loaded,
+open game categories. Skin validation and browser previews also load progressively.
 Use `RuntimeAssets.texture("res://Games/<id>/art/piece.svg")` and
 `RuntimeAssets.audio("res://Games/<id>/audio/move.wav")` for fixed-path host
 artwork and sounds. These shared helpers retain normal import settings for
