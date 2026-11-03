@@ -558,6 +558,18 @@ results clear it; reduced motion and reconnect restore a static authoritative cu
 Fleet monitor rows have right-aligned names, no colored circle indicators, and
 matching ship/name dimming for public wrecks. Smaller native monitors leave room
 for larger fitted boards. Native board/monitor headings use literal captain names.
+Both native boards use the same neutral-grey casing. Host and phone titles opt
+into the existing prominent sizing. Native/browser shots reuse the loaded
+cannonball artwork at its loaded size, originating at the visible cannon muzzle.
+Two visible boards aim inward and carry one foreground flight between shooter
+and target; a single-board view launches from its visible cannon. Live geometry
+keeps launches/targets attached after resize. Flight still lasts 0.48 seconds,
+with the full 1.25-second authoritative/local movement locks retained.
+Native shader water and browser inner-water highlights animate independently of
+boards and click targets. Ambient motion never locks gameplay; pause/disconnect,
+page hiding and reduced motion freeze it, and exit cancels it. Reduced motion
+skips flight while retaining static impact/turn feedback. Secret ships never
+enter public movement or water artwork.
 The shared fitter reserves the entire footer, and a stable replay slot keeps the
 board fitted through battle/results without page scrolling. Direct short landscape views use
 the existing SDK side-control relocation. Settings, Session & History and
