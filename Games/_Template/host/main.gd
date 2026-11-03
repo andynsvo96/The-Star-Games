@@ -692,6 +692,17 @@ func _ready() -> void:
 func initialize_session(context: GameSessionContext) -> void:
 	super.initialize_session(context)
 	screen.background_media.reduced_motion = context.reduced_motion
+	# Optional live cosmetic dropdown, next to music. Reload retained textures and
+	# audio in this callback, then publish ordinary public/private snapshots.
+	# Keep rules, clocks, input targets and running effects intact.
+	var skin_example := screen.add_skin_selector(self)
+	skin_example.get_parent().hide()
+	skin_example.skin_changed.connect(func() -> void:
+		screen.background_media.reload_assets()
+		broadcast_state({"status": screen.status.text})
+	)
+	# add_title_art(texture, 160, true, false, true) top-aligns its visual while
+	# retaining its measured heading slot and the existing centered board fit.
 	var saved := load_game_settings({"mode": 0, "optional_rule": false, "round_minutes": 10.0})
 	example_choice.select(saved.mode if saved.mode in [0, 1] else 0)
 	example_toggle.set_pressed_no_signal(saved.optional_rule)

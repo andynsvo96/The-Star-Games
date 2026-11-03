@@ -956,6 +956,10 @@ bytes. The presets also include supported image/video/audio extensions.
 Four in a Row also bundles its generated room and transparent title PNGs in the
 export filters. `GameScreen.add_title_art(texture, height)` is an optional
 illustrated heading with the existing Back to Games button kept at top left.
+It returns the `TextureRect` so live skins can replace its texture. The optional
+fifth argument, `top_aligned=true`, places the visual near the screen top while
+retaining its measured heading slot and the board's existing fit and position.
+The fourth argument remains `compact`. The template documents this opt-in.
 Use it instead of `add_wordmark`. Browser pages use `img.game-title-art` alongside
 an accessible `h1.sr-only`. For a larger title, pass `true` as the third argument
 of `add_title_art(texture, height, prominent)` and add `.game-title-prominent` on
@@ -2470,6 +2474,21 @@ and saving never alter a running session. The launcher pins that selection befor
 instantiating the host scene, including member-variable artwork loads. Missing or
 invalid packs fall back to Default. Returning clears that game's mappings,
 including declared shared media. No new module-specific selector is required.
+
+For immediate cosmetic changes, call `screen.add_skin_selector(self)` after
+`super.initialize_session(context)`. The shared `GameSkinSelector` docks beside
+music, lists validated saved packs with protected Default first, and saves/pins
+an accepted selection without restarting the session. Connect its `skin_changed`
+signal to reload retained title, board, piece and audio resources through their
+canonical paths, reload the shared background, then publish the normal filtered
+snapshots. Preserve rules, revisions, timers, preferences, held controls and
+running motion; leave the selector available through setup, play and results.
+Invalid selections and failed preference saves retain the current skin. Opening
+the dropdown refreshes available packs. Hidden template code demonstrates this
+callback; Battleship uses it live. Existing staged selectors keep their policy.
+Controllers must update existing image and CSS artwork URLs with the new public
+theme revision, including cached canvas images, without replacing input nodes or
+replaying effects. Refresh/reconnection restores the same host-selected skin.
 
 An existing in-game selector may use BaseGame's settings API for its accepted
 theme ID, then pin on initialization or a committed new game/replay;

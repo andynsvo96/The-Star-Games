@@ -1446,7 +1446,8 @@ func set_score_card_seat(card: Dictionary, seat: int, identity: Color) -> void:
 
 
 # Optional illustrated heading keeps shared navigation above the artwork.
-func add_title_art(texture: Texture2D, height := 120.0, prominent := false, compact := false) -> void:
+# A top-aligned visual retains its measured slot, preserving board composition.
+func add_title_art(texture: Texture2D, height := 120.0, prominent := false, compact := false, top_aligned := false) -> TextureRect:
 	_compact_heading = compact
 	if compact:
 		# RichTextLabel otherwise measures a new message at its previous width for
@@ -1467,23 +1468,61 @@ func add_title_art(texture: Texture2D, height := 120.0, prominent := false, comp
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	content.add_child(art)
-	content.move_child(art, title_label.get_index())
+	var slot: Control = art
+	if top_aligned:
+		slot = Control.new()
+		slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		art.custom_minimum_size = Vector2.ZERO
+		get_parent().add_child(art)
+		var fit := func() -> void:
+			var top := _board_top_margin()
+			var bottom := slot.global_position.y + slot.size.y - get_parent_control().global_position.y
+			art.position = Vector2(content.global_position.x - get_parent_control().global_position.x, top)
+			art.size = Vector2(content.size.x, minf(slot.custom_minimum_size.y, maxf(0, bottom - top)))
+		_floating_details_layouts.append(fit)
+	content.add_child(slot)
+	content.move_child(slot, title_label.get_index())
 	status.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	var adapt := func() -> void:
 		if not compact:
 			status.custom_minimum_size.x = minf(600, maxf(200, available_size().x - 64))
-		art.custom_minimum_size.y = minf(height, maxf(36.0 if compact else 64.0, available_size().y * (0.24 if prominent else 0.10 if compact else 0.14)))
+		slot.custom_minimum_size.y = minf(height, maxf(36.0 if compact else 64.0, available_size().y * (0.24 if prominent else 0.10 if compact else 0.14)))
 		if compact and get_theme_constant("card_table", "GamePalette") == 1:
 			var short := available_size().y < 500 and available_size().x >= 700
-			art.custom_minimum_size.y = 26 if short else minf(height, 48)
+			slot.custom_minimum_size.y = 26 if short else minf(height, 48)
 			_status_plaque_height = 34 if short else 56 if available_size().x < 550 else 44
-		if prominent and texture != null:
-			var aspect := float(texture.get_width()) / maxf(1, texture.get_height())
-			art.custom_minimum_size.y = minf(art.custom_minimum_size.y, maxf(0, available_size().x - 48) / aspect)
+		if prominent and art.texture != null:
+			var aspect := float(art.texture.get_width()) / maxf(1, art.texture.get_height())
+			slot.custom_minimum_size.y = minf(slot.custom_minimum_size.y, maxf(0, available_size().x - 48) / aspect)
 	resized.connect(adapt)
 	get_parent_control().resized.connect(adapt)
 	adapt.call_deferred()
+	_floating_details_layouts.append(adapt)
+	return art
+
+
+# Host-owned cosmetic selector beside the launcher music trigger.
+func add_skin_selector(host: BaseGame, packs: ThemePacks = null) -> GameSkinSelector:
+	var choice := GameSkinSelector.new()
+	choice.configure(host, packs)
+	var row := HBoxContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.theme = theme
+	row.add_theme_constant_override("separation", 8)
+	get_parent().add_child(row)
+	var caption := Label.new()
+	caption.text = "SKIN"
+	caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(caption)
+	row.add_child(choice)
+	var fit := func() -> void:
+		caption.visible = available_size().x >= 700
+		choice.custom_minimum_size = Vector2(minf(160, maxf(100, available_size().x - back_button.get_rect().end.x - 84)), 44)
+		row.size = row.get_combined_minimum_size()
+		row.position = Vector2(available_size().x - 60 - row.size.x, 8)
+	_floating_details_layouts.append(fit)
+	fit.call_deferred()
+	return choice
 
 
 func reserve_status_plaque(width: float, height: float) -> void:

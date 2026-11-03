@@ -8,6 +8,11 @@ var definitions := fixture.path_join("definitions")
 var runtime := fixture.path_join("runtime")
 var server: LanServer
 
+class FailingSettings extends GameSettingsStore:
+	func save_settings(_id: String, _values: Dictionary) -> bool:
+		last_error = "Expected fixture save failure"
+		return false
+
 
 func _init() -> void: call_deferred("_run")
 
@@ -114,6 +119,30 @@ func _run() -> void:
 	var metadata: Dictionary = await request("/game/skin-fixture/background.json")
 	var background: Variant = JSON.parse_string(metadata.body.get_string_from_utf8())
 	check(background is Dictionary and str(background.get("image", "")).contains("/themes/blue-skin/"), "Shared background metadata resolves the pinned skin")
+	var screen := GameScreen.new()
+	app.active_game.add_child(screen); screen.configure("Skin fixture")
+	screen.use_playful_style("res://Games/skin-fixture/art/background", "admiral")
+	var title := screen.add_title_art(app.active_game.piece, 80, true, false, true)
+	var selector := screen.add_skin_selector(app.active_game, manager)
+	var changes: Array = []
+	selector.skin_changed.connect(func() -> void:
+		changes.append(ThemePacks.snapshot("skin-fixture").id)
+		app.active_game.piece = RuntimeAssets.texture("res://Games/skin-fixture/art/piece.svg")
+		title.texture = app.active_game.piece
+		screen.background_media.reload_assets()
+		app.active_game.send_state("phone", payload)
+	)
+	check(selector.select_skin("default") and app.active_game.piece.get_width() == 24 and delivered[-1].theme.id == "default" and delivered[-1].hand == payload.hand, "A live selection reloads canonical art and private metadata without changing the private state")
+	response = await request("/game/skin-fixture/art/piece.svg?theme=default")
+	check(response.status == 200 and response.headers.contains("image/svg+xml"), "Live Default restores the original artwork through real HTTP")
+	check(selector.select_skin("blue-skin") and app.active_game.piece.get_width() == 44 and changes == ["default", "blue-skin"], "A custom skin can be reapplied without recreating the host")
+	check(selector.select_skin("blue-skin") and changes.size() == 2 and not selector.select_skin("missing-skin") and ThemePacks.snapshot("skin-fixture").id == "blue-skin", "Unchanged and invalid selections preserve the current skin and do not reload effects")
+	check(store.load_settings("skin-fixture", {"theme":"default","difficulty":0}) == {"theme":"blue-skin","difficulty":2}, "Live selection persists independently of other host preferences")
+	app.active_game.settings_store = FailingSettings.new()
+	check(not selector.select_skin("default") and ThemePacks.snapshot("skin-fixture").id == "blue-skin" and selector.text == "Blue skin" and changes.size() == 2, "A failed save retains the selected skin and running presentation")
+	app.active_game.settings_store = store
+	for frame in 8: await process_frame
+	check(selector.tooltip_text.is_empty() and selector.size.y >= 44 and title.global_position.y <= 16, "Shared skin selection and the top-aligned title keep accessible geometry")
 	server.stop_server(); app._return_from_game()
 	check(ThemePacks.snapshot("skin-fixture").is_empty() and RuntimeAssets.texture("res://Games/skin-shared/art/chip.svg").get_width() == 24, "Leaving clears both owned and shared skin mappings")
 	check(FileAccess.get_sha256(runtime.path_join("Games/skin-fixture/art/piece.svg")) == original_hash, "Custom skins never overwrite Default's original artwork")
