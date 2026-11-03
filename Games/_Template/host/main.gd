@@ -569,6 +569,7 @@ func _ready() -> void:
 	canvas_prompt_example.custom_minimum_size = Vector2(320, 240)
 	screen.content.add_child(canvas_prompt_example)
 	var canvas_prompt := screen.add_canvas_overlay(canvas_prompt_example)
+	# Overlay captions derive readable contrast from their actual shared surface.
 	canvas_prompt.set_message("Waiting for a choice")
 	canvas_prompt_example.hide()
 	var player_header_example := screen.add_phase_dialog(true,false,true)
@@ -591,6 +592,12 @@ func _ready() -> void:
 	form.compact = true
 	var form_section := form.add_section("Round options")
 	form.add_choice(form_section, "Mode", ["Practice", "Match"])
+	# Existing shared controls can live inside the same aligned settings fields.
+	# For a live skin here, configure GameSkinSelector with this BaseGame during
+	# initialize_session, then add_control(section, "Skin", skin_selector).
+	var custom_field := OptionButton.new()
+	custom_field.add_item("Default")
+	form.add_control(form_section, "Appearance", custom_field)
 	var form_timer := form.add_toggle(form_section, "Turn timer", true)
 	form.add_number(form_section, "Turn time", 0.1, 60, 0.1, 5, " min")
 	form.add_action("Apply", func() -> void: pass) # Validate and persist staged values here.

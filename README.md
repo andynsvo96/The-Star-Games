@@ -78,7 +78,8 @@ In **Asset Editor > Themes**, choose a game, duplicate its protected **Default**
 skin (called **Classic** in Monopoly Classic), and replace artwork or sounds.
 Save, then select **Use skin** to use it the next time that game opens. Default
 keeps the game's current appearance; missing custom slots inherit it. Battleship's
-top-right **Skin** dropdown, beside music, applies saved skins immediately on the
+top-right **Settings** button beside music contains a live **Skin** selector and
+optional ship powers, all off by default. Skin changes apply immediately on the
 host and connected phones, preserving the current battle. Monopoly's existing
 in-game skin selectors remain available. Skin choices are saved per game.
 

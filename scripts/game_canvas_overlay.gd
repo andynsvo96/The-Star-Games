@@ -37,7 +37,9 @@ func _init() -> void:
 func _fit() -> void:
 	panel.custom_minimum_size.x = maxf(80, minf(340, size.x - 40))
 	var blue := get_theme_constant("blue_studio", "GamePalette") == 1
-	panel.add_theme_stylebox_override("panel", GameLook.modern_studio_sheet(blue))
+	var surface := GameLook.modern_studio_sheet(blue)
+	panel.add_theme_stylebox_override("panel", surface)
+	heading.add_theme_color_override("font_color", GameLook.readable_text_color(get_theme_color("font_color", "Label"), surface.bg_color))
 
 
 func set_message(text: String) -> void:

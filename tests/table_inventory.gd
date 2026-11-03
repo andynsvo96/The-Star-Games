@@ -169,12 +169,21 @@ func _run() -> void:
 	var entry: RichTextLabel = activity.entries.get_child(0)
 	check(not entry.bbcode_enabled and entry.accessibility_name == "Name <literal> paid $5 → Other" and entry.get_parsed_text().contains("Name <literal>"),"JSON-safe activity icons preserve literal names and complete accessible transfers")
 	activity.queue_free()
+	for presentation in ["admiral", "studio-blue", "studio-modern"]:
+		var overlay := GameCanvasOverlay.new(); overlay.theme = GameLook.make_theme(presentation); overlay.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT); root.add_child(overlay); overlay.size = Vector2(320,240); overlay.set_message("Disconnected")
+		for frame in 4: await process_frame
+		var overlay_surface: StyleBoxFlat = overlay.panel.get_theme_stylebox("panel")
+		check(GameLook.text_contrast(overlay.heading.get_theme_color("font_color"), overlay_surface.bg_color) >= 4.5, "Canvas overlay captions stay readable on their actual surface in " + presentation)
+		check(overlay.heading.text == "Disconnected" and overlay.get_global_rect().encloses(overlay.panel.get_global_rect()), "Canvas overlay fits its existing playfield in " + presentation)
+		overlay.queue_free(); await process_frame
 	var form_holder := Control.new(); root.add_child(form_holder); form_holder.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var form_screen := GameScreen.new(); form_holder.add_child(form_screen); form_screen.configure("Shared settings"); form_screen.use_playful_style("", "modern-table")
 	var settings_body: VBoxContainer = form_screen.add_corner_details(["SETTINGS"],Callable(),true,false,false,true,true)[0]
 	var settings_form := form_screen.add_settings_form(settings_body)
 	settings_form.compact = true
 	var appearance := settings_form.add_section("Appearance"); var setting_theme := settings_form.add_choice(appearance,"Theme",["Default","A long custom theme label that must fit"])
+	var existing_control := OptionButton.new(); existing_control.add_item("Original control")
+	check(settings_form.add_control(appearance,"Existing selector",existing_control) == existing_control and settings_form.is_ancestor_of(existing_control), "Grouped settings mount an existing shared control without replacing it")
 	var opponents := settings_form.add_section("Opponents"); var setting_difficulty := settings_form.add_choice(opponents,"Difficulty",["Easy","Medium","Hard"])
 	var timing := settings_form.add_section("Timing"); var setting_timer := settings_form.add_toggle(timing,"Turn timer",true); var setting_time := settings_form.add_number(timing,"Turn time",.1,60,.1,5," min")
 	check(settings_form.get_theme_constant("separation") == 8 and timing.get_theme_constant("separation") == 4, "Compact settings use closer shared spacing after mounting")
@@ -192,6 +201,7 @@ func _run() -> void:
 		check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(sheet.get_global_rect()) and sheet.get_global_rect().encloses(apply_settings.get_global_rect()) and sheet.get_global_rect().encloses(close_settings.get_global_rect()),"Settings keep heading, Close and Apply inside the viewport at %s" % dimensions)
 		check(absf(setting_theme.global_position.x-setting_difficulty.global_position.x)<1 and absf(setting_theme.size.x-setting_difficulty.size.x)<1 and absf(setting_time.global_position.x-setting_theme.global_position.x)<1,"Dropdowns and numeric fields share one aligned column")
 		check(close_settings.size.y>=44 and apply_settings.size.y>=44 and setting_timer.size.y>=44,"Settings retain accessible control sizes")
+		check(existing_control.size.y>=44 and absf(existing_control.size.x-setting_theme.size.x)<1 and absf(existing_control.global_position.x-setting_theme.global_position.x)<1 and existing_control.accessibility_name == "Existing selector", "Custom settings controls share field geometry and accessible labels at %s" % dimensions)
 		if DisplayServer.get_name() != "headless":
 			DirAccess.make_dir_recursive_absolute("res://.test_data/table-inventory/"); await RenderingServer.frame_post_draw; root.get_texture().get_image().save_png("res://.test_data/table-inventory/settings-%dx%d.png" % [dimensions.x,dimensions.y])
 		close_settings.grab_focus(); setting_time.get_line_edit().grab_focus(); for unused in 4: await process_frame

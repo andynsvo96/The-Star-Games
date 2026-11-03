@@ -66,6 +66,11 @@ func add_number(group: VBoxContainer, caption: String, minimum: float, maximum: 
 	return input
 
 
+func add_control(group: VBoxContainer, caption: String, control: Control) -> Control:
+	_add_field(group, caption, control)
+	return control
+
+
 func add_action(caption: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.text = caption

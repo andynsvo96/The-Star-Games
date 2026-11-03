@@ -310,8 +310,9 @@ sender and build the private view on the host; never broadcast all secret hands,
 ships, profile IDs or reconnect tokens and ask a controller to hide them.
 
 Battleship keeps rules in `host/rules.gd`. `view_for(seat)` exports the owner's
-ships, public shots and sunk wrecks; `view_for(0)` is the shared host view. No
-unsunk opposing ship is sent to that player. Fleets reveal only after the battle
+ships, public shots and sunk wrecks; `view_for(0)` is the shared host view. Its
+optional Radar reveals one tile only to the activating captain; the opposing
+ship's identity and remaining cells stay private. Fleets reveal only after the battle
 ends. Refresh and reconnect use the same per-player view and revision validation.
 
 ### Quoridor example
@@ -550,7 +551,9 @@ inside the measured `.game-board-controls`, directly below the board and above
 deployment/replay actions. Only the player's monitor appears during setup.
 Connected phones omit the connection caption. Both screens omit visible routine
 status captions below the logo, including setup, ready-waiting, hit/miss and turn
-text. Explicit reconnect/placement feedback uses the shared reserved board footer;
+text. Placement feedback uses the shared reserved board footer. Disconnects dim
+only the missing captain's board through the shared canvas overlay, labelled
+`Disconnected`, without a footer pause caption;
 phones retain turn status for screen readers. A loaded cannonball marks the active
 fleet on the public host and the owner's turn in the phone's visible single-board
 view. Both host and local movement locks, awaiting input, pause/disconnect and
@@ -581,8 +584,9 @@ skips flight while retaining static impact/turn feedback. Secret ships never
 enter public movement or water artwork.
 The shared fitter reserves the entire footer, and a stable replay slot keeps the
 board fitted through battle/results without page scrolling. Direct short landscape views use
-the existing SDK side-control relocation. Settings, Session & History and
-How to Play buttons are omitted on host and controllers; authoritative session
+the existing SDK side-control relocation. Host Settings docks beside music and
+contains its live Skin selector and staged optional power rules. Session & History
+and standalone How to Play buttons are omitted; authoritative session
 wins and private reconnect snapshots are retained. The 424×456 casing encloses the square grid and its coordinates.
 Press and hold for 450 ms rotates the preview without placing an unplaced ship;
 a separate tap deploys it. Press a placed ship and drag to pick it up with an
@@ -595,6 +599,18 @@ action from its own fleet. Cancelled touches, scrolling, reconnection and locked
 cannot trigger a delayed placement. Invalid rotations preserve the ship.
 Keyboard R is available without a direction toggle. Recorded CC0 cannon, water
 and steel effects use the shared Effects bus; raw archives remain in `asset/`.
+Invalid rotations leave the fleet and footer unchanged. Five module-owned
+top-down ship SVGs distinguish a flight-deck Carrier, gun-heavy Battleship,
+Cruiser, rounded Submarine and compact Destroyer on host and phones. Separate
+skin slots preserve their identities. Optional ship powers default off; accepted
+setup preferences select points per miss (default) or one use of each active power
+per battle. Radar and Repair retain the cannon turn; Barrage and Mines replace it.
+The rules validate costs, afloat ship dependencies and targets before spending.
+Three consecutive barrage effects retain one authoritative/local input lock.
+Shield contacts use a grey shield rather than a miss, and repair effects contain
+only previously visible hit tiles. Radar contacts remain in per-player snapshots.
+Settings pauses input, AI, shot timelines and effects. The module README defines
+the cooldown, shield, repair and mine policies and the local power checks.
 
 Run rendered `tests/board_controls_update.gd` for the local board-game popup,
 ship-reselection, hold-cancellation and delayed-AI regressions across host sizes.
@@ -734,6 +750,13 @@ spacing with unchanged 44px controls. The template demonstrates this option.
 Restore values without signals as above; after restoring a toggle, call
 `GameLook.settings_toggle(button, enabled)` to refresh its explicit On/Off pill.
 Do not save staged edits or start a new game when opening or closing the form.
+`GameSettingsForm.add_control(section, caption, existing_control)` mounts an
+existing shared control in the same aligned, accessible 44px field layout while
+preserving its node, callbacks and behavior. Configure a `GameSkinSelector` with
+the BaseGame during `initialize_session`, then mount it as a Skin field instead
+of adding a corner selector. Its persistence, pack refresh and `skin_changed`
+callback still apply. The hidden template shows custom-field mounting;
+Battleship uses it for its live skin choice in Settings.
 `tests/table_inventory.gd` checks this presentation in desktop, portrait and short
 landscape layouts, including silent restoration and reachable actions.
 
@@ -2492,7 +2515,7 @@ snapshots. Preserve rules, revisions, timers, preferences, held controls and
 running motion; leave the selector available through setup, play and results.
 Invalid selections and failed preference saves retain the current skin. Opening
 the dropdown refreshes available packs. Hidden template code demonstrates this
-callback; Battleship uses it live. Existing staged selectors keep their policy.
+callback; Battleship mounts the same selector inside Settings. Existing staged selectors keep their policy.
 Controllers must update existing image and CSS artwork URLs with the new public
 theme revision, including cached canvas images, without replacing input nodes or
 replaying effects. Refresh/reconnection restores the same host-selected skin.
@@ -2965,6 +2988,8 @@ Both variations have hidden template examples; other palettes keep their default
 `set_message(literal_text)`, `heading` and `content`. It centers a compact prompt
 over dimmed paper without changing the board's size. Empty text hides it; modules
 own pause/input rules and may put authorized choice controls inside `content`.
+Its heading derives readable text contrast from the actual shared panel surface,
+including when an overlay is used with a dark game palette.
 Browser boards use `game-canvas-overlay` containing `game-canvas-message game-paper`
 and a literal heading/choices. Keep the overlay inside the positioned board and
 preserve choice button nodes on clock packets. Hide private choices when the
