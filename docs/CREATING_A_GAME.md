@@ -311,7 +311,7 @@ ships, profile IDs or reconnect tokens and ask a controller to hide them.
 
 Battleship keeps rules in `host/rules.gd`. `view_for(seat)` exports the owner's
 ships, public shots and sunk wrecks; `view_for(0)` is the shared host view. Its
-optional Radar reveals one tile only to the activating captain; the opposing
+optional Sonar reveals one tile only to the activating captain; the opposing
 ship's identity and remaining cells stay private. Fleets reveal only after the battle
 ends. Refresh and reconnect use the same per-player view and revision validation.
 
@@ -562,7 +562,7 @@ Fleet monitor rows have right-aligned names, no colored circle indicators, and
 matching ship/name dimming for public wrecks. Smaller native monitors leave room
 for larger fitted boards. Native board/monitor headings use literal captain names.
 Both native boards use the same neutral-grey casing. Host and phone titles opt
-into the existing prominent sizing. Native/browser shots reuse the loaded
+into the existing prominent sizing. Ordinary native/browser cannon shots reuse the loaded
 cannonball artwork at its loaded size, originating at the visible cannon muzzle.
 Two visible boards aim inward and carry one foreground flight between shooter
 and target; a single-board view launches from its visible cannon. Live geometry
@@ -603,14 +603,23 @@ Invalid rotations leave the fleet and footer unchanged. Five module-owned
 top-down ship SVGs distinguish a flight-deck Carrier, gun-heavy Battleship,
 Cruiser, rounded Submarine and compact Destroyer on host and phones. Separate
 skin slots preserve their identities. Optional ship powers default off; accepted
-setup preferences select points per miss (default) or one use of each active power
-per battle. Radar and Repair retain the cannon turn; Barrage and Mines replace it.
-The rules validate costs, afloat ship dependencies and targets before spending.
-Three consecutive barrage effects retain one authoritative/local input lock.
-Shield contacts use a grey shield rather than a miss, and repair effects contain
-only previously visible hit tiles. Radar contacts remain in per-player snapshots.
+setup preferences select points per ordinary cannon miss (default) or one use of
+each power per battle. The bank caps at five; special attacks earn no points, and
+every mode allows only one ability per turn. Submarine Sonar (3) detects the enemy
+Submarine first, then other ships after it sinks. Its private tile and existing
+sink-then-three-misses recharge remain authoritative. Destroyer Torpedo (4)
+travels along a chosen row/column from either edge, skips known damage and stops
+at the first unhit segment, revealing only travelled water and that contact.
+Cruiser Missile Salvo (3) arms two separately aimed missile attacks instead of
+one cannon shot. Carrier Airstrike (5) bombs three distinct host-chosen untried
+tiles with plane/bomb artwork, retaining the normal cannon attack. Battleship
+Barrage (4) keeps its three-shot line. Multi-shot effects retain the complete
+authoritative/local movement lock; snapshots restore remaining missiles and the
+used-ability latch after refresh. The rules validate costs, surviving owning
+ships and complete targets before spending, and public effects expose no hidden
+ship identities. Sonar contacts remain in per-player snapshots.
 Settings pauses input, AI, shot timelines and effects. The module README defines
-the cooldown, shield, repair and mine policies and the local power checks.
+the cooldown, torpedo, missile and random-bomb policies and the local power checks.
 
 Run rendered `tests/board_controls_update.gd` for the local board-game popup,
 ship-reselection, hold-cancellation and delayed-AI regressions across host sizes.
