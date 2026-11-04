@@ -602,12 +602,14 @@ and steel effects use the shared Effects bus; raw archives remain in `asset/`.
 Invalid rotations leave the fleet and footer unchanged. Five module-owned
 top-down ship SVGs distinguish a flight-deck Carrier, gun-heavy Battleship,
 Cruiser, rounded Submarine and compact Destroyer on host and phones. Separate
-skin slots preserve their identities. Optional ship powers default off; accepted
-setup preferences select points per ordinary cannon miss (default) or one use of
-each power per battle. The bank caps at five; special attacks earn no points, and
-every mode allows only one ability per turn. Submarine Sonar (3) detects the enemy
-Submarine first, then other ships after it sinks. Its private tile and existing
-sink-then-three-misses recharge remain authoritative. Destroyer Torpedo (4)
+skin slots preserve their identities. One saved **Special Powers** house-rule
+toggle defaults off and applies immediately during fleet setup; individual power
+switches and payment modes are omitted. Each missed attack, including a special
+attack, earns one point, capped at five. Every power costs points and can be used
+once per battle, with one activation per turn. A sunk owning ship forfeits its
+unused power. Submarine Sonar (3) detects the enemy Submarine first, or another
+afloat ship when it is already sunk. Its single private contact remains
+authoritative. Destroyer Torpedo (4)
 travels along a chosen row/column from either edge, skips known damage and stops
 at the first unhit segment, revealing only travelled water and that contact.
 Cruiser Missile Salvo (3) arms two separately aimed missile attacks instead of
@@ -619,8 +621,15 @@ authoritative/local movement lock; snapshots restore remaining missiles and the
 used-ability latch after refresh. The rules validate costs, surviving owning
 ships and complete targets before spending, and public effects expose no hidden
 ship identities. Sonar contacts remain in per-player snapshots.
-Settings pauses input, AI, shot timelines and effects. The module README defines
-the cooldown, torpedo, missile and random-bomb policies and the local power checks.
+Each fleet has a Special Powers panel below its status. Matching ship icons sit
+left, power names right, tiny circles beneath icons show costs, and five bank
+circles fill as points accrue. Affordable unused powers light up; used or lost
+powers dim and cannot activate. Players click their own power directly. The
+circular question button opens the shared scrolling guide, with one static SVG
+example per power; examples contain no live fleet information. Short layouts
+keep supplementary panels reachable by scrolling. Settings and the host guide
+pause input, AI, shot timelines and effects. The module README defines the
+merged limits, torpedo, missile and random-bomb policies and local power checks.
 
 Run rendered `tests/board_controls_update.gd` for the local board-game popup,
 ship-reselection, hold-cancellation and delayed-AI regressions across host sizes.
