@@ -613,23 +613,36 @@ authoritative. Destroyer Torpedo (4)
 travels along a chosen row/column from either edge, skips known damage and stops
 at the first unhit segment, revealing only travelled water and that contact.
 Cruiser Missile Salvo (3) arms two separately aimed missile attacks instead of
-one cannon shot. Carrier Airstrike (5) bombs three distinct host-chosen untried
-tiles with plane/bomb artwork, replacing the normal cannon attack. The next
-captain can act after all three passes settle. Battleship
-Barrage (4) keeps its three-shot line. Multi-shot effects retain the complete
-authoritative/local movement lock; snapshots restore remaining missiles and the
-used-ability latch after refresh. The rules validate costs, surviving owning
-ships and complete targets before spending, and public effects expose no hidden
+one cannon shot, accepting the second tap while the first missile is still flying.
+Its host-issued activation ticket permits that specific in-turn follow-up across
+fire revisions; receipts and the phone's pending-target budget reject extra taps.
+Carrier Airstrike (5) bombs three distinct host-chosen untried tiles with
+plane/bomb artwork, replacing the normal cannon attack. The next
+captain can act after all three passes settle. Battleship's **Barrage** (4) uses
+placement-style hold-to-rotate and tap-to-fire controls, launching its three line
+shots 0.3 seconds apart. Independent overlapping flights and impacts share an
+authoritative timeline. Opponent input retains the complete movement lock;
+snapshots restore remaining missiles and the used-ability latch after refresh.
+The rules validate costs, ship survival and complete targets before spending,
+and public effects expose no hidden
 ship identities. Sonar contacts remain in per-player snapshots.
 Each fleet has a Special Powers panel below its status. Matching ship icons sit
 left, power names right, tiny circles beneath icons show costs, and five bank
-circles fill as points accrue. Affordable unused powers light up; used or lost
-powers dim and cannot activate. Players click their own power directly. The
-circular question button opens the shared scrolling guide, with one static SVG
+circles fill as points accrue; points-needed captions are omitted. Affordable
+unused powers light up; used or lost powers dim and cannot activate. Players
+click their own power directly. The circular question button opens the shared
+scrolling guide, with one static SVG
 example per power; examples contain no live fleet information. Short layouts
 keep supplementary panels reachable by scrolling. Settings and the host guide
 pause input, AI, shot timelines and effects. The module README defines the
 merged limits, torpedo, missile and random-bomb policies and local power checks.
+The Settings powers section contains only its house-rule toggle; detailed help
+stays in the fleet guide. A completed battle opens a dimmed shared results dialog with two
+responsive player cards, one gold winner crown, duration, shots, hits, misses,
+accuracy, ships sunk and ordered power history. The statistics body scrolls on
+short screens while Play Again stays in the fixed action area. Results appear
+after all impacts settle and restore on refresh without a Fleet Sunk banner.
+`tests/battleship_rapid_results.gd` covers the local timing and results contract.
 
 Run rendered `tests/board_controls_update.gd` for the local board-game popup,
 ship-reselection, hold-cancellation and delayed-AI regressions across host sizes.
