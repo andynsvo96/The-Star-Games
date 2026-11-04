@@ -619,26 +619,32 @@ fire revisions; receipts and the phone's pending-target budget reject extra taps
 Carrier Airstrike (5) bombs three distinct host-chosen untried tiles with
 plane/bomb artwork, replacing the normal cannon attack. The next
 captain can act after all three passes settle. Battleship's **Barrage** (4) uses
-placement-style hold-to-rotate and tap-to-fire controls, launching its three line
-shots 0.3 seconds apart. Independent overlapping flights and impacts share an
+placement-style hold-to-rotate and double-click/tap-to-launch controls, launching
+its three line shots 0.3 seconds apart. Independent overlapping flights and impacts share an
 authoritative timeline. Opponent input retains the complete movement lock;
 snapshots restore remaining missiles and the used-ability latch after refresh.
 The rules validate costs, ship survival and complete targets before spending,
 and public effects expose no hidden
 ship identities. Sonar contacts remain in per-player snapshots.
-Each fleet has a Special Powers panel below its status. Matching ship icons sit
-left, power names right, tiny circles beneath icons show costs, and five bank
-circles fill as points accrue; points-needed captions are omitted. Affordable
-unused powers light up; used or lost powers dim and cannot activate. Players
-click their own power directly. The circular question button opens the shared
-scrolling guide, with one static SVG
-example per power; examples contain no live fleet information. Short layouts
-keep supplementary panels reachable by scrolling. Settings and the host guide
+Each fleet has a Special Powers panel below its status. Host ship icons sit left
+and power names right; phones use five compact square name tiles in one row.
+Each power's tiny cost circles fill as points accrue, without a separate bank
+meter. Used powers clear their progress; lost powers retain host-recorded
+progress at sinking across reconnects. Affordable unused powers light up;
+used/lost powers dim and cannot activate. Players click their own power directly.
+Torpedo also uses hold-to-rotate and double-click/tap-to-launch, alternating
+horizontal/vertical entry directions. Single taps aim without spending points.
+Phone board titles toggle fleet views, replacing separate navigation buttons;
+compact monitors and powers fit together without a nested scrollbar. The
+circular question button opens the shared scrolling guide, with distinct power
+titles, ship/cost subtitles, body text and one static SVG example per power;
+examples contain no live fleet information. Settings and the host guide
 pause input, AI, shot timelines and effects. The module README defines the
 merged limits, torpedo, missile and random-bomb policies and local power checks.
 The Settings powers section contains only its house-rule toggle; detailed help
 stays in the fleet guide. A completed battle opens a dimmed shared results dialog with two
-responsive player cards, one gold winner crown, duration, shots, hits, misses,
+responsive player cards with matching header and stat-row heights, one gold
+winner crown, duration, shots, hits, misses,
 accuracy, ships sunk and ordered power history. The statistics body scrolls on
 short screens while Play Again stays in the fixed action area. Results appear
 after all impacts settle and restore on refresh without a Fleet Sunk banner.
