@@ -585,7 +585,7 @@ enter public movement or water artwork.
 The shared fitter reserves the entire footer, and a stable replay slot keeps the
 board fitted through battle/results without page scrolling. Direct short landscape views use
 the existing SDK side-control relocation. Host Settings docks beside music and
-contains its live Skin selector and staged optional power rules. Session & History
+contains its live Skin selector and Special Powers rule. Session & History
 and standalone How to Play buttons are omitted; authoritative session
 wins and private reconnect snapshots are retained. The 424×456 casing encloses the square grid and its coordinates.
 Press and hold for 450 ms rotates the preview without placing an unplaced ship;
@@ -603,9 +603,17 @@ Invalid rotations leave the fleet and footer unchanged. Five module-owned
 top-down ship SVGs distinguish a flight-deck Carrier, gun-heavy Battleship,
 Cruiser, rounded Submarine and compact Destroyer on host and phones. Separate
 skin slots preserve their identities. One saved **Special Powers** house-rule
-toggle defaults off and applies immediately during fleet setup; individual power
-switches and payment modes are omitted. Each missed attack, including a special
-attack, earns one point, capped at five. Every power costs points and can be used
+toggle defaults off and remains editable in every phase, including disconnects.
+Setup changes preserve fleets/readiness; battle changes restart fleet setup,
+cancel old movement/AI/private decisions, and advance the round identity and
+revision without awarding results. Completed session wins/history and the current
+starter remain. Unchanged choices do not restart; changes after results apply to
+the next replay. Individual power switches and payment modes are omitted.
+All five ship SVGs have transparent surroundings. Incoming damage produces a
+subtle full-screen red glow only for the affected phone or playing host, with
+static reduced-motion feedback and no replay on duplicate sync/reconnect.
+Each missed attack, including a special attack, earns one point, capped at five.
+Every power costs points and can be used
 once per battle, with one activation per turn. A sunk owning ship forfeits its
 unused power. Submarine Sonar (3) detects the enemy Submarine first, or another
 afloat ship when it is already sunk. Its single private contact remains

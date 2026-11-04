@@ -82,6 +82,8 @@ top-right **Settings** button beside music contains a live **Skin** selector and
 one **Special Powers** house rule, off by default. Skin changes apply immediately
 on the host and connected phones, preserving the current battle. Monopoly's existing
 in-game skin selectors remain available. Skin choices are saved per game.
+The host can change Battleship's Special Powers rule at any time; changing it
+during battle restarts fleet setup and preserves completed session wins/history.
 
 The asset browser opens with **Launcher** and each detected game collapsed.
 Expanding a category scans only that library in the background, then adds its
