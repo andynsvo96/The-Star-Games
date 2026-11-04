@@ -612,7 +612,8 @@ travels along a chosen row/column from either edge, skips known damage and stops
 at the first unhit segment, revealing only travelled water and that contact.
 Cruiser Missile Salvo (3) arms two separately aimed missile attacks instead of
 one cannon shot. Carrier Airstrike (5) bombs three distinct host-chosen untried
-tiles with plane/bomb artwork, retaining the normal cannon attack. Battleship
+tiles with plane/bomb artwork, replacing the normal cannon attack. The next
+captain can act after all three passes settle. Battleship
 Barrage (4) keeps its three-shot line. Multi-shot effects retain the complete
 authoritative/local movement lock; snapshots restore remaining missiles and the
 used-ability latch after refresh. The rules validate costs, surviving owning
