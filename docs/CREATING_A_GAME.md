@@ -636,6 +636,9 @@ and public effects expose no hidden
 ship identities. Sonar contacts remain in per-player snapshots.
 Each fleet has a Special Powers panel below its status. Host ship icons sit left
 and power names right; phones use five compact square name tiles in one row.
+Host powers frames match their fleet monitors' widths, fit their actual contents,
+and end just below Torpedo. Their centered headers retain a 44px help target and
+remaining-missile feedback without forcing panels wider or adding an empty footer.
 Each power's tiny cost circles fill as points accrue, without a separate bank
 meter. Used powers clear their progress; lost powers retain host-recorded
 progress at sinking across reconnects. Affordable unused powers light up;
