@@ -199,6 +199,22 @@ func _check_game_entries(app: Control, folder: String) -> bool:
 			screen.configure("Music test")
 			screen.use_playful_style()
 			var settings: VBoxContainer = screen.add_corner_details(["Host Settings"], Callable(), false, false, false, true, true)[0]
+			var dock_button: Button = settings.get_meta("toggle_button")
+			dock_button.get_parent().z_index = 2
+			var music_reduced_motion: bool = music.reduced_motion
+			music.reduced_motion = true
+			music._reveal()
+			await process_frame
+			assert(music.z_index > dock_button.get_parent().z_index and music.panel.get_global_rect().intersects(dock_button.get_global_rect()), "The expanded music player renders above an overlapping raised game Settings dock")
+			var toggle_point: Vector2 = music.toggle.get_global_rect().get_center()
+			var pointer := InputEventMouseMotion.new()
+			pointer.position = toggle_point
+			pointer.global_position = toggle_point
+			root.push_input(pointer, true)
+			await process_frame
+			assert(root.gui_get_hovered_control() == music.toggle, "The visible music button receives pointer input above game Settings: %s, target %s, viewport %s" % [root.gui_get_hovered_control(), toggle_point, root.get_visible_rect()])
+			music._dismiss(true)
+			music.reduced_motion = music_reduced_motion
 			var game_stream: AudioStream = music.player.stream
 			var game_history: Array = music.history.duplicate()
 			for paused in [false, true]:

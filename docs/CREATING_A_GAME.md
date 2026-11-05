@@ -554,10 +554,16 @@ status captions below the logo, including setup, ready-waiting, hit/miss and tur
 text. Placement feedback uses the shared reserved board footer. Disconnects dim
 only the missing captain's board through the shared canvas overlay, labelled
 `Disconnected`, without a footer pause caption;
-phones retain turn status for screen readers. A loaded cannonball marks the active
+phones retain turn status for screen readers. During deployment, the same overlay
+dims a ready captain's board and says `Ready`; Unready clears it, and disconnect
+feedback takes precedence. Both fleets becoming ready clears the overlays and
+plays one original ship's-bell alarm on the host Effects bus. Sync/reconnect never
+replays it. A loaded cannonball marks the active
 fleet on the public host and the owner's turn in the phone's visible single-board
 view. Both host and local movement locks, awaiting input, pause/disconnect and
-results clear it; reduced motion and reconnect restore a static authoritative cue.
+results clear it. The active cannon and ball bob together without moving input
+targets; duplicate snapshots retain the phase. Reduced motion keeps the cue
+static, and reconnect restores the current authoritative turn.
 Fleet monitor rows have right-aligned names, no colored circle indicators, and
 matching ship/name dimming for public wrecks. Smaller native monitors leave room
 for larger fitted boards. Native board/monitor headings use literal captain names.
@@ -615,8 +621,10 @@ static reduced-motion feedback and no replay on duplicate sync/reconnect.
 Each missed attack, including a special attack, earns one point, capped at five.
 Every power costs points and can be used
 once per battle, with one activation per turn. A sunk owning ship forfeits its
-unused power. Submarine Sonar (3) detects the enemy Submarine first, or another
-afloat ship when it is already sunk. Its single private contact remains
+unused power. Used powers retain `Used` after their ship sinks; only a power
+forfeited before use becomes `Ship lost`. Submarine Sonar (3) chooses uniformly
+among surviving enemy ships, then reveals one random unhit tile privately.
+Its single private contact remains
 authoritative. Destroyer Torpedo (4)
 travels along a chosen row/column from either edge, skips known damage and stops
 at the first unhit segment, revealing only travelled water and that contact.
@@ -637,7 +645,8 @@ ship identities. Sonar contacts remain in per-player snapshots.
 Each fleet has a Special Powers panel below its status. Host ship icons sit left
 and power names right; phones use five compact square name tiles in one row.
 Host powers frames match their fleet monitors' widths, fit their actual contents,
-and end just below Torpedo. Their centered, clickable titles retain a 44px target and
+and end just below Torpedo. Their compact headings retain centered, clickable
+titles with 44px targets and
 remaining-missile feedback without forcing panels wider or adding an empty footer.
 Each power's tiny cost circles fill as points accrue, without a separate bank
 meter. Used powers clear their progress; lost powers retain host-recorded
@@ -867,6 +876,8 @@ shuffle avoids the last song when more than one is available. A one-song library
 restarts that song at each menu/game boundary; manual pause is preserved across
 navigation. Games need no music player or lifecycle hooks. Shared Master/Music
 volume and music controls apply; keep game sound effects on the Effects bus.
+The expanded shared music player renders above adjacent game Settings controls
+and retains pointer input when their rectangles overlap.
 An empty music folder is supported.
 
 The menu playlist from `asset/lobby_songs` follows the same shuffle and pause

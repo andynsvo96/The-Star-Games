@@ -40,6 +40,8 @@ var volume_tween: Tween
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Expanded music controls cover the game's adjacent Settings dock.
+	z_index = 10
 	player.bus = "Music"
 	add_child(player)
 	player.finished.connect(play_next)
