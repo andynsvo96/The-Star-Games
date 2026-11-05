@@ -92,6 +92,13 @@ targeting, costs, timing, scoring and private-state rules are identical to Defau
 Like other playable modules and their media, this skin stays local and is not
 bundled in the public repository.
 
+**Galactic Warfare** is the third local Battleship skin: Mothership / Fighter
+Squadron, Dreadnought / plasma Barrage, Battlecruiser / Twin Blasters, Starship /
+Quantum Scanner, and Interceptor / Laser Cannon. Space artwork, energy effects
+and offline sounds replace its presentation while preserving the same rules,
+costs, targets, timing and private state. It uses the same live Skin selector and
+remains local with the playable module and its media.
+
 The asset browser opens with **Launcher** and each detected game collapsed.
 Expanding a category scans only that library in the background, then adds its
 asset rows progressively. Older `asset/<game-id>/` source folders also appear
