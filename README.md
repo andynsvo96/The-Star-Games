@@ -85,6 +85,13 @@ in-game skin selectors remain available. Skin choices are saved per game.
 The host can change Battleship's Special Powers rule at any time; changing it
 during battle restarts fleet setup and preserves completed session wins/history.
 
+The local Battleship installation also includes **Age of Sail** in that Skin
+selector: a cinematic sailing-era fleet, stormy background, title, timber/brass
+boards, period sounds and themed special-power effects. Its ship lengths,
+targeting, costs, timing, scoring and private-state rules are identical to Default.
+Like other playable modules and their media, this skin stays local and is not
+bundled in the public repository.
+
 The asset browser opens with **Launcher** and each detected game collapsed.
 Expanding a category scans only that library in the background, then adds its
 asset rows progressively. Older `asset/<game-id>/` source folders also appear

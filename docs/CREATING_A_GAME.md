@@ -2577,6 +2577,12 @@ running motion; leave the selector available through setup, play and results.
 Invalid selections and failed preference saves retain the current skin. Opening
 the dropdown refreshes available packs. Hidden template code demonstrates this
 callback; Battleship mounts the same selector inside Settings. Existing staged selectors keep their policy.
+Battleship's local Age of Sail pack demonstrates a complete cosmetic overhaul
+using these same slots: ship/power labels, boards, sections, title, background,
+help artwork and sounds. Its module-owned presentation switches mortar, swivel
+shot, spyglass and fused-barrel effects while retaining canonical rule IDs,
+private views, accepted targets and the existing movement timeline. Update open
+help/results labels in place on a live skin change so focus and scroll survive.
 Controllers must update existing image and CSS artwork URLs with the new public
 theme revision, including cached canvas images, without replacing input nodes or
 replaying effects. Refresh/reconnection restores the same host-selected skin.
