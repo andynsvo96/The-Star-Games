@@ -561,9 +561,10 @@ plays one original ship's-bell alarm on the host Effects bus. Sync/reconnect nev
 replays it. A loaded cannonball marks the active
 fleet on the public host and the owner's turn in the phone's visible single-board
 view. Both host and local movement locks, awaiting input, pause/disconnect and
-results clear it. The active cannon and ball bob together without moving input
-targets; duplicate snapshots retain the phase. Reduced motion keeps the cue
-static, and reconnect restores the current authoritative turn.
+results clear it. The active cannon has a soft breathing gold glow; the cannon,
+loaded ball and input targets stay fixed. Duplicate snapshots retain the glow
+phase. Reduced motion keeps the glow static, and reconnect restores the current
+authoritative turn.
 Fleet monitor rows have right-aligned names, no colored circle indicators, and
 matching ship/name dimming for public wrecks. Smaller native monitors leave room
 for larger fitted boards. Native board/monitor headings use literal captain names.
