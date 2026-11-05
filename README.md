@@ -94,8 +94,9 @@ bundled in the public repository.
 
 **Galactic Warfare** is the third local Battleship skin: Mothership / Fighter
 Squadron, Dreadnought / plasma Barrage, Battlecruiser / Twin Blasters, Starship /
-Quantum Scanner, and Interceptor / Laser Cannon. Space artwork, energy effects
-and offline sounds replace its presentation while preserving the same rules,
+Quantum Scanner, and Interceptor / Laser Cannon. The backdrop shows a space fleet
+firing lasers. Ships warp into place, weapons use dry blaster sounds, and
+destroyed ships have a reactor breakup cue. These cosmetic changes preserve the same rules,
 costs, targets, timing and private state. It uses the same live Skin selector and
 remains local with the playable module and its media.
 
