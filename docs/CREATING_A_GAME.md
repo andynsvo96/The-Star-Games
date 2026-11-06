@@ -110,12 +110,23 @@ switching shuts down the old mode and initializes the new one, including scenery
 rules and controller navigation, without interrupting game music.
 
 Create an ordinary `screen.add_choice_control(settings, "GAME MODE", [])`, then
-call `configure_game_mode_choice(choice)` after `super.initialize_session(context)`.
+call `configure_game_mode_choice(choice, settings_button)` after initializing
+module state and before `start_game`. The optional second argument is the shared
+Settings toggle. On a settings-variant transition, the launcher sets the transient
+`context.open_game_settings` flag; the helper opens the destination Settings before
+play can begin. Initial entry from Games keeps Settings closed. Modules must apply
+their normal pause policy when the toggle opens.
 The shared BaseGame helper supplies validated `context.game_choices`, selects the
 active mode, hides the row outside this flow and emits the existing `game_selected`
 signal. The launcher validates the party and requires every admitted phone to be
 connected before saving or switching. Disable the control while any admitted
 phone is offline. The template includes a hidden settings example.
+
+`screen.add_corner_details` accepts an optional final `close_only` boolean,
+defaulting to false. With modal Settings and this option enabled, only the visible
+Close action dismisses the form: backdrop clicks and Escape do not close it, and
+the shared Back control is disabled until Close restores it. Checkers uses this
+option across its modes. Existing disclosures retain their dismissal behavior.
 
 `context.collection_state` is an optional transient dictionary shared between
 these modes until exit. Modules may retain completed summaries there, restoring
@@ -1602,8 +1613,23 @@ Player cards show pieces remaining (including kings), the king subset, active
 turn/capture feedback and the optional clock. Session win/loss totals are omitted
 from these views. The question-mark action opens mode-specific diagrams and
 instructions outside Settings, including on a solo host. Browser help is local.
+The how-to-play guide covers the game rules without a Teaching mode section.
 Small phone boards open an enlarged scrolling board with full touch targets and
 a fixed Close action; normal 390px Regular Checkers fits playable 44px squares.
+
+All four modes offer saved **Guided gameplay**, off by default. Enabling it shows
+eligible pieces/marbles and legal destinations for a selected piece on host and
+phones. Selection, last-move feedback and rule validation remain available with
+guidance off. Explicit teaching hints still mark their requested suggestion.
+Changing guidance preserves the board, clocks and revision; snapshots carry the
+accepted `guided_gameplay` value, including after reconnection.
+
+Regular Checkers, Draughts and Alquerque expose **Force Jump**, on by default.
+Turning it off permits declining a capture with a legal ordinary move. A started
+capture chain remains compulsory; Draughts still requires a maximum-length route
+when taking a capture. Changes are rejected during a chain, preserve the board,
+advance its revision and invalidate cached legal/AI work. Guides and AI follow
+the accepted setting. Each mode saves this preference independently.
 
 After movement settles, a shared results dialog shows the winner or draw reason,
 active duration, turns, captures, kings crowned and longest capture chain.
@@ -1627,6 +1653,8 @@ actions; multiplayer and unadmitted/stale commands cannot enable coaching.
 Moves and capture removal animate inner artwork, never input targets. Premature
 placement is discarded while the host or local movement is active. Host pause
 preserves the current phase; refresh/reconnection restores authoritative state.
+Traveling pieces and capture ghosts stay inside the board's drawing layer,
+under shared settings/help/results overlays, including when paused mid-animation.
 Reduced motion retains static pieces, crowns and feedback. Audio stays on the
 host Effects bus and no new skin selector is added.
 

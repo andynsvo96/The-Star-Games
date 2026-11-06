@@ -7,6 +7,8 @@ var solo_profile: Dictionary = {}
 var is_party_game := false
 var reduced_motion := false
 var game_choices: Array = []
+# A settings-variant transition opens the destination's settings before play.
+var open_game_settings := false
 # Transient, module-owned summaries shared by settings variants until exit.
 # Never persisted or included in controller snapshots by the framework.
 var collection_state: Dictionary = {}

@@ -994,7 +994,7 @@ func _layout_board_details() -> void:
 
 # Optional corner disclosures leave board centering and replay space unchanged.
 # Reuse themed buttons/panels; narrow screens open one readable sheet at a time.
-func add_corner_details(captions: Array[String], placement := Callable(), compact := false, fit_settings := false, roomy_controls := false, top_right := false, modal_settings := false, icon_only := false) -> Array[VBoxContainer]:
+func add_corner_details(captions: Array[String], placement := Callable(), compact := false, fit_settings := false, roomy_controls := false, top_right := false, modal_settings := false, icon_only := false, close_only := false) -> Array[VBoxContainer]:
 	assert(captions.size() in [1, 2])
 	var layer := Control.new()
 	layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1018,7 +1018,7 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 	var buttons: Array[Button] = []
 	var sheets: Array[PanelContainer] = []
 	var bodies: Array[VBoxContainer] = []
-	var navigation_order := {"index": -1}
+	var navigation_order := {"index": -1, "disabled": false}
 	for index in captions.size():
 		var button := Button.new()
 		button.text = captions[index] + " +"
@@ -1043,6 +1043,7 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 		bodies.append(body)
 		if index == 0: body.add_child(settings_header)
 		body.set_meta("toggle_button", button)
+		body.set_meta("settings_backdrop", settings_backdrop)
 		body.set_meta("settings_panel", sheet); body.set_meta("settings_scroll", scroll)
 		if (fit_settings or modal_settings) and index == 0:
 			var heading := add_sidebar_text(settings_header, captions[0])
@@ -1054,8 +1055,9 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 			if modal_settings: close.custom_minimum_size = Vector2(64, 44)
 			var escape := InputEventKey.new()
 			escape.keycode = KEY_ESCAPE
-			close.shortcut = Shortcut.new()
-			close.shortcut.events = [escape]
+			if not close_only:
+				close.shortcut = Shortcut.new()
+				close.shortcut.events = [escape]
 			close.pressed.connect(func() -> void: buttons[0].button_pressed = false)
 			body.set_meta("settings_header",settings_header); body.set_meta("settings_heading",heading); body.set_meta("settings_close",close)
 		button.toggled.connect(func(open: bool) -> void:
@@ -1065,12 +1067,13 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 				settings_backdrop.hide()
 				if int(navigation_order.index) >= 0:
 					get_parent().move_child(back_button, mini(int(navigation_order.index), get_parent().get_child_count() - 1))
+					if close_only: back_button.disabled = navigation_order.disabled
 					navigation_order.index = -1
 			if open and (available_size().x < 700 or (placement.is_valid() and placement.call().has_area())):
 				if captions.size() > 1: buttons[1 - index].button_pressed = false
 		)
 	settings_backdrop.gui_input.connect(func(event: InputEvent) -> void:
-		if event is InputEventMouseButton and event.pressed: buttons[0].button_pressed = false
+		if not close_only and event is InputEventMouseButton and event.pressed: buttons[0].button_pressed = false
 	)
 	var fit_settings_sheet := func(bounds: Vector2, free_height: float) -> void:
 		var minimum := sheets[0].get_combined_minimum_size()
@@ -1083,6 +1086,9 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 		if settings_backdrop.visible and not was_open:
 			# Keep the same return target reachable above the blocking settings layer.
 			navigation_order.index = back_button.get_index()
+			if close_only:
+				navigation_order.disabled = back_button.disabled
+				back_button.disabled = true
 			get_parent().move_child(back_button, get_parent().get_child_count() - 1)
 			settings_header.get_child(1).grab_focus()
 		sheets[0].z_index = 1 if modal else 0

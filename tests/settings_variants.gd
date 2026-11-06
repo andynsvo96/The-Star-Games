@@ -48,7 +48,7 @@ func join_phone(name: String, token := "") -> Dictionary:
 
 
 func _run() -> void:
-	var source := "extends BaseGame\nvar screen: GameScreen\nvar choice: OptionButton\nfunc _ready() -> void:\n\tscreen = GameScreen.new()\n\tadd_child(screen)\n\tscreen.configure(\"Fixture\")\n\tscreen.use_playful_style(get_script().resource_path.get_base_dir().get_base_dir().path_join(\"art/background\"))\n\tvar body := screen.add_corner_details([\"SETTINGS\"], Callable(), false, false, false, true, true)[0]\n\tchoice = screen.add_choice_control(body, \"GAME MODE\", [])\nfunc initialize_session(context: GameSessionContext) -> void:\n\tsuper.initialize_session(context)\n\tconfigure_game_mode_choice(choice)\nfunc start_game() -> void:\n\tbroadcast_state({\"mode\": session.game_id})\nfunc shutdown_game() -> void:\n\tsession.collection_state[session.game_id] = true\n\tscreen.background_media.set_active(false)\n"
+	var source := "extends BaseGame\nvar screen: GameScreen\nvar choice: OptionButton\nvar settings_button: Button\nfunc _ready() -> void:\n\tscreen = GameScreen.new()\n\tadd_child(screen)\n\tscreen.configure(\"Fixture\")\n\tscreen.use_playful_style(get_script().resource_path.get_base_dir().get_base_dir().path_join(\"art/background\"))\n\tvar body := screen.add_corner_details([\"SETTINGS\"], Callable(), false, false, false, true, true)[0]\n\tsettings_button = body.get_meta(\"toggle_button\")\n\tchoice = screen.add_choice_control(body, \"GAME MODE\", [])\nfunc initialize_session(context: GameSessionContext) -> void:\n\tsuper.initialize_session(context)\n\tconfigure_game_mode_choice(choice, settings_button)\nfunc start_game() -> void:\n\tbroadcast_state({\"mode\": session.game_id})\nfunc shutdown_game() -> void:\n\tsession.collection_state[session.game_id] = true\n\tscreen.background_media.set_active(false)\n"
 	var art := '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect width="24" height="24" fill="#345678"/></svg>'
 	for id in ["variant-pack", "variant-first", "variant-second", "plain-pack"]:
 		var module := folder.path_join(id)
@@ -94,6 +94,7 @@ func _run() -> void:
 	app._launch_game(collection)
 	check(app.active_game_id == "variant-first" and app.active_collection_id == "variant-pack", "First entry opens a playable mode directly")
 	check(app.active_game.choice.item_count == 2 and app.active_game.choice.selected == 0, "Host Settings contains the validated modes and current selection")
+	check(not app.active_game.settings_button.button_pressed, "Initial entry does not request an open Settings view")
 	check((await message(peers[0].socket, "screen", "variant-first")).get("path") == "/game/variant-first/", "SDK routes phones straight to the active mode")
 	var original: BaseGame = app.active_game
 	original.game_selected.emit("variant-first")
@@ -106,6 +107,7 @@ func _run() -> void:
 	app.game_settings_store = preferences
 	original.choice.item_selected.emit(1)
 	check(app.active_game_id == "variant-second" and original.is_queued_for_deletion(), "Selecting a mode replaces and shuts down the previous game")
+	check(app.active_game.session.open_game_settings and app.active_game.settings_button.button_pressed, "Settings-variant transitions open the destination Settings before starting")
 	check(app.active_game.session.collection_state.get("variant-first", false), "Transient module summaries survive mode changes")
 	check(app.game_settings_store.load_settings("variant-pack", {"gamemode":""}).gamemode == "variant-second", "Accepted mode persists under the parent ID")
 	check((await message(peers[0].socket, "game", "variant-second")).payload.mode == "variant-second", "New mode publishes through the existing LAN connection")
@@ -125,6 +127,7 @@ func _run() -> void:
 	check(app.active_game == null and app.current_state == "game_menu" and app.collection_state.is_empty() and app.lan_server.running, "Back skips the chooser, clears transient summaries and retains LAN")
 	app._launch_game(collection)
 	check(app.active_game_id == "variant-second" and app.active_game.session.collection_state.is_empty(), "Re-entry restores the remembered mode with a fresh session")
+	check(not app.active_game.session.open_game_settings and not app.active_game.settings_button.button_pressed, "Returning from Games clears the transient Settings request")
 	app.active_game.return_to_lobby()
 	await process_frame
 	app.game_settings_store.save_settings("variant-pack", {"gamemode":"missing"})

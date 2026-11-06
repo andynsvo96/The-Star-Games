@@ -579,7 +579,7 @@ func _can_launch_for_count(game: Dictionary, party_count: int) -> bool:
 	return (game["modes"].has("multiplayer") and party_count >= int(game["min_players"]) and party_count <= int(game["max_players"])) or (party_count == 0 and game["modes"].has("singleplayer"))
 
 
-func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [], automation: Dictionary = {}) -> void:
+func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [], automation: Dictionary = {}, open_settings := false) -> void:
 	var debug := not automation.is_empty()
 	var roster := party_roster.duplicate(true)
 	if roster.is_empty() and not debug: roster = lan_server.get_admitted_players() if game.has("game_choices") and not lan_server.lobby_open else lan_server.get_players()
@@ -623,6 +623,7 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 	active_game_is_party = is_party and not debug
 	var context := GameSessionContext.new(game["id"], roster if is_party else [], selected_profile, is_party)
 	context.debug_mode = debug
+	context.open_game_settings = open_settings
 	if debug:
 		context.solo_profile = GameDebugRunner.players(1)[0]
 		if is_party:
@@ -682,7 +683,7 @@ func _on_collection_choice(id: String) -> void:
 	if collection.get("settings_variants", false) and not game_settings_store.save_settings(str(collection.id), {"gamemode": id}):
 		_show_error(game_settings_store.last_error)
 		return
-	_launch_game(child, collection.id, collection_roster)
+	_launch_game(child, collection.id, collection_roster, {}, collection.get("settings_variants", false))
 
 
 func _return_from_game() -> void:

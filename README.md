@@ -46,7 +46,8 @@ Player limits and solo options vary by game. Checkers opens its last selected mo
 directly, with Regular Checkers, Chinese Checkers, Draughts, and Alquerque in host
 **Settings > Game mode**. Changing mode starts a fresh board with that mode's
 rules, background, theme and controls; completed session totals stay with each
-mode until leaving Checkers. Back returns straight to Games. With 3–6 connected
+mode until leaving Checkers. Settings stays open through mode changes and closes
+only with **Close**. Back returns straight to Games. With 3–6 connected
 players, opening Checkers automatically selects Chinese Checkers, even when a
 two-player mode was last selected. Two-player modes stay disabled until
 the party size fits. An offline admitted member must reconnect before switching.
@@ -63,6 +64,10 @@ statistics with **View Board**, **Results**, and one **Play Again** action.
 With one human against computer opponents, **Teaching mode** enables an Easy
 training opponent, explained legal hints and **Take Back** for the previous human
 turn and its computer replies. Coaching preferences are saved separately per mode.
+**Guided gameplay** is available in every mode, off by default, for automatic
+piece and legal-destination highlights. **Force Jump** defaults on in Regular
+Checkers, Draughts and Alquerque; switching it off permits declining a capture
+while preserving the requirement to finish any started jump chain.
 
 The local Poker variants include optional cinematic community-card reveals,
 all-in win odds, and individual player histories opened from their stat plaques

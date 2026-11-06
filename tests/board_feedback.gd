@@ -67,6 +67,18 @@ func _run() -> void:
 	check(not card.score_panel.visible and card.player.text == "Literal <player> [name]", "Current-game cards omit totals without losing identity")
 	var help_button := Button.new(); screen.content.add_child(help_button); GameLook.help_control(help_button)
 	check(GameLook.text_contrast(help_button.get_theme_color("font_color"), help_button.get_theme_color("panel", "GamePalette")) >= 4.5, "Question-mark controls retain readable contrast")
+	var settings := screen.add_corner_details(["SETTINGS"], Callable(), false, false, false, true, true, false, true)[0]
+	screen.add_settings_form(settings)
+	var toggle: Button = settings.get_meta("toggle_button")
+	var close: Button = settings.get_meta("settings_close")
+	toggle.button_pressed = true
+	for frame in 8: await process_frame
+	var outside := InputEventMouseButton.new(); outside.button_index = MOUSE_BUTTON_LEFT; outside.pressed = true
+	settings.get_meta("settings_backdrop").gui_input.emit(outside)
+	check(toggle.button_pressed and screen.back_button.disabled, "Close-only Settings blocks outside dismissal and game navigation")
+	check(close.shortcut == null and root.get_visible_rect().encloses(close.get_global_rect()), "Close-only Settings has a reachable Close without an Escape shortcut")
+	close.pressed.emit()
+	check(not toggle.button_pressed and not screen.back_button.disabled, "Close restores the board and shared return navigation")
 	holder.queue_free()
 	await process_frame
 	print("Board feedback: %d checks, %d failures" % [checks, failures])

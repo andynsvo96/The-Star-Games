@@ -9,6 +9,7 @@ var example_choice: OptionButton
 var example_toggle: Button
 var example_length: SpinBox
 var example_game_mode: OptionButton
+var example_settings_button: Button
 var debug_sample_turn := 0
 
 
@@ -602,7 +603,9 @@ func _ready() -> void:
 	screen.add_number_control(settings_example.body, "ROUND LENGTH", 30, 180, 15, 60, "sec")
 	# A grouped settings sheet keeps its heading/Close and Apply outside the scroll.
 	# This example's whole disclosure layer stays hidden in the playable template.
-	var form_body := screen.add_corner_details(["SETTINGS"], Callable(), true, false, false, true, true)[0]
+	# The final close_only option requires the visible Close action to dismiss.
+	var form_body := screen.add_corner_details(["SETTINGS"], Callable(), true, false, false, true, true, false, true)[0]
+	example_settings_button = form_body.get_meta("toggle_button")
 	var form := screen.add_settings_form(form_body)
 	# Set compact before adding fields for closer rows with the same 44px controls.
 	form.compact = true
@@ -717,7 +720,9 @@ func _ready() -> void:
 
 func initialize_session(context: GameSessionContext) -> void:
 	super.initialize_session(context)
-	configure_game_mode_choice(example_game_mode)
+	# Pass the settings toggle after module state is initialized, before start_game,
+	# to retain an open settings view when changing a settings-variant mode.
+	configure_game_mode_choice(example_game_mode, example_settings_button)
 	screen.background_media.reduced_motion = context.reduced_motion
 	# Optional live cosmetic dropdown, next to music. Reload retained textures and
 	# audio in this callback, then publish ordinary public/private snapshots.

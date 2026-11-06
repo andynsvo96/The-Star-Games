@@ -42,7 +42,7 @@ func start_game() -> void:
 
 # Mount an existing shared choice control in host Settings. The launcher owns
 # eligibility, persistence, teardown, theme pinning and controller navigation.
-func configure_game_mode_choice(choice: OptionButton) -> void:
+func configure_game_mode_choice(choice: OptionButton, settings_button: BaseButton = null) -> void:
 	choice.clear()
 	choice.accessibility_name = "Game mode"
 	choice.fit_to_longest_item = false
@@ -61,6 +61,8 @@ func configure_game_mode_choice(choice: OptionButton) -> void:
 		var id := str(choice.get_item_metadata(index))
 		if id != session.game_id: game_selected.emit(id)
 	)
+	if settings_button != null and session.open_game_settings:
+		settings_button.button_pressed = true
 
 
 # The launcher delivers snapshots through its existing LAN server.
