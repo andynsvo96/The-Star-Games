@@ -16,7 +16,7 @@ This public repository contains the launcher, shared host UI, browser controller
 
 ## Current local game catalog
 
-The development installation currently has 16 menu entries covering the 19 games and variants below. This list describes that local installation; these modules are not distributed in this repository.
+The development installation currently has 16 menu entries covering the 21 games and variants below. This list describes that local installation; these modules are not distributed in this repository.
 
 | Game | Description |
 | --- | --- |
@@ -25,6 +25,8 @@ The development installation currently has 16 menu entries covering the 19 games
 | Charades | Classic, Heads Up, Guess Who, and an in-person team Chain with editable word categories and shuffled prompts. |
 | Checkers | Jump opposing pieces, crown kings, and control the board. |
 | Chinese Checkers | Race ten marbles across a star with 2-6 human/computer seats. |
+| Draughts | International draughts on a 10×10 board; Flying Kings defaults on. |
+| Alquerque | Capture twelve opposing pieces along a 5×5 network of points. |
 | COUP | Bluff, challenge and eliminate rival influence with 2-6 human phone players. |
 | Chess | Classic chess with computer opponents and optional clocks. |
 | Four in a Row | Drop discs and connect four before your opponent. |
@@ -40,7 +42,11 @@ The development installation currently has 16 menu entries covering the 19 games
 | Tic Tac Toe | Get three in a row against a friend or computer. |
 | UNO | Match cards and empty your hand in Classic, Flip, or No Mercy. |
 
-Player limits and solo options vary by game. Checkers, Monopoly, and Poker each have a chooser for their two games or variants.
+Player limits and solo options vary by game. Checkers groups Regular Checkers,
+Chinese Checkers, Draughts, and Alquerque. Monopoly and Poker each group two variants.
+Draughts and Alquerque support solo, one-phone and two-phone play, with their own
+backgrounds, artwork and saved preferences. The host can switch Draughts' Flying
+Kings off as a house rule; changing it restarts the board and keeps completed wins.
 
 The local Poker variants include optional cinematic community-card reveals,
 all-in win odds, and individual player histories opened from their stat plaques

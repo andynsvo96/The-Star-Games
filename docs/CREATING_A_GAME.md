@@ -1553,14 +1553,44 @@ modules. The existing `next` action remains a replay alias for older controllers
 Title subtitles are omitted on hosts and controllers. Do not introduce a
 first-to-two format in these games or new modules unless explicitly requested.
 
-### Checkers collection and Chinese Checkers
+### Checkers collection, Draughts, Alquerque and Chinese Checkers
 
-The local `Games/checkers-collection` module groups regular `checkers` and
-`chinese-checkers` under one Checkers menu entry using the existing collection
-contract. Regular Checkers keeps its original ID, settings, scores and two-player
+The local `Games/checkers-collection` module groups regular `checkers`,
+`chinese-checkers`, `draughts` and `alquerque` under one Checkers menu entry using
+the existing collection contract. Regular Checkers keeps its original ID, settings, scores and two-player
 limit. Chinese Checkers admits up to six phones; unavailable choices remain
 visible and disabled. Child Back opens the chooser, whose Back opens Games.
-An offline admitted member must reconnect before either choice can launch.
+An offline admitted member must reconnect before any choice can launch.
+
+`Games/draughts` implements International Draughts: 100 squares, twenty men per
+side, backward captures by men, compulsory maximum captures, end-of-turn promotion
+and captured pieces that remain blocking until the chain finishes. Flying Kings
+defaults on; disabling it is an explicit short-king house rule. That accepted,
+saved host change restarts the board while retaining completed wins/history.
+Threefold repetition, the 25-move king-only limit and reduced king-endgame limits
+draw automatically. Its emerald/ivory board and tournament salon use shared royal
+chrome. Rule details and the FMJD reference are in its local README.
+
+`Games/alquerque` uses twelve pieces per side on twenty-five connected points.
+The modern all-direction rules require captures and complete jump chains, permit
+either capture route and have no kings. It wins by capture or blockade; repetition
+and a documented no-capture limit draw. Its stone board, ivory/terracotta pieces
+and Andalusian courtyard use shared garden chrome. The local README explicitly
+distinguishes this reconstruction from other Alquerque variants.
+
+Both new two-seat modules begin with the template layout and reuse regular
+Checkers' session/controller integration through local family hooks, with separate
+rules and artwork in each module. Solo and one-phone games can use a computer;
+only decisive two-phone boards update saved standings. Replay alternates starters.
+Settings and disconnects pause clocks, AI and movement. The host and phones reject
+placement until their movement settles; refresh restores authoritative state.
+Phone boards whose fitted cells would be smaller than 44px become a single
+enlargement target. Zoom opens the shared scrolling dialog with full-size cells,
+keyboard input and a reachable Close action. Backgrounds use extensionless
+`art/background`, with protected Default packs and local source originals/prompts.
+Local checks are `tests/checkers_variants.gd`, `checkers_variants_motion.gd`,
+`checkers_variants_network.gd`, `checkers_variants_autoplay.gd`, rendered
+`checkers_variants_visual.gd`, then `node tests/checkers_variants_controller.mjs`.
 
 `Games/chinese-checkers` separates its 121-hole star rules, board presentation
 and session/controller integration. It supports 2-6 seats, ten marbles each,
@@ -1600,9 +1630,10 @@ stem and the shared player. Chinese Checkers uses a generated transparent title
 PNG at the same host title setting as Regular Checkers, with `game-title-prominent`
 on phones for a larger responsive heading. Original images and exact
 prompts remain in `asset/checkers-collection/` and `asset/chinese-checkers/`.
-The chooser loads wide generated board illustrations from each child's validated
-`thumbnail_path`. Its own square thumbnail represents both games and matches the
-dimensional game-selection icon family in both List and Icons views.
+The chooser loads board illustrations from each child's validated
+`thumbnail_path`: generated previews for the original two modes and accurate
+vector previews for Draughts and Alquerque. Its square checker-king/star thumbnail
+matches the dimensional game-selection icon family in both List and Icons views.
 
 Local checks: `tests/chinese_checkers.gd`, `tests/chinese_checkers_motion.gd`,
 `tests/chinese_checkers_network.gd`, rendered `tests/chinese_checkers_visual.gd`,
