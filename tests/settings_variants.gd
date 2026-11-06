@@ -133,18 +133,20 @@ func _run() -> void:
 	app.active_game.return_to_lobby()
 	await process_frame
 	app.game_settings_store.save_settings("variant-pack", {"gamemode":"variant-first"})
-	app._show_lobby()
-	for index in 4: peers.append(await join_phone("Extra %d" % index))
-	app._play_from_lobby()
-	app._launch_game(collection)
-	check(app.active_game_id == "variant-second" and app.active_game.session.players.size() == 6, "A six-player party opens its eligible mode directly")
-	check(app.active_game.choice.is_item_disabled(0), "Unsupported player arrangements stay visible and disabled")
-	original = app.active_game
-	original.game_selected.emit("variant-first")
-	check(app.active_game == original, "Forged mode requests cannot bypass player limits")
-	check(app.game_settings_store.load_settings("variant-pack", {"gamemode":""}).gamemode == "variant-first", "Roster fallback preserves saved mode intent")
-	app.active_game.return_to_lobby()
-	await process_frame
+	for count in range(3, 7):
+		app._show_lobby()
+		peers.append(await join_phone("Extra %d" % count))
+		check(not peers.back().joined.is_empty(), "Phone %d joins before the party starts" % count)
+		app._play_from_lobby()
+		app._launch_game(collection)
+		check(app.active_game_id == "variant-second" and app.active_game.session.players.size() == count, "%d connected players automatically open their eligible mode" % count)
+		check(app.active_game.choice.is_item_disabled(0), "Two-player mode stays disabled with %d connected players" % count)
+		original = app.active_game
+		original.game_selected.emit("variant-first")
+		check(app.active_game == original, "Mode requests cannot bypass the %d-player party" % count)
+		check(app.game_settings_store.load_settings("variant-pack", {"gamemode":""}).gamemode == "variant-first", "Automatic selection preserves saved mode intent for %d players" % count)
+		app.active_game.return_to_lobby()
+		await process_frame
 	app._launch_game(catalog.find_game("plain-pack"))
 	check(app.active_game_id == "plain-pack", "Existing collections retain their chooser")
 	app.active_game.game_selected.emit("variant-second")

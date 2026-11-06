@@ -1583,8 +1583,10 @@ directly, with no title/selection splash. Its host Settings switches regular
 theme, board, rules and phone controls together. Each keeps its original ID,
 preferences, saved standings and player limit. Switching abandons the current
 board without results and retains completed per-mode session wins/history until
-exit. Back opens Games directly. Chinese Checkers admits up to six phones;
-larger parties fall back to it while two-player modes stay visible and disabled.
+exit. Back opens Games directly. With 3–6 connected phones, opening Checkers
+automatically selects Chinese Checkers regardless of the last selected mode;
+two-player modes stay visible and disabled. One/two-phone parties use their
+remembered mode. Automatic selection does not overwrite the saved preference.
 An offline admitted member must reconnect before switching modes.
 
 `Games/draughts` implements International Draughts: 100 squares, twenty men per

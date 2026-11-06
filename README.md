@@ -46,8 +46,9 @@ Player limits and solo options vary by game. Checkers opens its last selected mo
 directly, with Regular Checkers, Chinese Checkers, Draughts, and Alquerque in host
 **Settings > Game mode**. Changing mode starts a fresh board with that mode's
 rules, background, theme and controls; completed session totals stay with each
-mode until leaving Checkers. Back returns straight to Games. Larger parties
-automatically open Chinese Checkers, and two-player modes stay disabled until
+mode until leaving Checkers. Back returns straight to Games. With 3–6 connected
+players, opening Checkers automatically selects Chinese Checkers, even when a
+two-player mode was last selected. Two-player modes stay disabled until
 the party size fits. An offline admitted member must reconnect before switching.
 Monopoly and Poker each group two variants.
 Draughts and Alquerque support solo, one-phone and two-phone play, with their own
