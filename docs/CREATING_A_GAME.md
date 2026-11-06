@@ -1540,6 +1540,43 @@ status text accessible and keep navigation usable during the celebration.
 
 ### Illustrated board help and round summaries
 
+Host board references can use `screen.add_corner_help(settings_button, callback)`
+to put a 44px question-mark button immediately left of Settings. It follows the
+shared corner layout and hides while modal Settings is open. Phone references
+remain in the reachable controller toolbar. The template includes a hidden use.
+
+`screen.add_score_counter_rows(card, icons, values=[])` adds independently centered
+icon/count rows inside a shared score card and returns their Labels. Update the
+Labels literally from snapshots; hide a Label's parent row when a metric does not
+apply. The helper owns spacing, icon dimensions and typography. Compact title art
+uses the existing fourth `add_title_art` argument to leave more room for boards.
+
+### Dragging board pieces
+
+`GamePieceDrag` supplies native mouse/touch gestures without owning rules. Add the
+Node, then call `configure(surface, callbacks)` with `hit_test(global_point)`
+returning an index or -1, `can_start(index)`, `revision()` returning a stable
+round/revision token, `make_preview(index)` returning a sized Control, and
+`drop(from,to)` forwarding through the module's ordinary validated move method.
+Optional `start(index)` and `end(index)` callbacks hide/restore static artwork.
+Button handlers retain tap/keyboard selection and check `blocks_click()` to avoid
+an extra click after a drag. The preview stays within the board drawing layer,
+below shared modals. Changed state, lost eligibility, focus loss, canceled touch
+and reflow cancel the gesture. Never move authoritative pieces while dragging.
+
+Browsers load `/board-ui.js` and use `new StarGamesPieceDrag(surface, options)`.
+Options are `hitTest(clientX,clientY)`, `canStart(index)`, `revision()`,
+`createPreview(index)`, `onDrop(from,to)`, and optional `onStart`/`onEnd`. Return
+only an inner visual with explicit dimensions; keep the input targets fixed.
+`onDrop` validates legal endpoints before the usual SDK action. Call `validate()`
+during snapshot rendering and `cancel()` when needed; canvas tap handlers can use
+`blocksTap()` to suppress the release of a completed drag. Put `data-piece-drag`
+on eligible touch targets to reserve that gesture while retaining scrolling on
+empty areas of an enlarged board. Native and browser tests live in
+`tests/board_piece_drag.gd` and `tests/board_piece_drag.mjs`, using synthetic boards.
+
+### Illustrated references
+
 Use `screen.add_illustrated_guide(caption, examples)` for an explicit illustrated
 reference. Each example supplies literal `heading`, `detail`, an offline resource
 `image`, and a text alternative in `description`. The returned phase-dialog
@@ -1613,6 +1650,15 @@ Player cards show pieces remaining (including kings), the king subset, active
 turn/capture feedback and the optional clock. Session win/loss totals are omitted
 from these views. The question-mark action opens mode-specific diagrams and
 instructions outside Settings, including on a solo host. Browser help is local.
+Host help sits left of the top-right Settings action; compact matching title
+slots leave more room for centered boards. Counter rows center each icon/count
+group independently. Alquerque uses circular selection, guidance and focus cues
+without painting rectangular cell backgrounds.
+For a drawn title that fills the available header without reducing the board,
+use `add_title_art(texture, height, false, true, true, true)`. The final optional
+`above_board` flag fits the independent artwork between the navigation row and
+the board while retaining the existing compact layout slot and shared centering.
+The default remains unchanged for other title presentations.
 The how-to-play guide covers the game rules without a Teaching mode section.
 Small phone boards open an enlarged scrolling board with full touch targets and
 a fixed Close action; normal 390px Regular Checkers fits playable 44px squares.
@@ -1655,6 +1701,13 @@ placement is discarded while the host or local movement is active. Host pause
 preserves the current phase; refresh/reconnection restores authoritative state.
 Traveling pieces and capture ghosts stay inside the board's drawing layer,
 under shared settings/help/results overlays, including when paused mid-animation.
+All four modes accept both select-then-place and dragging to a legal destination
+on host and controllers. A drag submits a single ordinary move; compulsory chains
+still continue with the same piece, and Chinese Checkers resolves a legal route
+to the dropped endpoint. Illegal, outside, paused or stale drops restore the piece.
+The original title sources remain local alongside the generated Draughts,
+Alquerque and revised Chinese Checkers PNGs; `asset/checkers-collection/title-polish/`
+records their exact built-in image-generation prompts and source copies.
 Reduced motion retains static pieces, crowns and feedback. Audio stays on the
 host Effects bus and no new skin selector is added.
 

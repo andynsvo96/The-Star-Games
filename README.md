@@ -68,6 +68,10 @@ turn and its computer replies. Coaching preferences are saved separately per mod
 piece and legal-destination highlights. **Force Jump** defaults on in Regular
 Checkers, Draughts and Alquerque; switching it off permits declining a capture
 while preserving the requirement to finish any started jump chain.
+All four modes support dragging a piece to a legal destination as well as selecting
+and placing it. Host help sits beside Settings, above larger centered boards.
+Player counter groups are centered; Alquerque uses circular cues, and all modes
+use illustrated titles with consistent sizing.
 
 The local Poker variants include optional cinematic community-card reveals,
 all-in win odds, and individual player histories opened from their stat plaques

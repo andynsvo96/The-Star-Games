@@ -1378,6 +1378,51 @@ func set_score_card_current_game(card: Dictionary, compact := false) -> void:
 	card.content.add_theme_constant_override("separation", 4 if compact else 8)
 
 
+# Each icon/count group centers independently inside the artwork's content inset.
+func add_score_counter_rows(card: Dictionary, icons: Array, values: Array = []) -> Array[Label]:
+	var rows := GridContainer.new()
+	rows.columns = 1
+	rows.add_theme_constant_override("v_separation", 8)
+	card.content.add_child(rows)
+	var labels: Array[Label] = []
+	for index in icons.size():
+		var row := HBoxContainer.new()
+		row.alignment = BoxContainer.ALIGNMENT_CENTER
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_theme_constant_override("separation", 8)
+		rows.add_child(row)
+		var icon := TextureRect.new()
+		icon.texture = icons[index]
+		icon.custom_minimum_size = Vector2(32, 32)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		row.add_child(icon)
+		var count := Label.new()
+		count.text = str(values[index]) if index < values.size() else ""
+		count.add_theme_color_override("font_color", card.text_color)
+		count.add_theme_font_size_override("font_size", 18)
+		row.add_child(count)
+		labels.append(count)
+	return labels
+
+
+# An explicit reference action shares the Settings corner, outside the board fit.
+func add_corner_help(settings: Button, pressed: Callable) -> Button:
+	var button := Button.new()
+	settings.get_parent().add_child(button)
+	GameLook.help_control(button)
+	button.accessibility_name = "How to play"
+	button.pressed.connect(pressed)
+	var fit := func() -> void:
+		button.visible = settings.visible
+		button.size = Vector2(44, 44)
+		button.position = settings.position + Vector2(-52, (settings.size.y - 44) / 2)
+	settings.visibility_changed.connect(fit)
+	_floating_details_layouts.append(fit)
+	fit.call_deferred()
+	return button
+
+
 func add_illustrated_guide(caption: String, examples: Array = []) -> Dictionary:
 	var dialog := add_phase_dialog(false, true, false, true, 720)
 	dialog.heading.text = caption
@@ -1483,7 +1528,7 @@ func set_score_card_seat(card: Dictionary, seat: int, identity: Color) -> void:
 
 # Optional illustrated heading keeps shared navigation above the artwork.
 # A top-aligned visual retains its measured slot, preserving board composition.
-func add_title_art(texture: Texture2D, height := 120.0, prominent := false, compact := false, top_aligned := false) -> TextureRect:
+func add_title_art(texture: Texture2D, height := 120.0, prominent := false, compact := false, top_aligned := false, above_board := false) -> TextureRect:
 	_compact_heading = compact
 	if compact:
 		# RichTextLabel otherwise measures a new message at its previous width for
@@ -1513,8 +1558,11 @@ func add_title_art(texture: Texture2D, height := 120.0, prominent := false, comp
 		var fit := func() -> void:
 			var top := _board_top_margin()
 			var bottom := slot.global_position.y + slot.size.y - get_parent_control().global_position.y
+			if above_board and board_anchor != null and board_anchor.size.y > 0:
+				top = 64 if available_size().x < 700 else 2
+				bottom = board_anchor.global_position.y - get_parent_control().global_position.y - 2
 			art.position = Vector2(content.global_position.x - get_parent_control().global_position.x, top)
-			art.size = Vector2(content.size.x, minf(slot.custom_minimum_size.y, maxf(0, bottom - top)))
+			art.size = Vector2(content.size.x, minf(height if above_board else slot.custom_minimum_size.y, maxf(0, bottom - top)))
 		_floating_details_layouts.append(fit)
 	content.add_child(slot)
 	content.move_child(slot, title_label.get_index())

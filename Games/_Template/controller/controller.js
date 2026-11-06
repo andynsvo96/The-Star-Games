@@ -14,6 +14,15 @@
   // exampleGuide.open(helpButton). Round results use StarGamesRoundResults(main,
   // replayButton).update({key,heading,summary,players:[{display_name,color,winner,
   // metrics:[{label,value}]}]}, ready); duplicate keys retain reading position.
+  const exampleDragBoard = document.createElement("div"); exampleDragBoard.hidden = true;
+  const exampleDragCells = ["A", ""].map(text => {const button=document.createElement("button");button.textContent=text;exampleDragBoard.append(button);return button;});
+  document.querySelector(".game-controller").append(exampleDragBoard);
+  new StarGamesPieceDrag(exampleDragBoard, {
+    hitTest:(x,y)=>exampleDragCells.findIndex(cell=>{const r=cell.getBoundingClientRect();return x>=r.left&&x<r.right&&y>=r.top&&y<r.bottom;}),
+    canStart:cell=>cell===0, revision:()=>0,
+    createPreview:cell=>{const preview=exampleDragCells[cell].cloneNode(true);preview.style.width="44px";preview.style.height="44px";return preview;},
+    onDrop:(from,to)=>{ /* Submit from/to through the module's validated SDK action. */ }
+  });
 
 	const exampleCard = StarGamesCard({ name: "EXAMPLE", value: 1 });
 	exampleCard.hidden = true;

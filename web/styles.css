@@ -1731,6 +1731,10 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .playful-game .game-board-ui .game-board-tools > button.game-help-button { color:var(--ink); background:var(--panel); border:1px solid var(--panel-edge); border-image:none; box-shadow:none; }
 .game-board-coach { box-sizing:border-box; margin:5px 0 0; padding:8px; min-height:3.6em; border:1px solid var(--panel-edge); border-radius:6px; background:var(--panel); color:var(--ink); font:14px/1.35 "Segoe UI",Arial,sans-serif; text-align:center; }
 .game-board-paused .game-piece-pop { animation-play-state:paused; }
+.game-piece-drag-preview { position:fixed !important; z-index:5; display:block; pointer-events:none; transform:translate(-50%,-50%); object-fit:contain; opacity:.95; filter:drop-shadow(0 6px 5px #0007); margin:0 !important; }
+.game-board-ui [data-piece-drag] { touch-action:none; }
+.game-board-ui .game-current-stats .game-stat-grid { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:5px 10px; }
+.game-board-ui .game-current-stats .game-stat-item { justify-content:center; }
 .game-board-stats .game-session-score.game-current-game { display:flex; flex-direction:column; align-items:stretch; gap:3px; }
 .game-board-stats .game-current-game .game-score-detail,.game-board-stats .game-current-game .game-score-feedback { margin:0; text-align:center; font-size:12px; }
 .game-board-stats .game-current-game .game-score-feedback { min-height:1.2em; font:600 11px/1.2 "Segoe UI",Arial,sans-serif; }

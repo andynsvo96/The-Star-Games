@@ -69,4 +69,56 @@
 	}
 	window.StarGamesIllustratedGuide = IllustratedGuide;
 	window.StarGamesRoundResults = RoundResults;
+	// Taps and keyboard clicks keep their normal handlers. Only a deliberate drag
+	// suppresses its follow-up click; authority always stays with onDrop's caller.
+	class PieceDrag {
+		constructor(surface, options) {
+			this.surface = surface; this.options = options; this.gesture = null; this.suppressUntil = 0;
+			surface.addEventListener("dragstart", event => event.preventDefault());
+			surface.addEventListener("pointerdown", event => {
+				if (this.gesture && this.gesture.id !== event.pointerId) this.cancel();
+				if (!event.isPrimary || event.button !== 0 || this.gesture) return;
+				const from = options.hitTest(event.clientX, event.clientY);
+				if (from < 0 || !options.canStart(from)) return;
+				this.gesture = {id:event.pointerId, from, x:event.clientX, y:event.clientY, revision:options.revision(), dragging:false};
+			});
+			window.addEventListener("pointermove", event => {
+				const g = this.gesture; if (!g || g.id !== event.pointerId) return;
+				if (!this.valid()) { this.cancel(); return; }
+				if (!g.dragging && Math.hypot(event.clientX-g.x, event.clientY-g.y) >= 8) {
+					g.dragging = true; this.suppressUntil = performance.now()+400;
+					g.preview = options.createPreview(g.from); g.preview.classList.add("game-piece-drag-preview");
+					surface.append(g.preview); options.onStart?.(g.from);
+					try { surface.setPointerCapture(g.id); } catch {}
+				}
+				if (g.dragging) {
+					g.preview.style.left = event.clientX+"px"; g.preview.style.top = event.clientY+"px";
+					event.preventDefault();
+				}
+			}, {passive:false});
+			window.addEventListener("pointerup", event => {
+				const g = this.gesture; if (!g || g.id !== event.pointerId) return;
+				const to = options.hitTest(event.clientX, event.clientY);
+				const commit = g.dragging && this.valid() && to >= 0 && to !== g.from;
+				this.clear(); if (commit) options.onDrop(g.from, to);
+			});
+			window.addEventListener("pointercancel", event => { if (this.gesture?.id === event.pointerId) this.cancel(); });
+			surface.addEventListener("lostpointercapture", event => { if (event.target === surface && event.pointerId === this.gesture?.id) this.cancel(); });
+			surface.addEventListener("click", event => {
+				if (event.detail && performance.now() < this.suppressUntil) { event.preventDefault(); event.stopImmediatePropagation(); }
+			}, true);
+			for (const name of ["blur", "resize", "pagehide"]) window.addEventListener(name, () => this.cancel());
+			new ResizeObserver(() => this.cancel()).observe(surface);
+		}
+		valid() { const g=this.gesture; return !!g && g.revision===this.options.revision() && this.options.canStart(g.from); }
+		blocksTap() { return !!this.gesture?.dragging || performance.now()<this.suppressUntil; }
+		validate() { if (this.gesture && !this.valid()) this.cancel(); }
+		cancel() { if (this.gesture) this.clear(); }
+		clear() {
+			const g=this.gesture; this.gesture=null; if(!g) return;
+			if(g.dragging) { this.suppressUntil=performance.now()+400; g.preview.remove(); this.options.onEnd?.(g.from); }
+			try { if(this.surface.hasPointerCapture(g.id)) this.surface.releasePointerCapture(g.id); } catch {}
+		}
+	}
+	window.StarGamesPieceDrag = PieceDrag;
 })();

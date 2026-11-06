@@ -88,6 +88,9 @@ desktop.ini
 !/tests/board_camera.gd.uid
 !/tests/board_feedback.gd
 !/tests/board_feedback.gd.uid
+!/tests/board_piece_drag.gd
+!/tests/board_piece_drag.gd.uid
+!/tests/board_piece_drag.mjs
 !/tests/shared_board_controller.mjs
 !/tests/table_inventory.gd
 !/tests/table_inventory.gd.uid

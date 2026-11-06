@@ -1195,7 +1195,9 @@ static func help_control(button: Button) -> void:
 	for key in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
 		button.add_theme_color_override(key, ink)
 	for state in ["normal","hover","pressed","disabled"]:
-		button.add_theme_stylebox_override(state,box(button.get_theme_color("panel","GamePalette"),button.get_theme_color("panel_edge","GamePalette"),22,1))
+		var surface := box(button.get_theme_color("panel","GamePalette"),button.get_theme_color("panel_edge","GamePalette"),22,1)
+		surface.set_content_margin_all(4)
+		button.add_theme_stylebox_override(state,surface)
 
 
 # Opt-in board utilities use the active palette and a quiet brass primary.

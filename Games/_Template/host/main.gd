@@ -55,6 +55,8 @@ func _ready() -> void:
 	# Their cards inherit shared paper styling; the connection lifecycle is unchanged.
 	# Optional shared navy/steel chrome: use_playful_style(background, "naval").
 	# Optional midnight/cyan chrome: use_playful_style(background, "covert").
+	# For a board with compact title space, add_title_art(texture, 104, false,
+	# true, true, true) fits its drawn logo into the free header above the board.
 	# Board palettes: "royal" (walnut/ivory serif), "arcade" (ivory/navy),
 	# or "admiral" (navy/brass). Shared controls retain focus and disabled states.
 	# "garden" adds carved wood controls. Use GameLook.illustrated_control(button,
@@ -88,6 +90,16 @@ func _ready() -> void:
 	layout.playfield.add_child(round_example)
 	round_example.set_results([{"display_name":"Example player", "color":"#527bc3", "winner":true, "metrics":[{"label":"Moves", "value":12}]}])
 	round_example.hide()
+	var counter_example := screen.add_score_card(layout.sidebar, null, GameLook.BLUE, "ledger")
+	screen.set_score_card_current_game(counter_example)
+	screen.add_score_counter_rows(counter_example, [RuntimeAssets.texture("res://ui/playful/control-help.svg"), RuntimeAssets.texture("res://ui/playful/table-crown.svg")], ["12 PIECES", "1 KING"])
+	counter_example.panel.hide()
+	# Hidden pointer example. Real modules supply hit testing, preview artwork and
+	# their validated move callback; taps keep their usual Button handlers.
+	var piece_drag_surface_example := Control.new(); piece_drag_surface_example.size = Vector2(160,64)
+	layout.playfield.add_child(piece_drag_surface_example); piece_drag_surface_example.hide()
+	var piece_drag_example := GamePieceDrag.new(); add_child(piece_drag_example)
+	piece_drag_example.configure(piece_drag_surface_example, {"hit_test":func(point: Vector2) -> int: return int((point.x - piece_drag_surface_example.global_position.x) / 80) if piece_drag_surface_example.get_global_rect().has_point(point) else -1, "can_start":func(cell: int) -> bool: return cell == 0, "revision":func() -> int: return 0, "make_preview":func(_cell: int) -> Control: var preview := Label.new(); preview.text = "A"; preview.size = Vector2(44,44); return preview, "drop":func(_from: int, _to: int) -> void: pass})
 	# set_score_card_current_game(card) hides session totals/decorations while
 	# retaining literal identity, current-round counters and active-turn feedback.
 	# GameLook.board_action(button, true) opts into a brass replay/confirm action.
@@ -606,6 +618,7 @@ func _ready() -> void:
 	# The final close_only option requires the visible Close action to dismiss.
 	var form_body := screen.add_corner_details(["SETTINGS"], Callable(), true, false, false, true, true, false, true)[0]
 	example_settings_button = form_body.get_meta("toggle_button")
+	screen.add_corner_help(example_settings_button, func() -> void: illustrated_guide_example.overlay.show())
 	var form := screen.add_settings_form(form_body)
 	# Set compact before adding fields for closer rows with the same 44px controls.
 	form.compact = true

@@ -70,15 +70,18 @@ func _run() -> void:
 	var settings := screen.add_corner_details(["SETTINGS"], Callable(), false, false, false, true, true, false, true)[0]
 	screen.add_settings_form(settings)
 	var toggle: Button = settings.get_meta("toggle_button")
+	var corner_help := screen.add_corner_help(toggle, func() -> void: guide.overlay.show())
 	var close: Button = settings.get_meta("settings_close")
 	toggle.button_pressed = true
 	for frame in 8: await process_frame
 	var outside := InputEventMouseButton.new(); outside.button_index = MOUSE_BUTTON_LEFT; outside.pressed = true
 	settings.get_meta("settings_backdrop").gui_input.emit(outside)
-	check(toggle.button_pressed and screen.back_button.disabled, "Close-only Settings blocks outside dismissal and game navigation")
+	check(toggle.button_pressed and screen.back_button.disabled and not corner_help.visible, "Close-only Settings blocks outside dismissal, board help and game navigation")
 	check(close.shortcut == null and root.get_visible_rect().encloses(close.get_global_rect()), "Close-only Settings has a reachable Close without an Escape shortcut")
 	close.pressed.emit()
 	check(not toggle.button_pressed and not screen.back_button.disabled, "Close restores the board and shared return navigation")
+	for frame in 4: await process_frame
+	check(corner_help.size == Vector2(44,44) and absf(corner_help.get_global_rect().end.x + 8 - toggle.get_global_rect().position.x) < .1, "Corner help keeps a full target and a fixed Settings gap")
 	holder.queue_free()
 	await process_frame
 	print("Board feedback: %d checks, %d failures" % [checks, failures])
