@@ -100,6 +100,28 @@ entrance independent of container positions. Pointer/focus highlights breathe;
 `reduced_motion` freezes the highlight. The template includes a hidden example.
 Do not add hover descriptions or tooltips.
 
+A collection can opt into `"settings_variants": true` alongside `game_choices`
+to present its modes inside host Settings instead of a separate chooser. The
+launcher opens the parent's accepted `gamemode` preference directly, falling
+back to the first eligible mode without overwriting an unavailable saved choice.
+Back returns directly to Games. Existing collections retain their chooser flow.
+Each mode keeps its stable ID, settings, standings, pinned skin and SDK route;
+switching shuts down the old mode and initializes the new one, including scenery,
+rules and controller navigation, without interrupting game music.
+
+Create an ordinary `screen.add_choice_control(settings, "GAME MODE", [])`, then
+call `configure_game_mode_choice(choice)` after `super.initialize_session(context)`.
+The shared BaseGame helper supplies validated `context.game_choices`, selects the
+active mode, hides the row outside this flow and emits the existing `game_selected`
+signal. The launcher validates the party and requires every admitted phone to be
+connected before saving or switching. Disable the control while any admitted
+phone is offline. The template includes a hidden settings example.
+
+`context.collection_state` is an optional transient dictionary shared between
+these modes until exit. Modules may retain completed summaries there, restoring
+wins by identity while starting a fresh board. It is never persisted or sent to
+controllers by the framework; preferences still use the normal settings API.
+
 ## 3. Implement the host scene
 
 The root of `host/main.tscn` must extend `BaseGame`. Override only the lifecycle callbacks your game needs:
@@ -1555,12 +1577,15 @@ first-to-two format in these games or new modules unless explicitly requested.
 
 ### Checkers collection, Draughts, Alquerque and Chinese Checkers
 
-The local `Games/checkers-collection` module groups regular `checkers`,
-`chinese-checkers`, `draughts` and `alquerque` under one Checkers menu entry using
-the existing collection contract. Regular Checkers keeps its original ID, settings, scores and two-player
-limit. Chinese Checkers admits up to six phones; unavailable choices remain
-visible and disabled. Child Back opens the chooser, whose Back opens Games.
-An offline admitted member must reconnect before any choice can launch.
+The local Checkers entry uses `settings_variants` to open the remembered mode
+directly, with no title/selection splash. Its host Settings switches regular
+`checkers`, `chinese-checkers`, `draughts` and `alquerque`, replacing the background,
+theme, board, rules and phone controls together. Each keeps its original ID,
+preferences, saved standings and player limit. Switching abandons the current
+board without results and retains completed per-mode session wins/history until
+exit. Back opens Games directly. Chinese Checkers admits up to six phones;
+larger parties fall back to it while two-player modes stay visible and disabled.
+An offline admitted member must reconnect before switching modes.
 
 `Games/draughts` implements International Draughts: 100 squares, twenty men per
 side, backward captures by men, compulsory maximum captures, end-of-turn promotion
@@ -1624,16 +1649,14 @@ enlarged board with 58px
 hole spacing and reachable Close; keyboard selection also works. Reduced motion
 settles marbles immediately; other moves lock input until host and local motion
 finish. Duplicate syncs preserve movement, while reconnect restores settled art.
-The chooser has its own blue-and-brass games library background; Chinese Checkers
-keeps a lantern-lit garden. Each uses its module's extensionless `art/background`
+Chinese Checkers keeps its lantern-lit garden. Each mode uses its extensionless background
 stem and the shared player. Chinese Checkers uses a generated transparent title
 PNG at the same host title setting as Regular Checkers, with `game-title-prominent`
 on phones for a larger responsive heading. Original images and exact
 prompts remain in `asset/checkers-collection/` and `asset/chinese-checkers/`.
-The chooser loads board illustrations from each child's validated
-`thumbnail_path`: generated previews for the original two modes and accurate
-vector previews for Draughts and Alquerque. Its square checker-king/star thumbnail
-matches the dimensional game-selection icon family in both List and Icons views.
+The single Checkers entry retains its square checker-king/star thumbnail in
+both List and Icons views. The earlier library background and preview artwork
+remain available locally as source history.
 
 Local checks: `tests/chinese_checkers.gd`, `tests/chinese_checkers_motion.gd`,
 `tests/chinese_checkers_network.gd`, rendered `tests/chinese_checkers_visual.gd`,

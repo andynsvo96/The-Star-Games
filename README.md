@@ -42,8 +42,14 @@ The development installation currently has 16 menu entries covering the 21 games
 | Tic Tac Toe | Get three in a row against a friend or computer. |
 | UNO | Match cards and empty your hand in Classic, Flip, or No Mercy. |
 
-Player limits and solo options vary by game. Checkers groups Regular Checkers,
-Chinese Checkers, Draughts, and Alquerque. Monopoly and Poker each group two variants.
+Player limits and solo options vary by game. Checkers opens its last selected mode
+directly, with Regular Checkers, Chinese Checkers, Draughts, and Alquerque in host
+**Settings > Game mode**. Changing mode starts a fresh board with that mode's
+rules, background, theme and controls; completed session totals stay with each
+mode until leaving Checkers. Back returns straight to Games. Larger parties
+automatically open Chinese Checkers, and two-player modes stay disabled until
+the party size fits. An offline admitted member must reconnect before switching.
+Monopoly and Poker each group two variants.
 Draughts and Alquerque support solo, one-phone and two-phone play, with their own
 backgrounds, artwork and saved preferences. The host can switch Draughts' Flying
 Kings off as a house rule; changing it restarts the board and keeps completed wins.

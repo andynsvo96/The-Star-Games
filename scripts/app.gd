@@ -40,6 +40,7 @@ var active_game: BaseGame
 var active_game_id := ""
 var active_collection_id := ""
 var collection_roster: Array = []
+var collection_state: Dictionary = {}
 
 var lobby_roster: GridContainer
 var active_game_is_party := false
@@ -586,6 +587,16 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 	if debug and (driver == null or not driver.supported_counts(game).has(int(automation.get("count", 0)))): return
 	if not debug and not _can_launch_for_count(game, roster.size()):
 		return
+	# Settings variants enter their remembered eligible mode directly. Keeping
+	# each mode's validated module also preserves its IDs, media and preferences.
+	if not debug and game.get("settings_variants", false):
+		var saved := game_settings_store.load_settings(str(game.id), {"gamemode": ""})
+		var eligible: Array = game.game_choices.filter(func(id: String) -> bool:
+			return _can_launch_for_count(game_catalog.find_game(id), roster.size()))
+		var id: String = saved.gamemode if eligible.has(saved.gamemode) else eligible[0]
+		collection_state = {}
+		_launch_game(game_catalog.find_game(id), str(game.id), roster)
+		return
 	var packed := load(game["host_scene_path"]) as PackedScene
 	if packed == null:
 		_show_error("The host scene could not be loaded.")
@@ -619,7 +630,11 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 			context.solo_profile.profile_id = "debug-host"
 			context.solo_profile.display_name = "Test Host"
 	context.reduced_motion = bool(automation.get("reduced", true)) if debug else bool(profile_store.get_settings().get("reduced_motion", false))
-	for id in game.get("game_choices", []):
+	var collection := game_catalog.find_game(collection_id)
+	var settings_variants: bool = collection.get("settings_variants", false)
+	if collection_id.is_empty(): collection_state = {}
+	if settings_variants: context.collection_state = collection_state
+	for id in collection.game_choices if settings_variants else game.get("game_choices", []):
 		var choice := game_catalog.find_game(id).duplicate(true)
 		choice["can_launch"] = _can_launch_for_count(choice, count)
 		context.game_choices.append(choice)
@@ -655,11 +670,18 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 
 func _on_collection_choice(id: String) -> void:
 	var collection := game_catalog.find_game(active_game_id)
+	if not active_collection_id.is_empty():
+		var parent := game_catalog.find_game(active_collection_id)
+		if parent.get("settings_variants", false): collection = parent
 	if not collection.get("game_choices", []).has(id): return
+	if id == active_game_id: return
 	var child := game_catalog.find_game(id)
 	if child.is_empty() or not _can_launch_for_count(child, collection_roster.size()): return
 	var connected_ids := lan_server.get_players().map(func(player: Dictionary) -> String: return str(player.id))
 	if connected_ids.size() != collection_roster.size() or not collection_roster.all(func(player: Dictionary) -> bool: return connected_ids.has(str(player.id))): return
+	if collection.get("settings_variants", false) and not game_settings_store.save_settings(str(collection.id), {"gamemode": id}):
+		_show_error(game_settings_store.last_error)
+		return
 	_launch_game(child, collection.id, collection_roster)
 
 
@@ -676,11 +698,12 @@ func _return_from_game() -> void:
 	active_game_id = ""
 	active_collection_id = ""
 	collection_roster = []
+	collection_state = {}
 	active_game_is_party = false
 	if was_debug:
 		_show_debug_setup()
 		return
-	if not collection.is_empty() and _can_launch_for_count(collection, roster.size()): _launch_game(collection, "", roster)
+	if not collection.is_empty() and not collection.get("settings_variants", false) and _can_launch_for_count(collection, roster.size()): _launch_game(collection, "", roster)
 	else:
 		lan_server.set_active_game("")
 		_show_game_menu()

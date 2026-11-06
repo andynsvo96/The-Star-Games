@@ -110,6 +110,9 @@ func _read_game(folder_name: String) -> Dictionary:
 			if not id is String or not _is_valid_id(id) or id == game_id or seen.has(id):
 				return {"ok": false, "error": "game_choices must contain distinct, safe child game IDs."}
 			seen.append(id)
+	if parsed.has("settings_variants"):
+		if not parsed.settings_variants is bool or not parsed.has("game_choices"):
+			return {"ok": false, "error": "settings_variants requires game_choices and a boolean value."}
 	for path_field in ["thumbnail", "host_scene", "controller_entry"]:
 		var relative := str(parsed[path_field])
 		if not _is_safe_relative_path(relative):

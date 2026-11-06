@@ -8,6 +8,7 @@ var phase_dialog: Dictionary
 var example_choice: OptionButton
 var example_toggle: Button
 var example_length: SpinBox
+var example_game_mode: OptionButton
 var debug_sample_turn := 0
 
 
@@ -591,6 +592,9 @@ func _ready() -> void:
 	# Set compact before adding fields for closer rows with the same 44px controls.
 	form.compact = true
 	var form_section := form.add_section("Round options")
+	# A settings_variants collection supplies the validated modes. This selector
+	# changes the whole game through launcher navigation, including rules/art.
+	example_game_mode = screen.add_choice_control(form_section, "Game mode", [])
 	form.add_choice(form_section, "Mode", ["Practice", "Match"])
 	# Existing shared controls can live inside the same aligned settings fields.
 	# For a live skin here, configure GameSkinSelector with this BaseGame during
@@ -698,6 +702,7 @@ func _ready() -> void:
 
 func initialize_session(context: GameSessionContext) -> void:
 	super.initialize_session(context)
+	configure_game_mode_choice(example_game_mode)
 	screen.background_media.reduced_motion = context.reduced_motion
 	# Optional live cosmetic dropdown, next to music. Reload retained textures and
 	# audio in this callback, then publish ordinary public/private snapshots.
