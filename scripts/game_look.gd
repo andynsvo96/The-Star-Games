@@ -1191,8 +1191,26 @@ static func highlight_tile(button: Button, winning: bool) -> void:
 static func help_control(button: Button) -> void:
 	button.text = "?"; button.custom_minimum_size = Vector2(44,44)
 	button.add_theme_font_size_override("font_size",22)
+	var ink := readable_text_color(button.get_theme_color("font_color"), button.get_theme_color("panel", "GamePalette"))
+	for key in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		button.add_theme_color_override(key, ink)
 	for state in ["normal","hover","pressed","disabled"]:
 		button.add_theme_stylebox_override(state,box(button.get_theme_color("panel","GamePalette"),button.get_theme_color("panel_edge","GamePalette"),22,1))
+
+
+# Opt-in board utilities use the active palette and a quiet brass primary.
+static func board_action(button: Button, primary := false) -> void:
+	button.custom_minimum_size.y = 44
+	button.add_theme_font_size_override("font_size", 16)
+	if not primary:
+		return
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		var fill := Color("d5b56e")
+		if state == "hover": fill = fill.lightened(.12)
+		if state == "pressed": fill = fill.darkened(.1)
+		var disabled: bool = state == "disabled"
+		button.add_theme_stylebox_override(state, box(DISABLED_FILL if disabled else fill, DISABLED_EDGE if disabled else Color("8f672f"), 8, 2))
+		button.add_theme_color_override("font_" + ("color" if state == "normal" else state + "_color"), DISABLED_INK if disabled else Color("302218"))
 
 
 static func instruction_control(button: Button) -> void:

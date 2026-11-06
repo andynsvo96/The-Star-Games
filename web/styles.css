@@ -1723,6 +1723,37 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .playful-game .game-board-controller .game-status-reserved { min-height: calc(2.4em + .5rem + 4px); }
 .game-board-controller .game-playfield { --game-board-footer-reserve: 60; }
 .game-board-stats { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .35rem; margin: 0; min-width: 0; }
+.game-board-ui { --primary-top:#e8ce91; --primary-bottom:#d5b56e; --primary-edge:#8f672f; --primary-highlight:#fff3c655; --primary-shadow:#765125; }
+.playful-game.game-royal .game-controller.game-board-ui .game-primary { color:#302218; }
+.game-board-tools { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; min-height:44px; }
+.playful-game .game-board-tools > button { flex:1 1 auto; width:auto; min-width:44px; min-height:44px; padding:6px 9px; margin:0; font-size:13px; line-height:1.15; letter-spacing:0; }
+.playful-game .game-board-tools > .game-help-button { flex:0 0 44px; width:44px; padding:0; border-radius:50%; font-size:22px; }
+.playful-game .game-board-ui .game-board-tools > button.game-help-button { color:var(--ink); background:var(--panel); border:1px solid var(--panel-edge); border-image:none; box-shadow:none; }
+.game-board-coach { box-sizing:border-box; margin:5px 0 0; padding:8px; min-height:3.6em; border:1px solid var(--panel-edge); border-radius:6px; background:var(--panel); color:var(--ink); font:14px/1.35 "Segoe UI",Arial,sans-serif; text-align:center; }
+.game-board-paused .game-piece-pop { animation-play-state:paused; }
+.game-board-stats .game-session-score.game-current-game { display:flex; flex-direction:column; align-items:stretch; gap:3px; }
+.game-board-stats .game-current-game .game-score-detail,.game-board-stats .game-current-game .game-score-feedback { margin:0; text-align:center; font-size:12px; }
+.game-board-stats .game-current-game .game-score-feedback { min-height:1.2em; font:600 11px/1.2 "Segoe UI",Arial,sans-serif; }
+.game-board-ui .game-board-stats .game-session-score.game-current-game > .game-score-detail { font:700 14px/1.2 "Segoe UI",Arial,sans-serif; text-align:center; }
+.game-current-stats .game-score-feedback { min-height:2.6em; margin:4px 0 0; font:600 12px/1.25 "Segoe UI",Arial,sans-serif; }
+.game-board-stats .game-score-card.game-current-stats > .game-score-feedback { border:0; background:none; padding:0; box-shadow:none; border-radius:0; }
+.game-current-stats .game-stat-grid { margin-top:5px; }
+.game-illustrated-guide,.game-round-dialog { width:min(94vw,760px); max-width:760px; }
+.game-illustrated-guide > .dialog-body,.game-round-dialog > .dialog-body { scrollbar-width:thin; scrollbar-color:var(--panel-edge) transparent; }
+.game-illustrated-guide > .dialog-body:focus-visible,.game-round-dialog > .dialog-body:focus-visible { outline:2px solid var(--focus-color); outline-offset:-2px; }
+.game-guide-section { margin:0 0 24px; font-family:"Segoe UI",Arial,sans-serif; text-align:left; }
+.game-guide-section h3 { margin:0 0 8px; font-size:21px; line-height:1.2; }
+.game-guide-section > img { display:block; width:100%; height:210px; object-fit:contain; }
+.game-guide-section > p { margin:8px 0 0; font-size:16px; line-height:1.5; font-weight:400; }
+.game-round-summary { margin:0 0 14px; font:15px/1.4 "Segoe UI",Arial,sans-serif; text-align:center; white-space:pre-line; }
+.game-round-results { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.game-round-player { min-width:0; padding:14px; border:2px solid var(--panel-edge,#b18b4e); border-radius:10px; font:15px/1.35 "Segoe UI",Arial,sans-serif; }
+.game-round-player > header { display:flex !important; align-items:center; gap:8px; min-height:44px; margin-bottom:14px; }
+.game-round-player > header > strong { flex:1; padding-left:8px; overflow-wrap:anywhere; font-size:18px; }
+.game-round-player > header > img { width:30px; height:30px; object-fit:contain; }
+.game-round-player dl { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px 12px; margin:0; }
+.game-round-player dd { margin:0; font-weight:700; text-align:right; }
+@media (max-width:600px) { .game-round-results { grid-template-columns:minmax(0,1fr); } }
 .game-board-stats[data-game-stats-columns="3"] { grid-template-columns: repeat(3,minmax(0,1fr)); }
 .game-board-stats > * { min-width: 0; margin: 0; }
 .game-board-stats .game-session-score { font-size: .8rem; gap: .1rem .35rem; }

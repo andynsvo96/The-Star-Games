@@ -1527,53 +1527,114 @@ Decorations ignore pointer input, are hidden from screen readers, and honor
 reduced motion, including a preference change during playback. Keep the normal
 status text accessible and keep navigation usable during the celebration.
 
+### Illustrated board help and round summaries
+
+Use `screen.add_illustrated_guide(caption, examples)` for an explicit illustrated
+reference. Each example supplies literal `heading`, `detail`, an offline resource
+`image`, and a text alternative in `description`. The returned phase-dialog
+fields include `guide`, a `GameIllustratedGuide`; `guide.set_items(examples)`
+retains nodes on unchanged updates. Close, Escape and outside dismissal leave the
+board in place. Only the body scrolls. Connect the overlay's visibility to the
+module's own pause policy; the shared component never pauses rules automatically.
+Use `GameLook.help_control(button)` for the 44px question-mark action.
+
+Browsers load `/board-ui.js` and create
+`new StarGamesIllustratedGuide(main, {heading, onChange})`. Call `setItems` with
+`{heading, detail, image, description}` entries using canonical offline URLs,
+then `open(helpButton)` or `close()`. The shared dialog preserves reading position
+on duplicate snapshots, keeps its Close action reachable and restores focus.
+Static diagrams must agree with the active rules, including accepted house-rule
+settings. Never make examples from hidden live state. The template includes a
+hidden native/browser example and the real LAN server serves the shared script.
+
+`GameRoundResults.set_results(entries)` renders public round metrics, literal
+names and a winner crown in responsive player cards. Each entry contains
+`display_name`, `color`, `winner` and `metrics:[{label,value}]`. Put the component
+inside a shared phase dialog and the existing replay Button inside its fixed
+actions. Modules own result eligibility, awards, duration, visibility and the
+single replay action. The component calculates no scores and preserves its nodes
+when entries are unchanged. Filter all data before supplying it.
+
+The browser counterpart is `new StarGamesRoundResults(main, replayButton,
+{onChange})`. `update({key,heading,summary,players}, ready)` opens a new result once,
+with the same entry schema. Wait for authoritative and local movement to settle.
+Use a stable result key, `reset()` on a new board and `open()` from a visible
+Results action after View Board. The existing replay element is moved into the
+fixed action row; give it `data-game-inline-action` so the SDK does not impose a
+board-width limit on the dialog. All statistics remain host-authoritative.
+
+`screen.set_score_card_current_game(card)` hides session totals and decorative
+win artwork while keeping the existing identity, active-turn and content hooks.
+Populate content with current-board counters and feedback. Apply compact-card
+sizing before this opt-in; pass a second `true` for dense multi-seat name rows. Browser cards use `game-current-stats`; compact
+session-style progress rows can use `game-current-game`. `GameLook.board_action`
+and browser `game-board-ui`/`game-board-tools` provide matching board utilities
+and a brass primary action without changing other presentations. These hooks are
+shown in the template. `tests/board_feedback.gd` checks native components;
+`tests/network_smoke.gd` checks the actual shared script route.
+
 ### Checkers example
 
-`Games/checkers` uses the existing shared title-art, parchment-score, settings,
-history, motion, and celebration hooks for an 8x8 board. Its rules module owns
-legal moves, compulsory capture chains, promotion, automatic draws, and bounded
-AI search. Force Jump defaults on; turning it off makes starting a capture
-optional, while a started chain still finishes. The host can change this option
-between chains, including in two-phone games; changes preserve the board and
-scores, advance the revision, and cancel stale AI work. Snapshots include
-`force_jump`, `legal_moves`, `forced_from`, `last_move`, and
-`counts`; selection is presentation state, while every move is validated by the
-host against sender, seat, turn, revision, and legal destinations. A reconnect
-during a multiple jump restores the forced piece. The black controller reorders
-the cells for that player's perspective without changing authoritative indexes.
-Piece counters extend the shared score-card content; common chrome stays shared.
-Checkers also has an optional host-only Turn Timer, off by default, with the
-same custom time-per-player model as Chess (0.1 to 1440 decimal minutes). The
-first legal move starts it; a multiple jump keeps charging the same player.
-Host monotonic time decides expiry, immediately recording one opponent win.
-The host can edit the timer at any time, including a capture chain or disconnect.
-An accepted change restarts the current board, cancels stale AI/movement and
-resets clocks while preserving completed wins/history. No result is awarded for
-the abandoned board. Unchanged settings do not restart. Disconnects freeze clocks;
-sync restores `clock_seconds`, `remaining` and `clock_running`. Browser
-interpolation is display-only. Replay resets both clocks, and replay/difficulty
-changes preserve the setting. Enabled clocks use shared score-card text on both
-screens; detailed Session & History controls are omitted.
-The board's module-owned movement queues slides and capture hops without moving
-click targets. Promotion and win feedback follow the landing. Duplicate snapshots
-preserve active movement; resets, reconnects and reduced motion restore static
-state. The bottom instructions panel is omitted. Natural wood/felt cues are
-generated offline by `Games/checkers/audio/generate.py` and use the Effects bus.
-Raw artwork is bundled through the shared image/video filters in every export preset.
-Run `tests/checkers.gd` for rules, AI, mode, disconnect, replay, scoring, and
-catalog checks, and `tests/checkers_motion.gd` for movement and cancellation.
-Movement follows the [WCDF English rules](https://wcdf.net/rules/rules_of_checkers_english.pdf),
-with automatic draw detection and the launcher's alternating round starters.
+`Games/checkers` keeps legal moves, capture chains, promotion, automatic draws
+and bounded AI search in its rules module. Its host and phones use shared centered
+boards, current-game ledger cards, settings forms, illustrated references and
+round results. The Default board uses offline wood squares and raised checker
+art, with stacked crowned kings. Source originals remain under `asset/checkers/`.
 
-Tic Tac Toe, Checkers, and Four in a Row each count one completed board as one game, with an
-immediate win, one result per player and one point for the winner of a decisive
-two-phone game. Draws and local-host/AI games do not alter
-saved standings. Their single Play Again action works after wins or draws and
-preserves session wins, history and settings while alternating starters. Score
-cards show `session_wins`; `champion` identifies a decisive board winner in these
-modules. The existing `next` action remains a replay alias for older controllers.
-Title subtitles are omitted on hosts and controllers. Do not introduce a
-first-to-two format in these games or new modules unless explicitly requested.
+Force Jump defaults on. Turning it off makes starting a capture optional; a
+started chain always finishes with the same piece. Host changes between chains
+preserve the board, advance its revision and cancel stale AI work. Snapshots
+include `force_jump`, `legal_moves`, `forced_from`, `last_move` and `counts`.
+Selections and hints are presentation state; every submitted move is validated
+against sender, seat, revision, turn, pause and movement locks. The second phone
+rotates its presentation without changing authoritative square indexes.
+
+Regular Checkers, Draughts and Alquerque use an optional **Game Clock**, off by
+default, giving each player a total allowance. The first legal move starts it;
+a multiple jump keeps charging the same player. Three-, five- and ten-minute
+presets plus Custom cover 0.1 to 1440 minutes. Accepted live clock changes restart
+the current board while retaining completed internal session history; preparing
+a time while the clock is off does not restart play. Host Settings and host help
+pause input, AI, clocks, movement and sound. Disconnects freeze play. Browser clock
+interpolation is display-only; host monotonic time alone decides expiry.
+
+Player cards show pieces remaining (including kings), the king subset, active
+turn/capture feedback and the optional clock. Session win/loss totals are omitted
+from these views. The question-mark action opens mode-specific diagrams and
+instructions outside Settings, including on a solo host. Browser help is local.
+Small phone boards open an enlarged scrolling board with full touch targets and
+a fixed Close action; normal 390px Regular Checkers fits playable 44px squares.
+
+After movement settles, a shared results dialog shows the winner or draw reason,
+active duration, turns, captures, kings crowned and longest capture chain.
+Duration starts at the first accepted move and excludes host help, Settings and
+disconnected pauses. Duplicate snapshots preserve reading position. View Board
+retains a Results action; the single Play Again resets round facts, alternates
+starters and preserves internal session history. Draws award nothing. A decisive
+two-phone board reports one result per player and one saved point to its winner;
+host and computer play remains practice. No first-to-two match is introduced.
+
+Teaching mode is a saved per-mode preference, available only with one human and
+computer opponents. It uses an Easy training opponent, host-selected legal hints
+with a short explanation, and Take Back before a board finishes. A bounded
+module-owned stack records the position before each human turn; undo restores
+that complete turn and any computer replies, clocks, draw-detection state and
+round statistics. Revisions advance and old motion, hints and queued AI are
+cancelled. Jump chains use one checkpoint. Checkpoints are transient, never
+preferences or public snapshots. One-phone learners use the same validated SDK
+actions; multiplayer and unadmitted/stale commands cannot enable coaching.
+
+Moves and capture removal animate inner artwork, never input targets. Premature
+placement is discarded while the host or local movement is active. Host pause
+preserves the current phase; refresh/reconnection restores authoritative state.
+Reduced motion retains static pieces, crowns and feedback. Audio stays on the
+host Effects bus and no new skin selector is added.
+
+Run `tests/checkers.gd`, `tests/checkers_motion.gd`, rendered
+`tests/checkers_visual.gd`, then `node tests/checkers_controller.mjs`. Family
+coverage adds `tests/checkers_polish.gd`, rendered
+`tests/checkers_polish_visual.gd`, then `node tests/checkers_polish_controller.mjs`.
+All playable modules, artwork and dependent tests stay local.
 
 ### Checkers collection, Draughts, Alquerque and Chinese Checkers
 
@@ -1609,7 +1670,8 @@ Both new two-seat modules begin with the template layout and reuse regular
 Checkers' session/controller integration through local family hooks, with separate
 rules and artwork in each module. Solo and one-phone games can use a computer;
 only decisive two-phone boards update saved standings. Replay alternates starters.
-Settings and disconnects pause clocks, AI and movement. The host and phones reject
+Settings and host help pause clocks, AI and movement. Disconnects preserve the
+board and pause play. The host and phones reject
 placement until their movement settles; refresh restores authoritative state.
 Phone boards whose fitted cells would be smaller than 44px become a single
 enlargement target. Zoom opens the shared scrolling dialog with full-size cells,
@@ -1641,12 +1703,13 @@ humans without substituting computers; extra
 phones are spectators. Snapshots omit profile metadata and reconnect tokens.
 
 Both views inherit shared royal controls, selection rings and celebrations.
-Hosts use a larger shared centered board, compact score cards, matching numbered
-identity-color tokens, and a static gold name highlight for the current seat.
+Hosts use a larger shared centered board, compact current-game cards, matching
+numbered identity-color tokens, and a static gold name highlight for the current seat.
 Ordinary host turn plaques are omitted.
-Phones keep a compact top turn status, matching numbered color tokens, and shared
-session scores/countdowns below the board through the SDK's measured footer. Help
-stays in host Settings; phones retain Zoom. The shared scrolling dialog opens an
+Phones keep matching numbered color tokens and current-game home progress, turn
+feedback and countdowns below the board through the SDK's measured footer. Routine
+connected captions and the ordinary top turn plaque are omitted. Question-mark help on host and phones opens an illustrated, mode-specific guide;
+phones also retain enlarged-board access. The shared scrolling dialog opens an
 enlarged board with 58px
 hole spacing and reachable Close; keyboard selection also works. Reduced motion
 settles marbles immediately; other moves lock input until host and local motion

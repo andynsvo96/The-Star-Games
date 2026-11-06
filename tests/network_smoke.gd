@@ -72,6 +72,11 @@ func _run() -> void:
 		return _finish(false, "HTTP controller page response was invalid")
 	var artwork := HTTPRequest.new()
 	root.add_child(artwork)
+	if artwork.request("http://127.0.0.1:%d/board-ui.js" % server.http_port) != OK:
+		return _finish(false, "Shared board UI request failed")
+	var board_ui: Array = await artwork.request_completed
+	if board_ui[1] != 200 or not board_ui[3].get_string_from_utf8().contains("StarGamesIllustratedGuide"):
+		return _finish(false, "Shared illustrated board UI was not served offline")
 	if artwork.request("http://127.0.0.1:%d/?sg-phone=1" % server.http_port) != OK:
 		return _finish(false, "Inner controller page request failed")
 	var inner_response: Array = await artwork.request_completed

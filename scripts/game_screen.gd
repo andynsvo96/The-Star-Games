@@ -1361,6 +1361,36 @@ func add_score_stat(card: Dictionary, icon: Texture2D, text: String) -> Label:
 	return value
 
 
+# Round-only counters retain the existing card, identity and turn treatment.
+func set_score_card_current_game(card: Dictionary, compact := false) -> void:
+	card.score_panel.hide()
+	card.name_panel.custom_minimum_size.y = 24 if compact else 52
+	for child in card.content.get_children():
+		if child.has_meta("score_decoration"):
+			child.hide()
+	card.player.add_theme_font_size_override("font_size", 15 if compact else 18)
+	card.content.add_theme_constant_override("separation", 4 if compact else 8)
+
+
+func add_illustrated_guide(caption: String, examples: Array = []) -> Dictionary:
+	var dialog := add_phase_dialog(false, true, false, true, 720)
+	dialog.heading.text = caption
+	var guide := GameIllustratedGuide.new()
+	dialog.body.add_child(guide)
+	guide.set_items(examples)
+	dialog["guide"] = guide
+	var close := Button.new()
+	close.text = "CLOSE"
+	dialog.actions.add_child(close)
+	GameLook.action(close, false)
+	close.pressed.connect(func() -> void: dialog.overlay.hide())
+	var escape := InputEventKey.new()
+	escape.keycode = KEY_ESCAPE
+	close.shortcut = Shortcut.new()
+	close.shortcut.events = [escape]
+	return dialog
+
+
 # Dense multi-seat boards keep ornate cards inside the shared sidebar geometry.
 # Apply after adding counters; other card presentations retain their usual layout.
 func set_score_card_compact(card: Dictionary, compact: bool, minimal_decoration := false) -> void:

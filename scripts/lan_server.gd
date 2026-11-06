@@ -336,6 +336,7 @@ func _serve_http(peer: StreamPeerTCP, request: String) -> void:
 		"/phone-frame.js": resource_path = "res://web/phone-frame.js"
 		"/phone-frame.css": resource_path = "res://web/phone-frame.css"
 		"/game-celebration.js": resource_path = "res://web/game-celebration.js"
+		"/board-ui.js": resource_path = "res://web/board-ui.js"
 		"/card-ui.js": resource_path = "res://web/card-ui.js"
 		"/media-view.js": resource_path = "res://web/media-view.js"
 		"/manifest.webmanifest": resource_path = "res://web/manifest.webmanifest"

@@ -75,6 +75,21 @@ func _ready() -> void:
 	# set_score_card_compact(card, true, true) trims decoration in dense host stacks.
 	# Optional shared layout for games with session scores and history.
 	var layout := screen.add_centered_layout()
+	# Public illustrated help uses static examples; the module owns pause policy.
+	var illustrated_guide_example := screen.add_illustrated_guide("How to play", [{"heading":"An example move", "detail":"Explain the move in plain text.", "image":"res://Games/_Template/thumbnail.svg", "description":"A static public example"}])
+	var guide_button := Button.new()
+	layout.playfield.add_child(guide_button)
+	GameLook.help_control(guide_button)
+	guide_button.accessibility_name = "How to play"
+	guide_button.pressed.connect(func() -> void: illustrated_guide_example.overlay.show())
+	guide_button.hide()
+	var round_example := GameRoundResults.new()
+	layout.playfield.add_child(round_example)
+	round_example.set_results([{"display_name":"Example player", "color":"#527bc3", "winner":true, "metrics":[{"label":"Moves", "value":12}]}])
+	round_example.hide()
+	# set_score_card_current_game(card) hides session totals/decorations while
+	# retaining literal identity, current-round counters and active-turn feedback.
+	# GameLook.board_action(button, true) opts into a brass replay/confirm action.
 	# Optional question/reference media uses shared contain-fit artwork and explicit
 	# Play/Pause/Sound controls. It never autoplays. Pass native local paths:
 	# media.show_media({"sources":[image_or_video], "poster":"", "alt":"Description"}).

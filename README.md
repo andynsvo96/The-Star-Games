@@ -55,6 +55,15 @@ Draughts and Alquerque support solo, one-phone and two-phone play, with their ow
 backgrounds, artwork and saved preferences. The host can switch Draughts' Flying
 Kings off as a house rule; changing it restarts the board and keeps completed wins.
 
+Each Checkers mode keeps its own board and scenery. Player panels show current-game
+pieces or home progress and clocks; session win/loss totals are omitted. A **?**
+button opens illustrated instructions on host and phones, outside the compact
+host Settings form. Settings and host help pause play. Results include round
+statistics with **View Board**, **Results**, and one **Play Again** action.
+With one human against computer opponents, **Teaching mode** enables an Easy
+training opponent, explained legal hints and **Take Back** for the previous human
+turn and its computer replies. Coaching preferences are saved separately per mode.
+
 The local Poker variants include optional cinematic community-card reveals,
 all-in win odds, and individual player histories opened from their stat plaques
 on the host or browser controller. Cinematic Reveals defaults on in Table Settings.

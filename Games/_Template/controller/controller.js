@@ -3,6 +3,18 @@
   // on this controller's own identity when the authoritative turn matches it.
   "use strict";
   const gameId = "replace-with-game-id";
+  // Hidden shared illustrated-help example; a real module supplies its own diagrams.
+  const exampleGuide = new StarGamesIllustratedGuide(document.querySelector(".game-controller"));
+  exampleGuide.setItems([{heading:"An example move",detail:"Explain the public move in plain text.",image:"/ui/playful/control-help.svg",description:"A static example"}]);
+  const exampleBoardReplay = document.createElement("button"); exampleBoardReplay.textContent = "PLAY AGAIN";
+  const exampleBoardResults = new StarGamesRoundResults(document.querySelector(".game-controller"), exampleBoardReplay);
+  const exampleBoardResultsButton = document.createElement("button"); exampleBoardResultsButton.hidden = true;
+  document.querySelector(".game-controller").append(exampleBoardResultsButton);
+  exampleBoardResultsButton.addEventListener("click", () => exampleBoardResults.update({key:"example-round",heading:"Game results",summary:"A public round summary",players:[{display_name:"Example player",color:"#527bc3",winner:true,metrics:[{label:"Moves",value:12}]}]},true));
+  // exampleGuide.open(helpButton). Round results use StarGamesRoundResults(main,
+  // replayButton).update({key,heading,summary,players:[{display_name,color,winner,
+  // metrics:[{label,value}]}]}, ready); duplicate keys retain reading position.
+
 	const exampleCard = StarGamesCard({ name: "EXAMPLE", value: 1 });
 	exampleCard.hidden = true;
 	document.querySelector(".game-controller").append(exampleCard);
