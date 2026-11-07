@@ -94,11 +94,16 @@ func _ready() -> void:
 	screen.set_score_card_current_game(counter_example)
 	screen.add_score_counter_rows(counter_example, [RuntimeAssets.texture("res://ui/playful/control-help.svg"), RuntimeAssets.texture("res://ui/playful/table-crown.svg")], ["12 PIECES", "1 KING"])
 	counter_example.panel.hide()
+	screen.set_score_card_turn_glow(counter_example, true, true)
 	# Hidden pointer example. Real modules supply hit testing, preview artwork and
 	# their validated move callback; taps keep their usual Button handlers.
 	var piece_drag_surface_example := Control.new(); piece_drag_surface_example.size = Vector2(160,64)
 	layout.playfield.add_child(piece_drag_surface_example); piece_drag_surface_example.hide()
 	var piece_drag_example := GamePieceDrag.new(); add_child(piece_drag_example)
+	var shared_move_rehearsal_example := GameMovePreview.new()
+	piece_drag_surface_example.add_child(shared_move_rehearsal_example)
+	shared_move_rehearsal_example.configure(func(cell: int) -> Rect2: return Rect2(piece_drag_surface_example.global_position + Vector2(cell * 80,0),Vector2(44,44)), func(_record: Dictionary) -> Control: var ghost := Label.new(); ghost.text = "A"; return ghost)
+	shared_move_rehearsal_example.update_preview({"key":"public-example", "from":0, "to":1, "path":[0,1]}, false, true)
 	piece_drag_example.configure(piece_drag_surface_example, {"hit_test":func(point: Vector2) -> int: return int((point.x - piece_drag_surface_example.global_position.x) / 80) if piece_drag_surface_example.get_global_rect().has_point(point) else -1, "can_start":func(cell: int) -> bool: return cell == 0, "revision":func() -> int: return 0, "make_preview":func(_cell: int) -> Control: var preview := Label.new(); preview.text = "A"; preview.size = Vector2(44,44); return preview, "drop":func(_from: int, _to: int) -> void: pass})
 	# set_score_card_current_game(card) hides session totals/decorations while
 	# retaining literal identity, current-round counters and active-turn feedback.

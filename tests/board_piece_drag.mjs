@@ -6,7 +6,7 @@ import {spawn} from 'node:child_process';
 const root=resolve(import.meta.dirname,'..'),output=join(root,'.test_data/board-piece-drag');
 const chrome=process.argv[2]||process.env.CHROME_BIN||'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const source=await readFile(join(root,'web/board-ui.js'),'utf8');
-const html=`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/styles.css"><style>body{margin:0}#surface{display:flex;gap:80px;width:280px;height:120px;margin:16px}#surface button{flex:none;width:64px;height:64px;margin:0}</style><main class="game-board-ui"><div id="surface"><button data-piece-drag>A</button><button>B</button></div></main><script>${source}</script><script>
+const html=`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/styles.css"><style>body{margin:0}#surface{position:relative;display:flex;gap:80px;width:280px;height:120px;margin:16px}#surface button{flex:none;width:64px;height:64px;margin:0}</style><main class="game-board-ui"><div id="surface"><button data-piece-drag>A</button><button>B</button></div></main><script>${source}</script><script>
 window.qaRevision=0;window.qaEnabled=true;window.qaMoves=[];window.qaClicks=0;
 const surface=document.querySelector('#surface'),cells=[...surface.children];
 cells[0].addEventListener('click',()=>qaClicks++);
@@ -16,7 +16,9 @@ window.qaDrag=new StarGamesPieceDrag(surface,{
  createPreview:()=>{const preview=document.createElement('div');preview.textContent='A';Object.assign(preview.style,{width:'44px',height:'44px'});return preview;},
  onStart:cell=>cells[cell].style.visibility='hidden',onEnd:cell=>cells[cell].style.visibility='',
  onDrop:(from,to)=>{if(from===0&&to===1){qaMoves.push({from,to});qaRevision++;}}
-});window.qaReady=true;
+});
+window.qaPreview=new StarGamesMovePreview(surface,{rectFor:cell=>cells[cell].getBoundingClientRect(),createVisual:()=>{const ghost=document.createElement('span');ghost.textContent='A';return ghost;}});
+window.qaDemo={key:'first',from:0,to:1,path:[0,1]};window.qaReady=true;
 </script>`;
 const server=createServer(async(req,res)=>{try{res.writeHead(200,{'Content-Type':req.url==='/styles.css'?'text/css':'text/html'});res.end(req.url==='/styles.css'?await readFile(join(root,'web/styles.css')):html);}catch{res.writeHead(404);res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));await mkdir(output,{recursive:true});
@@ -49,6 +51,26 @@ try{
    await page.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[from]});await page.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[to]});check(await evaluate('!!qaDrag.gesture?.dragging'),'Touch can lift a piece');await page.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});check(await evaluate('qaMoves.length===2&&qaClicks===1'),'Touch release submits once');
    await page.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[from]});await page.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[to]});await page.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});check(await evaluate('qaMoves.length===2&&!qaDrag.gesture'),'Canceled touch cannot move a piece');
    const beforeKey=await evaluate('qaClicks');await evaluate('document.querySelector("#surface button").focus()');await page.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,text:'\r',unmodifiedText:'\r'});await page.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});check(await evaluate('qaClicks')===beforeKey+1,'Keyboard activation remains available: '+JSON.stringify(await evaluate('({clicks:qaClicks,focus:document.activeElement.outerHTML})')));
+   const original=await evaluate('({text:cells.map(cell=>cell.textContent),moves:qaMoves.length,revision:qaRevision})');
+   await evaluate('qaPreview.update(qaDemo,{reduced:matchMedia("(prefers-reduced-motion:reduce)").matches})');await delay(70);
+   check(await evaluate('!!document.querySelector(".game-guide-ghost")&&qaPreview.visual.getAttribute("aria-hidden")==="true"&&getComputedStyle(qaPreview.visual).pointerEvents==="none"'),'A public preview is visible without intercepting input');
+   await evaluate('qaPreview.update(qaDemo,{paused:true});window.qaHeldGhost=qaPreview.visual;window.qaHeldRect=qaHeldGhost.getBoundingClientRect().toJSON()');await delay(90);
+   check(await evaluate('qaPreview.visual===qaHeldGhost&&Math.abs(qaHeldGhost.getBoundingClientRect().x-qaHeldRect.x)<.1&&Math.abs(qaHeldGhost.getBoundingClientRect().y-qaHeldRect.y)<.1'),'Pause freezes the current ghost without rebuilding it');
+   await evaluate('qaPreview.update(qaDemo)');await delay(450);
+   check(await evaluate('Math.abs(qaPreview.visual.getBoundingClientRect().x-cells[1].getBoundingClientRect().x)<.1'),'A demonstration lands at the suggested destination');
+   await evaluate('qaPreview.update(qaDemo)');await delay(60);
+   check(await evaluate('qaPreview.visual===qaHeldGhost&&Math.abs(qaPreview.visual.getBoundingClientRect().x-cells[1].getBoundingClientRect().x)<.1'),'Duplicate snapshots keep the same landed ghost');
+   await evaluate('surface.style.marginLeft="20px";qaPreview.refresh()');
+   check(await evaluate('Math.abs(qaPreview.visual.getBoundingClientRect().x-cells[1].getBoundingClientRect().x)<.1'),'A settled preview follows board reflow');
+   await evaluate('qaPreview.update({...qaDemo,key:"second"},{paused:true})');
+   check(await evaluate('qaPreview.visual!==qaHeldGhost&&Math.abs(qaPreview.visual.getBoundingClientRect().x-cells[0].getBoundingClientRect().x)<.1'),'A new host choice starts a new preview');
+   await evaluate('qaPreview.update({...qaDemo,key:"second"},{restore:true})');
+   check(await evaluate('Math.abs(qaPreview.visual.getBoundingClientRect().x-cells[1].getBoundingClientRect().x)<.1'),'Reconnect restores a settled destination');
+   await evaluate('qaPreview.update({...qaDemo,key:"reduced"},{reduced:true})');
+   check(await evaluate('Math.abs(qaPreview.visual.getBoundingClientRect().x-cells[1].getBoundingClientRect().x)<.1'),'Reduced motion shows a static destination');
+   await evaluate('qaPreview.update({})');
+   check(await evaluate('!document.querySelector(".game-guide-ghost")'),'Clearing a suggestion removes its ghost');
+   check(JSON.stringify(await evaluate('({text:cells.map(cell=>cell.textContent),moves:qaMoves.length,revision:qaRevision})'))===JSON.stringify(original),'Public demonstrations never change pieces, moves or revisions');
    console.log(name+': '+JSON.stringify({checks,failures:0}));
   }catch(error){failed=true;console.log(name+': '+JSON.stringify({checks,failures:1,error:String(error)}));}
  }

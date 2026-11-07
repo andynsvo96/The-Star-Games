@@ -1,8 +1,14 @@
 (() => {
-  // Optional personal turn glow: toggle the shared .game-turn-glow class only
-  // on this controller's own identity when the authoritative turn matches it.
+  // Optional turn glow: toggle the shared .game-turn-glow on each active
+  // player's panel from authoritative turn state, respecting reduced motion.
   "use strict";
   const gameId = "replace-with-game-id";
+  // Shared player panels retain individual themed frames and one turn treatment.
+  const playerPanelExample = document.createElement('section'); playerPanelExample.hidden=true;
+  playerPanelExample.className='game-board-ui game-board-stats';
+  const playerPanelCardExample=document.createElement('aside');playerPanelCardExample.className='game-score-card game-ornate game-player-panel game-turn-glow';
+  const playerPanelNameExample=document.createElement('p');playerPanelNameExample.textContent='Example player';
+  playerPanelCardExample.append(playerPanelNameExample);playerPanelExample.append(playerPanelCardExample);document.querySelector('.game-controller').append(playerPanelExample);
   // Hidden shared illustrated-help example; a real module supplies its own diagrams.
   const exampleGuide = new StarGamesIllustratedGuide(document.querySelector(".game-controller"));
   exampleGuide.setItems([{heading:"An example move",detail:"Explain the public move in plain text.",image:"/ui/playful/control-help.svg",description:"A static example"}]);
@@ -17,6 +23,12 @@
   const exampleDragBoard = document.createElement("div"); exampleDragBoard.hidden = true;
   const exampleDragCells = ["A", ""].map(text => {const button=document.createElement("button");button.textContent=text;exampleDragBoard.append(button);return button;});
   document.querySelector(".game-controller").append(exampleDragBoard);
+  // A keyed public suggestion animates an independent ghost and holds its end.
+  const sharedMoveRehearsalExample = new StarGamesMovePreview(exampleDragBoard, {
+    rectFor:cell=>exampleDragCells[cell].getBoundingClientRect(),
+    createVisual:()=>{const ghost=document.createElement('span');ghost.textContent='A';return ghost;}
+  });
+  sharedMoveRehearsalExample.update({key:'public-example',from:0,to:1,path:[0,1]},{reduced:true});
   new StarGamesPieceDrag(exampleDragBoard, {
     hitTest:(x,y)=>exampleDragCells.findIndex(cell=>{const r=cell.getBoundingClientRect();return x>=r.left&&x<r.right&&y>=r.top&&y<r.bottom;}),
     canStart:cell=>cell===0, revision:()=>0,

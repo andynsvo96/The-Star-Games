@@ -82,6 +82,28 @@ func _run() -> void:
 	check(not toggle.button_pressed and not screen.back_button.disabled, "Close restores the board and shared return navigation")
 	for frame in 4: await process_frame
 	check(corner_help.size == Vector2(44,44) and absf(corner_help.get_global_rect().end.x + 8 - toggle.get_global_rect().position.x) < .1, "Corner help keeps a full target and a fixed Settings gap")
+	var preview_check := GameMovePreview.new(); holder.add_child(preview_check)
+	preview_check.configure(func(cell: int) -> Rect2: return Rect2(30 + cell * 100, 30, 32, 32), func(_record: Dictionary) -> Control: var visual := Label.new(); visual.text = "A"; return visual)
+	var demonstration := {"key":"one", "from":0, "to":1, "path":[0,1]}
+	preview_check.update_preview(demonstration, false, true)
+	var held_visual := preview_check.visual
+	check(held_visual.global_position.is_equal_approx(Vector2(130,30)), "Reduced motion holds a preview at its destination")
+	preview_check.update_preview(demonstration, false, false)
+	check(preview_check.visual == held_visual and preview_check.elapsed == preview_check.duration, "Duplicate snapshots retain the settled ghost")
+	demonstration.key = "two"; preview_check.update_preview(demonstration, true, false)
+	check(preview_check.elapsed == 0 and preview_check.paused, "A new suggestion restarts an independent preview and honors pause")
+	preview_check.update_preview({}, false, false)
+	check(preview_check.key.is_empty() and not is_instance_valid(preview_check.visual), "Cleared guidance removes its ghost")
+	demonstration.key = "animated"; preview_check.update_preview(demonstration, false, false)
+	await create_timer(.12).timeout
+	check(preview_check.elapsed > 0 and preview_check.elapsed < preview_check.duration, "A new live preview advances independently")
+	preview_check.update_preview(demonstration, true, false)
+	var held_age := preview_check.elapsed
+	await create_timer(.08).timeout
+	check(preview_check.elapsed == held_age, "Pause freezes the current demonstration phase")
+	preview_check.update_preview(demonstration, false, false)
+	await create_timer(.4).timeout
+	check(preview_check.visual.global_position.is_equal_approx(Vector2(130,30)), "A completed demonstration stays at its destination")
 	holder.queue_free()
 	await process_frame
 	print("Board feedback: %d checks, %d failures" % [checks, failures])

@@ -69,6 +69,31 @@
 	}
 	window.StarGamesIllustratedGuide = IllustratedGuide;
 	window.StarGamesRoundResults = RoundResults;
+	class MovePreview {
+		constructor(parent,{rectFor,createVisual}) { Object.assign(this,{parent,rectFor,createVisual,key:"",visual:null,frame:0,elapsed:0,paused:false}); }
+		update(record,{paused=false,reduced=false,restore=false}={}) {
+			this.paused=paused;
+			if(!record || !Number.isInteger(record.to) || record.to<0) {this.clear();return;}
+			const key=record.key??JSON.stringify([record.from,record.to,record.path]);
+			if(key!==this.key) {
+				this.clear();this.key=key;this.route=record.path?.length>1?record.path:[record.from,record.to];
+				this.duration=Math.min(1500,Math.max(350,(this.route.length-1)*320));this.elapsed=reduced||restore?this.duration:0;
+				this.visual=this.createVisual(record);this.visual.classList.add('game-guide-ghost');this.visual.setAttribute('aria-hidden','true');this.parent.append(this.visual);
+			}
+			if(reduced||restore)this.elapsed=this.duration;
+			this.last=performance.now();this.refresh();this.schedule();
+		}
+		schedule(){cancelAnimationFrame(this.frame);if(this.visual&&!this.paused&&this.elapsed<this.duration)this.frame=requestAnimationFrame(now=>{this.elapsed=Math.min(this.duration,this.elapsed+now-this.last);this.last=now;this.refresh();this.schedule();});}
+		refresh(){
+			if(!this.visual)return;
+			const p=Math.min(1,this.elapsed/this.duration)*(this.route.length-1),index=Math.min(Math.floor(p),this.route.length-2),t=p-index,ease=t*t*(3-2*t);
+			const a=this.rectFor(this.route[index]),b=this.rectFor(this.route[index+1]),parent=this.parent.getBoundingClientRect();
+			const width=a.width+(b.width-a.width)*t,height=a.height+(b.height-a.height)*t;
+			Object.assign(this.visual.style,{left:(a.x+a.width/2+(b.x+b.width/2-a.x-a.width/2)*ease-parent.left-this.parent.clientLeft-width/2)+'px',top:(a.y+a.height/2+(b.y+b.height/2-a.y-a.height/2)*ease-parent.top-this.parent.clientTop-height/2-Math.sin(t*Math.PI)*height*.15)+'px',width:width+'px',height:height+'px'});
+		}
+		clear(){cancelAnimationFrame(this.frame);this.visual?.remove();this.visual=null;this.key="";}
+	}
+	window.StarGamesMovePreview=MovePreview;
 	// Taps and keyboard clicks keep their normal handlers. Only a deliberate drag
 	// suppresses its follow-up click; authority always stays with onDrop's caller.
 	class PieceDrag {

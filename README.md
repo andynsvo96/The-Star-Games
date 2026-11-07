@@ -65,25 +65,30 @@ With one human against computer opponents, **Teaching mode** enables an Easy
 training opponent, explained legal hints and **Take Back** for the previous human
 turn and its computer replies. Coaching preferences are saved separately per mode.
 **Guided gameplay** is available in every mode, off by default, for automatic
-piece and legal-destination highlights. **Force Jump** defaults on in Regular
+piece and legal-destination highlights. **Last Move Indicator** also defaults
+off in every mode; enabling it highlights the previous move's endpoints,
+including Alquerque's translucent squares. **Force Jump** defaults on in Regular
 Checkers, Draughts and Alquerque; switching it off permits declining a capture
 while preserving the requirement to finish any started jump chain.
 Native boards and the Regular Checkers, Draughts and Alquerque phone boards
 support dragging a piece as well as selecting and placing it. Chinese Checkers
 phones tap to move and use the shared CATAN camera to drag/pinch/scroll the map.
 Host help sits beside Settings, above larger centered boards.
-Player counter groups are centered; Alquerque uses circular cues, and all modes
+Player counter groups are centered; every mode uses individually themed player
+panels with a breathing turn glow on host and phones, with a static reduced-motion
+highlight. Chinese Checkers gives each player a separate frame. All modes
 use larger illustrated phone titles and centered boards. Phone Help sits at the
 upper right; Enlarge and its dialogs are removed in every mode. Chinese Checkers
 zooms directly across the screen, with fixed-size input targets and a fitted
 starting view. Short landscape puts stats beside the board.
 
 On a phone player's turn, the multiplayer host can click a legal piece and a
-legal destination to suggest a move. The same guidance appears on the host and
-phones, even with automatic Guided gameplay off. Clicking the source again clears
-it. Guidance never moves a piece, advances the revision or awards anything; the
-player retains control. A move clears stale suggestions, and reconnect restores
-current guidance.
+legal destination to suggest a move. White guide cues and an animated white ghost
+appear on the host and phones, distinct from the player's gold selection, even
+with automatic Guided gameplay off. The ghost stays at its suggested destination
+until another suggestion or a real move; clicking the source again clears it.
+Guidance never moves a real piece, advances the revision or awards anything; the
+player retains control. Pauses freeze the preview and reconnect restores it.
 
 The local Poker variants include optional cinematic community-card reveals,
 all-in win odds, and individual player histories opened from their stat plaques

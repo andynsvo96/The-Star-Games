@@ -1595,6 +1595,29 @@ on eligible touch targets to reserve that gesture while retaining scrolling on
 empty areas of an enlarged board. Native and browser tests live in
 `tests/board_piece_drag.gd` and `tests/board_piece_drag.mjs`, using synthetic boards.
 
+### Public move previews
+
+Use `GameMovePreview` for a public suggested move that leaves authoritative
+pieces in place. Add it inside the board drawing layer, below shared modals, then
+`configure(rect_for, make_visual)`. The callbacks return a global cell `Rect2`
+and an independent inner `Control`. Call
+`update_preview({key,from,to,path,piece}, paused, reduced_motion, restore)` on
+snapshots. Each new key starts a demonstration along the cell-index path; an
+unchanged key preserves its phase and landed ghost. An empty record clears it.
+Pause freezes progress; reduced motion and refresh restoration place it directly
+at the destination. `GameMovePreview.white_material()` makes textured artwork a
+white ghost. `GameSelectionRing.color` can distinguish public guidance from the
+default gold player selection without changing input targets.
+
+Browsers load `/board-ui.js` and create
+`new StarGamesMovePreview(parent, {rectFor,createVisual})`. Return viewport cell
+rectangles and independent artwork, then call
+`update(record, {paused,reduced,restore})`. The parent is a positioned board
+layer. Call `refresh()` after a camera transform or geometry change and `clear()`
+on exit. The shared `game-guide-ghost` class supplies white, noninteractive
+artwork. Host snapshots own keys, routes and permitted piece identities; browser
+previews never submit a move. Keep private state out of every descriptor.
+
 ### Illustrated references
 
 Use `screen.add_illustrated_guide(caption, examples)` for an explicit illustrated
@@ -1641,6 +1664,18 @@ and a brass primary action without changing other presentations. These hooks are
 shown in the template. `tests/board_feedback.gd` checks native components;
 `tests/network_smoke.gd` checks the actual shared script route.
 
+Individual browser player sections can add `game-player-panel` to their shared
+`game-score-card` presentation. Use `game-ornate` for individually framed progress
+cards, including a `game-score-identity` row and `game-score-detail` counter.
+These panels omit the identity-colored vertical name rule. Toggle
+`game-turn-glow` on the full current player's panel from authoritative state;
+it breathes without changing layout. The native counterpart is
+`screen.set_score_card_turn_glow(card, active, reduced_motion)`. Both retain a
+static highlight with reduced motion. Set browser `has-reduced-motion` on the
+body for the host's preference; browser media preferences are also respected.
+These opt-ins keep the same turn treatment across board modes while existing
+theme variables supply their own artwork. Hidden template examples show both.
+
 ### Checkers example
 
 `Games/checkers` keeps legal moves, capture chains, promotion, automatic draws
@@ -1672,8 +1707,8 @@ from these views. The question-mark action opens mode-specific diagrams and
 instructions outside Settings, including on a solo host. Browser help is local.
 Host help sits left of the top-right Settings action; compact matching title
 slots leave more room for centered boards. Counter rows center each icon/count
-group independently. Alquerque uses circular selection, guidance and focus cues
-without painting rectangular cell backgrounds.
+group independently. Alquerque uses circular selection, guidance and focus cues;
+optional last-move squares are the only tinted rectangular cell backgrounds.
 For a drawn title that fills the available header without reducing the board,
 use `add_title_art(texture, height, false, true, true, true)`. The final optional
 `above_board` flag fits the independent artwork between the navigation row and
@@ -1685,20 +1720,29 @@ playable centered boards. No mode offers Enlarge or an enlargement dialog.
 
 All four modes offer saved **Guided gameplay**, off by default. Enabling it shows
 eligible pieces/marbles and legal destinations for a selected piece on host and
-phones. Selection, last-move feedback and rule validation remain available with
+phones. Selection and rule validation remain available with
 guidance off. Explicit teaching hints still mark their requested suggestion.
 Changing guidance preserves the board, clocks and revision; snapshots carry the
 accepted `guided_gameplay` value, including after reconnection.
 
+All four modes also save **Last Move Indicator**, off by default. It marks both
+endpoints of the previous real move, including Alquerque's translucent squares.
+It is independent of guidance and updates host and phones without restarting a
+board or changing its revision. Snapshots include `last_move_indicator`.
+Every mode uses individually themed player panels with a breathing turn glow on
+the host and phones; Chinese Checkers separates each player's progress card.
+
 Multiplayer hosts can manually guide the current human phone seat by clicking a
-legal source and then a legal destination. Public `host_guide:{from,to,seat}`
+legal source and then a legal destination. Public `host_guide:{from,to,seat,key,path,piece}`
 contains presentation only; `to:-1` shows that source's legal destinations until
-the host picks one. Phones render the same shared selection/destination cues
-independently of `guided_gameplay`. The player still chooses and submits the
-move through ordinary seat/revision validation. Guidance never edits a board,
-revision, clock allowance, score or history. Clicking the source again clears it;
-new moves/resets invalidate it. Pause, disconnect and movement hide its cues,
-and sync/reconnect restores a still-current suggestion. Computer turns cannot
+the host picks one. Host and phones use white guide cues, distinct from the
+player's gold selection. Each host choice gets a new key and animates a white
+ghost along the chosen route. It stays at the destination through duplicate
+syncs; pauses/disconnects freeze it and reconnect restores it settled. This works
+independently of `guided_gameplay`. The player still submits the real move
+through ordinary seat/revision validation. Guidance never edits a board, revision,
+clock allowance, score or history. Clicking the source again clears it;
+new choices replace it and real moves/resets invalidate it. Computer turns cannot
 be manually guided; a participating host retains normal control of their own turn.
 
 Regular Checkers, Draughts and Alquerque expose **Force Jump**, on by default.
