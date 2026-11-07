@@ -1722,6 +1722,19 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .playful-game .game-board-controller .game-status { font-size: .85rem; line-height: 1.2; padding: .25rem .65rem; margin: .15rem auto; }
 .playful-game .game-board-controller .game-status-reserved { min-height: calc(2.4em + .5rem + 4px); }
 .game-board-controller .game-playfield { --game-board-footer-reserve: 60; }
+/* Center the board itself while measuring the title, tools and complete stats. */
+.game-board-centered { position:relative; }
+.game-board-centered .game-playfield { padding-top:var(--game-board-top-room,0px); }
+.playful-game .game-board-controller.game-board-centered > header { display:block; }
+.playful-game .game-board-controller.game-board-centered .game-title-art.game-title-prominent { width:min(100%,42rem); height:clamp(100px,18dvh,180px); max-height:none; }
+.playful-game .game-controller .game-header-tools { position:fixed; top:max(8px,env(safe-area-inset-top)); right:max(8px,env(safe-area-inset-right)); z-index:20; }
+.playful-game .game-controller .game-help-button { width:44px; min-width:44px; height:44px; min-height:44px; padding:0; margin:0; border-radius:50%; font-size:22px; }
+.playful-game .game-controller.game-board-ui .game-help-button { box-sizing:border-box; color:var(--ink); background:var(--panel); border:1px solid var(--panel-edge); border-image:none; box-shadow:none; text-shadow:none; }
+@media (orientation:landscape) and (max-height:560px) {
+  .playful-game .game-board-controller.game-board-centered .game-title-art.game-title-prominent { height:64px; width:min(70%,32rem); }
+  .game-board-centered .game-board-stats { --game-board-stats-side:1; position:absolute; right:8px; top:50dvh; transform:translateY(-50%); width:clamp(140px,22vw,210px); grid-template-columns:minmax(0,1fr); }
+  .game-board-centered .game-board-stats[data-game-stats-columns="3"], .game-board-centered .game-board-stats:has(> :nth-child(3):not([hidden])) { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
 .game-board-stats { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .35rem; margin: 0; min-width: 0; }
 .game-board-ui { --primary-top:#e8ce91; --primary-bottom:#d5b56e; --primary-edge:#8f672f; --primary-highlight:#fff3c655; --primary-shadow:#765125; }
 .playful-game.game-royal .game-controller.game-board-ui .game-primary { color:#302218; }
@@ -1738,6 +1751,8 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-board-stats .game-session-score.game-current-game { display:flex; flex-direction:column; align-items:stretch; gap:3px; }
 .game-board-stats .game-current-game .game-score-detail,.game-board-stats .game-current-game .game-score-feedback { margin:0; text-align:center; font-size:12px; }
 .game-board-stats .game-current-game .game-score-feedback { min-height:1.2em; font:600 11px/1.2 "Segoe UI",Arial,sans-serif; }
+.game-board-stats .game-score-status { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:2px 5px; min-height:1.2em; }
+.game-board-stats .game-score-status > .game-score-clock { font-size:12px; line-height:1.2; }
 .game-board-ui .game-board-stats .game-session-score.game-current-game > .game-score-detail { font:700 14px/1.2 "Segoe UI",Arial,sans-serif; text-align:center; }
 .game-current-stats .game-score-feedback { min-height:2.6em; margin:4px 0 0; font:600 12px/1.25 "Segoe UI",Arial,sans-serif; }
 .game-board-stats .game-score-card.game-current-stats > .game-score-feedback { border:0; background:none; padding:0; box-shadow:none; border-radius:0; }
@@ -1928,6 +1943,10 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-map-fit { position: relative; width: 100%; aspect-ratio: 1; margin: 0 auto; pointer-events: none; }
 .game-controller .game-board-canvas { position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; aspect-ratio: auto; margin: 0; }
 .game-board-canvas > svg { overflow: visible; }
+.game-camera-controller { pointer-events:none; }
+.game-camera-controller .game-board-canvas { pointer-events:auto; z-index:0; }
+.game-camera-controller > header { position:relative; z-index:2; pointer-events:none; }
+.game-camera-controller .game-header-tools, .game-camera-controller .game-board-controls, .game-camera-controller .game-board-stats { isolation:isolate; pointer-events:auto; }
 
 /* Headline counters keep names and the primary value in independent slots. */
 .game-player-row.has-headline .game-player-row-stats .game-player-row-caption { display:none; }

@@ -1090,7 +1090,8 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 				navigation_order.disabled = back_button.disabled
 				back_button.disabled = true
 			get_parent().move_child(back_button, get_parent().get_child_count() - 1)
-			settings_header.get_child(1).grab_focus()
+			if settings_header.is_inside_tree():
+				settings_header.get_child(1).grab_focus()
 		sheets[0].z_index = 1 if modal else 0
 		if modal:
 			if modal_settings:

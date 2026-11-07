@@ -1271,7 +1271,10 @@ when processing native touch events. Keyboard arrows pan, +/- zoom and Home fits
 
 Browser `StarGamesBoardCamera(element, {surface, onChange})` supplies the same
 bounded drag, wheel, pinch, keyboard and cancellation behavior. `surface` defaults
-to the board SVG. Keep target buttons unscaled at 44px and position them with
+to the board SVG. Optional `maxZoom` defaults to 4 and is bounded to 1–16;
+dense maps can allow more magnification without changing other callers.
+Chinese Checkers uses 12 so even a short six-seat phone view can enlarge marbles.
+Keep target buttons unscaled at 44px and position them with
 `project(normalized_x, normalized_y)` after camera/layout changes. The map clips
 artwork to its viewport; the page retains normal scrolling. `reset()` restores
 fit; call `cancel()` for reconnect/modal transitions and `destroy()` on page exit.
@@ -1323,6 +1326,23 @@ rows into three portrait columns or six columns in short landscape. Ordinary
 two-player footers use two columns. Long names wrap while counters remain compact.
 Both Checkers games use the hook; the template includes a hidden composition.
 Other games keep their existing layout and fitter minimums.
+
+Add `game-board-centered` alongside `game-board-controller` to center the board
+itself at the screen midpoint. The SDK measures the heading, reserved actions,
+and complete stats to fit symmetrically around that midpoint. Use
+`game-title-art game-title-prominent` for the larger title; short landscape
+keeps a 64px title and moves the measured stats beside the board. Put a 44px
+`game-help-button` with `aria-label="How to play"` inside `game-header-tools`
+in the header for independent top-right help. Keep board fitting in the SDK,
+without local positions or an enlargement dialog. The template's inert
+`example-centered-board` demonstrates the composition. For dense maps, reuse
+`StarGamesBoardCamera` with an inner artwork surface and separate 44px targets;
+camera drags/pinches never submit game moves. For a full-screen canvas, add
+`game-camera-controller` to main with the existing `game-board-canvas`/fit-anchor
+pattern. It layers header, stats and tools above the map while empty layout areas
+pass gestures through. A `game-score-status` row can group current-turn feedback
+and its `output.game-score-clock` to keep dense rosters compact. Keyboard
+activation remains available immediately after a camera gesture.
 
 Native `set_score_card_active(card, active, true)` adds a static gold name-panel
 highlight to ledger and ornate cards, with identical insets for both states.
@@ -1660,8 +1680,8 @@ use `add_title_art(texture, height, false, true, true, true)`. The final optiona
 the board while retaining the existing compact layout slot and shared centering.
 The default remains unchanged for other title presentations.
 The how-to-play guide covers the game rules without a Teaching mode section.
-Small phone boards open an enlarged scrolling board with full touch targets and
-a fixed Close action; normal 390px Regular Checkers fits playable 44px squares.
+Phones use larger illustrated titles, independent top-right Help and directly
+playable centered boards. No mode offers Enlarge or an enlargement dialog.
 
 All four modes offer saved **Guided gameplay**, off by default. Enabling it shows
 eligible pieces/marbles and legal destinations for a selected piece on host and
@@ -1669,6 +1689,17 @@ phones. Selection, last-move feedback and rule validation remain available with
 guidance off. Explicit teaching hints still mark their requested suggestion.
 Changing guidance preserves the board, clocks and revision; snapshots carry the
 accepted `guided_gameplay` value, including after reconnection.
+
+Multiplayer hosts can manually guide the current human phone seat by clicking a
+legal source and then a legal destination. Public `host_guide:{from,to,seat}`
+contains presentation only; `to:-1` shows that source's legal destinations until
+the host picks one. Phones render the same shared selection/destination cues
+independently of `guided_gameplay`. The player still chooses and submits the
+move through ordinary seat/revision validation. Guidance never edits a board,
+revision, clock allowance, score or history. Clicking the source again clears it;
+new moves/resets invalidate it. Pause, disconnect and movement hide its cues,
+and sync/reconnect restores a still-current suggestion. Computer turns cannot
+be manually guided; a participating host retains normal control of their own turn.
 
 Regular Checkers, Draughts and Alquerque expose **Force Jump**, on by default.
 Turning it off permits declining a capture with a legal ordinary move. A started
@@ -1701,8 +1732,10 @@ placement is discarded while the host or local movement is active. Host pause
 preserves the current phase; refresh/reconnection restores authoritative state.
 Traveling pieces and capture ghosts stay inside the board's drawing layer,
 under shared settings/help/results overlays, including when paused mid-animation.
-All four modes accept both select-then-place and dragging to a legal destination
-on host and controllers. A drag submits a single ordinary move; compulsory chains
+All native boards and the three two-seat phone boards accept both
+select-then-place and dragging to a legal destination. Chinese Checkers phones
+use tap/keyboard placement and reserve dragging for their map camera. A piece
+drag submits a single ordinary move; compulsory chains
 still continue with the same piece, and Chinese Checkers resolves a legal route
 to the dropped endpoint. Illegal, outside, paused or stale drops restore the piece.
 The original title sources remain local alongside the generated Draughts,
@@ -1754,9 +1787,8 @@ only decisive two-phone boards update saved standings. Replay alternates starter
 Settings and host help pause clocks, AI and movement. Disconnects preserve the
 board and pause play. The host and phones reject
 placement until their movement settles; refresh restores authoritative state.
-Phone boards whose fitted cells would be smaller than 44px become a single
-enlargement target. Zoom opens the shared scrolling dialog with full-size cells,
-keyboard input and a reachable Close action. Backgrounds use extensionless
+Phone boards retain direct tap, keyboard and piece-drag input at fitted sizes,
+without an enlargement target or dialog. Backgrounds use extensionless
 `art/background`, with protected Default packs and local source originals/prompts.
 Local checks are `tests/checkers_variants.gd`, `checkers_variants_motion.gd`,
 `checkers_variants_network.gd`, `checkers_variants_autoplay.gd`, rendered
@@ -1790,9 +1822,13 @@ Ordinary host turn plaques are omitted.
 Phones keep matching numbered color tokens and current-game home progress, turn
 feedback and countdowns below the board through the SDK's measured footer. Routine
 connected captions and the ordinary top turn plaque are omitted. Question-mark help on host and phones opens an illustrated, mode-specific guide;
-phones also retain enlarged-board access. The shared scrolling dialog opens an
-enlarged board with 58px
-hole spacing and reachable Close; keyboard selection also works. Reduced motion
+phones use the same shared view-only camera as CATAN: drag to pan, pinch/scroll
+to zoom, +/- or arrows to navigate, and Home to fit. An ordinary measured anchor
+keeps the initial star centered; the painting/input canvas fills the screen so
+zoomed artwork can extend beyond that anchor. Targets remain 44px while artwork
+scales. Tap a marble then its legal endpoint; keyboard hole buttons also work.
+Camera gestures never move marbles. Zoom/pan survive snapshots, reading help and
+resize; a new board fits again. Navigation cancels held gestures. Reduced motion
 settles marbles immediately; other moves lock input until host and local motion
 finish. Duplicate syncs preserve movement, while reconnect restores settled art.
 Chinese Checkers keeps its lantern-lit garden. Each mode uses its extensionless background

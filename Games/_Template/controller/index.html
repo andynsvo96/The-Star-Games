@@ -117,6 +117,30 @@
       </div>
     </main>
   </template>
+  <!-- Optional centered board with a prominent title and independent corner help.
+       Adopt these classes on the live main/header/playfield/stats. The SDK keeps
+       the board itself at screen center and moves stats beside short landscapes.
+       For a pannable board, use StarGamesBoardCamera with an inner art surface;
+       its drags/pinches are view-only. Keep tap/keyboard moves host-validated. -->
+  <template id="example-centered-board">
+    <main class="game-controller game-board-controller game-board-centered game-camera-controller game-board-ui">
+      <header>
+        <h1 class="sr-only">Example game</h1>
+        <img class="game-title-art game-title-prominent" src="/ui/playful/stat-trophy.svg" alt="">
+        <p role="status" hidden>Connected</p>
+        <div class="game-header-tools"><button class="game-help-button" type="button" aria-label="How to play">?</button></div>
+      </header>
+      <section class="game-playfield">
+        <div class="game-map-fit" data-game-board-fit aria-hidden="true"></div>
+        <div id="board" class="game-board-canvas" role="group" aria-label="Example board"><svg aria-hidden="true"></svg></div>
+        <div class="game-board-controls game-board-tools"><button id="replay" class="game-primary" data-game-inline-action hidden>PLAY AGAIN</button></div>
+      </section>
+      <div class="game-board-stats" aria-label="Current game statistics">
+        <aside class="game-session-score game-current-game"><p>First player</p><p>Current progress</p><div class="game-score-status"><p class="game-score-feedback">YOUR TURN</p><output class="game-score-clock" role="timer">1:00</output></div></aside>
+        <aside class="game-session-score game-current-game"><p>Second player</p><p>Current progress</p></aside>
+      </div>
+    </main>
+  </template>
   <!-- Optional responsive tools: place a game-board-side-controls element with
        data-game-side-controls inside main. At a side layout set the playfield's
        --game-board-controls-side:1 and --game-board-footer-reserve:16.

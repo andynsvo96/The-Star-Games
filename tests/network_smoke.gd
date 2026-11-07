@@ -5,6 +5,8 @@ class SocketErrorLogger extends Logger:
 	var mutex := Mutex.new()
 
 	func _log_error(_function: String, _file: String, _line: int, code: String, _rationale: String, _editor_notify: bool, _error_type: int, _script_backtraces: Array[ScriptBacktrace]) -> void:
+		if not Engine.print_error_messages:
+			return # Deliberately rejected, unauthenticated handshake input.
 		if code.contains("ready_state != STATE_OPEN") or code.contains("outbound_buffer_size") or code.contains("Missing or invalid header") or _rationale.contains("Missing or invalid header"):
 			mutex.lock()
 			errors += 1
@@ -54,6 +56,18 @@ func _run() -> void:
 	server._process(0)
 	if not server.websocket_clients.is_empty(): return _finish(false, "Solo HTTP probe reached WebSocket handshaking")
 	probe.disconnect_from_host(); server.set_lobby_open(true); server.set_process(true)
+	var malformed := "GET / HTTP/1.1\r\nHost: localhost\r\nUpgrade: ".to_utf8_buffer()
+	malformed.append(255)
+	malformed.append_array("\r\nConnection: close\r\n\r\n".to_utf8_buffer())
+	for bytes in ["GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n".to_utf8_buffer(), malformed]:
+		if not await _rejected_probe(server.websocket_port, bytes):
+			return _finish(false, "Malformed WebSocket probe was not rejected")
+	if server.rejected_websocket_handshakes != 2 or not Engine.print_error_messages:
+		return _finish(false, "Handshake rejection did not preserve engine error reporting")
+	if not await _rejected_probe(server.http_port, PackedByteArray([255, 13, 10, 13, 10])):
+		return _finish(false, "Binary HTTP probe was not rejected before decoding")
+	if not await _rejected_probe(server.http_port, "A".repeat(16385).to_ascii_buffer()):
+		return _finish(false, "Oversized HTTP header was not rejected")
 
 	var http := HTTPClient.new()
 	if http.connect_to_host("127.0.0.1", server.http_port) != OK:
@@ -126,6 +140,10 @@ func _run() -> void:
 		return _finish(false, "Browser player could not join")
 	if server.get_players().size() != 1:
 		return _finish(false, "Joined player did not enter authoritative roster")
+	socket.send(PackedByteArray([255]))
+	var binary_response := await _message_of_type("error")
+	if binary_response.get("code") != "invalid_json" or socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
+		return _finish(false, "Binary game message was not rejected without breaking the connection")
 	socket.send_text(JSON.stringify({"type": "color", "color": "#e53935"}))
 	await _message_of_type("roster")
 	for _frame in 10:
@@ -224,6 +242,23 @@ func _wait_for_http_status(http: HTTPClient, wanted: int) -> bool:
 		if http.get_status() in [HTTPClient.STATUS_CANT_CONNECT, HTTPClient.STATUS_CANT_RESOLVE, HTTPClient.STATUS_CONNECTION_ERROR]:
 			return false
 		await process_frame
+	return false
+
+
+func _rejected_probe(port: int, bytes: PackedByteArray) -> bool:
+	var probe := StreamPeerTCP.new()
+	probe.connect_to_host("127.0.0.1", port)
+	for frame in 120:
+		probe.poll()
+		if probe.get_status() == StreamPeerTCP.STATUS_CONNECTED: break
+		await process_frame
+	if probe.get_status() != StreamPeerTCP.STATUS_CONNECTED: return false
+	probe.put_data(bytes)
+	for frame in 240:
+		probe.poll()
+		if probe.get_status() != StreamPeerTCP.STATUS_CONNECTED: return true
+		await process_frame
+	probe.disconnect_from_host()
 	return false
 
 

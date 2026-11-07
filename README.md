@@ -68,10 +68,22 @@ turn and its computer replies. Coaching preferences are saved separately per mod
 piece and legal-destination highlights. **Force Jump** defaults on in Regular
 Checkers, Draughts and Alquerque; switching it off permits declining a capture
 while preserving the requirement to finish any started jump chain.
-All four modes support dragging a piece to a legal destination as well as selecting
-and placing it. Host help sits beside Settings, above larger centered boards.
+Native boards and the Regular Checkers, Draughts and Alquerque phone boards
+support dragging a piece as well as selecting and placing it. Chinese Checkers
+phones tap to move and use the shared CATAN camera to drag/pinch/scroll the map.
+Host help sits beside Settings, above larger centered boards.
 Player counter groups are centered; Alquerque uses circular cues, and all modes
-use illustrated titles with consistent sizing.
+use larger illustrated phone titles and centered boards. Phone Help sits at the
+upper right; Enlarge and its dialogs are removed in every mode. Chinese Checkers
+zooms directly across the screen, with fixed-size input targets and a fitted
+starting view. Short landscape puts stats beside the board.
+
+On a phone player's turn, the multiplayer host can click a legal piece and a
+legal destination to suggest a move. The same guidance appears on the host and
+phones, even with automatic Guided gameplay off. Clicking the source again clears
+it. Guidance never moves a piece, advances the revision or awards anything; the
+player retains control. A move clears stale suggestions, and reconnect restores
+current guidance.
 
 The local Poker variants include optional cinematic community-card reveals,
 all-in win odds, and individual player histories opened from their stat plaques
@@ -167,5 +179,14 @@ godot --headless --path . --script res://tests/music_smoke.gd
 godot --headless --path . --script res://tests/session_media.gd
 godot --headless --path . --script res://tests/asset_editor_fixture.gd
 ```
+
+A plain HTTP request, TLS probe or malformed bytes sent to the WebSocket port
+can produce Godot's `Missing or invalid header 'upgrade'` and UTF-8 diagnostics.
+These diagnostics belong to rejected connections. The LAN
+server contains expected parser diagnostics during unauthenticated handshakes,
+counts rejected handshakes, and retains error reporting for established sockets
+and game code. Binary/oversized HTTP headers are rejected before UTF-8 decoding.
+The controller page uses the HTTP join port; its SDK connects to the next port
+for WebSockets automatically.
 
 Export presets are included for Windows, macOS, and Android. Install the matching Godot export templates to build them; keep generated builds in `builds/`.

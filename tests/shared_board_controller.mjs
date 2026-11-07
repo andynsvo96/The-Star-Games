@@ -92,10 +92,10 @@ const assertions = `
 		check(footer.children.length === count, 'Synthetic roster contains requested seat count');
 		check(!document.querySelector('[title]'), 'Synthetic controls omit hover tooltips');
         const cameraView=document.createElement('div');cameraView.style.cssText='position:fixed;left:-2000px;top:0;width:240px;height:180px';const surface=document.createElement('div');cameraView.append(surface);document.body.append(cameraView);
-        const camera=new StarGamesBoardCamera(cameraView,{surface});let selected=0;cameraView.addEventListener('click',()=>selected++);
+        const camera=new StarGamesBoardCamera(cameraView,{surface});check(camera.maxZoom===4,'Existing camera callers retain their maximum zoom');let selected=0;cameraView.addEventListener('click',()=>selected++);
         cameraView.dispatchEvent(new WheelEvent('wheel',{deltaY:-300,clientX:-1880,clientY:90,bubbles:true,cancelable:true}));check(camera.zoom>1,'Shared inline wheel magnifies the map');
         const pointer=(type,id,x,y,target=cameraView)=>target.dispatchEvent(new PointerEvent(type,{pointerId:id,clientX:-2000+x,clientY:y,button:0,bubbles:true,cancelable:true,pointerType:'touch'}));
-        pointer('pointerdown',1,60,80);pointer('pointermove',1,100,110,window);pointer('pointerup',1,100,110,window);cameraView.click();check(selected===0&&camera.pan.x>0,'Shared map drag suppresses gameplay click');
+        pointer('pointerdown',1,60,80);pointer('pointermove',1,100,110,window);pointer('pointerup',1,100,110,window);cameraView.dispatchEvent(new MouseEvent('click',{detail:1,bubbles:true}));check(selected===0&&camera.pan.x>0,'Shared map drag suppresses gameplay click');
         camera.reset();pointer('pointerdown',2,60,80);pointer('pointerdown',3,120,80);pointer('pointermove',3,180,80,window);pointer('pointerup',3,180,80,window);pointer('pointerup',2,60,80,window);check(camera.zoom>1,'Shared touch pinch magnifies inline');
         const z=camera.zoom;camera.cancel();pointer('pointermove',3,220,80,window);check(camera.zoom===z,'Canceled gesture cannot move the map later');
         camera.reset();check(camera.zoom===1&&camera.pan.x===0&&camera.pan.y===0,'Shared fit restores the camera');camera.destroy();
@@ -244,6 +244,48 @@ const assertions = `
 		check(symbol.querySelector('.game-symbol-title').textContent==='Choose <one>'&&!symbol.querySelector('one')&&symbol.querySelector('.game-symbol-detail').getBoundingClientRect().top>=symbol.querySelector('.game-symbol-art').getBoundingClientRect().bottom,'Shared symbol cards keep literal instructions beneath their contained artwork');
 		check(!symbol.querySelector('.game-playing-card-value')&&symbol.getAttribute('aria-label').includes('Pick any two tokens')&&getComputedStyle(symbol).color==='rgb(255, 255, 255)','Symbol cards omit money fields and keep readable contrast and accessible rules');
 		const hiddenSymbol=StarGamesCard({layout:'symbol',back:true,name:'Secret kind',detail:'Secret rule',accent:'#ff0000'},{art:'/ui/playful/stat-resources.svg'});check(!hiddenSymbol.textContent&&!hiddenSymbol.querySelector('svg')&&hiddenSymbol.getAttribute('aria-label')==='Card back'&&hiddenSymbol.style.getPropertyValue('--card-accent')==='#617c76','Symbol backs omit private text, artwork and identity colors');collectionHost.remove();
+		{ // The centered opt-in uses only shared assets and synthetic public stats.
+		qaLayout.stopped=true;qaLayout.observer.disconnect();
+		document.querySelector('main').remove();
+		const centered=document.createElement('main');centered.className='game-controller game-board-controller game-board-centered game-board-ui';
+		centered.innerHTML='<header><h1 class="sr-only">Board example</h1><img class="game-title-art game-title-prominent" alt="" src="/ui/playful/stat-trophy.svg"><p id="connection" hidden>Connected</p><p id="status" class="sr-only">Your turn</p><div class="game-header-tools"><button class="game-help-button" aria-label="How to play">?</button></div></header><section class="game-playfield"><div id="board" role="group" aria-label="Centered board"></div><div class="game-board-controls game-board-tools"><button id="replay" data-game-inline-action hidden>Play again</button></div></section><div class="game-board-stats"></div>';
+		document.body.append(centered);
+		const centeredBoard=centered.querySelector('#board'),centeredStats=centered.querySelector('.game-board-stats');
+		const stats=amount=>{centeredStats.innerHTML=Array.from({length:amount},(_,index)=>'<aside class="game-session-score game-current-game"><p>Player '+(index+1)+' longer name</p><p>4 / 10 HOME</p></aside>').join('');centeredStats.dataset.gameStatsColumns=amount>2?'3':'2';};
+		stats(2);
+		const centeredLayout=new StarGamesBoardLayout(centeredBoard,centered.querySelector('#replay'));
+		const centeredFits=caption=>{
+			const b=centeredBoard.getBoundingClientRect(),f=centeredStats.getBoundingClientRect();
+			check(Math.abs(b.y+b.height/2-innerHeight/2)<2&&Math.abs(b.x+b.width/2-innerWidth/2)<2,caption+': board itself is centered');
+			check(b.top>=0&&b.bottom<=innerHeight&&f.top>=0&&f.bottom<=innerHeight+1,caption+': board and complete stats fit');
+			check(getComputedStyle(centeredStats).getPropertyValue('--game-board-stats-side').trim()==='1'?f.left>=b.right:f.top>=b.bottom,caption+': stats avoid the board');
+			check(document.documentElement.scrollHeight<=innerHeight+1&&document.documentElement.scrollWidth<=innerWidth+1,caption+': no page scroll');
+		};
+		await settle();centeredFits('Two-seat centered view');
+		const help=centered.querySelector('.game-help-button').getBoundingClientRect(),logo=centered.querySelector('.game-title-art').getBoundingClientRect();
+		check(help.width>=44&&help.height>=44&&help.top<=12&&help.right>=innerWidth-12,'Corner help has a full target');
+		check(logo.height>=(innerWidth>innerHeight&&innerHeight<=560?64:100),'Centered title is prominent');
+		stats(6);await settle();centeredFits('Six-seat centered view');
+		centeredLayout.stopped=true;centeredLayout.observer.disconnect();
+		centered.classList.add('game-camera-controller');
+		const fitAnchor=document.createElement('div');fitAnchor.className='game-map-fit';fitAnchor.dataset.gameBoardFit='';centeredBoard.before(fitAnchor);
+		centeredBoard.classList.add('game-board-canvas');centeredBoard.style.cssText='position:fixed;inset:0;width:100%;height:100%;max-width:none;aspect-ratio:auto;background:none';
+		const canvasLayout=new StarGamesBoardLayout(centeredBoard,centered.querySelector('#replay'));await settle();
+		const inner=document.createElementNS('http://www.w3.org/2000/svg','svg');centeredBoard.append(inner);
+		const camera=new StarGamesBoardCamera(centeredBoard,{surface:inner,fitElement:fitAnchor,maxZoom:12});camera.apply();
+		const chrome=centered.querySelector('.game-help-button').getBoundingClientRect(),statBounds=centeredStats.getBoundingClientRect();
+		check(document.elementFromPoint(chrome.x+chrome.width/2,chrome.y+chrome.height/2)?.closest('button')===centered.querySelector('.game-help-button'),'Full-screen camera keeps corner help above its input canvas');
+		check(!!document.elementFromPoint(statBounds.x+statBounds.width/2,statBounds.y+statBounds.height/2)?.closest('.game-board-stats'),'Full-screen camera keeps stats above its input canvas');
+		const fitted=fitAnchor.getBoundingClientRect();check(Math.abs(fitted.y+fitted.height/2-innerHeight/2)<2,'Full-screen camera retains its centered fit anchor');
+		const b=centeredBoard.getBoundingClientRect();
+		centeredBoard.dispatchEvent(new WheelEvent('wheel',{clientX:b.x+b.width/2,clientY:b.y+b.height/2,deltaY:-300,cancelable:true}));
+		check(camera.zoom>1,'Shared camera zooms an inner surface');camera.zoomAt(100,{x:b.width/2,y:b.height/2});check(camera.zoom===12,'Dense maps can opt into more magnification');camera.reset();
+		const pointer=(type,x,y,target)=>target.dispatchEvent(new PointerEvent(type,{pointerId:11,button:0,buttons:type==='pointerup'?0:1,isPrimary:true,clientX:x,clientY:y,bubbles:true}));
+		pointer('pointerdown',b.x+40,b.y+40,centeredBoard);pointer('pointermove',b.x+70,b.y+60,window);pointer('pointerup',b.x+70,b.y+60,window);
+		const keyboardTarget=document.createElement('button');let keyboardClicks=0;keyboardTarget.addEventListener('click',()=>keyboardClicks++);centeredBoard.append(keyboardTarget);keyboardTarget.click();
+		check(keyboardClicks===1,'Camera drag suppression preserves keyboard activation');
+		camera.destroy();canvasLayout.stopped=true;canvasLayout.observer.disconnect();
+		}
 		window.qaResult = {run, checks, failures:0, seats:count, cards:presentation, boardWidth:opening.board.width, footerHeight:opening.footer.height, longFooterHeight:longNames.footer.height};
 	} catch (error) {
 		window.qaResult = {run, checks, failures:1, error:String(error)};

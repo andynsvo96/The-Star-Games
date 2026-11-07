@@ -180,17 +180,25 @@
       for (let pass = 0; pass < 12; pass++) {
         const container = this.board.closest(".game-controller");
         const centered = container.classList.contains("game-centered-controller");
+        const centeredBoard = container.classList.contains("game-board-centered");
+        const playfield = this.board.closest(".game-playfield");
         const style = getComputedStyle(container);
         const boardController = container.classList.contains("game-board-controller");
         const trailingStyle = this.trailing ? getComputedStyle(this.trailing) : null;
         const trailingHeight = this.trailing && !this.trailing.hidden ? this.trailing.getBoundingClientRect().height + parseFloat(trailingStyle.marginTop || 0) + parseFloat(trailingStyle.marginBottom || 0) + parseFloat(style.rowGap || 0) : 0;
-        const footer = trailingHeight + (boardController && this.stats && !this.stats.hidden
+        const sideStats = centeredBoard && this.stats && !this.stats.hidden && getComputedStyle(this.stats).getPropertyValue("--game-board-stats-side").trim() === "1";
+        const footer = trailingHeight + (boardController && this.stats && !this.stats.hidden && !sideStats
           ? this.stats.getBoundingClientRect().height + parseFloat(style.rowGap || 0) + 8
           : 0);
-        const availableHeight = centered
+        const naturalTop = this.board.getBoundingClientRect().top - (centeredBoard ? parseFloat(getComputedStyle(playfield).paddingTop) : 0);
+        const availableHeight = centeredBoard
+          ? 2 * Math.min(innerHeight / 2 - naturalTop, innerHeight / 2 - room - footer - parseFloat(style.paddingBottom))
+          : centered
           ? innerHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom) - room
           : innerHeight - this.board.getBoundingClientRect().top - room - footer - (boardController ? parseFloat(style.paddingBottom) : 0);
-        const limit = Math.floor(Math.min(this.board.parentElement.clientWidth, Math.max(boardController ? 44 : 160, availableHeight * ratio)));
+        const availableWidth = sideStats ? container.clientWidth - 2 * (this.stats.getBoundingClientRect().width + 24) : this.board.parentElement.clientWidth;
+        const limit = Math.floor(Math.min(availableWidth, Math.max(boardController ? 44 : 160, availableHeight * ratio)));
+        if (centeredBoard) playfield.style.setProperty("--game-board-top-room", Math.max(0, innerHeight / 2 - limit / ratio / 2 - naturalTop) + "px");
         if (this.board.style.maxWidth === limit + "px") break;
         this.board.style.maxWidth = limit + "px";
         this.replay.style.maxWidth = boardController && this.replay.hasAttribute("data-game-inline-action") ? "" : limit + "px";
@@ -327,9 +335,10 @@
   }
   // View-only map camera. Keeps gameplay taps separate from drag/pinch gestures.
   class StarGamesBoardCamera {
-    constructor(element, {surface = element.querySelector('svg'), fitElement = null, onChange = () => {}} = {}) {
+    constructor(element, {surface = element.querySelector('svg'), fitElement = null, maxZoom = 4, onChange = () => {}} = {}) {
       this.element = element; this.surface = surface; this.onChange = onChange;
       this.fitElement = fitElement;
+      this.maxZoom = Number.isFinite(maxZoom) ? Math.max(1,Math.min(16,maxZoom)) : 4;
       this.zoom = 1; this.pan = {x:0,y:0}; this.points = new Map(); this.gesture = false; this.suppressUntil = 0;
       element.classList.add('game-board-camera'); element.tabIndex = 0;
       const listen = (target, event, handler, options) => { target.addEventListener(event,handler,options); this.cleanup.push(() => target.removeEventListener(event,handler,options)); };
@@ -354,7 +363,7 @@
         this.points.delete(e.pointerId); if (!this.points.size) this.gesture = false;
       };
       listen(window,'pointerup',end); listen(window,'pointercancel',end);
-      listen(element,'click',e => { if (performance.now()<this.suppressUntil) { e.preventDefault(); e.stopImmediatePropagation(); } },true);
+      listen(element,'click',e => { if (e.detail && performance.now()<this.suppressUntil) { e.preventDefault(); e.stopImmediatePropagation(); } },true);
       listen(element,'wheel',e => { e.preventDefault(); this.zoomAt(Math.exp(-e.deltaY*.002),this.local({x:e.clientX,y:e.clientY})); },{passive:false});
       listen(element,'keydown',e => {
         if (e.target !== element) return;
@@ -375,7 +384,7 @@
     frame() { const r=this.element.getBoundingClientRect(),f=this.fitElement?.getBoundingClientRect();return f?{x:f.left-r.left,y:f.top-r.top,width:f.width,height:f.height}:{x:0,y:0,width:r.width,height:r.height}; }
     project(x,y) { const f=this.frame(); return {x:(x-.5)*f.width*this.zoom+f.x+f.width/2+this.pan.x,y:(y-.5)*f.height*this.zoom+f.y+f.height/2+this.pan.y}; }
     zoomAt(factor,anchor) {
-      const f=this.frame(),next=Math.max(1,Math.min(4,this.zoom*factor)),cx=f.x+f.width/2,cy=f.y+f.height/2;
+      const f=this.frame(),next=Math.max(1,Math.min(this.maxZoom,this.zoom*factor)),cx=f.x+f.width/2,cy=f.y+f.height/2;
       this.pan.x=anchor.x-cx-(anchor.x-cx-this.pan.x)*next/this.zoom; this.pan.y=anchor.y-cy-(anchor.y-cy-this.pan.y)*next/this.zoom;
       this.zoom=next; this.apply();
     }

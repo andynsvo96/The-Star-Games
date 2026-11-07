@@ -25,6 +25,7 @@ var websocket_server := TCPServer.new()
 var http_connections: Array = []
 var http_responses: Array = []
 var websocket_clients: Array = []
+var rejected_websocket_handshakes := 0
 var active_players := {}
 var http_port := 0
 var websocket_port := 0
@@ -231,9 +232,15 @@ func _poll_http_connections() -> void:
 		peer.poll()
 		connection["frames"] += 1
 		if peer.get_status() == StreamPeerTCP.STATUS_CONNECTED and peer.get_available_bytes() > 0:
-			var received := peer.get_partial_data(peer.get_available_bytes())
+			var received := peer.get_partial_data(mini(peer.get_available_bytes(), 16385))
 			if received[0] == OK:
 				connection["buffer"].append_array(received[1])
+				# HTTP headers are ASCII. Drop binary/TLS probes before decoding;
+				# invalid UTF-8 must not become an engine error or an asset path.
+				if connection.buffer.size() > 16384 or not _http_header_bytes_valid(connection.buffer):
+					peer.disconnect_from_host()
+					http_connections.remove_at(index)
+					continue
 				var request: String = PackedByteArray(connection["buffer"]).get_string_from_utf8()
 				if request.contains("\r\n\r\n"):
 					_serve_http(peer, request)
@@ -242,6 +249,13 @@ func _poll_http_connections() -> void:
 		if peer.get_status() in [StreamPeerTCP.STATUS_ERROR, StreamPeerTCP.STATUS_NONE] or connection["frames"] > 300:
 			peer.disconnect_from_host()
 			http_connections.remove_at(index)
+
+
+static func _http_header_bytes_valid(bytes: PackedByteArray) -> bool:
+	for byte in bytes:
+		if byte > 126 or (byte < 32 and byte not in [9, 10, 13]):
+			return false
+	return true
 
 
 func _serve_http(peer: StreamPeerTCP, request: String) -> void:
@@ -523,20 +537,36 @@ func _poll_websocket_clients() -> void:
 		var socket: WebSocketPeer = client["socket"]
 		if not client.opened and not lobby_open and admitted_players.is_empty():
 			socket.close(-1); websocket_clients.remove_at(index); continue
-		socket.poll()
+		if socket.get_ready_state() == WebSocketPeer.STATE_CONNECTING:
+			# Godot owns the upgrade parser and rejects non-WebSocket probes.
+			# Its parser reports arbitrary wire bytes as engine errors (including
+			# UTF-8 diagnostics). Contain that expected rejection to handshaking;
+			# established sockets and game code retain ordinary error reporting.
+			var printed_errors := Engine.print_error_messages
+			Engine.print_error_messages = false
+			socket.poll()
+			Engine.print_error_messages = printed_errors
+		else:
+			socket.poll()
 		if socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
 			_flush_client(client)
 			if not client["opened"]:
 				client["opened"] = true
 				_send(socket, {"type": "hello", "protocol_version": PROTOCOL_VERSION, "host_name": profile_store.get_settings()["host_name"], "websocket_port": websocket_port, "lobby_open": lobby_open})
 			while socket.get_available_packet_count() > 0:
-				var text := socket.get_packet().get_string_from_utf8()
+				var packet := socket.get_packet()
+				if not socket.was_string_packet():
+					_send(socket, {"type": "error", "code": "invalid_json", "message": "Messages must be JSON text."})
+					continue
+				var text := packet.get_string_from_utf8()
 				var message: Variant = JSON.parse_string(text)
 				if message is Dictionary:
 					_handle_message(client, message)
 				else:
 					_send(socket, {"type": "error", "code": "invalid_json", "message": "Message must be valid JSON."})
 		elif socket.get_ready_state() == WebSocketPeer.STATE_CLOSED:
+			if not client.opened:
+				rejected_websocket_handshakes += 1
 			_disconnect_client(client)
 			websocket_clients.remove_at(index)
 
