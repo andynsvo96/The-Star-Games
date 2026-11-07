@@ -57,6 +57,18 @@ const assertions = `
 	const unchanged = (before, after, caption) => check(['x','y','width','height'].every(key => Math.abs(before[key] - after[key]) < 1), caption + ' ' + JSON.stringify({before,after,controls:document.querySelector('.game-board-controls').getBoundingClientRect().toJSON()}));
 	try {
 		await document.fonts.ready;
+		// Six public metrics fit two shared rows without borrowing a game module.
+		const denseHost=document.createElement('div');denseHost.className='game-board-ui game-board-stats';denseHost.style.cssText='position:fixed;left:-2000px;top:0;display:block';
+		const denseCard=document.createElement('aside');denseCard.className='game-score-card game-ledger game-compact-stats game-current-stats game-player-panel game-dense-counters';
+		denseCard.innerHTML='<p>Long literal player name</p><div class="game-score-status"><span class="game-score-feedback">WHITE · YOUR TURN</span><output class="game-score-clock">5:00</output></div><div class="game-stat-grid">'+Array.from({length:6},(_,i)=>'<span class="game-stat-item"><img src="/ui/playful/stat-victory.svg" alt="Public metric '+i+'"><span>x '+(i?2:8)+'</span></span>').join('')+'</div>';
+		denseHost.append(denseCard);document.body.append(denseHost);
+		for(const width of [140,180,220]){
+			denseHost.style.width=width+'px';await settle();
+			const metrics=[...denseCard.querySelectorAll('.game-stat-item')],rows=new Set(metrics.map(item=>Math.round(item.getBoundingClientRect().top)));
+			check(rows.size===2&&metrics.every(item=>item.scrollWidth<=item.clientWidth+1),'Dense shared counters retain six readable metrics in two rows at '+width+'px');
+			check(denseCard.querySelector('p').textContent==='Long literal player name'&&denseCard.querySelector('.game-score-status').scrollWidth<=denseCard.querySelector('.game-score-status').clientWidth+1,'Dense public identity, status and clock stay readable at '+width+'px');
+		}
+		denseHost.remove();
 		const reference=new StarGamesCardReader();
 		const referenceFace=(width,height)=>'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="'+width+'" height="'+height+'"><rect width="100%" height="100%" fill="#ead7a8"/></svg>');
 		const referencePages=[{src:referenceFace(120,180),alt:'Literal front <rules>'},{src:referenceFace(240,120),alt:'Literal back rules'}];

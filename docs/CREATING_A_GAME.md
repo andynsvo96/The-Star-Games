@@ -1344,6 +1344,14 @@ pass gestures through. A `game-score-status` row can group current-turn feedback
 and its `output.game-score-clock` to keep dense rosters compact. Keyboard
 activation remains available immediately after a camera gesture.
 
+For six small public metrics, opt into `game-dense-counters` on an existing
+`game-player-panel game-current-stats` card inside `game-board-ui`. It retains
+all six icon/count pairs in two three-column rows, with the existing
+`game-score-status` row for side/turn text and an optional clock. Long literal
+names wrap independently. Other cards retain their spacing. The template's
+inert `example-dense-board-stats` demonstrates this opt-in, and the synthetic
+`tests/shared_board_controller.mjs` checks it without any playable modules.
+
 Native `set_score_card_active(card, active, true)` adds a static gold name-panel
 highlight to ledger and ornate cards, with identical insets for both states.
 The optional third argument defaults false, preserving existing callers. Use it
@@ -1902,42 +1910,70 @@ guidance, clocks, result reason, session wins and history. Input validates admit
 identity, color, turn, integer values, revision and legal moves. Public player
 snapshots omit profile IDs and reconnect tokens.
 
-Chess stats sit inside shared ivory ledgers framed in walnut. Host Settings opens
-from the top right beside music in the shared dimmed popup. Session & History
-controls are omitted. Controllers omit options/history panels, the perspective
-note and the extra launcher
-heading above the game title. The host alone can change Move Guidance; removed
-controller option actions are ignored. Moves & Help, draw claims,
-draw offers and resignation controls are omitted from both host and controllers;
-the host ignores the removed actions. Game rules
-retain their internal move history for clocks and draw detection.
+Chess uses the shared centered board composition, compact illustrated heading,
+current-game ivory ledgers, whole-panel turn glow and fitted phone board with
+bottom stats. Textured wood squares retain its sculpted ivory/ebony pieces and
+royal study. Panels show names, White/Black identity, six remaining-piece counts,
+turn/check/disconnect feedback and optional clocks, without session win boxes,
+Untimed or the ordinary top status banner. Phones use `game-dense-counters` to
+retain six metrics on small screens. Tap, keyboard and shared piece dragging all
+use the same validated move path. Illustrated promotion buttons retain an
+explicit Choose Piece action after View Board.
+
+Host Settings uses the shared grouped form beside music, with difficulty,
+opponent, live Skin, clock presets/custom minutes, Guided gameplay, Last Move
+Indicator and Teaching mode. The separate question-mark action opens twelve
+static illustrated rule references on host and phones. Settings and host Help
+pause input, AI, clocks, duration, movement and sounds; phone Help is local.
+Session & History, move-history, draw-claim/offer and resignation controls remain
+omitted. The internal move history still supports clocks and draw detection.
 
 Participants swap colors on replay while their wins remain attached to the same
 identity; White always moves first. A completed board is one game. Draws award no
 win and only decisive two-phone boards update saved points/results. Accepted
-Chess settings changes restart the current board, canceling old
-workers, promotion choices and motion while preserving completed session wins
-and unchanged preferences. Clocks reset to the accepted allowance. The host may change applicable options at any
-time. Opponent-mode changes keep wins attached to retained identities.
-The clock is off by default; custom decimal minutes are entered on the host
-at any time. A change restarts the board; the clock starts after the first
-legal move,
-uses host monotonic time, keeps running through promotion and computer thinking,
-and freezes on any admitted-player disconnect. Browser countdown interpolation
-is display-only; the host alone decides timeout results.
+clock, opponent and normal difficulty changes restart the current board,
+canceling workers, promotion choices and motion while preserving completed wins
+and unchanged preferences. Clocks reset to the accepted allowance. Preparing
+minutes while the clock is off preserves the board. Guided gameplay (saved under
+the existing `guidance` key, default on) and independent Last Move Indicator
+(default off) change without resetting the board, clocks or revision.
+The clock is off by default and starts after the first legal move. It uses host
+monotonic time, keeps running through promotion and computer thinking, and
+freezes on host Settings/Help or any admitted-player disconnect. Browser
+countdown interpolation is display-only; the host alone decides timeout results.
 
 Rules follow the [FIDE Laws of Chess](https://handbook.fide.com/chapter/e012023)
 for legal movement, promotion, castling, en passant, checkmate, stalemate, and
 timeout with standard mating-material detection. Fivefold/75-move draws are
 automatic and checkmate takes precedence. The rules library retains claim and
-resignation helpers, but game sessions do not expose them. Guidance defaults on
-and can be changed by the host only. There is no undo.
+resignation helpers, but game sessions do not expose them. Host-only Teaching
+mode is available with one human against the computer, including a one-phone
+learner. It uses Easy without replacing saved normal difficulty, bounded legal
+explained hints, and Take Back for the previous human move and computer reply.
+Up to 64 transient checkpoints restore castling/en-passant rights, repetition,
+halfmove state, clocks and round facts, advance revision and cancel stale work.
+Coaching follows the human's color on replay; multiplayer cannot enable it.
+The public host can also suggest a phone player's legal move through the shared
+white ghost preview, independently of guidance. This never changes a real piece,
+revision or result; pauses freeze it and reconnect restores it settled.
+
+After movement settles, shared Chess Results displays winner/draw reason,
+active duration, moves, captures, checks, promotions, castles and session wins.
+View Board leaves Results reachable; one Play Again remains outside scrolling
+statistics. Duplicate snapshots preserve result nodes and reading position.
+The live shared skin selector offers Default and Marble Court, plus editor-made
+packs. Canonical revisioned artwork changes preserve controls, selections, rules,
+clocks, movement and open help/results. Cosmetic packs never determine rules.
 The castle scenery uses an extensionless
 background stem and all artwork/audio stays offline. `tests/chess.gd` includes
 published move-tree fixtures plus rules, clocks and session checks;
 `tests/chess_motion.gd` checks movement and worker cancellation;
-`tests/chess_controller.mjs` checks isolated Chromium layouts and controller
-snapshots in portrait, landscape, tablet and reduced-motion configurations.
+`tests/chess_polish.gd` checks coaching, pauses, undo and live cosmetics;
+`tests/chess_network.gd` checks real LAN routing, reconnect, scoring and media.
+Run rendered `tests/chess_visual.gd` before `node tests/chess_controller.mjs` for
+host-generated browser fixtures, portrait/landscape, small phones, the portrait
+frame, help/results/promotion, gestures and reduced motion. Detailed behavior
+and commands live in the local module README; playable content remains local.
 
 ### UNO example
 

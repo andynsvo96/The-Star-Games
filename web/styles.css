@@ -1777,6 +1777,13 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-current-stats .game-score-feedback { min-height:2.6em; margin:4px 0 0; font:600 12px/1.25 "Segoe UI",Arial,sans-serif; }
 .game-board-stats .game-score-card.game-current-stats > .game-score-feedback { border:0; background:none; padding:0; box-shadow:none; border-radius:0; }
 .game-current-stats .game-stat-grid { margin-top:5px; }
+/* Opt-in dense counters retain all six metrics on small board controllers. */
+.game-board-ui .game-player-panel.game-dense-counters .game-stat-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:2px 3px; }
+.game-board-stats .game-player-panel.game-dense-counters { grid-template-columns:minmax(0,1fr); }
+.game-player-panel.game-dense-counters .game-score-status { grid-column:1 / -1; }
+.game-current-stats.game-dense-counters .game-score-feedback { min-height:1.2em; margin:0; font-size:11px; }
+.game-board-stats .game-player-panel.game-dense-counters .game-stat-item { gap:1px; font-size:11px; }
+.game-board-stats .game-player-panel.game-dense-counters .game-stat-item img { width:16px; height:18px; }
 .game-illustrated-guide,.game-round-dialog { width:min(94vw,760px); max-width:760px; }
 .game-illustrated-guide > .dialog-body,.game-round-dialog > .dialog-body { scrollbar-width:thin; scrollbar-color:var(--panel-edge) transparent; }
 .game-illustrated-guide > .dialog-body:focus-visible,.game-round-dialog > .dialog-body:focus-visible { outline:2px solid var(--focus-color); outline-offset:-2px; }

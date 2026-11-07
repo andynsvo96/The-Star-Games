@@ -122,6 +122,24 @@
        the board itself at screen center and moves stats beside short landscapes.
        For a pannable board, use StarGamesBoardCamera with an inner art surface;
        its drags/pinches are view-only. Keep tap/keyboard moves host-validated. -->
+  <!-- Dense public counters keep six current-game metrics in two rows. The
+       shared status row retains side/turn identity and an optional clock. -->
+  <template id="example-dense-board-stats">
+    <div class="game-board-stats game-board-ui" aria-label="Player statistics">
+      <aside class="game-score-card game-ledger game-compact-stats game-current-stats game-player-panel game-dense-counters">
+        <p>Player name</p>
+        <div class="game-score-status"><span class="game-score-feedback" role="status">WHITE · YOUR TURN</span><output class="game-score-clock" aria-label="Player clock">5:00</output></div>
+        <div class="game-stat-grid">
+          <span class="game-stat-item"><img src="/ui/playful/stat-resources.svg" alt="First metric"><span>8</span></span>
+          <span class="game-stat-item"><img src="/ui/playful/stat-route.svg" alt="Second metric"><span>2</span></span>
+          <span class="game-stat-item"><img src="/ui/playful/stat-knights.svg" alt="Third metric"><span>2</span></span>
+          <span class="game-stat-item"><img src="/ui/playful/stat-development.svg" alt="Fourth metric"><span>2</span></span>
+          <span class="game-stat-item"><img src="/ui/playful/stat-victory.svg" alt="Fifth metric"><span>1</span></span>
+          <span class="game-stat-item"><img src="/ui/playful/stat-trophy.svg" alt="Sixth metric"><span>1</span></span>
+        </div>
+      </aside>
+    </div>
+  </template>
   <template id="example-centered-board">
     <main class="game-controller game-board-controller game-board-centered game-camera-controller game-board-ui">
       <header>

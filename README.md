@@ -90,6 +90,15 @@ until another suggestion or a real move; clicking the source again clears it.
 Guidance never moves a real piece, advances the revision or awards anything; the
 player retains control. Pauses freeze the preview and reconnect restores it.
 
+Chess now uses a larger centered wood board, compact current-game player panels,
+turn glows, drag/tap controls and illustrated help/promotion choices on host and
+phones. Results show round statistics with View Board and one Play Again.
+Grouped Settings pauses play and offers clock presets, independent guidance and
+last-move indicators, Teaching mode with explained hints and Take Back, and live
+Default/Marble Court skins. Host white ghost suggestions guide phone players
+without moving their pieces. Coaching is limited to one human against the computer;
+two-phone scoring, replay color swaps and offline reconnection remain supported.
+
 The local Poker variants include optional cinematic community-card reveals,
 all-in win odds, and individual player histories opened from their stat plaques
 on the host or browser controller. Cinematic Reveals defaults on in Table Settings.
