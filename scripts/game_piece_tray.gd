@@ -20,6 +20,12 @@ func _ready() -> void:
 	caption.add_theme_font_override("font", GameLook.interface_font(700))
 	caption.add_theme_font_size_override("font_size", 13)
 	add_child(caption)
+	var fill := caption.get_theme_color("panel", "GamePalette")
+	var backing := GameLook.box(fill, Color.TRANSPARENT, 4, 0)
+	backing.set_content_margin_all(0)
+	backing.shadow_size = 0
+	caption.add_theme_stylebox_override("normal", backing)
+	caption.add_theme_color_override("font_color", GameLook.readable_text_color(caption.get_theme_color("font_color"), fill))
 	row = GridContainer.new()
 	row.columns = 5
 	row.add_theme_constant_override("h_separation", 4)

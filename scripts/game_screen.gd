@@ -1405,6 +1405,7 @@ func set_score_card_artwork(card: Dictionary, artwork: Texture2D) -> void:
 	var current: StyleBox = card.panel.get_theme_stylebox("panel")
 	if artwork == null or not current is StyleBoxTexture:
 		return
+	if current.texture == artwork and current.modulate_color == Color.WHITE: return
 	var surface: StyleBoxTexture = current.duplicate()
 	surface.texture = artwork
 	surface.modulate_color = Color.WHITE
@@ -1412,31 +1413,53 @@ func set_score_card_artwork(card: Dictionary, artwork: Texture2D) -> void:
 
 
 # Each icon/count group centers independently inside the artwork's content inset.
-func add_score_counter_rows(card: Dictionary, icons: Array, values: Array = []) -> Array[Label]:
+func add_score_counter_rows(card: Dictionary, icons: Array, values: Array = [], compact := false) -> Array[Label]:
 	var rows := GridContainer.new()
-	rows.columns = 1
-	rows.add_theme_constant_override("v_separation", 8)
+	rows.columns = 3 if compact else 1
+	rows.add_theme_constant_override("v_separation", 3 if compact else 8)
+	rows.add_theme_constant_override("h_separation", 4)
 	card.content.add_child(rows)
 	var labels: Array[Label] = []
 	for index in icons.size():
 		var row := HBoxContainer.new()
 		row.alignment = BoxContainer.ALIGNMENT_CENTER
 		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_theme_constant_override("separation", 8)
+		row.add_theme_constant_override("separation", 2 if compact else 8)
 		rows.add_child(row)
 		var icon := TextureRect.new()
 		icon.texture = icons[index]
-		icon.custom_minimum_size = Vector2(32, 32)
+		icon.custom_minimum_size = Vector2(18, 22) if compact else Vector2(32, 32)
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		row.add_child(icon)
+		if compact:
+			var backing := Panel.new()
+			backing.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			backing.show_behind_parent = true
+			var chip := GameLook.box(Color("c8bc9f"), Color("8c784f"), 4, 1)
+			chip.shadow_size = 0
+			backing.add_theme_stylebox_override("panel", chip)
+			icon.add_child(backing)
+			backing.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		var count := Label.new()
 		count.text = str(values[index]) if index < values.size() else ""
 		count.add_theme_color_override("font_color", card.text_color)
-		count.add_theme_font_size_override("font_size", 18)
+		count.add_theme_font_size_override("font_size", 13 if compact else 18)
 		row.add_child(count)
 		labels.append(count)
 	return labels
+
+
+# A module may pair supplied light/dark frame artwork with readable shared ink.
+func set_score_card_palette(card: Dictionary, ink: Color, header_fill: Color, edge: Color) -> void:
+	var key: Array = [ink, header_fill, edge]
+	if card.get("palette", []) == key: return
+	card.palette = key
+	card.text_color = ink
+	for label in card.content.find_children("*", "Label", true, false): label.add_theme_color_override("font_color", ink)
+	var header := GameLook.box(header_fill, edge, 6, 1)
+	header.set_content_margin_all(4)
+	card.name_panel.add_theme_stylebox_override("panel", header)
 
 
 # An explicit reference action shares the Settings corner, outside the board fit.

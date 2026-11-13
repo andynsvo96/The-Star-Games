@@ -1584,10 +1584,16 @@ to put a 44px question-mark button immediately left of Settings. It follows the
 shared corner layout and hides while modal Settings is open. Phone references
 remain in the reachable controller toolbar. The template includes a hidden use.
 
-`screen.add_score_counter_rows(card, icons, values=[])` adds independently centered
+`screen.add_score_counter_rows(card, icons, values=[], compact=false)` adds independently centered
 icon/count rows inside a shared score card and returns their Labels. Update the
 Labels literally from snapshots; hide a Label's parent row when a metric does not
-apply. The helper owns spacing, icon dimensions and typography. Compact title art
+apply. `compact=true` uses a three-column inventory grid with a neutral icon backing.
+`screen.set_score_card_palette(card, ink, header_fill, edge)` pairs supplied frame
+artwork with readable labels and header colors. Browser equivalents use
+`game-score-tone-light` / `game-score-tone-dark` with matching `--game-score-art`,
+and `game-piece-counts` containing `game-piece-count` icon/count rows. Preserve
+the actual piece color and give each row an accessible piece name and count.
+The helper owns spacing, icon dimensions and typography. Compact title art
 uses the existing fourth `add_title_art` argument to leave more room for boards.
 
 ### Dragging board pieces
@@ -1677,15 +1683,20 @@ page's canonical image while retaining its topic and reading position.
 
 An example may also supply `demonstration` with an offline `background`, optional
 `aspect` ratio, `description`, `sprites:[{image,rect:[x,y,width,height],opacity?}]`
-and `steps:[{caption,duration?,reset?,moves:[{sprite,rect?,via?,opacity?,image?,fade?}]}]`.
+and `steps:[{caption?,duration?,reset?,moves:[{sprite,rect?,via?,opacity?,image?,fade?}]}]`.
 Rectangles use normalized illustration coordinates; `sprite` is a zero-based
 index and optional `via` rectangles show intermediate positions. A step moves
 inner artwork with smooth easing, holds the result, then continues; the final
 step loops to the initial picture. `reset:true` demonstrates an alternative move
 from the original position. Captures and replacement images apply on arrival;
 `fade:true` opts into gradual opacity for arrivals or non-capture effects.
-Every step has a literal caption, and the shared controls offer Pause/Play and
-Replay. These are independent public illustrations, never live game snapshots.
+The shared image button loops automatically; click, tap, Enter or Space pauses
+or resumes at the current phase. Origin ghosts, outlined paths, arrowheads and
+destination rings show each move, including intermediate `via` positions.
+Keep instructions in the lesson's fixed `detail` and a stable accessible
+`description`; per-step caption metadata does not change the displayed text.
+The picture and its small play/pause indicator retain their dimensions across
+steps. These are independent public illustrations, never live game snapshots.
 
 Call native `guide.set_reduced_motion(context.reduced_motion)` or browser
 `guide.setReducedMotion(host_reduced_motion)` when state updates. Reduced motion
@@ -2008,7 +2019,8 @@ top-right corner for eligible solo/computer sessions, retaining the existing
 `teaching_enabled` preference. Diagrams have compact square bounds; check/king
 safety and planning are separate from the six piece-movement lessons. An adjacent
 **×** closes the guide. Every illustration has an independent looping move
-demonstration, Pause/Replay and an annotated reduced-motion fallback.
+demonstration with movement paths and tap-to-pause playback. Lesson text stays
+fixed, and reduced motion retains an annotated static diagram.
 Settings and host Help
 pause input, AI, clocks, duration, movement and sounds; phone Help is local.
 Session & History, move-history, draw-claim/offer and resignation controls remain

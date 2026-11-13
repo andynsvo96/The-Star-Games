@@ -71,11 +71,13 @@ const assertions = `
 		demoGuide.setItems(demoItems);demoGuide.open();demoGuide.setReducedMotion(false);await settle();
 		check(demoGuide.header.contains(demoGuide.dialog.querySelector('[data-guide-close]'))&&demoGuide.dialog.querySelector('[data-guide-close]').textContent==='×','Tutorial has a fixed accessible X in its header');
 		const demo=demoGuide.demonstration;demo.advance(.95);const moved=parseFloat(demo.actors[0].style.left);demoGuide.setItems(demoItems);
-		check(moved>10&&moved<60&&demoGuide.demonstration===demo&&demo.caption.textContent==='Literal <move>','Demonstration moves inner artwork and survives duplicate state');
-		demo.pause.click();const elapsed=demo.elapsed;await settle();check(demo.elapsed===elapsed,'Paused tutorial motion preserves its phase');
-		demo.replay.click();check(demo.elapsed===0&&demo.playing,'Replay restarts the current demonstration');
+		check(moved>10&&moved<60&&demoGuide.demonstration===demo&&demo.overlay.querySelector('path'),'Demonstration moves artwork along its visible route and survives duplicate state');
+		const guideSize=demoGuide.dialog.getBoundingClientRect(),guideText=demoGuide.lesson.textContent;
+		demo.stage.click();const elapsed=demo.elapsed;await settle();check(demo.elapsed===elapsed,'Clicking the illustration pauses without changing phase');
+		demo.stage.click();check(demo.elapsed===elapsed&&demo.playing,'Clicking again resumes the same phase');demo.restart();
 		demo.advance(1.6);demo.advance(1);check(parseFloat(demo.actors[0].style.left)>59.9&&parseFloat(demo.actors[0].style.top)===20,'Sequential examples retain the previous move instead of resetting their board');
 		demo.advance(.95);check(parseFloat(demo.actors[0].style.left)>59.9&&parseFloat(demo.actors[0].style.top)>20,'The next move continues from that retained position');
+		await settle();const stableSize=demoGuide.dialog.getBoundingClientRect();check(Math.abs(stableSize.height-guideSize.height)<1&&Math.abs(stableSize.width-guideSize.width)<1&&demoGuide.lesson.textContent===guideText&&!demoGuide.dialog.querySelector('.game-guide-demo-caption,.game-guide-demonstration .game-action-row'),'Instructions and guide geometry stay fixed across animation steps');
 		demoGuide.setReducedMotion(true);check(demo.element.hidden&&!demoGuide.staticImage.hidden,'Reduced motion keeps a static reference');demoGuide.close();demo.destroy();demoGuide.dialog.remove();
 		const trayHost=document.createElement('div');document.querySelector('main').append(trayHost);let trayChoice=-1;const tray=new StarGamesPieceTray(trayHost,key=>trayChoice=key);
 		const stock=[{key:1,label:'Example piece',image:'/ui/playful/control-help.svg',count:2,enabled:true},{key:2,label:'Empty piece',image:'/ui/playful/control-help.svg',count:0,enabled:true}];tray.update(stock,1);const trayButton=tray.buttons[0];tray.update(stock,1);trayButton.click();

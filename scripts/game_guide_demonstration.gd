@@ -13,43 +13,27 @@ var step := 0
 var elapsed := 0.0
 var playing := true
 var reduced_motion := false
-var stage: Control
-var caption: Label
-var pause_button: Button
-var replay_button: Button
+var stage: Button
 
 
 func _ready() -> void:
 	add_theme_constant_override("separation", 6)
-	stage = Control.new()
-	stage.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stage = Button.new()
+	stage.flat = true
+	stage.toggle_mode = true
+	stage.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	for state in ["normal", "hover", "pressed", "hover_pressed", "focus"]: stage.add_theme_stylebox_override(state, StyleBoxEmpty.new())
 	stage.custom_minimum_size = Vector2(0, 220)
 	stage.draw.connect(_paint)
 	stage.resized.connect(stage.queue_redraw)
+	stage.pressed.connect(toggle_playing)
 	add_child(stage)
-	caption = Label.new()
-	caption.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	caption.add_theme_font_override("font", GameLook.interface_font())
-	caption.add_theme_font_size_override("font_size", 13)
-	caption.custom_minimum_size.y = 36
-	add_child(caption)
-	var controls := HBoxContainer.new()
-	controls.alignment = BoxContainer.ALIGNMENT_CENTER
-	add_child(controls)
-	pause_button = Button.new(); pause_button.text = "PAUSE"
-	replay_button = Button.new(); replay_button.text = "REPLAY"
-	for button in [pause_button, replay_button]:
-		controls.add_child(button)
-		GameLook.board_action(button)
-		button.add_theme_font_override("font", GameLook.interface_font(700))
-		button.add_theme_font_size_override("font_size", 12)
-	pause_button.pressed.connect(func() -> void: playing = not playing; pause_button.text = "PAUSE" if playing else "PLAY")
-	replay_button.pressed.connect(restart)
 
 
 func set_demonstration(value: Dictionary) -> void:
 	if value == record: return
 	record = value.duplicate(true)
+	stage.accessibility_name = str(record.get("description", "Move demonstration")) + ". Pause or play animation."
 	reload_artwork()
 	restart()
 
@@ -71,8 +55,14 @@ func _texture(path: String) -> Texture2D:
 
 func restart() -> void:
 	playing = true
-	if pause_button != null: pause_button.text = "PAUSE"
+	stage.set_pressed_no_signal(false)
 	_begin_step(0)
+
+
+func toggle_playing() -> void:
+	playing = not playing
+	stage.set_pressed_no_signal(not playing)
+	stage.queue_redraw()
 
 
 func aspect_ratio() -> float:
@@ -99,8 +89,6 @@ func _begin_step(index: int) -> void:
 		if move.has("opacity"): targets[actor].opacity = clampf(float(move.opacity), 0, 1)
 		if move.has("image"): targets[actor].image = str(move.image)
 		if move.get("fade", false): fades[actor] = true
-	caption.text = str(instruction.get("caption", ""))
-	stage.accessibility_name = str(record.get("description", ""))
 	elapsed = 0
 	_advance(0)
 
@@ -137,6 +125,7 @@ func _paint() -> void:
 	var art_size := background.get_size() * factor
 	var area := Rect2((stage.size - art_size) / 2, art_size)
 	stage.draw_texture_rect(background, area, false)
+	_draw_paths(area)
 	for sprite in sprites:
 		var rect: Array = sprite.get("rect", [])
 		if rect.size() != 4: continue
@@ -144,3 +133,32 @@ func _paint() -> void:
 		if texture == null: continue
 		var bounds := Rect2(area.position + Vector2(rect[0], rect[1]) * art_size, Vector2(rect[2], rect[3]) * art_size)
 		GameLook.draw_texture_contained(stage, texture, bounds, Color(1, 1, 1, float(sprite.get("opacity", 1))))
+	var badge := area.position + Vector2(10, area.size.y - 10)
+	stage.draw_circle(badge, 8, Color("233f50ee"))
+	if playing:
+		for x in [-2.5, 2.5]: stage.draw_line(badge + Vector2(x,-3), badge + Vector2(x,3), Color.WHITE, 2, true)
+	else: stage.draw_colored_polygon(PackedVector2Array([badge+Vector2(-2,-4),badge+Vector2(4,0),badge+Vector2(-2,4)]), Color.WHITE)
+	if stage.has_focus(): stage.draw_style_box(GameLook.box(Color.TRANSPARENT, GameLook.GOLD, 4, 2), Rect2(Vector2.ONE, stage.size - Vector2.ONE * 2))
+
+
+func _draw_paths(area: Rect2) -> void:
+	for actor in paths:
+		var route: Array = paths[actor]
+		var points := PackedVector2Array()
+		for rect: Array in route: points.append(area.position + Vector2(rect[0] + rect[2] / 2, rect[1] + rect[3] / 2) * area.size)
+		if points[0].distance_to(points[-1]) < .1: continue
+		var origin: Array = starts[actor].rect
+		var ghost := _texture(str(starts[actor].image))
+		if ghost != null: GameLook.draw_texture_contained(stage, ghost, Rect2(area.position + Vector2(origin[0],origin[1])*area.size,Vector2(origin[2],origin[3])*area.size),Color(1,1,1,.24))
+		var color: Color = [Color("147a9c"),Color("ad6327"),Color("6651a4")][int(actor) % 3]
+		stage.draw_polyline(points, Color("fff5df"), 6, true)
+		stage.draw_polyline(points, color, 3, true)
+		stage.draw_circle(points[0], 4, Color("fff5df"))
+		stage.draw_circle(points[0], 3, color)
+		var radius := minf(area.size.x * origin[2], area.size.y * origin[3]) * .42
+		stage.draw_arc(points[-1], radius, 0, TAU, 32, Color("fff5df"), 5, true)
+		stage.draw_arc(points[-1], radius, 0, TAU, 32, color, 2, true)
+		var direction := (points[-1] - points[-2]).normalized()
+		var tip := points[-1] - direction * radius
+		var normal := Vector2(-direction.y, direction.x)
+		stage.draw_polyline(PackedVector2Array([tip-direction*8+normal*5,tip,tip-direction*8-normal*5]),color,3,true)

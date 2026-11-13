@@ -1779,7 +1779,8 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-current-stats .game-stat-grid { margin-top:5px; }
 /* Opt-in dense counters retain all six metrics on small board controllers. */
 .game-board-ui .game-player-panel.game-dense-counters .game-stat-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:2px 3px; }
-.game-board-stats .game-player-panel.game-dense-counters { grid-template-columns:minmax(0,1fr); }
+.game-board-ui .game-board-stats .game-player-panel.game-dense-counters { grid-template-columns:minmax(0,1fr); }
+.game-board-stats .game-player-panel.game-dense-counters > p:first-child > span:first-child { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .game-player-panel.game-dense-counters .game-score-status { grid-column:1 / -1; }
 .game-current-stats.game-dense-counters .game-score-feedback { min-height:1.2em; margin:0; font-size:11px; }
 .game-board-stats .game-player-panel.game-dense-counters .game-stat-item { gap:1px; font-size:11px; }
@@ -1804,17 +1805,29 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-guide-paged .game-guide-page > img { width:100%; height:auto; max-height:300px; object-fit:contain; }
 .game-guide-visual { min-width:0; }
 .game-guide-visual > img { display:block; width:100%; height:260px; object-fit:contain; }
-.game-guide-demo-stage { position:relative; width:100%; max-width:260px; margin:auto; overflow:hidden; }
+.game-guide-demonstration .game-guide-demo-stage { display:block; position:relative; width:100%; max-width:260px; margin:auto; overflow:hidden; padding:0; border:0; border-radius:0; background:none; box-shadow:none; transform:none; cursor:pointer; }
 .game-guide-demo-stage > img { display:block; width:100%; height:100%; object-fit:contain; }
-.game-guide-demo-stage > .game-guide-demo-piece { position:absolute; }
+.game-guide-demo-stage > img,.game-guide-demo-paths { pointer-events:none; user-select:none; }
+.game-guide-demo-paths { position:absolute; inset:0; width:100%; height:100%; z-index:1; }
+.game-guide-demo-stage > .game-guide-demo-piece { position:absolute; z-index:2; }
+.game-guide-demo-status { position:absolute; left:2px; bottom:2px; z-index:3; display:grid; place-items:center; width:16px; height:16px; border-radius:50%; color:white; background:#233f50ee; font:10px/1 Arial,sans-serif; pointer-events:none; }
+.game-guide-demo-stage:focus-visible { outline:2px solid var(--focus-color,#e5be64); outline-offset:2px; }
 .game-piece-tray { width:100%; max-width:420px; margin:0 auto; }
-.game-piece-tray-caption { margin:0 0 4px; text-align:center; font:700 13px/1.3 "Segoe UI",Arial,sans-serif; }
+.game-piece-tray-caption { margin:0 0 4px; border-radius:4px; background:var(--panel); color:var(--ink); text-align:center; font:700 13px/1.3 "Segoe UI",Arial,sans-serif; }
 .game-piece-tray-slots { display:grid; grid-template-columns:repeat(auto-fit,minmax(44px,1fr)); gap:4px; }
 .game-piece-tray .game-piece-tray-slots > button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; min-width:44px; min-height:60px; padding:3px; margin:0; font:700 13px "Segoe UI",Arial,sans-serif; letter-spacing:0; }
 .game-piece-tray button img { width:26px; height:30px; object-fit:contain; }
 .game-piece-tray button[aria-pressed="true"] { outline:3px solid #e5be64; outline-offset:-3px; }
-.game-guide-demo-caption { min-height:2.6em; margin:6px 0; font:13px/1.3 "Segoe UI",Arial,sans-serif; text-align:center; }
-.game-guide-demonstration .game-action-row button { min-height:44px; padding:4px 10px; margin:0; font:700 12px "Segoe UI",Arial,sans-serif; letter-spacing:0; }
+.game-board-ui .game-score-card.game-score-tone-light { color:#443424; }
+.game-board-ui .game-score-card.game-score-tone-dark { color:#f5e8cb; }
+.game-board-ui .game-score-card:is(.game-score-tone-light,.game-score-tone-dark) > p:first-child { border:1px solid #b59a68; border-radius:6px; padding:4px; background:#fff3d7; }
+.game-board-ui .game-score-card.game-score-tone-dark > p:first-child { background:#282c30; }
+.game-board-ui .game-score-card:is(.game-score-tone-light,.game-score-tone-dark) :is(output,.game-score-side,.game-score-detail,.game-score-feedback) { color:inherit; }
+.game-piece-count-heading { margin:4px 0 2px !important; padding:0 !important; font:12px/1.2 "Segoe UI",Arial,sans-serif !important; text-align:center; }
+.game-piece-counts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:3px 4px; }
+.game-piece-count { display:flex; justify-content:center; align-items:center; gap:2px; font:13px/1 "Segoe UI",Arial,sans-serif; }
+.game-piece-count img { width:18px; height:22px; object-fit:contain; background:#c8bc9f; border:1px solid #8c784f; border-radius:4px; }
+.game-piece-count.is-empty img { opacity:.35; }
 .game-guide-copy p { margin:10px 0 0; font:16px/1.5 "Segoe UI",Arial,sans-serif; }
 .game-guide-paged .dialog-actions { display:flex; flex-wrap:nowrap; align-items:center; gap:6px; }
 .game-guide-paged .dialog-actions button { flex:0 0 auto; min-width:44px; min-height:44px; padding:6px 10px; font:700 13px "Segoe UI",Arial,sans-serif; letter-spacing:0; }
@@ -1823,7 +1836,7 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
   .game-guide-paged .game-guide-page { grid-template-columns:minmax(0,1fr); gap:12px; }
   .game-guide-paged .game-guide-page > img { height:min(52vw,220px); }
   .game-guide-visual > img { height:min(52vw,220px); }
-  .game-guide-demo-stage { max-width:min(52vw,220px); }
+  .game-guide-demonstration .game-guide-demo-stage { max-width:min(52vw,220px); }
   .game-guide-banner h2 { font-size:19px; }
 }
 .game-round-summary { margin:0 0 14px; font:15px/1.4 "Segoe UI",Arial,sans-serif; text-align:center; white-space:pre-line; }

@@ -18,19 +18,19 @@
 	class GuideDemonstration {
 		constructor(record) {
 			this.record=record; this.active=false; this.playing=true; this.frame=0;
-			this.element=node("div","game-guide-demonstration"); this.stage=node("div","game-guide-demo-stage");
-			this.stage.style.aspectRatio=String(record.aspect||1); this.stage.setAttribute("role","img"); this.stage.setAttribute("aria-label",record.description||"Illustrated move demonstration");
+			this.element=node("div","game-guide-demonstration"); this.stage=node("button","game-guide-demo-stage");this.stage.type="button";
+			this.stage.style.aspectRatio=String(record.aspect||1);this.stage.setAttribute("aria-label",(record.description||"Move demonstration")+". Pause or play animation.");
 			const background=node("img"); background.src=record.background; background.alt=""; background.setAttribute("aria-hidden","true"); this.stage.append(background);
 			background.addEventListener("load",()=>{if(!record.aspect&&background.naturalHeight)this.stage.style.aspectRatio=String(background.naturalWidth/background.naturalHeight);});
+			this.overlay=document.createElementNS("http://www.w3.org/2000/svg","svg");this.overlay.classList.add("game-guide-demo-paths");this.overlay.setAttribute("viewBox","0 0 1 1");this.overlay.setAttribute("aria-hidden","true");this.stage.append(this.overlay);
 			this.actors=(record.sprites||[]).map(sprite=>{const image=node("img","game-guide-demo-piece");image.src=sprite.image;image.alt="";image.setAttribute("aria-hidden","true");this.stage.append(image);return image;});
-			this.caption=node("p","game-guide-demo-caption"); const controls=node("div","game-action-row game-action-compact");
-			this.pause=node("button","game-secondary","PAUSE"); this.replay=node("button","game-secondary","REPLAY");
-			for(const button of [this.pause,this.replay])button.type="button";
-			this.pause.addEventListener("click",()=>{this.playing=!this.playing;this.pause.textContent=this.playing?"PAUSE":"PLAY";this.schedule();});
-			this.replay.addEventListener("click",()=>this.restart()); controls.append(this.pause,this.replay); this.element.append(this.stage,this.caption,controls);
+			this.status=node("span","game-guide-demo-status");this.status.setAttribute("aria-hidden","true");this.stage.append(this.status);
+			this.stage.addEventListener("click",()=>this.togglePlaying());this.element.append(this.stage);
 			this.visibility=()=>this.schedule(); document.addEventListener("visibilitychange",this.visibility); this.restart();
 		}
-		restart(){this.playing=true;this.pause.textContent="PAUSE";this.beginStep(0);this.schedule();}
+		restart(){this.playing=true;this.updateStatus();this.beginStep(0);this.schedule();}
+		togglePlaying(){this.playing=!this.playing;this.updateStatus();this.schedule();}
+		updateStatus(){this.status.textContent=this.playing?"Ⅱ":"▶";this.stage.setAttribute("aria-pressed",String(!this.playing));}
 		beginStep(index){
 			const steps=this.record.steps||[];if(!steps.length)return;
 			this.step=index%steps.length;const instruction=steps[this.step];
@@ -41,7 +41,21 @@
 				if(move.opacity!==undefined)this.targets[actor].opacity=move.opacity;if(move.image)this.targets[actor].image=move.image;
 				if(move.fade)this.fades.add(actor);
 			}
-			this.elapsed=0;this.caption.textContent=instruction.caption||"";this.advance(0);
+			this.elapsed=0;this.paintPaths();this.advance(0);
+		}
+		paintPaths(){
+			const svg=(tag,attributes)=>{const element=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const [key,value] of Object.entries(attributes))element.setAttribute(key,String(value));return element;};
+			this.overlay.replaceChildren();
+			for(const [actor,route] of this.paths){
+				const rect=this.starts[actor].rect,points=route.map(r=>[r[0]+r[2]/2,r[1]+r[3]/2]),a=points[0],b=points.at(-1);if(Math.hypot(b[0]-a[0],b[1]-a[1])<.0001)continue;
+				const color=["#147a9c","#ad6327","#6651a4"][actor%3],d=points.map((p,i)=>(i?"L":"M")+p.join(" ")).join(" ");
+				this.overlay.append(svg("image",{href:this.starts[actor].image,x:rect[0],y:rect[1],width:rect[2],height:rect[3],opacity:.24}));
+				for(const [stroke,width] of [["#fff5df",.022],[color,.011]])this.overlay.append(svg("path",{d,fill:"none",stroke,"stroke-width":width,"stroke-linecap":"round","stroke-linejoin":"round"}));
+				this.overlay.append(svg("circle",{cx:a[0],cy:a[1],r:.015,fill:color,stroke:"#fff5df","stroke-width":.004}));
+				const radius=Math.min(rect[2],rect[3])*.42;this.overlay.append(svg("circle",{cx:b[0],cy:b[1],r:radius,fill:"none",stroke:"#fff5df","stroke-width":.018}),svg("circle",{cx:b[0],cy:b[1],r:radius,fill:"none",stroke:color,"stroke-width":.007}));
+				const last=points.at(-2),length=Math.hypot(b[0]-last[0],b[1]-last[1]),u=[(b[0]-last[0])/length,(b[1]-last[1])/length],tip=[b[0]-u[0]*radius,b[1]-u[1]*radius];
+				this.overlay.append(svg("path",{d:`M${tip[0]-u[0]*.03-u[1]*.018} ${tip[1]-u[1]*.03+u[0]*.018}L${tip.join(" ")}L${tip[0]-u[0]*.03+u[1]*.018} ${tip[1]-u[1]*.03-u[0]*.018}`,fill:"none",stroke:color,"stroke-width":.01}));
+			}
 		}
 		advance(delta){
 			const instruction=this.record.steps?.[this.step];if(!instruction||!this.starts)return;

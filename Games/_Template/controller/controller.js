@@ -17,11 +17,14 @@
   examplePages.setItems([{section:"Piece Moves",heading:"An example move",detail:"One topic per page.",image:"/ui/playful/control-help.svg",description:"A static public example"},{section:"Rules & Tactics",heading:"An example rule",detail:"Keep rules and advice separate.",image:"/ui/playful/control-help.svg",description:"A second public example"}]);
   // Optional public move animation. Give images the same canonical theme URL
   // handling as other artwork; setReducedMotion receives the host preference.
+  // Lesson text stays fixed; clicking the image pauses/resumes its path animation.
   const exampleAnimatedItems=examplePages.items.map(item=>({...item}));
   exampleAnimatedItems[0].demonstration={background:"/ui/playful/score-ledger.svg",sprites:[{image:"/ui/playful/control-help.svg",rect:[.1,.2,.2,.2]}],steps:[{caption:"Show an example move.",moves:[{sprite:0,rect:[.6,.2,.2,.2]}]}]};
   examplePages.setItems(exampleAnimatedItems);
   const exampleReserve=new StarGamesPieceTray(document.querySelector('.game-controller'),key=>{});
   exampleReserve.update([{key:1,label:"Example piece",count:2,enabled:true,image:"/ui/playful/control-help.svg"}]);exampleReserve.element.hidden=true;
+  // Read-only stock counters use game-piece-counts / game-piece-count rows;
+  // pair game-score-tone-light/dark with matching --game-score-art and ink.
   exampleGuide.setItems([{heading:"An example move",detail:"Explain the public move in plain text.",image:"/ui/playful/control-help.svg",description:"A static example"}]);
   const exampleBoardReplay = document.createElement("button"); exampleBoardReplay.textContent = "PLAY AGAIN";
   const exampleBoardResults = new StarGamesRoundResults(document.querySelector(".game-controller"), exampleBoardReplay);

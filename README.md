@@ -98,7 +98,9 @@ switch for move guides, coordinates and last-move highlights. **Tutorial**
 uses compact illustrated pages grouped into Piece Moves, Rules & Tactics and
 Playing, with **Tutorial Mode: On/Off** at the top right for solo/computer coaching
 and an adjacent **×** to close. All guide illustrations demonstrate moves with
-Pause/Replay and a static reduced-motion fallback. Bughouse and Crazyhouse share
+origin ghosts, movement paths and destination rings. Tap the picture to pause or
+resume its loop; lesson text stays fixed. Reduced motion keeps an annotated static
+diagram. Bughouse and Crazyhouse share
 an always-visible reserve tray for the playing host and phones, replacing the
 solo Bughouse reserve popup.
 Tutorial automatically enables those aids, explains risky moves and immediate
@@ -125,6 +127,9 @@ the four-player expansion automatically, defaulting to Bughouse when the saved
 choice does not fit. Three humans receive a computer fourth seat; computer games
 are practice and do not change saved standings. Bughouse runs two
 simultaneous team boards with captures transferred to the partner's reserve.
+Matching ivory/charcoal player cards identify partners and show reserve icons.
+Bughouse's saved computer difficulty also controls pacing: Easy 4.5 seconds,
+Medium 3 seconds and Hard 2 seconds, measured after settled movement.
 Free for All uses a four-sided cross board and last king standing. Mode changes
 start fresh boards and retain completed per-mode totals until leaving Chess;
 offline admitted players must reconnect before switching. These playable modules,

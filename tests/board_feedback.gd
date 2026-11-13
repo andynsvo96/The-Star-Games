@@ -74,13 +74,13 @@ func _run() -> void:
 	var clip := {"background":"res://ui/playful/score-ledger.svg", "sprites":[{"image":"res://ui/playful/control-help.svg", "rect":[.1,.2,.2,.2]}], "steps":[{"caption":"Literal <move>", "duration":1.0, "moves":[{"sprite":0, "rect":[.6,.2,.2,.2]}]}]}
 	demo.set_demonstration(clip)
 	demo._advance(.95)
-	check(demo.sprites[0].rect[0] > .1 and demo.sprites[0].rect[0] < .6 and demo.caption.text == "Literal <move>", "Public example artwork interpolates between positions with literal captions")
+	check(demo.sprites[0].rect[0] > .1 and demo.sprites[0].rect[0] < .6 and demo.paths.has(0), "Public examples interpolate artwork with a source-to-destination route")
 	var progress: float = demo.elapsed
-	demo.pause_button.pressed.emit()
+	demo.stage.pressed.emit()
 	for frame in 8: await process_frame
 	check(is_equal_approx(demo.elapsed, progress), "Pause retains the current demonstration phase")
-	demo.replay_button.pressed.emit()
-	check(demo.playing and demo.elapsed == 0 and demo.sprites[0].rect[0] == .1, "Replay starts the current example again")
+	demo.stage.pressed.emit()
+	check(demo.playing and demo.elapsed == progress and demo.get_child_count() == 1, "Clicking the image resumes its phase without caption or transport controls")
 	pages.guide.set_reduced_motion(true)
 	check(not demo.visible and pages.guide.picture.visible, "Reduced motion retains the static annotated reference")
 	pages.guide.set_reduced_motion(false)
