@@ -58,6 +58,7 @@ func _run() -> void:
 	guide.overlay.hide()
 	var pages := screen.add_illustrated_guide("How to Play", [{"section":"Moves", "heading":"First <move>", "detail":"Literal [public] rules.", "image":"res://ui/playful/control-help.svg", "description":"An offline example"}, {"section":"Rules", "heading":"Second rule", "detail":"A separate topic.", "image":"res://ui/playful/control-help.svg", "description":"Another offline example"}], true)
 	pages.overlay.show()
+	check(pages.close.text == "×" and pages.close.get_parent() == pages.heading_row and not pages.actions.is_ancestor_of(pages.close), "Paged references keep an accessible X in the fixed header")
 	pages.guide.next.pressed.emit()
 	check(pages.guide.page == 1 and pages.guide.previous.disabled == false and pages.guide.next.disabled and pages.guide.topics.get_item_text(0) == "Second rule", "Paged guide navigation changes section and topic together with bounded endpoints")
 	var current_picture: Control = pages.guide.picture
@@ -69,6 +70,29 @@ func _run() -> void:
 	check(pages.guide.page == 0 and pages.guide.copy.get_child(0).text == "First <move>", "Section navigation renders literal lesson titles")
 	pages.guide.tabs.get_child(1).pressed.emit()
 	check(pages.guide.page == 1, "Switching back restores a section's last selected page")
+	var demo: GameGuideDemonstration = pages.guide.demonstration
+	var clip := {"background":"res://ui/playful/score-ledger.svg", "sprites":[{"image":"res://ui/playful/control-help.svg", "rect":[.1,.2,.2,.2]}], "steps":[{"caption":"Literal <move>", "duration":1.0, "moves":[{"sprite":0, "rect":[.6,.2,.2,.2]}]}]}
+	demo.set_demonstration(clip)
+	demo._advance(.95)
+	check(demo.sprites[0].rect[0] > .1 and demo.sprites[0].rect[0] < .6 and demo.caption.text == "Literal <move>", "Public example artwork interpolates between positions with literal captions")
+	var progress: float = demo.elapsed
+	demo.pause_button.pressed.emit()
+	for frame in 8: await process_frame
+	check(is_equal_approx(demo.elapsed, progress), "Pause retains the current demonstration phase")
+	demo.replay_button.pressed.emit()
+	check(demo.playing and demo.elapsed == 0 and demo.sprites[0].rect[0] == .1, "Replay starts the current example again")
+	pages.guide.set_reduced_motion(true)
+	check(not demo.visible and pages.guide.picture.visible, "Reduced motion retains the static annotated reference")
+	pages.guide.set_reduced_motion(false)
+	check(demo.visible and not pages.guide.picture.visible, "Animated references return without replacing the page")
+	var tray := GamePieceTray.new(); screen.content.add_child(tray)
+	var stock := [{"key":1,"label":"Example piece","count":2,"enabled":true,"texture":RuntimeAssets.texture("res://ui/playful/control-help.svg")},{"key":2,"label":"Empty piece","count":0,"enabled":true}]
+	tray.set_items(stock, 1)
+	var held := tray.buttons[0]
+	tray.set_items(stock, 1)
+	check(tray.buttons[0] == held and held.button_pressed and not held.disabled and tray.buttons[1].disabled and held.accessibility_name.contains("2 in reserve"), "Reserve trays retain controls, selection and authoritative empty-slot locks")
+	check(tray.buttons[1].get_meta("tray_count").get_theme_color("font_color") == GameLook.DISABLED_INK, "Unavailable reserve counts retain readable ink on disabled controls")
+	tray.hide()
 	for shape in [Vector2i(1280,720), Vector2i(480,850), Vector2i(844,390), Vector2i(320,568)]:
 		root.min_size = Vector2i.ONE
 		root.content_scale_size = shape; root.size = shape

@@ -15,10 +15,71 @@
 		dialog.setAttribute("aria-label", heading);
 		return {dialog, title, body, actions};
 	}
+	class GuideDemonstration {
+		constructor(record) {
+			this.record=record; this.active=false; this.playing=true; this.frame=0;
+			this.element=node("div","game-guide-demonstration"); this.stage=node("div","game-guide-demo-stage");
+			this.stage.style.aspectRatio=String(record.aspect||1); this.stage.setAttribute("role","img"); this.stage.setAttribute("aria-label",record.description||"Illustrated move demonstration");
+			const background=node("img"); background.src=record.background; background.alt=""; background.setAttribute("aria-hidden","true"); this.stage.append(background);
+			background.addEventListener("load",()=>{if(!record.aspect&&background.naturalHeight)this.stage.style.aspectRatio=String(background.naturalWidth/background.naturalHeight);});
+			this.actors=(record.sprites||[]).map(sprite=>{const image=node("img","game-guide-demo-piece");image.src=sprite.image;image.alt="";image.setAttribute("aria-hidden","true");this.stage.append(image);return image;});
+			this.caption=node("p","game-guide-demo-caption"); const controls=node("div","game-action-row game-action-compact");
+			this.pause=node("button","game-secondary","PAUSE"); this.replay=node("button","game-secondary","REPLAY");
+			for(const button of [this.pause,this.replay])button.type="button";
+			this.pause.addEventListener("click",()=>{this.playing=!this.playing;this.pause.textContent=this.playing?"PAUSE":"PLAY";this.schedule();});
+			this.replay.addEventListener("click",()=>this.restart()); controls.append(this.pause,this.replay); this.element.append(this.stage,this.caption,controls);
+			this.visibility=()=>this.schedule(); document.addEventListener("visibilitychange",this.visibility); this.restart();
+		}
+		restart(){this.playing=true;this.pause.textContent="PAUSE";this.beginStep(0);this.schedule();}
+		beginStep(index){
+			const steps=this.record.steps||[];if(!steps.length)return;
+			this.step=index%steps.length;const instruction=steps[this.step];
+			if(!this.step||instruction.reset)this.sprites=(this.record.sprites||[]).map(sprite=>({...sprite,rect:[...sprite.rect],opacity:sprite.opacity??1}));
+			this.starts=structuredClone(this.sprites);this.targets=structuredClone(this.sprites);this.paths=new Map();this.fades=new Set();
+			for(const move of instruction.moves||[]){const actor=move.sprite;if(!this.targets[actor])continue;
+				if(move.rect){this.targets[actor].rect=move.rect;this.paths.set(actor,[this.starts[actor].rect,...(move.via||[]),move.rect]);}
+				if(move.opacity!==undefined)this.targets[actor].opacity=move.opacity;if(move.image)this.targets[actor].image=move.image;
+				if(move.fade)this.fades.add(actor);
+			}
+			this.elapsed=0;this.caption.textContent=instruction.caption||"";this.advance(0);
+		}
+		advance(delta){
+			const instruction=this.record.steps?.[this.step];if(!instruction||!this.starts)return;
+			this.elapsed+=delta;const duration=Math.max(.3,instruction.duration||1.2),progress=Math.max(0,Math.min(1,(this.elapsed-.55)/duration)),eased=progress*progress*(3-2*progress);
+			this.actors.forEach((image,index)=>{const start=this.starts[index],target=this.targets[index],route=this.paths.get(index);let rect=start.rect;
+				if(route){const part=Math.min(eased*(route.length-1),route.length-1.00001),segment=Math.floor(part);rect=route[segment].map((a,i)=>a+(route[segment+1][i]-a)*(part-segment));}
+				const opacity=this.fades.has(index)?start.opacity+(target.opacity-start.opacity)*eased:progress>=1?target.opacity:start.opacity;
+				const src=progress>=1?target.image:start.image;this.sprites[index]={...this.sprites[index],rect:[...rect],opacity,image:src};
+				Object.assign(image.style,{left:rect[0]*100+"%",top:rect[1]*100+"%",width:rect[2]*100+"%",height:rect[3]*100+"%",opacity});
+				if(image.getAttribute("src")!==src)image.src=src;
+			});
+			if(this.elapsed>=duration+1.55)this.beginStep(this.step+1);
+		}
+		setActive(value){this.active=value;this.schedule();}
+		schedule(){cancelAnimationFrame(this.frame);this.last=performance.now();if(this.active&&this.playing&&!document.hidden)this.frame=requestAnimationFrame(now=>{this.advance(Math.min(.1,(now-this.last)/1000));this.schedule();});}
+		destroy(){cancelAnimationFrame(this.frame);document.removeEventListener("visibilitychange",this.visibility);this.element.remove();}
+	}
+	class PieceTray {
+		constructor(parent,onSelect) {
+			this.element=node("section","game-piece-tray");this.element.setAttribute("aria-label","Reserve");
+			this.caption=node("p","game-piece-tray-caption");this.row=node("div","game-piece-tray-slots");this.element.append(this.caption,this.row);parent.append(this.element);
+			this.buttons=Array.from({length:5},(_,index)=>{const button=node("button","game-compact-control"),image=node("img"),count=node("span");button.type="button";image.alt="";button.append(image,count);button.addEventListener("click",()=>{if(!button.disabled)onSelect(this.items[index].key);});this.row.append(button);return button;});
+		}
+		update(items,selected=-1,title="Your reserve") {
+			this.items=items;let total=0,choice="";
+			this.buttons.forEach((button,index)=>{const item=items[index];button.hidden=!item;if(!item)return;total+=item.count;
+				const image=button.querySelector("img");if(image.getAttribute("src")!==item.image)image.src=item.image;button.querySelector("span").textContent="×"+item.count;
+				button.disabled=!item.enabled||!item.count;const active=item.key===selected;button.setAttribute("aria-pressed",String(active));button.setAttribute("aria-label",`${item.label}, ${item.count} in reserve${active?", selected":""}`);if(active)choice=item.label;
+			});
+			this.caption.textContent=title+(choice?" · "+choice+" selected":!total?" · Empty":"");
+		}
+	}
 	class IllustratedGuide {
-		constructor(parent, {heading = "How to Play", onChange = () => {}, paged = false} = {}) {
+		constructor(parent, {heading = "How to Play", onChange = () => {}, paged = false, assetUrl = path => path} = {}) {
 			Object.assign(this, sheet(parent, heading, "game-illustrated-guide"));
-			this.onChange = onChange; this.paged = paged; this.page = 0; this.groupPages = new Map();
+			this.onChange = onChange; this.paged = paged; this.page = 0; this.groupPages = new Map();this.assetUrl=assetUrl;
+			this.motionPreference=matchMedia("(prefers-reduced-motion: reduce)");this.hostReduced=false;
+			this.motionPreference.addEventListener("change",()=>this.updateMotion());
 			const close = node("button", "game-secondary", "CLOSE"); close.type = "button";
 			close.dataset.guideClose = "";
 			close.addEventListener("click", () => this.dialog.close()); this.actions.append(close);
@@ -27,6 +88,7 @@
 				this.header = node("header", "dialog-heading game-guide-banner");
 				this.title.className = ""; this.title.replaceWith(this.header); this.header.append(this.title);
 				this.headerActions = node("div", "game-guide-header-actions"); this.header.append(this.headerActions);
+				close.textContent = "×"; close.classList.add("game-guide-close"); close.setAttribute("aria-label", "Close tutorial"); this.header.append(close);
 				this.tabs = node("nav", "game-guide-tabs"); this.tabs.setAttribute("aria-label", "Guide sections");
 				this.topics = node("select", "game-choice game-guide-topics"); this.topics.setAttribute("aria-label", "Lesson topic");
 				this.topics.addEventListener("change", () => this.selectPage(Number(this.topics.value)));
@@ -40,10 +102,11 @@
 				this.next.addEventListener("click", () => this.selectPage(this.page + 1));
 				this.actions.prepend(this.previous, this.counter, this.next);
 			}
-			this.dialog.addEventListener("close", () => { this.trigger?.focus({preventScroll:true}); this.onChange(false); });
+			this.dialog.addEventListener("close", () => { this.demonstration?.setActive(false); this.trigger?.focus({preventScroll:true}); this.onChange(false); });
 			this.key = "";
 		}
 		setItems(items) {
+			items=this.resolveAssets(items);
 			const key = JSON.stringify(items); if (key === this.key) return;
 			this.key = key; this.items = items;
 			if (this.paged) {
@@ -62,6 +125,7 @@
 				section.append(node("h3", "", item.heading), image, node("p", "", item.detail)); this.body.append(section);
 			}
 		}
+		resolveAssets(value){if(Array.isArray(value))return value.map(entry=>this.resolveAssets(entry));if(value&&typeof value==="object")return Object.fromEntries(Object.entries(value).map(([key,entry])=>[key,["image","background"].includes(key)&&typeof entry==="string"?this.assetUrl(entry):this.resolveAssets(entry)]));return value;}
 		selectPage(index) {
 			if (!this.items?.length) { this.previous.disabled = this.next.disabled = true; this.lesson.replaceChildren(); return; }
 			this.page = Math.max(0, Math.min(index, this.items.length - 1));
@@ -73,14 +137,19 @@
 				const option = node("option", "", entry.heading); option.value = index; return [option];
 			})); this.topics.value = this.page;
 			const image = node("img"); image.src = item.image; image.alt = item.description || "";
+			this.demonstration?.destroy();this.demonstration=null;this.staticImage=image;
+			const visual=node("div","game-guide-visual");visual.append(image);
+			if(item.demonstration?.steps?.length){this.demonstration=new GuideDemonstration(item.demonstration);visual.append(this.demonstration.element);}
 			const copy = node("div", "game-guide-copy"); copy.append(node("h3", "", item.heading), node("p", "", item.detail));
 			if (item.tip) copy.append(node("p", "game-guide-tip", item.tip));
-			this.lesson.replaceChildren(image, copy);
+			this.lesson.replaceChildren(visual, copy);this.updateMotion();
 			this.counter.textContent = `${this.page + 1} / ${this.items.length}`;
 			this.previous.disabled = this.page === 0; this.next.disabled = this.page === this.items.length - 1;
 			this.body.scrollTop = 0;
 		}
-		open(trigger) { this.trigger = trigger; if (!this.dialog.open) { this.dialog.showModal(); this.actions.querySelector("[data-guide-close]").focus({preventScroll:true}); this.onChange(true); } }
+		setReducedMotion(value){this.hostReduced=!!value;this.updateMotion();}
+		updateMotion(){if(!this.demonstration)return;const reduced=this.hostReduced||this.motionPreference.matches;this.staticImage.hidden=!reduced;this.demonstration.element.hidden=reduced;this.demonstration.setActive(this.dialog.open&&!reduced);}
+		open(trigger) { this.trigger = trigger; if (!this.dialog.open) { this.dialog.showModal(); this.dialog.querySelector("[data-guide-close]").focus({preventScroll:true}); this.demonstration?.setActive(true); this.onChange(true); } }
 		close() { if (this.dialog.open) this.dialog.close(); }
 	}
 	class RoundResults {
@@ -115,6 +184,7 @@
 		reset() { this.key = ""; if (this.dialog.open) this.dialog.close(); }
 	}
 	window.StarGamesIllustratedGuide = IllustratedGuide;
+	window.StarGamesPieceTray = PieceTray;
 	window.StarGamesRoundResults = RoundResults;
 	class MovePreview {
 		constructor(parent,{rectFor,createVisual}) { Object.assign(this,{parent,rectFor,createVisual,key:"",visual:null,frame:0,elapsed:0,paused:false}); }

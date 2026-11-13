@@ -1795,12 +1795,26 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-guide-banner { display:flex !important; align-items:center; gap:12px; margin:0 0 12px; padding:12px; border:1px solid #b89554; border-radius:10px; background:#233f50; color:#fff4cf; }
 .game-guide-banner h2 { flex:1; min-width:0; margin:0; font:700 22px/1.2 "Segoe UI",Arial,sans-serif; color:inherit; text-align:left; }
 .game-guide-header-actions { display:flex; align-items:center; gap:8px; }
+.game-guide-paged .game-guide-close { flex:0 0 44px; width:44px; height:44px; min-width:44px; padding:0; margin:0; font:26px/1 "Segoe UI",Arial,sans-serif; letter-spacing:0; }
 .game-guide-tabs { display:flex; gap:6px; margin:0 0 8px; }
 .game-guide-paged .game-guide-tabs button { flex:1; min-width:0; min-height:44px; margin:0; padding:6px; font:700 13px/1.15 "Segoe UI",Arial,sans-serif; letter-spacing:0; }
 .game-guide-paged .game-guide-tabs button[aria-pressed="true"] { background:#233f50; border-color:#b89554; color:#fff4cf; box-shadow:none; }
 .game-guide-paged .game-guide-topics { display:block; width:100%; min-height:44px; margin:0 0 12px; font:16px "Segoe UI",Arial,sans-serif; }
 .game-guide-paged .game-guide-page { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px; align-items:center; margin:0; }
 .game-guide-paged .game-guide-page > img { width:100%; height:auto; max-height:300px; object-fit:contain; }
+.game-guide-visual { min-width:0; }
+.game-guide-visual > img { display:block; width:100%; height:260px; object-fit:contain; }
+.game-guide-demo-stage { position:relative; width:100%; max-width:260px; margin:auto; overflow:hidden; }
+.game-guide-demo-stage > img { display:block; width:100%; height:100%; object-fit:contain; }
+.game-guide-demo-stage > .game-guide-demo-piece { position:absolute; }
+.game-piece-tray { width:100%; max-width:420px; margin:0 auto; }
+.game-piece-tray-caption { margin:0 0 4px; text-align:center; font:700 13px/1.3 "Segoe UI",Arial,sans-serif; }
+.game-piece-tray-slots { display:grid; grid-template-columns:repeat(auto-fit,minmax(44px,1fr)); gap:4px; }
+.game-piece-tray .game-piece-tray-slots > button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; min-width:44px; min-height:60px; padding:3px; margin:0; font:700 13px "Segoe UI",Arial,sans-serif; letter-spacing:0; }
+.game-piece-tray button img { width:26px; height:30px; object-fit:contain; }
+.game-piece-tray button[aria-pressed="true"] { outline:3px solid #e5be64; outline-offset:-3px; }
+.game-guide-demo-caption { min-height:2.6em; margin:6px 0; font:13px/1.3 "Segoe UI",Arial,sans-serif; text-align:center; }
+.game-guide-demonstration .game-action-row button { min-height:44px; padding:4px 10px; margin:0; font:700 12px "Segoe UI",Arial,sans-serif; letter-spacing:0; }
 .game-guide-copy p { margin:10px 0 0; font:16px/1.5 "Segoe UI",Arial,sans-serif; }
 .game-guide-paged .dialog-actions { display:flex; flex-wrap:nowrap; align-items:center; gap:6px; }
 .game-guide-paged .dialog-actions button { flex:0 0 auto; min-width:44px; min-height:44px; padding:6px 10px; font:700 13px "Segoe UI",Arial,sans-serif; letter-spacing:0; }
@@ -1808,6 +1822,8 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 @media (max-width:600px) {
   .game-guide-paged .game-guide-page { grid-template-columns:minmax(0,1fr); gap:12px; }
   .game-guide-paged .game-guide-page > img { height:min(52vw,220px); }
+  .game-guide-visual > img { height:min(52vw,220px); }
+  .game-guide-demo-stage { max-width:min(52vw,220px); }
   .game-guide-banner h2 { font-size:19px; }
 }
 .game-round-summary { margin:0 0 14px; font:15px/1.4 "Segoe UI",Arial,sans-serif; text-align:center; white-space:pre-line; }

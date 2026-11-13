@@ -84,6 +84,16 @@ func _ready() -> void:
 	# Add module-owned controls to header_actions; the module owns pause policy.
 	var paged_guide_example := screen.add_illustrated_guide("How to Play", [{"section":"Piece Moves", "heading":"An example move", "detail":"Explain one topic per page.", "image":"res://Games/_Template/thumbnail.svg", "description":"A static public example"}, {"section":"Rules & Tactics", "heading":"An example rule", "detail":"Keep movement separate from rules and advice.", "image":"res://Games/_Template/thumbnail.svg", "description":"A second public example"}], true)
 	paged_guide_example.overlay.hide()
+	# A demonstration is trusted public presentation data: normalized sprite
+	# rectangles, independent move steps, captions and offline canonical artwork.
+	var example_clip := {"background":"res://ui/playful/score-ledger.svg", "sprites":[{"image":"res://ui/playful/control-help.svg", "rect":[.1,.2,.2,.2]}], "steps":[{"caption":"Show an example move.", "moves":[{"sprite":0,"rect":[.6,.2,.2,.2]}]}]}
+	var animated_example: Array = paged_guide_example.guide.items.duplicate(true)
+	animated_example[0]["demonstration"] = example_clip
+	paged_guide_example.guide.set_items(animated_example)
+	# Call guide.set_reduced_motion(context.reduced_motion) from module updates.
+	var reserve_example := GamePieceTray.new(); screen.content.add_child(reserve_example)
+	reserve_example.set_items([{"key":1,"label":"Example piece","count":2,"enabled":true,"texture":RuntimeAssets.texture("res://ui/playful/control-help.svg")}])
+	reserve_example.hide() # Connect piece_selected to the usual validated handler.
 	var guide_button := Button.new()
 	layout.playfield.add_child(guide_button)
 	GameLook.help_control(guide_button)

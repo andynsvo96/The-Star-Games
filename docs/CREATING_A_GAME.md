@@ -1661,7 +1661,8 @@ For a compact paged reference, pass a third `true` to
 `add_illustrated_guide(caption, examples, true)`, or `{paged:true}` to the browser
 constructor. Supply a literal `section` on each example. The shared component
 provides section buttons, a topic selector, one illustrated lesson, page count
-and Prev/Next navigation, with a colored title band and fixed Close action.
+and Prev/Next navigation, with a colored title band and a fixed accessible **×**
+on its right. Module `header_actions` appear immediately left of this close button.
 Wide lessons place artwork beside text; narrow screens stack them. Short native
 views use more of the screen, with Close/Escape returning to ordinary navigation.
 Long individual lessons still scroll. Sections remember their last topic;
@@ -1673,6 +1674,40 @@ in the module. The template has hidden native/browser examples. Existing list
 guides retain their layout unless they opt in.
 Use `guide.reload_artwork()` on a native live skin refresh to reload the current
 page's canonical image while retaining its topic and reading position.
+
+An example may also supply `demonstration` with an offline `background`, optional
+`aspect` ratio, `description`, `sprites:[{image,rect:[x,y,width,height],opacity?}]`
+and `steps:[{caption,duration?,reset?,moves:[{sprite,rect?,via?,opacity?,image?,fade?}]}]`.
+Rectangles use normalized illustration coordinates; `sprite` is a zero-based
+index and optional `via` rectangles show intermediate positions. A step moves
+inner artwork with smooth easing, holds the result, then continues; the final
+step loops to the initial picture. `reset:true` demonstrates an alternative move
+from the original position. Captures and replacement images apply on arrival;
+`fade:true` opts into gradual opacity for arrivals or non-capture effects.
+Every step has a literal caption, and the shared controls offer Pause/Play and
+Replay. These are independent public illustrations, never live game snapshots.
+
+Call native `guide.set_reduced_motion(context.reduced_motion)` or browser
+`guide.setReducedMotion(host_reduced_motion)` when state updates. Reduced motion
+keeps the ordinary annotated `image`; device preferences also apply in browsers.
+Hidden/closed references do not advance. Unchanged items preserve the current
+animation, and changing topics replaces only its demonstration. The browser
+constructor's optional `assetUrl(path)` callback applies the usual pinned theme
+revision to all nested illustration media. `GameGuideDemonstration` owns native
+presentation, and the browser counterpart is included in `/board-ui.js`.
+The template includes hidden public animation examples. Existing static guides
+need no additional data and retain their behavior.
+
+`GamePieceTray` and browser `StarGamesPieceTray(parent,onSelect)` provide a compact
+five-slot reserve with a caption, contained icons, counts and selected feedback.
+Native `set_items(items,selected,title)` uses `{key,label,texture,count,enabled}`;
+browser `update(items,selected,title)` uses `image` instead of `texture`.
+They preserve their buttons on updates, show disabled zero counts, wrap short
+layouts and retain 44px targets. Native `piece_selected(key)` and browser
+`onSelect(key)` forward to the module's ordinary validated handler. Supply only
+permitted public/owner stock and accepted legal choices; the component does not
+validate a game, submit a move or change inventory. Hidden template examples
+show both APIs. Bughouse and Crazyhouse share this presentation locally.
 
 `GameRoundResults.set_results(entries)` renders public round metrics, literal
 names and a winner crown in responsive player cards. Each entry contains
@@ -1966,12 +2001,14 @@ explicit Choose Piece action after View Board.
 
 Host Settings uses the shared grouped form beside music, with difficulty,
 opponent, live Skin, clock presets/custom minutes and Guided gameplay.
-The separate question-mark action opens fourteen static illustrated pages on
+The separate question-mark action opens fourteen illustrated tutorial pages on
 host and phones, grouped into Piece Moves, Rules & Tactics and Playing.
-The colored How to Play header holds a host-only **Tutorial** toggle in its
+The colored **Tutorial** header holds a host-only **Tutorial Mode: On/Off** toggle in its
 top-right corner for eligible solo/computer sessions, retaining the existing
 `teaching_enabled` preference. Diagrams have compact square bounds; check/king
-safety and planning are separate from the six piece-movement lessons.
+safety and planning are separate from the six piece-movement lessons. An adjacent
+**×** closes the guide. Every illustration has an independent looping move
+demonstration, Pause/Replay and an annotated reduced-motion fallback.
 Settings and host Help
 pause input, AI, clocks, duration, movement and sounds; phone Help is local.
 Session & History, move-history, draw-claim/offer and resignation controls remain
@@ -2061,7 +2098,7 @@ existing `solo_profile` for the host and three module-owned computers. Three hum
 receive a computer fourth seat without changing the launcher roster. AI games
 remain practice across reconnect, replay and mode switches; four-human completed games retain saved
 standings. Worker replies validate the current seat, board ticket, pause and
-movement locks. Solo hosts use shared piece dragging, a reserve dialog and explicit
+movement locks. Solo hosts use shared piece dragging, a persistent reserve tray and explicit
 promotion choices; a dismissed promotion remains reachable through Choose Piece.
 The worker cycles eligible computers fairly across both Bughouse boards and checks
 each reply against its own board, so another board's new turn cannot cancel it.

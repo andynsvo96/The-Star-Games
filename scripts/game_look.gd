@@ -1209,8 +1209,17 @@ static func guide_banner() -> StyleBoxFlat:
 
 static func guide_toggle(button: Button, enabled: bool) -> void:
 	settings_toggle(button, enabled)
-	button.text = str(button.get_meta("settings_caption", "Tutorial")) + (": ON" if enabled else ": OFF")
-	button.add_theme_font_size_override("font_size", 13)
+	button.text = str(button.get_meta("settings_caption", "Enabled")) + (": On" if enabled else ": Off")
+	var compact := button.get_viewport_rect().size.x < 420
+	button.add_theme_font_size_override("font_size", 11 if compact else 13)
+	var style_key := int(compact) + 2 * int(enabled)
+	if button.get_meta("guide_style", -1) != style_key:
+		button.set_meta("guide_style", style_key)
+		for state in ["normal", "hover", "pressed", "disabled"]:
+			var style := button.get_theme_stylebox(state).duplicate()
+			style.content_margin_left = 8 if compact else 16
+			style.content_margin_right = 8 if compact else 16
+			button.add_theme_stylebox_override(state, style)
 
 
 static func guide_section(button: Button, selected: bool) -> void:

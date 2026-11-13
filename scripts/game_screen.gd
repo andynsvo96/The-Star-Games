@@ -1495,13 +1495,15 @@ func add_illustrated_guide(caption: String, examples: Array = [], paged := false
 		dialog.actions.add_child(guide.navigation)
 		guide.page_changed.connect(func() -> void: dialog.scroll.scroll_vertical = 0)
 	var close := Button.new()
-	close.text = "CLOSE"
-	if paged: guide.navigation.add_child(close)
+	close.text = "×" if paged else "CLOSE"
+	close.accessibility_name = "Close tutorial" if paged else "Close guide"
+	if paged: dialog.heading_row.add_child(close)
 	else: dialog.actions.add_child(close)
 	GameLook.action(close, false)
 	if paged:
-		close.add_theme_font_size_override("font_size", 13)
-		close.custom_minimum_size.y = 44
+		close.add_theme_font_size_override("font_size", 25)
+		close.custom_minimum_size = Vector2(44, 44)
+		dialog["close"] = close
 	close.pressed.connect(func() -> void: dialog.overlay.hide())
 	var escape := InputEventKey.new()
 	escape.keycode = KEY_ESCAPE

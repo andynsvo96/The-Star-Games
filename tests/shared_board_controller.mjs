@@ -66,6 +66,20 @@ const assertions = `
 		check(guideBox.left>=0&&guideBox.right<=innerWidth&&guideActions.top>=0&&guideActions.bottom<=innerHeight&&pagedGuide.dialog.scrollWidth<=pagedGuide.dialog.clientWidth+1,'Paged help and its actions fit without horizontal overflow');
 		pagedGuide.tabs.children[0].click();check(pagedGuide.page===0&&pagedGuide.topics.selectedOptions[0].textContent==='First <move>','Section buttons select the matching topic');
 		pagedGuide.close();pagedGuide.dialog.remove();
+		const demoGuide=new StarGamesIllustratedGuide(document.querySelector('main'),{heading:'Tutorial',paged:true});
+		const demoItems=[{section:'Moves',heading:'Move example',detail:'A public illustration.',image:'/ui/playful/control-help.svg',description:'An annotated static example',demonstration:{background:'/ui/playful/score-ledger.svg',sprites:[{image:'/ui/playful/control-help.svg',rect:[.1,.2,.2,.2]}],steps:[{caption:'Literal <move>',duration:1,moves:[{sprite:0,rect:[.6,.2,.2,.2]}]},{caption:'Continue from the last move',duration:1,moves:[{sprite:0,rect:[.6,.6,.2,.2]}]}]}}];
+		demoGuide.setItems(demoItems);demoGuide.open();demoGuide.setReducedMotion(false);await settle();
+		check(demoGuide.header.contains(demoGuide.dialog.querySelector('[data-guide-close]'))&&demoGuide.dialog.querySelector('[data-guide-close]').textContent==='×','Tutorial has a fixed accessible X in its header');
+		const demo=demoGuide.demonstration;demo.advance(.95);const moved=parseFloat(demo.actors[0].style.left);demoGuide.setItems(demoItems);
+		check(moved>10&&moved<60&&demoGuide.demonstration===demo&&demo.caption.textContent==='Literal <move>','Demonstration moves inner artwork and survives duplicate state');
+		demo.pause.click();const elapsed=demo.elapsed;await settle();check(demo.elapsed===elapsed,'Paused tutorial motion preserves its phase');
+		demo.replay.click();check(demo.elapsed===0&&demo.playing,'Replay restarts the current demonstration');
+		demo.advance(1.6);demo.advance(1);check(parseFloat(demo.actors[0].style.left)>59.9&&parseFloat(demo.actors[0].style.top)===20,'Sequential examples retain the previous move instead of resetting their board');
+		demo.advance(.95);check(parseFloat(demo.actors[0].style.left)>59.9&&parseFloat(demo.actors[0].style.top)>20,'The next move continues from that retained position');
+		demoGuide.setReducedMotion(true);check(demo.element.hidden&&!demoGuide.staticImage.hidden,'Reduced motion keeps a static reference');demoGuide.close();demo.destroy();demoGuide.dialog.remove();
+		const trayHost=document.createElement('div');document.querySelector('main').append(trayHost);let trayChoice=-1;const tray=new StarGamesPieceTray(trayHost,key=>trayChoice=key);
+		const stock=[{key:1,label:'Example piece',image:'/ui/playful/control-help.svg',count:2,enabled:true},{key:2,label:'Empty piece',image:'/ui/playful/control-help.svg',count:0,enabled:true}];tray.update(stock,1);const trayButton=tray.buttons[0];tray.update(stock,1);trayButton.click();
+		check(tray.buttons[0]===trayButton&&trayChoice===1&&trayButton.getAttribute('aria-pressed')==='true'&&tray.buttons[1].disabled,'Reserve controls retain identity and expose only available stock');trayHost.remove();
 		// Six public metrics fit two shared rows without borrowing a game module.
 		const denseHost=document.createElement('div');denseHost.className='game-board-ui game-board-stats';denseHost.style.cssText='position:fixed;left:-2000px;top:0;display:block';
 		const denseCard=document.createElement('aside');denseCard.className='game-score-card game-ledger game-compact-stats game-current-stats game-player-panel game-dense-counters';

@@ -16,6 +16,9 @@ var next: Button
 var counter: Label
 var lesson: GridContainer
 var picture: TextureRect
+var visual: VBoxContainer
+var demonstration: GameGuideDemonstration
+var reduced_motion := false
 var copy: VBoxContainer
 signal page_changed
 
@@ -91,11 +94,15 @@ func _build_pages() -> void:
 	lesson.add_theme_constant_override("h_separation", 24)
 	lesson.add_theme_constant_override("v_separation", 12)
 	add_child(lesson)
+	visual = VBoxContainer.new()
+	lesson.add_child(visual)
 	picture = TextureRect.new()
 	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lesson.add_child(picture)
+	visual.add_child(picture)
+	demonstration = GameGuideDemonstration.new()
+	visual.add_child(demonstration)
 	copy = VBoxContainer.new()
 	copy.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	copy.add_theme_constant_override("separation", 12)
@@ -151,6 +158,8 @@ func select_page(index: int) -> void:
 		copy.add_child(label)
 	picture.texture = RuntimeAssets.texture(str(item.get("image", "")))
 	picture.accessibility_name = str(item.get("description", ""))
+	demonstration.set_demonstration(item.get("demonstration", {}))
+	set_reduced_motion(reduced_motion)
 	counter.text = "%d / %d" % [page + 1, items.size()]
 	previous.disabled = page == 0; next.disabled = page == items.size() - 1
 	_fit_page()
@@ -160,16 +169,29 @@ func select_page(index: int) -> void:
 func reload_artwork() -> void:
 	if paged:
 		if not items.is_empty(): picture.texture = RuntimeAssets.texture(str(items[page].get("image", "")))
+		demonstration.reload_artwork()
 		return
 	var pictures := find_children("*", "TextureRect", true, false)
 	for index in mini(pictures.size(), items.size()): pictures[index].texture = RuntimeAssets.texture(str(items[index].get("image", "")))
 
 
+func set_reduced_motion(value: bool) -> void:
+	reduced_motion = value
+	if demonstration == null: return
+	var animated := not demonstration.record.is_empty() and not reduced_motion
+	demonstration.visible = animated
+	picture.visible = not animated
+	demonstration.reduced_motion = value
+
+
 func _fit_page() -> void:
-	if lesson == null: return
+	if lesson == null or not is_inside_tree(): return
 	var wide := size.x >= 580
 	var short_wide := wide and get_viewport_rect().size.y < 560
 	selectors.vertical = not short_wide
 	lesson.columns = 2 if wide else 1
 	var edge := clampf(get_viewport_rect().size.y - 230, 112, 220) if short_wide else minf(260, size.x * .46)
+	if wide and demonstration.visible and not short_wide: edge = minf(edge, 240)
 	picture.custom_minimum_size = Vector2(edge if wide else 0, edge if wide else clampf(size.x * .6, 140, 220))
+	visual.custom_minimum_size.x = edge if wide else 0
+	demonstration.stage.custom_minimum_size = Vector2(picture.custom_minimum_size.x, picture.custom_minimum_size.y / demonstration.aspect_ratio())
