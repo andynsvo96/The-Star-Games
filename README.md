@@ -105,9 +105,10 @@ Chess opens its remembered eligible mode through a single collection entry.
 Host **Settings > Game mode** selects Classic Chess, Chess960 (Fischer Random),
 Crazyhouse, Bughouse or Free for All. Every mode has independent scenery,
 board/piece artwork, title, skins and saved preferences. Solo and one/two-phone
-parties can play the three two-seat modes; exactly four connected phones opens
+parties can play the three two-seat modes; three or four connected phones open
 the four-player expansion automatically, defaulting to Bughouse when the saved
-choice does not fit. Three players cannot launch Chess. Bughouse runs two
+choice does not fit. Three humans receive a computer fourth seat; these games
+are practice and do not change saved standings. Bughouse runs two
 simultaneous team boards with captures transferred to the partner's reserve.
 Free for All uses a four-sided cross board and last king standing. Mode changes
 start fresh boards and retain completed per-mode totals until leaving Chess;
