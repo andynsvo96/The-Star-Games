@@ -16,7 +16,7 @@ This public repository contains the launcher, shared host UI, browser controller
 
 ## Current local game catalog
 
-The development installation currently has 16 menu entries covering the 21 games and variants below. This list describes that local installation; these modules are not distributed in this repository.
+The development installation currently has 16 menu entries covering the 25 games and variants below. This list describes that local installation; these modules are not distributed in this repository.
 
 | Game | Description |
 | --- | --- |
@@ -28,7 +28,7 @@ The development installation currently has 16 menu entries covering the 21 games
 | Draughts | International draughts on a 10×10 board; Flying Kings defaults on. |
 | Alquerque | Capture twelve opposing pieces along a 5×5 network of points. |
 | COUP | Bluff, challenge and eliminate rival influence with 2-6 human phone players. |
-| Chess | Classic chess with computer opponents and optional clocks. |
+| Chess | Classic, Chess960 and Crazyhouse; four-player Bughouse and Free for All. |
 | Four in a Row | Drop discs and connect four before your opponent. |
 | Jeopardy | Buzz from your phone, answer aloud or type, and play editable trivia boards. |
 | Mafia | Use discussion, secret roles, and votes to uncover the Mafia. |
@@ -100,6 +100,19 @@ Default keeps the wood board and royal study; Marble Court has been removed.
 Host white ghost suggestions guide phone players
 without moving their pieces. Coaching is limited to one human against the computer;
 two-phone scoring, replay color swaps and offline reconnection remain supported.
+
+Chess opens its remembered eligible mode through a single collection entry.
+Host **Settings > Game mode** selects Classic Chess, Chess960 (Fischer Random),
+Crazyhouse, Bughouse or Free for All. Every mode has independent scenery,
+board/piece artwork, title, skins and saved preferences. Solo and one/two-phone
+parties can play the three two-seat modes; exactly four connected phones opens
+the four-player expansion automatically, defaulting to Bughouse when the saved
+choice does not fit. Three players cannot launch Chess. Bughouse runs two
+simultaneous team boards with captures transferred to the partner's reserve.
+Free for All uses a four-sided cross board and last king standing. Mode changes
+start fresh boards and retain completed per-mode totals until leaving Chess;
+offline admitted players must reconnect before switching. These playable modules,
+their artwork and dependent tests remain local.
 
 The local Poker variants include optional cinematic community-card reveals,
 all-in win odds, and individual player histories opened from their stat plaques

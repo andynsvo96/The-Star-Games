@@ -1991,6 +1991,32 @@ host-generated browser fixtures, portrait/landscape, small phones, the portrait
 frame, help/results/promotion, gestures and reduced motion. Detailed behavior
 and commands live in the local module README; playable content remains local.
 
+The local Chess collection uses the same `settings_variants` flow as Checkers.
+Its standalone children retain `chess`, `chess960`, `crazyhouse`, `bughouse` and
+`chess-free-for-all` as stable IDs. One menu entry selects an eligible remembered
+child: solo and one/two-phone sessions use the two-seat modes; exactly four
+phones use Bughouse or Free for All. Three phones have no eligible child. Each
+child owns its protected Default skin, extensionless background and title.
+Two-seat children reuse Chess's presentation and variant-aware rules; the
+four-seat children share the family lifecycle while keeping independent rules.
+
+Chess960 uses king-to-original-rook input to disambiguate every castling
+arrangement, including a stationary king or rook. Crazyhouse pockets and promoted
+piece provenance belong to the host position, repetition identity and computer
+search. Bughouse uses a host-issued ticket per board so an unrelated board move
+does not invalidate a valid command. Adding captured stock changes its partner
+board's ticket. Both boards share pause/results lifecycle; one team result ends
+the complete game. Free for All rotates four armies on a 160-square cross board
+and removes an army on checkmate, stalemate or a flag. The last surviving king
+wins; eliminated phones spectate. Its phones reuse the shared board camera.
+
+Local coverage adds `tests/chess_variants.gd`, `chess_variants_motion.gd`,
+`chess_variants_autoplay.gd`, `chess_variants_network.gd`, rendered
+`chess_variants_visual.gd`, then `node tests/chess_variants_controller.mjs`.
+The collection README documents the explicit variant draw, replay and clock
+policies and links the rule authorities. Playable modules, source artwork/prompts
+and dependent tests remain outside the public repository.
+
 ### UNO example
 
 UNO's host-only Gamemode selector uses the shared inline choice control and staged
