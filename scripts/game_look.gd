@@ -1200,6 +1200,30 @@ static func help_control(button: Button) -> void:
 		button.add_theme_stylebox_override(state,surface)
 
 
+static func guide_banner() -> StyleBoxFlat:
+	var style := box(Color("233f50"), Color("b89554"), 10, 1)
+	style.set_content_margin_all(12)
+	style.shadow_size = 0
+	return style
+
+
+static func guide_toggle(button: Button, enabled: bool) -> void:
+	settings_toggle(button, enabled)
+	button.text = str(button.get_meta("settings_caption", "Tutorial")) + (": ON" if enabled else ": OFF")
+	button.add_theme_font_size_override("font_size", 13)
+
+
+static func guide_section(button: Button, selected: bool) -> void:
+	for state in ["normal", "hover", "pressed", "hover_pressed"]:
+		if selected:
+			var style := guide_banner()
+			style.set_content_margin_all(6)
+			button.add_theme_stylebox_override(state, style)
+		else: button.remove_theme_stylebox_override(state)
+	button.add_theme_color_override("font_color", CREAM if selected else button.get_theme_color("font_color", "Button"))
+	button.accessibility_name = button.text + (", selected" if selected else "")
+
+
 # Opt-in board utilities use the active palette and a quiet brass primary.
 static func board_action(button: Button, primary := false) -> void:
 	button.custom_minimum_size.y = 44

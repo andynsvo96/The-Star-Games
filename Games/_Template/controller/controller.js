@@ -11,6 +11,10 @@
   playerPanelCardExample.append(playerPanelNameExample);playerPanelExample.append(playerPanelCardExample);document.querySelector('.game-controller').append(playerPanelExample);
   // Hidden shared illustrated-help example; a real module supplies its own diagrams.
   const exampleGuide = new StarGamesIllustratedGuide(document.querySelector(".game-controller"));
+  // {paged:true} adds a colored header, section tabs, a topic selector and pages.
+  // Supply each entry's section; optional headerActions holds existing controls.
+  const examplePages = new StarGamesIllustratedGuide(document.querySelector(".game-controller"), {paged:true});
+  examplePages.setItems([{section:"Piece Moves",heading:"An example move",detail:"One topic per page.",image:"/ui/playful/control-help.svg",description:"A static public example"},{section:"Rules & Tactics",heading:"An example rule",detail:"Keep rules and advice separate.",image:"/ui/playful/control-help.svg",description:"A second public example"}]);
   exampleGuide.setItems([{heading:"An example move",detail:"Explain the public move in plain text.",image:"/ui/playful/control-help.svg",description:"A static example"}]);
   const exampleBoardReplay = document.createElement("button"); exampleBoardReplay.textContent = "PLAY AGAIN";
   const exampleBoardResults = new StarGamesRoundResults(document.querySelector(".game-controller"), exampleBoardReplay);

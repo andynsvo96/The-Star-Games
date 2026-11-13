@@ -1791,6 +1791,25 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 .game-guide-section h3 { margin:0 0 8px; font-size:21px; line-height:1.2; }
 .game-guide-section > img { display:block; width:100%; height:210px; object-fit:contain; }
 .game-guide-section > p { margin:8px 0 0; font-size:16px; line-height:1.5; font-weight:400; }
+.game-guide-paged.game-dialog { width:min(94vw,880px); max-width:880px; }
+.game-guide-banner { display:flex !important; align-items:center; gap:12px; margin:0 0 12px; padding:12px; border:1px solid #b89554; border-radius:10px; background:#233f50; color:#fff4cf; }
+.game-guide-banner h2 { flex:1; min-width:0; margin:0; font:700 22px/1.2 "Segoe UI",Arial,sans-serif; color:inherit; text-align:left; }
+.game-guide-header-actions { display:flex; align-items:center; gap:8px; }
+.game-guide-tabs { display:flex; gap:6px; margin:0 0 8px; }
+.game-guide-paged .game-guide-tabs button { flex:1; min-width:0; min-height:44px; margin:0; padding:6px; font:700 13px/1.15 "Segoe UI",Arial,sans-serif; letter-spacing:0; }
+.game-guide-paged .game-guide-tabs button[aria-pressed="true"] { background:#233f50; border-color:#b89554; color:#fff4cf; box-shadow:none; }
+.game-guide-paged .game-guide-topics { display:block; width:100%; min-height:44px; margin:0 0 12px; font:16px "Segoe UI",Arial,sans-serif; }
+.game-guide-paged .game-guide-page { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px; align-items:center; margin:0; }
+.game-guide-paged .game-guide-page > img { width:100%; height:auto; max-height:300px; object-fit:contain; }
+.game-guide-copy p { margin:10px 0 0; font:16px/1.5 "Segoe UI",Arial,sans-serif; }
+.game-guide-paged .dialog-actions { display:flex; flex-wrap:nowrap; align-items:center; gap:6px; }
+.game-guide-paged .dialog-actions button { flex:0 0 auto; min-width:44px; min-height:44px; padding:6px 10px; font:700 13px "Segoe UI",Arial,sans-serif; letter-spacing:0; }
+.game-guide-counter { flex:1; min-width:0; font:14px "Segoe UI",Arial,sans-serif; white-space:nowrap; }
+@media (max-width:600px) {
+  .game-guide-paged .game-guide-page { grid-template-columns:minmax(0,1fr); gap:12px; }
+  .game-guide-paged .game-guide-page > img { height:min(52vw,220px); }
+  .game-guide-banner h2 { font-size:19px; }
+}
 .game-round-summary { margin:0 0 14px; font:15px/1.4 "Segoe UI",Arial,sans-serif; text-align:center; white-space:pre-line; }
 .game-round-results { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
 .game-round-player { min-width:0; padding:14px; border:2px solid var(--panel-edge,#b18b4e); border-radius:10px; font:15px/1.35 "Segoe UI",Arial,sans-serif; }

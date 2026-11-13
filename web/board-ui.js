@@ -16,24 +16,71 @@
 		return {dialog, title, body, actions};
 	}
 	class IllustratedGuide {
-		constructor(parent, {heading = "How to play", onChange = () => {}} = {}) {
+		constructor(parent, {heading = "How to Play", onChange = () => {}, paged = false} = {}) {
 			Object.assign(this, sheet(parent, heading, "game-illustrated-guide"));
-			this.onChange = onChange;
+			this.onChange = onChange; this.paged = paged; this.page = 0; this.groupPages = new Map();
 			const close = node("button", "game-secondary", "CLOSE"); close.type = "button";
+			close.dataset.guideClose = "";
 			close.addEventListener("click", () => this.dialog.close()); this.actions.append(close);
+			if (paged) {
+				this.dialog.classList.add("game-guide-paged");
+				this.header = node("header", "dialog-heading game-guide-banner");
+				this.title.className = ""; this.title.replaceWith(this.header); this.header.append(this.title);
+				this.headerActions = node("div", "game-guide-header-actions"); this.header.append(this.headerActions);
+				this.tabs = node("nav", "game-guide-tabs"); this.tabs.setAttribute("aria-label", "Guide sections");
+				this.topics = node("select", "game-choice game-guide-topics"); this.topics.setAttribute("aria-label", "Lesson topic");
+				this.topics.addEventListener("change", () => this.selectPage(Number(this.topics.value)));
+				this.lesson = node("section", "game-guide-section game-guide-page");
+				this.lesson.setAttribute("aria-live", "polite");
+				this.body.append(this.tabs, this.topics, this.lesson);
+				this.previous = node("button", "game-secondary", "PREV"); this.previous.type = "button"; this.previous.setAttribute("aria-label", "Previous lesson");
+				this.next = node("button", "game-secondary", "NEXT"); this.next.type = "button"; this.next.setAttribute("aria-label", "Next lesson");
+				this.counter = node("output", "game-guide-counter"); this.counter.setAttribute("aria-label", "Lesson page");
+				this.previous.addEventListener("click", () => this.selectPage(this.page - 1));
+				this.next.addEventListener("click", () => this.selectPage(this.page + 1));
+				this.actions.prepend(this.previous, this.counter, this.next);
+			}
 			this.dialog.addEventListener("close", () => { this.trigger?.focus({preventScroll:true}); this.onChange(false); });
 			this.key = "";
 		}
 		setItems(items) {
 			const key = JSON.stringify(items); if (key === this.key) return;
-			this.key = key; this.body.replaceChildren();
+			this.key = key; this.items = items;
+			if (this.paged) {
+				this.groups = [...new Set(items.map(item => item.section || "Guide"))];
+				this.tabs.replaceChildren(...this.groups.map(group => {
+					const button = node("button", "game-secondary", group); button.type = "button";
+					button.addEventListener("click", () => this.selectPage(this.groupPages.get(group) ?? items.findIndex(item => (item.section || "Guide") === group)));
+					return button;
+				}));
+				this.selectPage(Math.min(this.page, items.length - 1)); return;
+			}
+			this.body.replaceChildren();
 			for (const item of items) {
 				const section = node("section", "game-guide-section");
 				const image = node("img"); image.src = item.image; image.alt = item.description || "";
 				section.append(node("h3", "", item.heading), image, node("p", "", item.detail)); this.body.append(section);
 			}
 		}
-		open(trigger) { this.trigger = trigger; if (!this.dialog.open) { this.dialog.showModal(); this.actions.querySelector("button").focus({preventScroll:true}); this.onChange(true); } }
+		selectPage(index) {
+			if (!this.items?.length) { this.previous.disabled = this.next.disabled = true; this.lesson.replaceChildren(); return; }
+			this.page = Math.max(0, Math.min(index, this.items.length - 1));
+			const item = this.items[this.page], group = item.section || "Guide";
+			this.groupPages.set(group, this.page);
+			[...this.tabs.children].forEach(button => button.setAttribute("aria-pressed", String(button.textContent === group)));
+			this.topics.replaceChildren(...this.items.flatMap((entry, index) => {
+				if ((entry.section || "Guide") !== group) return [];
+				const option = node("option", "", entry.heading); option.value = index; return [option];
+			})); this.topics.value = this.page;
+			const image = node("img"); image.src = item.image; image.alt = item.description || "";
+			const copy = node("div", "game-guide-copy"); copy.append(node("h3", "", item.heading), node("p", "", item.detail));
+			if (item.tip) copy.append(node("p", "game-guide-tip", item.tip));
+			this.lesson.replaceChildren(image, copy);
+			this.counter.textContent = `${this.page + 1} / ${this.items.length}`;
+			this.previous.disabled = this.page === 0; this.next.disabled = this.page === this.items.length - 1;
+			this.body.scrollTop = 0;
+		}
+		open(trigger) { this.trigger = trigger; if (!this.dialog.open) { this.dialog.showModal(); this.actions.querySelector("[data-guide-close]").focus({preventScroll:true}); this.onChange(true); } }
 		close() { if (this.dialog.open) this.dialog.close(); }
 	}
 	class RoundResults {

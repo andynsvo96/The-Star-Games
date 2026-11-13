@@ -93,9 +93,11 @@ player retains control. Pauses freeze the preview and reconnect restores it.
 Chess now uses a larger centered wood board, compact current-game player panels,
 turn glows, drag/tap controls and illustrated help/promotion choices on host and
 phones. Results show round statistics with View Board and one Play Again.
-Grouped Settings pauses play and offers clock presets, one Guided gameplay
-switch for move guides, coordinates and last-move highlights, and Teaching mode.
-Teaching automatically enables those aids, explains risky moves and immediate
+Grouped Settings pauses play and offers clock presets and one Guided gameplay
+switch for move guides, coordinates and last-move highlights. **How to Play**
+uses compact illustrated pages grouped into Piece Moves, Rules & Tactics and
+Playing, with **Tutorial** at the top right for solo/computer coaching.
+Tutorial automatically enables those aids, explains risky moves and immediate
 mate threats, offers position-specific plans, optional examples and Take Back.
 Default keeps the wood board and royal study; Marble Court has been removed.
 Host white ghost suggestions guide phone players

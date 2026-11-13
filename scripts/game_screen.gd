@@ -617,13 +617,15 @@ func add_phase_dialog(fit_contents := false, full_screen := false, compact := fa
 		var width_limit := float(panel.get_meta("maximum_width", maximum_width))
 		if width_limit > 0: width = minf(maxf(0, bounds.x - 32) if panel.get_meta("expand_width", false) else width, width_limit)
 		var height := maxf(0, bounds.y - 112) if full_screen else minf(560, maxf(0, bounds.y - 112))
+		var edge_to_edge: bool = panel.get_meta("edge_to_edge_short", false) and bounds.y < 560
+		if edge_to_edge: height = maxf(0, bounds.y - 24)
 		# Set width first so wrapped names and team rows can settle before fitting.
 		panel.size.x = width
 		if fit_contents:
 			var chrome_height := panel.get_combined_minimum_size().y - scroll.get_combined_minimum_size().y
 			height = minf(height, chrome_height + body.get_combined_minimum_size().y)
 		panel.size = Vector2(width, height)
-		panel.position = Vector2((bounds.x - width) / 2.0, 80 + (bounds.y - 96 - height) / 2.0)
+		panel.position = Vector2((bounds.x - width) / 2.0, (bounds.y - height) / 2.0 if edge_to_edge else 80 + (bounds.y - 96 - height) / 2.0)
 	get_parent_control().resized.connect(fit)
 	# Wrapped headings can lower their minimum only after the new width settles.
 	panel.minimum_size_changed.connect(func() -> void: fit.call_deferred())
@@ -1132,6 +1134,8 @@ func add_corner_details(captions: Array[String], placement := Callable(), compac
 					button.icon = RuntimeAssets.texture("res://ui/playful/table-settings.svg")
 					button.expand_icon = true
 					button.add_theme_constant_override("icon_max_width", 26)
+					var ink := GameLook.readable_text_color(theme.get_color("font_color", "Button"), theme.get_color("panel", "GamePalette"))
+					for color in ["icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_focus_color"]: button.add_theme_color_override(color, ink)
 					for state in ["normal", "hover", "pressed", "disabled"]:
 						var surface := GameLook.box(theme.get_color("panel", "GamePalette"), theme.get_color("panel_edge", "GamePalette"), 24, 1)
 						surface.set_content_margin_all(8)
@@ -1452,17 +1456,52 @@ func add_corner_help(settings: Button, pressed: Callable) -> Button:
 	return button
 
 
-func add_illustrated_guide(caption: String, examples: Array = []) -> Dictionary:
-	var dialog := add_phase_dialog(false, true, false, true, 720)
+func add_illustrated_guide(caption: String, examples: Array = [], paged := false) -> Dictionary:
+	var dialog := add_phase_dialog(paged, true, false, true, 880 if paged else 720)
 	dialog.heading.text = caption
 	var guide := GameIllustratedGuide.new()
+	guide.paged = paged
 	dialog.body.add_child(guide)
 	guide.set_items(examples)
 	dialog["guide"] = guide
+	if paged:
+		dialog.panel.set_meta("edge_to_edge_short", true)
+		var navigation_state := {"hidden":false, "was_visible":true}
+		var fit_navigation := func() -> void:
+			if dialog.overlay.visible and available_size().y < 560:
+				if not navigation_state.hidden:
+					navigation_state.was_visible = back_button.visible
+					navigation_state.hidden = true
+					back_button.hide()
+			elif navigation_state.hidden:
+				back_button.visible = navigation_state.was_visible
+				navigation_state.hidden = false
+		dialog.overlay.visibility_changed.connect(fit_navigation)
+		get_parent_control().resized.connect(fit_navigation)
+		var column: VBoxContainer = dialog.heading_row.get_parent()
+		var banner := PanelContainer.new()
+		banner.add_theme_stylebox_override("panel", GameLook.guide_banner())
+		column.add_child(banner); column.move_child(banner, 0)
+		dialog.heading_row.reparent(banner)
+		dialog.heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		dialog.heading.add_theme_font_override("font", GameLook.interface_font(700))
+		dialog.heading.add_theme_font_size_override("font_size", 19)
+		dialog.heading.add_theme_color_override("font_color", GameLook.CREAM)
+		var header_actions := HBoxContainer.new()
+		header_actions.add_theme_constant_override("separation", 8)
+		dialog.heading_row.add_child(header_actions)
+		dialog["header_actions"] = header_actions
+		dialog["banner"] = banner
+		dialog.actions.add_child(guide.navigation)
+		guide.page_changed.connect(func() -> void: dialog.scroll.scroll_vertical = 0)
 	var close := Button.new()
 	close.text = "CLOSE"
-	dialog.actions.add_child(close)
+	if paged: guide.navigation.add_child(close)
+	else: dialog.actions.add_child(close)
 	GameLook.action(close, false)
+	if paged:
+		close.add_theme_font_size_override("font_size", 13)
+		close.custom_minimum_size.y = 44
 	close.pressed.connect(func() -> void: dialog.overlay.hide())
 	var escape := InputEventKey.new()
 	escape.keycode = KEY_ESCAPE

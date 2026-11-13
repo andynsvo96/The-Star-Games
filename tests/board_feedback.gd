@@ -56,6 +56,27 @@ func _run() -> void:
 	check(example.get_child(1).texture != null and not example.get_child(1).accessibility_name.is_empty(), "Illustrations keep an offline image and text alternative")
 	check(root.get_visible_rect().encloses(guide.actions.get_global_rect()), "Illustrated guide keeps Close outside its scrolling body")
 	guide.overlay.hide()
+	var pages := screen.add_illustrated_guide("How to Play", [{"section":"Moves", "heading":"First <move>", "detail":"Literal [public] rules.", "image":"res://ui/playful/control-help.svg", "description":"An offline example"}, {"section":"Rules", "heading":"Second rule", "detail":"A separate topic.", "image":"res://ui/playful/control-help.svg", "description":"Another offline example"}], true)
+	pages.overlay.show()
+	pages.guide.next.pressed.emit()
+	check(pages.guide.page == 1 and pages.guide.previous.disabled == false and pages.guide.next.disabled and pages.guide.topics.get_item_text(0) == "Second rule", "Paged guide navigation changes section and topic together with bounded endpoints")
+	var current_picture: Control = pages.guide.picture
+	pages.guide.set_items(pages.guide.items)
+	check(pages.guide.page == 1 and pages.guide.picture == current_picture, "Repeated paged guide snapshots preserve topic and artwork nodes")
+	pages.guide.reload_artwork()
+	check(pages.guide.page == 1 and pages.guide.copy.get_child(0).text == "Second rule" and pages.guide.picture == current_picture, "Cosmetic reload retains the selected lesson and image target")
+	pages.guide.tabs.get_child(0).pressed.emit()
+	check(pages.guide.page == 0 and pages.guide.copy.get_child(0).text == "First <move>", "Section navigation renders literal lesson titles")
+	pages.guide.tabs.get_child(1).pressed.emit()
+	check(pages.guide.page == 1, "Switching back restores a section's last selected page")
+	for shape in [Vector2i(1280,720), Vector2i(480,850), Vector2i(844,390), Vector2i(320,568)]:
+		root.min_size = Vector2i.ONE
+		root.content_scale_size = shape; root.size = shape
+		for frame in 12: await process_frame
+		check(root.get_visible_rect().encloses(pages.panel.get_global_rect()) and root.get_visible_rect().encloses(pages.actions.get_global_rect()), "Paged reference and navigation fit %s" % shape)
+	pages.overlay.hide()
+	check(screen.back_button.visible, "Closing short-screen help restores shared return navigation")
+	root.content_scale_size = Vector2i(1280,720); root.size = Vector2i(1280,720)
 	var round_results := GameRoundResults.new()
 	screen.content.add_child(round_results)
 	var entries := [{"display_name":"Literal [winner]", "color":"#000000", "winner":true, "metrics":[{"label":"Moves", "value":12}]}]

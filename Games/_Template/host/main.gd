@@ -80,6 +80,10 @@ func _ready() -> void:
 	var layout := screen.add_centered_layout()
 	# Public illustrated help uses static examples; the module owns pause policy.
 	var illustrated_guide_example := screen.add_illustrated_guide("How to play", [{"heading":"An example move", "detail":"Explain the move in plain text.", "image":"res://Games/_Template/thumbnail.svg", "description":"A static public example"}])
+	# Optional compact lessons: section tabs, topic selection and Prev/Next pages.
+	# Add module-owned controls to header_actions; the module owns pause policy.
+	var paged_guide_example := screen.add_illustrated_guide("How to Play", [{"section":"Piece Moves", "heading":"An example move", "detail":"Explain one topic per page.", "image":"res://Games/_Template/thumbnail.svg", "description":"A static public example"}, {"section":"Rules & Tactics", "heading":"An example rule", "detail":"Keep movement separate from rules and advice.", "image":"res://Games/_Template/thumbnail.svg", "description":"A second public example"}], true)
+	paged_guide_example.overlay.hide()
 	var guide_button := Button.new()
 	layout.playfield.add_child(guide_button)
 	GameLook.help_control(guide_button)

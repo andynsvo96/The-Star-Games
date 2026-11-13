@@ -1657,6 +1657,23 @@ Static diagrams must agree with the active rules, including accepted house-rule
 settings. Never make examples from hidden live state. The template includes a
 hidden native/browser example and the real LAN server serves the shared script.
 
+For a compact paged reference, pass a third `true` to
+`add_illustrated_guide(caption, examples, true)`, or `{paged:true}` to the browser
+constructor. Supply a literal `section` on each example. The shared component
+provides section buttons, a topic selector, one illustrated lesson, page count
+and Prev/Next navigation, with a colored title band and fixed Close action.
+Wide lessons place artwork beside text; narrow screens stack them. Short native
+views use more of the screen, with Close/Escape returning to ordinary navigation.
+Long individual lessons still scroll. Sections remember their last topic;
+unchanged item arrays retain the current page and image nodes. Modules can place
+existing host controls in returned `header_actions` (browser `headerActions`);
+`GameLook.guide_toggle(button, enabled)` styles a compact header toggle using its
+`settings_caption` metadata. Keep validation, saved preferences and pause policy
+in the module. The template has hidden native/browser examples. Existing list
+guides retain their layout unless they opt in.
+Use `guide.reload_artwork()` on a native live skin refresh to reload the current
+page's canonical image while retaining its topic and reading position.
+
 `GameRoundResults.set_results(entries)` renders public round metrics, literal
 names and a winner crown in responsive player cards. Each entry contains
 `display_name`, `color`, `winner` and `metrics:[{label,value}]`. Put the component
@@ -1948,9 +1965,14 @@ use the same validated move path. Illustrated promotion buttons retain an
 explicit Choose Piece action after View Board.
 
 Host Settings uses the shared grouped form beside music, with difficulty,
-opponent, live Skin, clock presets/custom minutes, Guided gameplay and Teaching
-mode. The separate question-mark action opens twelve
-static illustrated rule references on host and phones. Settings and host Help
+opponent, live Skin, clock presets/custom minutes and Guided gameplay.
+The separate question-mark action opens fourteen static illustrated pages on
+host and phones, grouped into Piece Moves, Rules & Tactics and Playing.
+The colored How to Play header holds a host-only **Tutorial** toggle in its
+top-right corner for eligible solo/computer sessions, retaining the existing
+`teaching_enabled` preference. Diagrams have compact square bounds; check/king
+safety and planning are separate from the six piece-movement lessons.
+Settings and host Help
 pause input, AI, clocks, duration, movement and sounds; phone Help is local.
 Session & History, move-history, draw-claim/offer and resignation controls remain
 omitted. The internal move history still supports clocks and draw detection.
