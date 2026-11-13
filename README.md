@@ -93,9 +93,10 @@ player retains control. Pauses freeze the preview and reconnect restores it.
 Chess now uses a larger centered wood board, compact current-game player panels,
 turn glows, drag/tap controls and illustrated help/promotion choices on host and
 phones. Results show round statistics with View Board and one Play Again.
-Grouped Settings pauses play and offers clock presets, independent guidance and
-last-move indicators, and Teaching mode with automatic turn lessons, piece-movement
-explanations, immediate capture warnings, optional examples and Take Back.
+Grouped Settings pauses play and offers clock presets, one Guided gameplay
+switch for move guides, coordinates and last-move highlights, and Teaching mode.
+Teaching automatically enables those aids, explains risky moves and immediate
+mate threats, offers position-specific plans, optional examples and Take Back.
 Default keeps the wood board and royal study; Marble Court has been removed.
 Host white ghost suggestions guide phone players
 without moving their pieces. Coaching is limited to one human against the computer;
@@ -109,8 +110,8 @@ Pieces and stat icons retain Classic's untinted ivory/ebony finish; Free for All
 adds small colored shape markers for its four armies. Player names/side labels
 lead directly into counters, with turn glows replacing routine turn text.
 Classic, Chess960 and Free for All use more of the available board area.
-Settings offers independent saved Board coordinates beneath Guided gameplay,
-with readable labels on every board, including both Bughouse boards.
+Guided gameplay includes flat coordinate lettering in each board's frame,
+including both Bughouse boards, without separate coordinate or last-move settings.
 Solo hosts can select
 any mode, with three computers filling Bughouse and Free for All. One/two-phone
 parties can play the three two-seat modes; three or four connected phones open

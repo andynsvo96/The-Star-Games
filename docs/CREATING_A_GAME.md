@@ -1948,8 +1948,8 @@ use the same validated move path. Illustrated promotion buttons retain an
 explicit Choose Piece action after View Board.
 
 Host Settings uses the shared grouped form beside music, with difficulty,
-opponent, live Skin, clock presets/custom minutes, Guided gameplay, Last Move
-Indicator and Teaching mode. The separate question-mark action opens twelve
+opponent, live Skin, clock presets/custom minutes, Guided gameplay and Teaching
+mode. The separate question-mark action opens twelve
 static illustrated rule references on host and phones. Settings and host Help
 pause input, AI, clocks, duration, movement and sounds; phone Help is local.
 Session & History, move-history, draw-claim/offer and resignation controls remain
@@ -1962,8 +1962,11 @@ clock, opponent and normal difficulty changes restart the current board,
 canceling workers, promotion choices and motion while preserving completed wins
 and unchanged preferences. Clocks reset to the accepted allowance. Preparing
 minutes while the clock is off preserves the board. Guided gameplay (saved under
-the existing `guidance` key, default on) and independent Last Move Indicator
-(default off) change without resetting the board, clocks or revision.
+the existing `guidance` key, default on) bundles piece/destination guides,
+coordinates and last-move highlights into one setting for all five modes.
+Old independent coordinate/last-move keys are ignored. Changing this bundle
+preserves the board, clocks and revision. Coordinates use flat inlay lettering
+in the frame's material channel, without badges, borders or text shadows.
 The clock is off by default and starts after the first legal move. It uses host
 monotonic time, keeps running through promotion and computer thinking, and
 freezes on host Settings/Help or any admitted-player disconnect. Browser
@@ -1977,17 +1980,26 @@ resignation helpers, but game sessions do not expose them. Host-only Teaching
 mode is available with one human against the computer, including a one-phone
 learner. It uses Easy without replacing saved normal difficulty. A short lesson
 appears automatically each turn; selecting a piece explains its movement and
-legal destinations, including blocked pieces. Teaching supplies legal highlights
-even with ordinary guidance off. Accepted moves and computer replies get literal
+legal destinations, including blocked pieces. Teaching forces the complete
+guidance bundle on while active; leaving it restores the saved normal choice.
+Accepted moves and computer replies get literal
 explanations. A compact lesson stays visible; Coach expands the full text and
 offers an optional Show Example with a bounded legal suggestion. The host Coach
 pauses play while reading; phone Coach is local like phone Help. Short landscape
 phones reuse the shared toolbar relocation beside the centered board. Teaching
 phones opt into the existing compact heading to retain board space.
-Before a move that allows an immediate unfavorable capture of the moving piece,
-a host-generated review explains a legal capture and offers Try Another Move or
-Play This Move. This is a limited capture/recapture check, not a full tactical
-evaluation. Confirmations validate the admitted learner and current host-held
+The module-owned public-position coach adds concrete plans and inspected moves
+to avoid to the full lesson and selected-piece explanation. A bounded analysis
+runs once per revision; repeated snapshots preserve it. Suggestions favor verified
+mate, favorable captures, development, castling and promotion without detected
+immediate losses. If only risky options were inspected, an example explicitly
+states its remaining threat. Uninspected moves are never labelled safe.
+Before a move that permits immediate mate, loses a pawn/piece, allows an opposing
+promotion or leaves another piece exposed, a host-generated review explains the
+legal reply and offers another checked idea when available. Try Another Move and
+Play This Move preserve the learner's choice, including intentional sacrifices.
+These short reply/recapture checks are not a complete engine search or a promise
+of a win. Confirmations validate the admitted learner and current host-held
 move/revision; client approval flags cannot bypass review. Settings/disconnects
 hide the review and reconnection restores it. Take Back restores the previous
 human move and computer reply.
