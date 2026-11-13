@@ -94,8 +94,10 @@ Chess now uses a larger centered wood board, compact current-game player panels,
 turn glows, drag/tap controls and illustrated help/promotion choices on host and
 phones. Results show round statistics with View Board and one Play Again.
 Grouped Settings pauses play and offers clock presets, independent guidance and
-last-move indicators, Teaching mode with explained hints and Take Back, and live
-Default/Marble Court skins. Host white ghost suggestions guide phone players
+last-move indicators, and Teaching mode with automatic turn lessons, piece-movement
+explanations, immediate capture warnings, optional examples and Take Back.
+Default keeps the wood board and royal study; Marble Court has been removed.
+Host white ghost suggestions guide phone players
 without moving their pieces. Coaching is limited to one human against the computer;
 two-phone scoring, replay color swaps and offline reconnection remain supported.
 

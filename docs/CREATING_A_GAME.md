@@ -1948,8 +1948,22 @@ timeout with standard mating-material detection. Fivefold/75-move draws are
 automatic and checkmate takes precedence. The rules library retains claim and
 resignation helpers, but game sessions do not expose them. Host-only Teaching
 mode is available with one human against the computer, including a one-phone
-learner. It uses Easy without replacing saved normal difficulty, bounded legal
-explained hints, and Take Back for the previous human move and computer reply.
+learner. It uses Easy without replacing saved normal difficulty. A short lesson
+appears automatically each turn; selecting a piece explains its movement and
+legal destinations, including blocked pieces. Teaching supplies legal highlights
+even with ordinary guidance off. Accepted moves and computer replies get literal
+explanations. A compact lesson stays visible; Coach expands the full text and
+offers an optional Show Example with a bounded legal suggestion. The host Coach
+pauses play while reading; phone Coach is local like phone Help. Short landscape
+phones reuse the shared toolbar relocation beside the centered board. Teaching
+phones opt into the existing compact heading to retain board space.
+Before a move that allows an immediate unfavorable capture of the moving piece,
+a host-generated review explains a legal capture and offers Try Another Move or
+Play This Move. This is a limited capture/recapture check, not a full tactical
+evaluation. Confirmations validate the admitted learner and current host-held
+move/revision; client approval flags cannot bypass review. Settings/disconnects
+hide the review and reconnection restores it. Take Back restores the previous
+human move and computer reply.
 Up to 64 transient checkpoints restore castling/en-passant rights, repetition,
 halfmove state, clocks and round facts, advance revision and cancel stale work.
 Coaching follows the human's color on replay; multiplayer cannot enable it.
@@ -1961,8 +1975,10 @@ After movement settles, shared Chess Results displays winner/draw reason,
 active duration, moves, captures, checks, promotions, castles and session wins.
 View Board leaves Results reachable; one Play Again remains outside scrolling
 statistics. Duplicate snapshots preserve result nodes and reading position.
-The live shared skin selector offers Default and Marble Court, plus editor-made
-packs. Canonical revisioned artwork changes preserve controls, selections, rules,
+The live shared skin selector offers Default and editor-made packs. Marble Court
+is retired; existing saved selections fall back to Default. Traveling pieces use
+the board's ordinary drawing layer so Settings/Help remain above paused movement.
+Canonical revisioned artwork changes preserve controls, selections, rules,
 clocks, movement and open help/results. Cosmetic packs never determine rules.
 The castle scenery uses an extensionless
 background stem and all artwork/audio stays offline. `tests/chess.gd` includes
