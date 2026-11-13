@@ -1994,13 +1994,18 @@ and commands live in the local module README; playable content remains local.
 The local Chess collection uses the same `settings_variants` flow as Checkers.
 Its standalone children retain `chess`, `chess960`, `crazyhouse`, `bughouse` and
 `chess-free-for-all` as stable IDs. One menu entry selects an eligible remembered
-child: solo and one/two-phone sessions use the two-seat modes; three/four phones
-use Bughouse or Free for All. Three humans receive a module-owned computer fourth
-seat without changing the launcher roster. AI games remain practice across
-reconnect, replay and mode switches; four-human completed games retain saved
+child: solo hosts can select all five modes; one/two-phone sessions use the two-seat
+modes, and three/four phones use Bughouse or Free for All. Solo expansions use the
+existing `solo_profile` for the host and three module-owned computers. Three humans
+receive a computer fourth seat without changing the launcher roster. AI games
+remain practice across reconnect, replay and mode switches; four-human completed games retain saved
 standings. Worker replies validate the current seat, board ticket, pause and
-movement locks. Disconnected humans keep their seats. Each
-child owns its protected Default skin, extensionless background and title.
+movement locks. Solo hosts use shared piece dragging, a reserve dialog and explicit
+promotion choices; a dismissed promotion remains reachable through Choose Piece.
+The worker cycles eligible computers fairly across both Bughouse boards and checks
+each reply against its own board, so another board's new turn cannot cancel it.
+Disconnected humans keep their seats. Each child owns its protected Default skin,
+extensionless background and title.
 Two-seat children reuse Chess's presentation and variant-aware rules; the
 four-seat children share the family lifecycle while keeping independent rules.
 
@@ -2015,7 +2020,7 @@ and removes an army on checkmate, stalemate or a flag. The last surviving king
 wins; eliminated phones spectate. Its phones reuse the shared board camera.
 
 Local coverage adds `tests/chess_variants.gd`, `chess_three_players.gd`,
-`chess_variants_motion.gd`,
+`chess_solo_variants.gd`, `chess_variants_motion.gd`,
 `chess_variants_autoplay.gd`, `chess_variants_network.gd`, rendered
 `chess_variants_visual.gd`, then `node tests/chess_variants_controller.mjs`.
 The collection README documents the explicit variant draw, replay and clock
