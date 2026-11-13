@@ -1672,6 +1672,22 @@ and a brass primary action without changing other presentations. These hooks are
 shown in the template. `tests/board_feedback.gd` checks native components;
 `tests/network_smoke.gd` checks the actual shared script route.
 
+For counters directly beneath a name/side identity, pass a third `true` to
+`set_score_card_current_game(card, compact, true)`. This removes reserved name
+height and reduces content spacing without shrinking the chosen name font.
+Hide empty feedback Labels. Browser cards add `game-tight-identity`, put the
+side in a `span.game-score-side` inside the name paragraph, and hide the complete
+`game-score-status` row when both feedback and clock are absent. Keep necessary
+check, disconnect and result feedback; the active card can retain its turn glow.
+
+`screen.set_score_card_artwork(card, texture)` replaces a score frame while
+preserving its safe content insets, slice geometry, identity and input nodes.
+Use artwork matching the chosen presentation's slice contract (32px for ledger),
+with a light interior for ledger ink. The browser ledger accepts
+`--game-score-art:url("/game/<id>/art/player-panel.svg")`. Reload these canonical
+assets with the pinned theme revision after a live skin change. Both template
+views demonstrate the hooks; omitted artwork retains the shared frame.
+
 Individual browser player sections can add `game-player-panel` to their shared
 `game-score-card` presentation. Use `game-ornate` for individually framed progress
 cards, including a `game-score-identity` row and `game-score-detail` counter.
@@ -1914,7 +1930,7 @@ Chess uses the shared centered board composition, compact illustrated heading,
 current-game ivory ledgers, whole-panel turn glow and fitted phone board with
 bottom stats. Textured wood squares retain its sculpted ivory/ebony pieces and
 royal study. Panels show names, White/Black identity, six remaining-piece counts,
-turn/check/disconnect feedback and optional clocks, without session win boxes,
+check/disconnect feedback and optional clocks, without session win boxes,
 Untimed or the ordinary top status banner. Phones use `game-dense-counters` to
 retain six metrics on small screens. Tap, keyboard and shared piece dragging all
 use the same validated move path. Illustrated promotion buttons retain an
@@ -2006,6 +2022,12 @@ The worker cycles eligible computers fairly across both Bughouse boards and chec
 each reply against its own board, so another board's new turn cannot cancel it.
 Disconnected humans keep their seats. Each child owns its protected Default skin,
 extensionless background and title.
+Chess variants keep Classic's untinted ivory/ebony sculptures, including stat
+icons and movement. Free for All identifies armies with separate colored shape
+markers at the bases. Distinct material boards and player frames match each
+mode's scenery: astronomical inlays, alchemist details, linked brass or kingdom
+crests. Tight name/side rows lead directly into current-board counts; turn glows
+replace routine turn text on host and phones.
 Two-seat children reuse Chess's presentation and variant-aware rules; the
 four-seat children share the family lifecycle while keeping independent rules.
 

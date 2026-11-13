@@ -104,7 +104,11 @@ two-phone scoring, replay color swaps and offline reconnection remain supported.
 Chess opens its remembered eligible mode through a single collection entry.
 Host **Settings > Game mode** selects Classic Chess, Chess960 (Fischer Random),
 Crazyhouse, Bughouse or Free for All. Every mode has independent scenery,
-board/piece artwork, title, skins and saved preferences. Solo hosts can select
+board artwork, matching player panels, title, skins and saved preferences.
+Pieces and stat icons retain Classic's untinted ivory/ebony finish; Free for All
+adds small colored shape markers for its four armies. Player names/side labels
+lead directly into counters, with turn glows replacing routine turn text.
+Solo hosts can select
 any mode, with three computers filling Bughouse and Free for All. One/two-phone
 parties can play the three two-seat modes; three or four connected phones open
 the four-player expansion automatically, defaulting to Bughouse when the saved

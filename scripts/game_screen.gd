@@ -1369,14 +1369,26 @@ func add_score_stat(card: Dictionary, icon: Texture2D, text: String) -> Label:
 
 
 # Round-only counters retain the existing card, identity and turn treatment.
-func set_score_card_current_game(card: Dictionary, compact := false) -> void:
+func set_score_card_current_game(card: Dictionary, compact := false, tight_identity := false) -> void:
 	card.score_panel.hide()
-	card.name_panel.custom_minimum_size.y = 24 if compact else 52
+	card.name_panel.custom_minimum_size.y = 0 if tight_identity else (24 if compact else 52)
 	for child in card.content.get_children():
 		if child.has_meta("score_decoration"):
 			child.hide()
 	card.player.add_theme_font_size_override("font_size", 15 if compact else 18)
-	card.content.add_theme_constant_override("separation", 4 if compact else 8)
+	card.content.add_theme_constant_override("separation", 2 if tight_identity else (4 if compact else 8))
+
+
+# Module artwork replaces only the frame, retaining its safe insets and controls.
+# Call again after a live skin change; the existing card and focus stay intact.
+func set_score_card_artwork(card: Dictionary, artwork: Texture2D) -> void:
+	var current: StyleBox = card.panel.get_theme_stylebox("panel")
+	if artwork == null or not current is StyleBoxTexture:
+		return
+	var surface: StyleBoxTexture = current.duplicate()
+	surface.texture = artwork
+	surface.modulate_color = Color.WHITE
+	card.panel.add_theme_stylebox_override("panel", surface)
 
 
 # Each icon/count group centers independently inside the artwork's content inset.

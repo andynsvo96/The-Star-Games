@@ -755,7 +755,7 @@ body.playful-game { isolation: isolate; }
 .playful-game:is(.game-royal, .game-arcade, .game-admiral) .game-controller button:disabled { color: #59616f; border-color: #838b98; background: #bfc3ca; box-shadow: none; }
 /* Real player content is inset inside one reusable walnut and paper surface. */
 .game-score-card.game-ledger { position: relative; display: block; margin: 0; padding: 0; border: 24px solid transparent;
-  border-image: url('/ui/playful/score-ledger.svg') 32 fill / 24px / 0 stretch; border-radius: 0; background: none; box-shadow: 0 4px 12px #150f0933; color: #56351f; }
+  border-image: var(--game-score-art, url('/ui/playful/score-ledger.svg')) 32 fill / 24px / 0 stretch; border-radius: 0; background: none; box-shadow: 0 4px 12px #150f0933; color: #56351f; }
 .game-score-card.game-ledger > * { min-width: 0; max-width: 100%; }
 .game-score-card.game-ledger > p { margin: 0 0 .5rem; padding: .3rem 0; font-size: clamp(.75rem, 10cqw, 1.25rem); line-height: 1.2; }
 .game-score-card.game-ledger output { margin: 0; padding: .35rem .15rem; color: #56351f; border: 1px solid #bc945866; border-radius: 6px; background: #dec49a44; box-shadow: none; font-size: clamp(.7rem, 16cqw, 1.8rem); line-height: 1.2; }
@@ -2104,6 +2104,11 @@ html:has(.game-card-reader.has-fitted-reference[open]), html:has(.game-card-read
 
 .game-board-stats .game-session-score > .game-score-detail { grid-column:2; text-align:right; font-size:.7rem; color:var(--muted); }
 .game-board-stats .game-session-score > .game-score-clock { grid-column:1 / -1; text-align:center; }
+.game-score-side { display:block; }
+/* Tight identities place current-board counters directly below name and side. */
+.game-board-stats .game-score-card.game-tight-identity { row-gap:0; }
+.game-board-stats .game-score-card.game-tight-identity > p { margin-bottom:0; }
+.game-current-stats.game-tight-identity .game-stat-grid { margin-top:0; }
 @media (max-width:400px) {
  .game-board-stats .game-session-score:has(.game-score-identity) { grid-template-columns:repeat(2,minmax(0,1fr)); }
  .game-board-stats .game-session-score:has(.game-score-identity) > .game-score-detail { grid-column:2; text-align:right; font-size:.7rem; line-height:1.2; }

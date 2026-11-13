@@ -452,6 +452,11 @@ func _ready() -> void:
 	var example_score := screen.add_score_card(layout.sidebar, null, GameLook.RED, "ledger")
 	# "ledger" adds a framed ivory sheet with safe 24px content insets;
 	# returned name/score/content/underline properties keep the same contract.
+	# Optional module frame; reload through the same hook on live skin changes.
+	screen.set_score_card_artwork(example_score, RuntimeAssets.texture("res://ui/playful/score-ledger.svg"))
+	# A third true argument removes reserved identity height and tightens counters.
+	# Hide empty feedback Labels so they reserve no row.
+	screen.set_score_card_current_game(example_score, false, true)
 	example_score.player.text = "PLAYER"
 	# "ornate" adds a carved parchment card with laurel wins. Additional counters:
 	# screen.add_score_stat(card, RuntimeAssets.texture("res://ui/playful/stat-walls.svg"), "10 WALLS").
