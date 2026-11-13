@@ -181,6 +181,7 @@
         const container = this.board.closest(".game-controller");
         const centered = container.classList.contains("game-centered-controller");
         const centeredBoard = container.classList.contains("game-board-centered");
+        const fillSpace = centeredBoard && container.classList.contains("game-board-fill-space");
         const playfield = this.board.closest(".game-playfield");
         const style = getComputedStyle(container);
         const boardController = container.classList.contains("game-board-controller");
@@ -191,14 +192,17 @@
           ? this.stats.getBoundingClientRect().height + parseFloat(style.rowGap || 0) + 8
           : 0);
         const naturalTop = this.board.getBoundingClientRect().top - (centeredBoard ? parseFloat(getComputedStyle(playfield).paddingTop) : 0);
-        const availableHeight = centeredBoard
+        const bottom = innerHeight - room - footer - parseFloat(style.paddingBottom);
+        const availableHeight = fillSpace
+          ? bottom - naturalTop
+          : centeredBoard
           ? 2 * Math.min(innerHeight / 2 - naturalTop, innerHeight / 2 - room - footer - parseFloat(style.paddingBottom))
           : centered
           ? innerHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom) - room
           : innerHeight - this.board.getBoundingClientRect().top - room - footer - (boardController ? parseFloat(style.paddingBottom) : 0);
         const availableWidth = sideStats ? container.clientWidth - 2 * (this.stats.getBoundingClientRect().width + 24) : this.board.parentElement.clientWidth;
         const limit = Math.floor(Math.min(availableWidth, Math.max(boardController ? 44 : 160, availableHeight * ratio)));
-        if (centeredBoard) playfield.style.setProperty("--game-board-top-room", Math.max(0, innerHeight / 2 - limit / ratio / 2 - naturalTop) + "px");
+        if (centeredBoard) playfield.style.setProperty("--game-board-top-room", Math.max(0, (fillSpace ? (naturalTop + bottom) / 2 : innerHeight / 2) - limit / ratio / 2 - naturalTop) + "px");
         if (this.board.style.maxWidth === limit + "px") break;
         this.board.style.maxWidth = limit + "px";
         this.replay.style.maxWidth = boardController && this.replay.hasAttribute("data-game-inline-action") ? "" : limit + "px";

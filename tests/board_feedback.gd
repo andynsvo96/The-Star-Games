@@ -115,5 +115,22 @@ func _run() -> void:
 	check(preview_check.visual.global_position.is_equal_approx(Vector2(130,30)), "A completed demonstration stays at its destination")
 	holder.queue_free()
 	await process_frame
+	var fit_holder := Control.new(); root.add_child(fit_holder); fit_holder.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var fitted := GameScreen.new(); fit_holder.add_child(fitted); fitted.configure("Fit fixture"); fitted.scores.hide(); fitted.status.hide()
+	var board := Control.new(); board.custom_minimum_size = Vector2(180,180); fitted.content.add_child(board)
+	var replay := Button.new(); replay.text = "Play again"; replay.custom_minimum_size.y = 44; fitted.content.add_child(replay)
+	fitted.center_board(board,replay)
+	for frame in 8: await process_frame
+	var centered_limit := fitted.board_height_limit()
+	fitted.fit_board_to_space()
+	for frame in 8: await process_frame
+	var top := fitted._board_top_margin() + fitted._board_header_height()
+	var bottom := fitted.available_size().y - 24 - replay.get_combined_minimum_size().y
+	check(fitted.board_height_limit() >= centered_limit and is_equal_approx(fitted.board_height_limit(),bottom-top), "Available-space fitting uses the complete height between heading and reserved actions")
+	check(is_equal_approx(fitted._board_center_y(),(top+bottom)/2), "Available-space fitting keeps shared centering between actual obstructions")
+	var reserved_limit := fitted.board_height_limit(); replay.hide()
+	for frame in 8: await process_frame
+	check(is_equal_approx(fitted.board_height_limit(),reserved_limit), "Hidden replay retains its space in an expanded board composition")
+	fit_holder.queue_free(); await process_frame
 	print("Board feedback: %d checks, %d failures" % [checks, failures])
 	quit(0 if failures == 0 else 1)

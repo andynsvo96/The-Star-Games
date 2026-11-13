@@ -507,6 +507,8 @@ func _ready() -> void:
 	screen.add_history_log(screen.add_details(layout.left_sidebar, "HISTORY", "scroll")).text = "No completed rounds yet."
 	# Add game-specific controls to layout.playfield.
 	# Board games call screen.center_board(board_frame, replay_button) once built.
+	# Optional screen.fit_board_to_space() then fills the usable area between
+	# heading and reserved actions. Keep resizing from board_height_limit().
 	# An optional third argument places setup controls in that reserved slot:
 	# screen.center_board(board_frame, replay_button, deployment_controls).
 	# Optional fourth argument sets a shared vertical focus (default 0.5):

@@ -281,6 +281,17 @@ can temporarily exceed the host bounds during wrapping. The shared layout also
 reserves space for its vertical scrollbar.
 Its balanced, reserved gutter keeps that center fixed when supplementary panels expand.
 
+For a board that should use spare space below an asymmetric heading, call
+`screen.fit_board_to_space()` after `center_board`. It fits and centers within
+the area between the measured heading and reserved actions, retaining the same
+width limits, sidebars and replay reservation. Continue sizing from
+`board_height_limit()` and `board_width_limit()`; do not add local offsets.
+Existing games keep screen-midpoint centering unless they opt in. Browser
+`game-board-fill-space` alongside `game-board-centered` selects the matching
+SDK behavior, including measured bottom stats and short-landscape side controls.
+The template documents both opt-ins. Classic Chess, Chess960 and Free for All
+use this composition; Crazyhouse and Bughouse keep their established layout.
+
 Card tables with a private hand below the public field can opt into centering the
 heading and complete table together with
 `screen.center_board(table, replay_button, null, 0.5, false, true)`. The sixth

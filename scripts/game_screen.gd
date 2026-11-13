@@ -22,6 +22,7 @@ var _board_limit := -1.0
 var _board_width_limit := -1.0
 var _board_center_ratio := 0.5
 var _board_center_heading := false
+var _board_fill_space := false
 var _board_auxiliary: Control
 var _board_reserve_auxiliary := false
 var _board_wide_auxiliary := false
@@ -137,6 +138,10 @@ func _board_header_height() -> float:
 
 
 func _board_center_y() -> float:
+	if _board_fill_space:
+		var top := _board_top_margin() + _board_header_height()
+		var bottom := maxf(top, available_size().y - 24 - _board_action_height())
+		return (top + bottom) / 2.0
 	# Card tables can center their heading and complete playfield together while
 	# retaining the same replay reservation and responsive fitting as other games.
 	if _board_bottom_auxiliary:
@@ -146,16 +151,27 @@ func _board_center_y() -> float:
 	return available_size().y * _board_center_ratio + (_board_header_height() / 2 if _board_center_heading else 0.0)
 
 
+func fit_board_to_space() -> void:
+	# Center within the usable area between heading and reserved actions, allowing
+	# larger boards when those two areas have unequal heights. Other callers keep
+	# the existing screen-centered composition.
+	_board_fill_space = true
+	board_space_changed.emit()
+
+
+func _board_action_height() -> float:
+	var height := _replay_slot.custom_minimum_size.y
+	if _board_details != null:
+		height += _details_actions.get_combined_minimum_size().y + 8
+	return height
+
+
 func board_height_limit() -> float:
 	if _board_layout == null:
 		return available_size().y - 128.0
 	var center := _board_center_y()
 	var above := center - _board_top_margin() - _board_header_height()
-	var action_height := _replay_slot.custom_minimum_size.y
-	if _board_details != null:
-		# Reserve replay height even while its row is hidden, without leaving a
-		# horizontal hole between the options and history panels.
-		action_height += _details_actions.get_combined_minimum_size().y + 8
+	var action_height := _board_action_height()
 	var below := available_size().y - center - 16.0 - action_height - 8.0
 	return maxf(0.0, minf(above, below) * 2.0)
 

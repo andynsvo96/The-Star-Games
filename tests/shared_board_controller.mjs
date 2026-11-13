@@ -274,6 +274,12 @@ const assertions = `
 			check(document.documentElement.scrollHeight<=innerHeight+1&&document.documentElement.scrollWidth<=innerWidth+1,caption+': no page scroll');
 		};
 		await settle();centeredFits('Two-seat centered view');
+		const centeredSize=centeredBoard.getBoundingClientRect().width;
+		centered.classList.add('game-board-fill-space');centeredLayout.refresh();await settle();
+		const filled=centeredBoard.getBoundingClientRect();
+		check(filled.width>=centeredSize-1&&filled.top>=0&&filled.bottom<=innerHeight,'Available-space fitting enlarges or retains the board within the viewport');
+		const settledFill=filled.top;await settle();check(Math.abs(centeredBoard.getBoundingClientRect().top-settledFill)<1,'Available-space fit remains stable after layout');
+		centered.classList.remove('game-board-fill-space');centeredLayout.refresh();await settle();
 		const help=centered.querySelector('.game-help-button').getBoundingClientRect(),logo=centered.querySelector('.game-title-art').getBoundingClientRect();
 		check(help.width>=44&&help.height>=44&&help.top<=12&&help.right>=innerWidth-12,'Corner help has a full target');
 		check(logo.height>=(innerWidth>innerHeight&&innerHeight<=560?64:100),'Centered title is prominent');

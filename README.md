@@ -108,6 +108,9 @@ board artwork, matching player panels, title, skins and saved preferences.
 Pieces and stat icons retain Classic's untinted ivory/ebony finish; Free for All
 adds small colored shape markers for its four armies. Player names/side labels
 lead directly into counters, with turn glows replacing routine turn text.
+Classic, Chess960 and Free for All use more of the available board area.
+Settings offers independent saved Board coordinates beneath Guided gameplay,
+with readable labels on every board, including both Bughouse boards.
 Solo hosts can select
 any mode, with three computers filling Bughouse and Free for All. One/two-phone
 parties can play the three two-seat modes; three or four connected phones open
