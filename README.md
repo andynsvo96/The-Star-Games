@@ -111,11 +111,18 @@ Host white ghost suggestions guide phone players
 without moving their pieces. Coaching is limited to one human against the computer;
 two-phone scoring, replay color swaps and offline reconnection remain supported.
 
+The local **Fantasy** skin is available in every Chess mode under
+**Settings > Appearance > Skin**. It adds chibi humanoid pieces and matching
+icons, role-specific movement/capture effects, and host-only sound effects.
+Free for All has four army palettes. Each mode retains its existing scenery,
+board, title and rules; reduced motion places pieces immediately. Fantasy media
+and its dependent tests remain local with the playable modules.
+
 Chess opens its remembered eligible mode through a single collection entry.
 Host **Settings > Game mode** selects Classic Chess, Chess960 (Fischer Random),
 Crazyhouse, Bughouse or Free for All. Every mode has independent scenery,
 board artwork, matching player panels, title, skins and saved preferences.
-Pieces and stat icons retain Classic's untinted ivory/ebony finish; Free for All
+Default pieces and stat icons retain Classic's ivory/ebony finish; Free for All
 adds small colored shape markers for its four armies. Player names/side labels
 lead directly into counters, with turn glows replacing routine turn text.
 Classic, Chess960 and Free for All use more of the available board area.

@@ -11,6 +11,7 @@ var last_error := ""
 var definitions_root := "res://Games"
 var module_folder := ""
 var relative_folder := ""
+var theme_media_folders: Array[String] = []
 
 
 func _init(id := "", custom_definitions_root := "") -> void:
@@ -28,6 +29,12 @@ func _init(id := "", custom_definitions_root := "") -> void:
 			source_folders[owner] = "res://Games/" + folder.trim_prefix(definitions_root.trim_suffix("/") + "/")
 		var value: Variant = _read(module_folder.path_join("theme-slots.json"))
 		if value is Dictionary and value.get("schema_version") == 1 and value.get("slots") is Array:
+			# Bundled families may share immutable skin media outside removable modes.
+			# Only trusted definitions grant access; a pack cannot grant itself roots.
+			if value.get("theme_media_sources") is Array:
+				for source in value.theme_media_sources:
+					if source is String and source_folders.has(source) and source != id:
+						theme_media_folders.append(str(source_folders[source]).trim_prefix("res://"))
 			if value.get("presentation", "") in ["card-table", "modern-table"]:
 				presentation = value.presentation
 			if value.get("preview_kind", "") in ["cards", "portfolio", "assets"]:
@@ -84,7 +91,11 @@ func load_pack(id: String) -> Dictionary:
 	var allowed: Array = slots.map(func(slot: Dictionary) -> String: return slot.id)
 	for key in pack.get("assets", {}):
 		var file: Variant = pack.assets[key]
-		if not key in allowed or not file is String or not RuntimeAssets.safe_media_path(file) or not file.begins_with(relative_folder.path_join("themes/%s/media/" % id)): return {}
+		if not key in allowed or not file is String or not RuntimeAssets.safe_media_path(file): return {}
+		var permitted: bool = file.begins_with(relative_folder.path_join("themes/%s/media/" % id))
+		for folder in theme_media_folders:
+			if file.begins_with(folder.path_join("themes/%s/media/" % id)): permitted = true
+		if not permitted: return {}
 		if not _safe(file): return {}
 		if not FileAccess.file_exists(RuntimeAssets.root_folder().path_join(file)) and not FileAccess.file_exists("res://" + file): return {}
 		var physical := RuntimeAssets.root_folder().path_join(file)

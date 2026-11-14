@@ -151,6 +151,35 @@ func _run() -> void:
 	check(ThemePacks.snapshot("skin-fixture").revision == revision, "Saving an edit leaves a running skin revision pinned")
 	var file := FileAccess.open(runtime.path_join(str(pack.assets.piece)), FileAccess.WRITE); file.store_string("corrupt"); file.close()
 	check(manager.pin("blue-skin").id == "default", "Missing or corrupt skin media falls back to Default")
+	# A trusted collection can hold one immutable skin library for removable modes.
+	write(definitions.path_join("skin-shared/theme-slots.json"), JSON.stringify({"schema_version":1,"slots":[]}))
+	var trusted: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(module.path_join("theme-slots.json")))
+	trusted["theme_media_sources"] = ["skin-shared"]
+	write(module.path_join("theme-slots.json"), JSON.stringify(trusted))
+	var shared_manager := ThemePacks.new("skin-fixture", definitions)
+	var signature := FileAccess.get_sha256(fixture.path_join("custom.png")).substr(0,24)
+	var shared_path := "Games/skin-shared/themes/blue-skin/media/piece-%s.png" % signature
+	DirAccess.make_dir_recursive_absolute(runtime.path_join(shared_path).get_base_dir())
+	RuntimeAssets.copy_file(fixture.path_join("custom.png"), runtime.path_join(shared_path))
+	var shared_pack := {"schema_version":1,"id":"blue-skin","name":"Shared blue", "assets":{"piece":shared_path},"labels":{}}
+	write(runtime.path_join("Games/skin-fixture/themes/blue-skin/theme.json"), JSON.stringify(shared_pack))
+	check(not shared_manager.load_pack("blue-skin").is_empty(), "Trusted family media validates without duplicating a child's artwork")
+	shared_manager.pin("blue-skin")
+	check(RuntimeAssets.texture("res://Games/skin-fixture/art/piece.svg").get_width() == 44, "A child resolves shared content-addressed skin media")
+	var copied := shared_manager.duplicate_pack("blue-skin", "Independent copy")
+	check(copied.ok and str(copied.pack.assets.piece).begins_with("Games/skin-fixture/themes/independent-copy/media/"), "Editor duplication makes an independent writable pack")
+	trusted.erase("theme_media_sources")
+	write(module.path_join("theme-slots.json"), JSON.stringify(trusted))
+	check(ThemePacks.new("skin-fixture", definitions).load_pack("blue-skin").is_empty(), "A pack cannot grant itself access to another module's media")
+	trusted["theme_media_sources"] = ["skin-shared"]
+	write(module.path_join("theme-slots.json"), JSON.stringify(trusted))
+	shared_pack.assets.piece = shared_path.replace("/blue-skin/", "/other-skin/")
+	write(runtime.path_join("Games/skin-fixture/themes/blue-skin/theme.json"), JSON.stringify(shared_pack))
+	check(shared_manager.load_pack("blue-skin").is_empty(), "Shared sources do not grant access to another pack's directory")
+	shared_pack.assets.piece = shared_path
+	write(runtime.path_join("Games/skin-fixture/themes/blue-skin/theme.json"), JSON.stringify(shared_pack))
+	write(runtime.path_join(shared_path), "corrupt")
+	check(shared_manager.pin("blue-skin").id == "default", "Shared immutable media still rejects corrupt bytes")
 	ThemePacks.unpin("skin-fixture"); editor.queue_free(); app.queue_free()
 	for frame in 6: await process_frame
 	RuntimeAssets.root_override = ""; RuntimeAssets.refresh()

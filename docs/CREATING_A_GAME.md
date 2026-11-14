@@ -3074,6 +3074,16 @@ variant still owns its pack directory, saved selection and revision. A custom
 pack cannot declare new sources or slots. Poker's two local variants demonstrate
 this opt-in; never duplicate shared rules or media just to make another skin.
 
+For a family skin shared by removable modes, trusted slot definitions may also
+declare `"theme_media_sources": ["collection-id"]` (the template defaults to
+an empty array). A named pack may reference content-addressed media in that
+installed module's `themes/<same-pack-id>/media/` directory. Keep the masters and
+shared runtime files in the parent, with a small independent manifest per mode.
+Slot IDs, SHA-256 filename checks, file kinds, safe paths and link rejection still
+apply. Pack manifests cannot grant sources; undeclared modules, another pack's
+directory and scripts remain invalid. Editor duplication copies shared media
+into the new pack's own directory, so subsequent edits remain independent.
+
 `ThemePacks.new(game_id)` discovers/validates packs, groups slots, duplicates packs,
 prepares content-addressed media, saves metadata with backups/rollback, and pins
 an immutable validated manifest via `pin(id)`. Custom `assets` map slot IDs to safe
