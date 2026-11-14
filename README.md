@@ -155,7 +155,10 @@ after replay swaps, and show reserve icons with compact board labels. Solo
 Bughouse boards face the host and partner with their pieces at the bottom.
 Bughouse's saved computer difficulty also controls pacing: Easy 4.5 seconds,
 Medium 3 seconds and Hard 2 seconds, measured after settled movement.
-Free for All uses a four-sided cross board and last king standing. Mode changes
+Free for All uses a four-sided cross board and last king standing. Its host and
+phone boards use CATAN's drag-to-pan and scroll/pinch-to-zoom controls across the
+screen, with Home to fit. Tap a piece and its destination to move; camera
+gestures never move pieces. Mode changes
 start fresh boards and retain completed per-mode totals until leaving Chess;
 offline admitted players must reconnect before switching. These playable modules,
 their artwork and dependent tests remain local.

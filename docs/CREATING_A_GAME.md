@@ -2176,7 +2176,12 @@ does not invalidate a valid command. Adding captured stock changes its partner
 board's ticket. Both boards share pause/results lifecycle; one team result ends
 the complete game. Free for All rotates four armies on a 160-square cross board
 and removes an army on checkmate, stalemate or a flag. The last surviving king
-wins; eliminated phones spectate. Its phones reuse the shared board camera.
+wins; eliminated phones spectate. Host and phones reuse CATAN's shared board
+camera and full-screen canvas: drag pans, scroll/pinch zooms, and Home fits.
+Tap a piece then its destination to play; map gestures never submit a move.
+Keep the fitted anchor and fixed navigation/player controls separate from the
+moving artwork. Snapshots, help/settings, resize and reconnect retain the view;
+a fresh board restores its fit.
 
 Local coverage adds `tests/chess_variants.gd`, `chess_three_players.gd`,
 `chess_solo_variants.gd`, `chess_variants_motion.gd`,
