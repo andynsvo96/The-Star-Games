@@ -122,9 +122,11 @@ and its dependent tests remain local with the playable modules.
 
 **Chibi Adventures** is the third local Chess skin in that same selector across
 all five modes. Original MapleStory-inspired 2D characters have oversized heads,
-expressive faces and distinct outfits for all six pieces. White/Black and four-army
-palettes also appear in counters, promotions, reserves and tutorials. The skin
-uses the existing board, scenery and standard movement, with live switching,
+expressive faces and distinct outfits for all six pieces. Each faction has its
+own character designs: cheerful ivory adventurers, angry gothic villains, fiery
+red warriors, blue frost elves, golden desert beastfolk and green woodland fae.
+Their characters also appear in counters, promotions, reserves and tutorials.
+The skin uses the existing board, scenery and standard movement, with live switching,
 reconnection and reduced motion supported. Its media, prompts and dependent tests
 remain local with the playable modules.
 
