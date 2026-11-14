@@ -171,7 +171,7 @@ func _process(_delta: float) -> void:
 		loading_index = -1
 		packs = result.packs
 		_set_loading(false)
-		var accepted := str(settings_store.load_settings(manager.game_id, {"theme": "default"}).theme)
+		var accepted := manager.selected_id(settings_store)
 		_apply_theme(accepted)
 		if games.has(initial_game_id) and initial_game_id != manager.game_id:
 			var next_index := games.find(initial_game_id)
@@ -392,7 +392,7 @@ func _changed() -> void:
 	discard_button.disabled = draft == original
 	restore_button.disabled = draft.get("id") == "default"
 	var accepted: Dictionary = {}
-	var accepted_id := str(settings_store.load_settings(manager.game_id, {"theme": "default"}).theme)
+	var accepted_id := manager.selected_id(settings_store)
 	for pack in packs:
 		if pack.id == accepted_id: accepted = pack
 	if accepted.is_empty() and not packs.is_empty(): accepted = packs[0]
@@ -404,7 +404,7 @@ func _changed() -> void:
 
 func _use_skin() -> void:
 	if use_button.disabled or manager.load_pack(str(original.get("id", ""))).is_empty(): return
-	if settings_store.save_settings(manager.game_id, {"theme": original.id}):
+	if manager.save_selection(settings_store, str(original.id)):
 		_changed(); notice.text = "%s selected for the next launch." % original.name
 	else: notice.text = settings_store.last_error
 

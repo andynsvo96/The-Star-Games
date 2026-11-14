@@ -15,7 +15,7 @@ func configure(game: BaseGame, packs: ThemePacks = null) -> void:
 	fit_to_longest_item = false
 	text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	if ThemePacks.snapshot(manager.game_id).is_empty():
-		manager.pin(str(host.load_game_settings({"theme": "default"}).theme))
+		manager.pin(str(host.load_game_settings({"theme": "default"}).theme) if host.session.debug_mode else manager.selected_id(host.settings_store))
 	_refresh()
 	get_popup().about_to_popup.connect(_refresh)
 	item_selected.connect(func(index: int) -> void: select_skin(str(get_item_metadata(index))))
@@ -24,7 +24,7 @@ func configure(game: BaseGame, packs: ThemePacks = null) -> void:
 func _refresh() -> void:
 	clear()
 	var current := str(ThemePacks.snapshot(manager.game_id).get("id", "default"))
-	for pack in manager.list_packs():
+	for pack in manager.list_packs(true):
 		add_item(str(pack.name))
 		set_item_metadata(item_count - 1, pack.id)
 		if pack.id == current: select(item_count - 1)
@@ -36,13 +36,14 @@ func select_skin(id: String) -> bool:
 	if pack.is_empty():
 		_refresh()
 		return false
+	var saved := host.save_game_settings({"theme": id}) if host.session.debug_mode else manager.save_selection(host.settings_store, id)
+	if not saved:
+		_refresh()
+		return false
 	if ThemePacks.snapshot(manager.game_id).get("revision", "") == pack.revision:
 		_refresh()
 		return true
-	if not host.save_game_settings({"theme": id}):
-		_refresh()
-		return false
-	manager.pin(id)
+	manager.pin(id, true)
 	_refresh()
 	skin_changed.emit()
 	return true

@@ -607,8 +607,7 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 		active_game.queue_free()
 	# Pin before instantiation: module member initializers and _ready load art.
 	var skins := ThemePacks.new(str(game.id), game_catalog.games_root)
-	var skin_settings := game_settings_store.load_settings(str(game.id), {"theme": "default"})
-	skins.pin(str(skin_settings.theme))
+	skins.pin(skins.selected_id(game_settings_store))
 	var instance := packed.instantiate()
 	if not instance is BaseGame:
 		instance.queue_free()

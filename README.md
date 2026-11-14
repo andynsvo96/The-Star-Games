@@ -120,7 +120,7 @@ Free for All has four army palettes. Each mode retains its existing scenery,
 board, title and rules; reduced motion places pieces immediately. Fantasy media
 and its dependent tests remain local with the playable modules.
 
-**Chibi Adventures** is the third local Chess skin in that same selector across
+**Chibi** is the third local Chess skin in that same selector across
 all five modes. Original MapleStory-inspired 2D characters have oversized heads,
 expressive faces and distinct outfits for all six pieces. Each faction has its
 own character designs: cheerful ivory adventurers, angry gothic villains, fiery
@@ -133,7 +133,10 @@ remain local with the playable modules.
 Chess opens its remembered eligible mode through a single collection entry.
 Host **Settings > Game mode** selects Classic Chess, Chess960 (Fischer Random),
 Crazyhouse, Bughouse or Free for All. Every mode has independent scenery,
-board artwork, matching player panels, title, skins and saved preferences.
+board artwork, matching player panels, title and gameplay preferences. Choosing a
+skin applies across all five Chess modes and is remembered across launches.
+The skin menu reuses validation for unchanged media, and live switching reuses
+already loaded artwork to reduce pauses.
 Default pieces and stat icons retain Classic's ivory/ebony finish; Free for All
 adds small colored shape markers for its four armies. Player names/side labels
 lead directly into counters, with turn glows replacing routine turn text.
@@ -204,7 +207,8 @@ keeps the game's current appearance; missing custom slots inherit it. Battleship
 top-right **Settings** button beside music contains a live **Skin** selector and
 one **Special Powers** house rule, off by default. Skin changes apply immediately
 on the host and connected phones, preserving the current battle. Monopoly's existing
-in-game skin selectors remain available. Skin choices are saved per game.
+in-game skin selectors remain available. Skin choices are saved per game;
+Chess shares one choice across its five modes.
 The host can change Battleship's Special Powers rule at any time; changing it
 during battle restarts fleet setup and preserves completed session wins/history.
 

@@ -125,6 +125,8 @@ func _run() -> void:
 	var title := screen.add_title_art(app.active_game.piece, 80, true, false, true)
 	var selector := screen.add_skin_selector(app.active_game, manager)
 	var changes: Array = []
+	var unchanged_texture := RuntimeAssets.texture("res://Games/skin-fixture/art/untouched.svg")
+	var custom_texture: Texture2D = app.active_game.piece
 	selector.skin_changed.connect(func() -> void:
 		changes.append(ThemePacks.snapshot("skin-fixture").id)
 		app.active_game.piece = RuntimeAssets.texture("res://Games/skin-fixture/art/piece.svg")
@@ -136,6 +138,7 @@ func _run() -> void:
 	response = await request("/game/skin-fixture/art/piece.svg?theme=default")
 	check(response.status == 200 and response.headers.contains("image/svg+xml"), "Live Default restores the original artwork through real HTTP")
 	check(selector.select_skin("blue-skin") and app.active_game.piece.get_width() == 44 and changes == ["default", "blue-skin"], "A custom skin can be reapplied without recreating the host")
+	check(app.active_game.piece == custom_texture and RuntimeAssets.texture("res://Games/skin-fixture/art/untouched.svg") == unchanged_texture, "Live switching reuses resolved textures and unchanged inherited artwork")
 	check(selector.select_skin("blue-skin") and changes.size() == 2 and not selector.select_skin("missing-skin") and ThemePacks.snapshot("skin-fixture").id == "blue-skin", "Unchanged and invalid selections preserve the current skin and do not reload effects")
 	check(store.load_settings("skin-fixture", {"theme":"default","difficulty":0}) == {"theme":"blue-skin","difficulty":2}, "Live selection persists independently of other host preferences")
 	app.active_game.settings_store = FailingSettings.new()
@@ -149,8 +152,10 @@ func _run() -> void:
 	var pinned := manager.pin("blue-skin"); var revision: String = pinned.revision
 	var saved := pack.duplicate(true); saved.name = "Edited blue skin"; manager.save_pack(saved)
 	check(ThemePacks.snapshot("skin-fixture").revision == revision, "Saving an edit leaves a running skin revision pinned")
+	check(manager.list_packs(true).any(func(item: Dictionary) -> bool: return item.id == "blue-skin" and item.name == "Edited blue skin"), "Cached menus discover edited manifests")
 	var file := FileAccess.open(runtime.path_join(str(pack.assets.piece)), FileAccess.WRITE); file.store_string("corrupt"); file.close()
 	check(manager.pin("blue-skin").id == "default", "Missing or corrupt skin media falls back to Default")
+	check(not manager.list_packs(true).any(func(item: Dictionary) -> bool: return item.id == "blue-skin"), "A cached menu drops a pack whose media changed")
 	# A trusted collection can hold one immutable skin library for removable modes.
 	write(definitions.path_join("skin-shared/theme-slots.json"), JSON.stringify({"schema_version":1,"slots":[]}))
 	var trusted: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(module.path_join("theme-slots.json")))
@@ -166,6 +171,11 @@ func _run() -> void:
 	check(not shared_manager.load_pack("blue-skin").is_empty(), "Trusted family media validates without duplicating a child's artwork")
 	shared_manager.pin("blue-skin")
 	check(RuntimeAssets.texture("res://Games/skin-fixture/art/piece.svg").get_width() == 44, "A child resolves shared content-addressed skin media")
+	var bytes := FileAccess.get_file_as_bytes(runtime.path_join(shared_path))
+	var damaged := bytes.duplicate(); damaged[0] = 0
+	FileAccess.open(runtime.path_join(shared_path), FileAccess.WRITE).store_buffer(damaged)
+	check(shared_manager.load_pack("blue-skin").is_empty(), "Strict selection rejects same-size corruption after successful cached decoding")
+	FileAccess.open(runtime.path_join(shared_path), FileAccess.WRITE).store_buffer(bytes)
 	var copied := shared_manager.duplicate_pack("blue-skin", "Independent copy")
 	check(copied.ok and str(copied.pack.assets.piece).begins_with("Games/skin-fixture/themes/independent-copy/media/"), "Editor duplication makes an independent writable pack")
 	trusted.erase("theme_media_sources")
@@ -180,8 +190,42 @@ func _run() -> void:
 	write(runtime.path_join("Games/skin-fixture/themes/blue-skin/theme.json"), JSON.stringify(shared_pack))
 	write(runtime.path_join(shared_path), "corrupt")
 	check(shared_manager.pin("blue-skin").id == "default", "Shared immutable media still rejects corrupt bytes")
+	_test_selection_owner(module)
 	ThemePacks.unpin("skin-fixture"); editor.queue_free(); app.queue_free()
 	for frame in 6: await process_frame
 	RuntimeAssets.root_override = ""; RuntimeAssets.refresh()
 	print("Skin framework: %d checks, %d failures" % [checks, failures])
 	quit(1 if failures else 0)
+
+
+func _test_selection_owner(module: String) -> void:
+	var family := definitions.path_join("skin-family")
+	var child := family.path_join("first")
+	var second := family.path_join("second")
+	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(module.path_join("game.json")))
+	manifest.id = "skin-family"
+	manifest.game_choices = [{"id":"skin-first","title":"First","folder":"first"},{"id":"skin-second","title":"Second","folder":"second"}]
+	write(family.path_join("game.json"), JSON.stringify(manifest))
+	for entry in [[child,"skin-first"],[second,"skin-second"]]:
+		var child_manifest := manifest.duplicate(true); child_manifest.id = entry[1]; child_manifest.erase("game_choices")
+		write(str(entry[0]).path_join("game.json"), JSON.stringify(child_manifest))
+		write(str(entry[0]).path_join("theme-slots.json"), JSON.stringify({"schema_version":1,"selection_owner":"skin-family","slots":[{"id":"piece","label":"Piece","group":"Art","kind":"image","path":"Games/skin-family/%s/piece.svg" % str(entry[0]).get_file()}]}))
+		write(str(entry[0]).path_join("themes/default/theme.json"), JSON.stringify({"schema_version":1,"id":"default","name":"Default","assets":{},"labels":{}}))
+	var first := ThemePacks.new("skin-first", definitions)
+	var other := ThemePacks.new("skin-second", definitions)
+	var store := GameSettingsStore.new(fixture.path_join("family-settings"))
+	store.save_settings("skin-first", {"theme":"legacy", "difficulty":2})
+	store.save_settings("skin-second", {"theme":"other-legacy", "difficulty":0})
+	store.save_settings("skin-family", {"gamemode":"skin-second"})
+	check(first.selection_owner == "skin-family" and other.selection_owner == "skin-family", "Declared children may share their parent's skin preference")
+	check(first.selected_id(store) == "legacy" and other.selected_id(store) == "other-legacy", "Existing per-mode choices remain fallback preferences until the first shared selection")
+	check(first.save_selection(store, "default") and other.selected_id(store) == "default", "A choice in one child applies to its sibling")
+	check(other.save_selection(store, "shared") and first.selected_id(GameSettingsStore.new(store.directory)) == "shared", "A choice in the second child survives a new store")
+	check(store.load_settings("skin-first", {"difficulty":1}).difficulty == 2 and store.load_settings("skin-second", {"difficulty":1}).difficulty == 0 and store.load_settings("skin-family", {"gamemode":""}).gamemode == "skin-second", "Shared cosmetics preserve child gameplay and parent mode preferences")
+	check(not first.save_selection(FailingSettings.new(), "default") and first.selected_id(store) == "shared", "A failed shared preference save preserves the accepted choice")
+	check(first.pin(first.selected_id(store)).get("id") == "default" and first.selected_id(store) == "shared", "An unavailable family skin falls back without overwriting the shared preference")
+	ThemePacks.unpin("skin-first")
+	var definition: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(child.path_join("theme-slots.json")))
+	definition.selection_owner = "skin-fixture"
+	write(child.path_join("theme-slots.json"), JSON.stringify(definition))
+	check(ThemePacks.new("skin-first", definitions).selection_owner == "skin-first", "A skin definition cannot redirect preferences to an unrelated game")

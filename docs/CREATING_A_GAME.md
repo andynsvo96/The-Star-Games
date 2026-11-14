@@ -3084,6 +3084,16 @@ apply. Pack manifests cannot grant sources; undeclared modules, another pack's
 directory and scripts remain invalid. Editor duplication copies shared media
 into the new pack's own directory, so subsequent edits remain independent.
 
+Collection children may set `"selection_owner": "collection-id"` in their trusted
+slot definitions to share one accepted skin choice across modes. The owner must
+be their installed parent; packs cannot declare it. The launcher, live selector
+and editor's **Use skin** read/write only that parent's `theme` preference,
+preserving each child's gameplay preferences and the parent's remembered mode.
+Until a shared choice is saved, a child's previous selection remains its fallback.
+Selecting an already-active skin also establishes the shared preference. A mode
+without that pack uses Default without overwriting the shared choice. Empty or
+omitted `selection_owner` retains independent per-game selection, as in the template.
+
 `ThemePacks.new(game_id)` discovers/validates packs, groups slots, duplicates packs,
 prepares content-addressed media, saves metadata with backups/rollback, and pins
 an immutable validated manifest via `pin(id)`. Custom `assets` map slot IDs to safe
@@ -3112,7 +3122,12 @@ canonical paths, reload the shared background, then publish the normal filtered
 snapshots. Preserve rules, revisions, timers, preferences, held controls and
 running motion; leave the selector available through setup, play and results.
 Invalid selections and failed preference saves retain the current skin. Opening
-the dropdown refreshes available packs. Hidden template code demonstrates this
+the dropdown refreshes available packs, reusing validated manifests while their
+media paths, sizes and modification times remain unchanged. Explicit selection
+still verifies every media SHA-256; successful media decoding is reused by content
+hash, including shared family artwork. Live switching retains textures by resolved
+source until session unpinning, avoiding reloading unchanged scenery and previously
+used pieces. Hidden template code demonstrates this
 callback; Battleship mounts the same selector inside Settings. Existing staged selectors keep their policy.
 Battleship's local Age of Sail pack demonstrates a complete cosmetic overhaul
 using these same slots: ship/power labels, boards, sections, title, background,

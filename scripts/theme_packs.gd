@@ -3,7 +3,10 @@ extends RefCounted
 
 # Shared, cosmetic-only packs. A game pins an immutable manifest until replay.
 static var active: Dictionary = {}
+static var _inspected_media: Dictionary = {}
+static var _inspection_mutex := Mutex.new()
 var game_id := ""
+var selection_owner := ""
 var slots: Array = []
 var presentation := "card-table"
 var preview_kind := "cards"
@@ -12,10 +15,12 @@ var definitions_root := "res://Games"
 var module_folder := ""
 var relative_folder := ""
 var theme_media_folders: Array[String] = []
+var _validated_packs: Dictionary = {}
 
 
 func _init(id := "", custom_definitions_root := "") -> void:
 	game_id = id
+	selection_owner = id
 	if not custom_definitions_root.is_empty(): definitions_root = custom_definitions_root
 	# Preserve legacy packs while allowing new modules to declare their preview.
 	if id == "monopoly-deal": presentation = "modern-table"
@@ -29,6 +34,10 @@ func _init(id := "", custom_definitions_root := "") -> void:
 			source_folders[owner] = "res://Games/" + folder.trim_prefix(definitions_root.trim_suffix("/") + "/")
 		var value: Variant = _read(module_folder.path_join("theme-slots.json"))
 		if value is Dictionary and value.get("schema_version") == 1 and value.get("slots") is Array:
+			# A declared child can share only its installed parent's cosmetic choice.
+			var owner := str(value.get("selection_owner", ""))
+			if folders.has(owner) and module_folder.begins_with(str(folders[owner]).trim_suffix("/") + "/"):
+				selection_owner = owner
 			# Bundled families may share immutable skin media outside removable modes.
 			# Only trusted definitions grant access; a pack cannot grant itself roots.
 			if value.get("theme_media_sources") is Array:
@@ -65,7 +74,7 @@ static func valid_id(value: String) -> bool:
 	return true
 
 
-func list_packs() -> Array:
+func list_packs(reuse_validated := false) -> Array:
 	var result: Array = []
 	var ids: Array = ["default"]
 	for folder in [module_folder.path_join("themes"), RuntimeAssets.root_folder().path_join(relative_folder.path_join("themes"))]:
@@ -75,12 +84,12 @@ func list_packs() -> Array:
 	ids.sort()
 	ids.erase("default"); ids.push_front("default")
 	for id in ids:
-		var pack := load_pack(id)
+		var pack := load_pack(id, reuse_validated)
 		if not pack.is_empty(): result.append(pack)
 	return result
 
 
-func load_pack(id: String) -> Dictionary:
+func load_pack(id: String, reuse_validated := false) -> Dictionary:
 	if not valid_id(game_id) or not valid_id(id) or slots.is_empty(): return {}
 	var relative := relative_folder.path_join("themes/%s/theme.json" % id)
 	var path := RuntimeAssets.root_folder().path_join(relative)
@@ -88,7 +97,13 @@ func load_pack(id: String) -> Dictionary:
 	var pack: Variant = _read(path)
 	if not pack is Dictionary or pack.get("schema_version") != 1 or pack.get("id") != id or not pack.get("name") is String or pack.name.strip_edges().is_empty() or pack.name.length() > 64: return {}
 	if not pack.get("assets", {}) is Dictionary or not pack.get("labels", {}) is Dictionary: return {}
+	var cached: Dictionary = _validated_packs.get(id, {})
+	if reuse_validated and cached.get("manifest") == pack:
+		var stamp := _media_stamp(pack)
+		if not stamp.is_empty() and stamp == cached.stamp: return cached.pack.duplicate(true)
+	_validated_packs.erase(id)
 	var allowed: Array = slots.map(func(slot: Dictionary) -> String: return slot.id)
+	var checked_paths: Dictionary = {}
 	for key in pack.get("assets", {}):
 		var file: Variant = pack.assets[key]
 		if not key in allowed or not file is String or not RuntimeAssets.safe_media_path(file): return {}
@@ -96,24 +111,64 @@ func load_pack(id: String) -> Dictionary:
 		for folder in theme_media_folders:
 			if file.begins_with(folder.path_join("themes/%s/media/" % id)): permitted = true
 		if not permitted: return {}
-		if not _safe(file): return {}
+		if not _safe(file, checked_paths): return {}
 		if not FileAccess.file_exists(RuntimeAssets.root_folder().path_join(file)) and not FileAccess.file_exists("res://" + file): return {}
 		var physical := RuntimeAssets.root_folder().path_join(file)
 		if not FileAccess.file_exists(physical): physical = "res://" + file
-		var signature := FileAccess.get_sha256(physical).substr(0, 24)
-		if not file.get_file().begins_with(str(key) + "-" + signature + "."): return {}
+		var signature := FileAccess.get_sha256(physical)
+		if not file.get_file().begins_with(str(key) + "-" + signature.substr(0, 24) + "."): return {}
 		var slot: Dictionary = slots.filter(func(item: Dictionary) -> bool: return item.id == key)[0]
 		# Bundled, content-addressed videos were validated by the desktop editor.
 		# Android has no FFmpeg; the shared native player validates OGV playback
 		# and retains its image fallback for unsupported containers.
-		var inspected := {"ok": true, "kind": "video"} if OS.get_name() == "Android" and AssetStore.kind(physical) == "video" else AssetStore.inspect(physical)
+		var inspected := _inspect_media(physical, signature)
 		if not inspected.ok or (inspected.kind != slot.kind and not (slot.kind == "background" and inspected.kind in ["image", "video"])): return {}
 	for key in pack.get("labels", {}):
 		if not key in allowed or not pack.labels[key] is String or pack.labels[key].strip_edges().is_empty() or pack.labels[key].length() > 80: return {}
+	var manifest: Dictionary = pack.duplicate(true)
 	pack["assets"] = pack.get("assets", {})
 	pack["labels"] = pack.get("labels", {})
 	pack["revision"] = JSON.stringify(pack).sha256_text().substr(0, 20)
+	_validated_packs[id] = {"manifest": manifest, "pack": pack.duplicate(true), "stamp": _media_stamp(pack, checked_paths)}
 	return pack
+
+
+# Menu refreshes may reuse a validated manifest while its files are unchanged.
+# Explicit loads/selections still hash every file, including same-size edits.
+func _media_stamp(pack: Dictionary, checked_paths: Variant = null) -> Array:
+	var checked: Dictionary = checked_paths if checked_paths is Dictionary else {}
+	var stamp: Array = [RuntimeAssets.root_folder()]
+	for relative: String in pack.get("assets", {}).values():
+		if not _safe(relative, checked): return []
+		var path := RuntimeAssets.root_folder().path_join(relative)
+		if not FileAccess.file_exists(path): path = "res://" + relative
+		var file := FileAccess.open(path, FileAccess.READ)
+		if file == null: return []
+		stamp.append([path, FileAccess.get_modified_time(path), file.get_length()])
+	return stamp
+
+
+static func _inspect_media(path: String, signature: String) -> Dictionary:
+	var key := signature + "." + path.get_extension().to_lower()
+	_inspection_mutex.lock()
+	var inspected: Dictionary = _inspected_media.get(key, {})
+	_inspection_mutex.unlock()
+	if not inspected.is_empty(): return inspected
+	inspected = {"ok": true, "kind": "video"} if OS.get_name() == "Android" and AssetStore.kind(path) == "video" else AssetStore.inspect(path)
+	if inspected.ok:
+		_inspection_mutex.lock()
+		_inspected_media[key] = inspected
+		_inspection_mutex.unlock()
+	return inspected
+
+
+func selected_id(store: GameSettingsStore) -> String:
+	var previous := str(store.load_settings(game_id, {"theme": "default"}).theme)
+	return str(store.load_settings(selection_owner, {"theme": previous}).theme) if selection_owner != game_id else previous
+
+
+func save_selection(store: GameSettingsStore, id: String) -> bool:
+	return store.save_settings(selection_owner, {"theme": id})
 
 
 func duplicate_pack(source: String, name: String) -> Dictionary:
@@ -179,8 +234,8 @@ func stage_media(pack: Dictionary, slot_id: String, source_path: String) -> Dict
 	return {"ok": true, "source": target}
 
 
-func pin(id: String) -> Dictionary:
-	var pack := load_pack(id)
+func pin(id: String, reuse_validated := false) -> Dictionary:
+	var pack := load_pack(id, reuse_validated)
 	if pack.is_empty(): pack = load_pack("default")
 	if pack.is_empty():
 		unpin(game_id)
@@ -189,7 +244,8 @@ func pin(id: String) -> Dictionary:
 	for slot in slots:
 		if pack.get("assets", {}).has(slot.id): mapping[slot.path] = pack.assets[slot.id]
 	active[game_id] = {"pack": pack.duplicate(true), "mapping": mapping, "folder": relative_folder}
-	RuntimeAssets.textures.clear()
+	# Texture keys already include the resolved source. Retain unchanged scenery
+	# and previously used skins until unpin releases the session's cache.
 	return pack
 
 
@@ -223,11 +279,14 @@ static func resolve(relative: String) -> String:
 	return str(active.get(id, {}).get("mapping", {}).get(relative, relative))
 
 
-static func _safe(relative: String) -> bool:
+static func _safe(relative: String, checked_paths: Variant = null) -> bool:
+	var checked: Dictionary = checked_paths if checked_paths is Dictionary else {}
 	var path := RuntimeAssets.root_folder()
 	for segment in relative.split("/"):
 		path = path.path_join(segment)
+		if checked.has(path): continue
 		if AssetStore._is_link(path): return false
+		checked[path] = true
 	return true
 
 

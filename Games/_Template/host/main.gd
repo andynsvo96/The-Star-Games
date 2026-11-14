@@ -785,6 +785,8 @@ func initialize_session(context: GameSessionContext) -> void:
 	# audio in this callback, then publish ordinary public/private snapshots.
 	# Keep rules, clocks, input targets and running effects intact.
 	var skin_example := screen.add_skin_selector(self)
+	# Collection children may set selection_owner in theme-slots.json to their
+	# parent's stable ID to share one skin choice; gameplay settings stay local.
 	skin_example.get_parent().hide()
 	skin_example.skin_changed.connect(func() -> void:
 		screen.background_media.reload_assets()

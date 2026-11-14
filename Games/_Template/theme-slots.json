@@ -2,6 +2,7 @@
   "schema_version": 1,
   "preview_kind": "assets",
   "theme_media_sources": [],
+  "selection_owner": "",
   "slots": [
     {
       "id": "background",
