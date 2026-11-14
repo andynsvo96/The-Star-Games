@@ -1,6 +1,6 @@
 # Monopoly Deal: implementation brief and UI direction
 
-Status: implemented in [Games/monopoly-deal](../Games/monopoly-deal/README.md), with shared theme packs and editor support. The concepts below record the approved design direction; the module README documents final behavior and checks.
+Status: implemented in [Games/monopoly-deal](../Games/monopoly/deal/README.md), with shared theme packs and editor support. The concepts below record the approved design direction; the module README documents final behavior and checks.
 
 ## Confirmed choices
 
@@ -76,13 +76,13 @@ Use classic-style complete faces with live display-name overlays, printed proper
 
 ## Architecture and repository fit
 
-Create Games/monopoly-deal by copying Games/_Template only when implementation begins. Preserve game.json, host/, controller/, BaseGame, GameSessionContext, and StarGamesController. Separate pure rules/card inventory, AI, session orchestration, host rendering, and browser presentation.
+Create Games/monopoly/deal by copying Games/_Template only when implementation begins. Preserve game.json, host/, controller/, BaseGame, GameSessionContext, and StarGamesController. Separate pure rules/card inventory, AI, session orchestration, host rendering, and browser presentation.
 
 Use stable card-definition and property-group IDs. A theme maps semantic visual slots and labels; it never supplies executable code or game rules. Validate theme IDs, schema version, safe relative paths, label lengths/types, media content and supported formats. Reject invalid packs without losing the last valid selection.
 
 Implement pack discovery, validation, saved-pack operations and active resolution in the shared layer, integrated with AssetStore/RuntimeAssets and existing LAN media routes. Preserve existing individual replacements for all other games. Document resolution precedence and keep a pack's edits isolated from Default and other packs. Support transactional saves with rollback on failure and backups for both media and name metadata. The current asset/replacements.json alone is a global file-replacement index and does not provide named packs or editable text.
 
-Keep game.json.background as a safe extensionless module-relative stem, and pass its canonical res://Games/monopoly-deal/<stem> to GameScreen.use_playful_style. Resolve the selected pack's corresponding sources through shared background metadata/player logic; do not add a per-game media player. Serve selected names/media and pack revision through the existing offline LAN service. Browser caches must follow the selected revision, and refresh must restore the same selected pack.
+Keep game.json.background as a safe extensionless module-relative stem, and pass its canonical res://Games/monopoly/deal/<stem> to GameScreen.use_playful_style. Resolve the selected pack's corresponding sources through shared background metadata/player logic; do not add a per-game media player. Serve selected names/media and pack revision through the existing offline LAN service. Browser caches must follow the selected revision, and refresh must restore the same selected pack.
 
 Desktop hosts edit packs. Android uses bundled packs and existing native OGV host support; no new Android asset editor or runtime FFmpeg requirement.
 

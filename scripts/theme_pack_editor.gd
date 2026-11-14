@@ -58,9 +58,10 @@ func _ready() -> void:
 	var workspace := VBoxContainer.new(); workspace.size_flags_horizontal = Control.SIZE_EXPAND_FILL; workspace.size_flags_vertical = Control.SIZE_EXPAND_FILL; workspace.add_theme_constant_override("separation", 10); workspace_scroll.add_child(workspace)
 	var controls := EditorStyle.panel(EditorStyle.TOOLBAR, 12); workspace.add_child(controls)
 	var toolbar := HFlowContainer.new(); toolbar.add_theme_constant_override("h_separation", 12); controls.add_child(toolbar)
-	var folders := DirAccess.get_directories_at(definitions_root); folders.sort()
-	for id in folders:
-		if not id.begins_with("_") and FileAccess.file_exists(definitions_root.path_join(id).path_join("theme-slots.json")):
+	var folders := GameCatalog.module_folders(definitions_root)
+	var ids := folders.keys(); ids.sort()
+	for id in ids:
+		if FileAccess.file_exists(str(folders[id]).path_join("theme-slots.json")):
 			games.append(id); game_choice.add_item(id.capitalize())
 	game_choice.custom_minimum_size.x = 150; game_choice.fit_to_longest_item = false; game_choice.clip_text = true
 	EditorStyle.field(toolbar, "GAME", game_choice)
@@ -455,7 +456,7 @@ func _previous() -> void:
 	if not DirAccess.dir_exists_absolute(directory): return
 	var folders := DirAccess.get_directories_at(directory); folders.sort(); folders.reverse()
 	for folder in folders:
-		var path := directory.path_join(folder).path_join("Games/%s/themes/%s/theme.json" % [manager.game_id, draft.id])
+		var path := directory.path_join(folder).path_join(manager.relative_folder.path_join("themes/%s/theme.json" % draft.id))
 		if FileAccess.file_exists(path):
 			var pack: Variant = ThemePacks._read(path)
 			if pack is Dictionary: draft = pack; _inspect(); _populate(); _changed(); notice.text = "Previous theme staged. Save to restore it."

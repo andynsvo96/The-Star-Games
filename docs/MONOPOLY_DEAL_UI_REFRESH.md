@@ -390,7 +390,7 @@ Verification performed for this stage:
   not run for these isolated mockups. Physical phones were not tested.
 
 The implemented behavior is documented in
-[the module README](../Games/monopoly-deal/README.md); the
+[the module README](../Games/monopoly/deal/README.md); the
 [earlier design brief](MONOPOLY_DEAL_DESIGN.md) records its original direction.
 
 ## Pre-integration UI audit
@@ -586,7 +586,7 @@ decorative assets; text, cards, counts, panels, and buttons remain live UI.
   shared card/reader/motion helpers, and shared UI assets as needed.
 - Shared browser presentation: `web/styles.css`, `web/card-ui.js`, and existing
   SDK helpers. Add opt-in styling rather than overriding every game's defaults.
-- Module layout/input: `Games/monopoly-deal/host/table.gd`, `host/main.gd`, and
+- Module layout/input: `Games/monopoly/deal/host/table.gd`, `host/main.gd`, and
   the controller HTML/CSS/JavaScript.
 - Production artwork/theme integration: module art, theme slots, and existing
   theme preview paths. Preserve canonical card asset paths and theme fallbacks.

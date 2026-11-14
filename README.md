@@ -144,6 +144,14 @@ on the host or browser controller. Cinematic Reveals defaults on in Table Settin
 
 Game-specific menu icons and their source artwork also remain local.
 
+The local folders now follow those menu groups: Checkers modes live inside
+`Games/checkers/`, Chess modes inside `Games/chess/`, Monopoly variants inside
+`Games/monopoly/`, and Poker variants inside `Games/poker/`. Each mode has its
+own subfolder and manifest. Remove a mode subfolder, then restart or select
+**Scan for Games**, to grey out that mode in its chooser or host Settings.
+Restore the folder and scan to enable it again. Other modes and saved settings
+remain available. See [Games catalog](Games/README.md) for the folder names.
+
 ## Run locally
 
 1. Install [Godot 4.7](https://godotengine.org/download/archive/) and download or clone this repository.

@@ -104,6 +104,8 @@ desktop.ini
 !/tests/skin_controller.mjs
 !/tests/settings_variants.gd
 !/tests/settings_variants.gd.uid
+!/tests/nested_game_modes.gd
+!/tests/nested_game_modes.gd.uid
 
 # Synthetic asset discovery, editor navigation and responsive layout checks.
 !/tests/asset_editor_fixture.gd

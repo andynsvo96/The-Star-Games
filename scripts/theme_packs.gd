@@ -9,6 +9,8 @@ var presentation := "card-table"
 var preview_kind := "cards"
 var last_error := ""
 var definitions_root := "res://Games"
+var module_folder := ""
+var relative_folder := ""
 
 
 func _init(id := "", custom_definitions_root := "") -> void:
@@ -17,7 +19,14 @@ func _init(id := "", custom_definitions_root := "") -> void:
 	# Preserve legacy packs while allowing new modules to declare their preview.
 	if id == "monopoly-deal": presentation = "modern-table"
 	if valid_id(id):
-		var value: Variant = _read(definitions_root.path_join(id).path_join("theme-slots.json"))
+		var folders := GameCatalog.module_folders(definitions_root)
+		module_folder = str(folders.get(id, definitions_root.path_join(id)))
+		relative_folder = "Games/" + module_folder.trim_prefix(definitions_root.trim_suffix("/") + "/")
+		var source_folders: Dictionary = {}
+		for owner in folders:
+			var folder := str(folders[owner])
+			source_folders[owner] = "res://Games/" + folder.trim_prefix(definitions_root.trim_suffix("/") + "/")
+		var value: Variant = _read(module_folder.path_join("theme-slots.json"))
 		if value is Dictionary and value.get("schema_version") == 1 and value.get("slots") is Array:
 			if value.get("presentation", "") in ["card-table", "modern-table"]:
 				presentation = value.presentation
@@ -28,13 +37,15 @@ func _init(id := "", custom_definitions_root := "") -> void:
 			var sources: Array = [id]
 			if value.get("asset_sources") is Array:
 				for source in value.asset_sources:
-					if source is String and valid_id(source) and not sources.has(source): sources.append(source)
+					if source is String and valid_id(source) and not sources.has(source):
+						sources.append(source)
+						if not source_folders.has(source): source_folders[source] = "res://Games/" + source
 			var ids := {}; var paths := {}
 			for slot in value.slots:
 				if not slot is Dictionary: continue
 				var path := str(slot.get("path", ""))
 				if not valid_id(str(slot.get("id", ""))) or not RuntimeAssets.safe_media_path(path): continue
-				if not path.begins_with("Games/") or not path.get_slice("/", 1) in sources: continue
+				if not path.begins_with("Games/") or not GameCatalog.path_owner(path, source_folders) in sources: continue
 				if slot.get("kind") not in ["image", "audio", "background"] or not slot.get("label") is String or not slot.get("group") is String: continue
 				if ids.has(slot.id) or paths.has(path): continue
 				ids[slot.id] = true; paths[path] = true; slots.append(slot)
@@ -50,7 +61,7 @@ static func valid_id(value: String) -> bool:
 func list_packs() -> Array:
 	var result: Array = []
 	var ids: Array = ["default"]
-	for folder in [definitions_root.path_join(game_id).path_join("themes"), RuntimeAssets.root_folder().path_join("Games/%s/themes" % game_id)]:
+	for folder in [module_folder.path_join("themes"), RuntimeAssets.root_folder().path_join(relative_folder.path_join("themes"))]:
 		if DirAccess.dir_exists_absolute(folder):
 			for id in DirAccess.get_directories_at(folder):
 				if valid_id(id) and not ids.has(id): ids.append(id)
@@ -64,16 +75,16 @@ func list_packs() -> Array:
 
 func load_pack(id: String) -> Dictionary:
 	if not valid_id(game_id) or not valid_id(id) or slots.is_empty(): return {}
-	var relative := "Games/%s/themes/%s/theme.json" % [game_id, id]
+	var relative := relative_folder.path_join("themes/%s/theme.json" % id)
 	var path := RuntimeAssets.root_folder().path_join(relative)
-	if id == "default" or not FileAccess.file_exists(path): path = definitions_root.path_join(game_id).path_join("themes/%s/theme.json" % id)
+	if id == "default" or not FileAccess.file_exists(path): path = module_folder.path_join("themes/%s/theme.json" % id)
 	var pack: Variant = _read(path)
 	if not pack is Dictionary or pack.get("schema_version") != 1 or pack.get("id") != id or not pack.get("name") is String or pack.name.strip_edges().is_empty() or pack.name.length() > 64: return {}
 	if not pack.get("assets", {}) is Dictionary or not pack.get("labels", {}) is Dictionary: return {}
 	var allowed: Array = slots.map(func(slot: Dictionary) -> String: return slot.id)
 	for key in pack.get("assets", {}):
 		var file: Variant = pack.assets[key]
-		if not key in allowed or not file is String or not RuntimeAssets.safe_media_path(file) or not file.begins_with("Games/%s/themes/%s/media/" % [game_id, id]): return {}
+		if not key in allowed or not file is String or not RuntimeAssets.safe_media_path(file) or not file.begins_with(relative_folder.path_join("themes/%s/media/" % id)): return {}
 		if not _safe(file): return {}
 		if not FileAccess.file_exists(RuntimeAssets.root_folder().path_join(file)) and not FileAccess.file_exists("res://" + file): return {}
 		var physical := RuntimeAssets.root_folder().path_join(file)
@@ -101,7 +112,7 @@ func duplicate_pack(source: String, name: String) -> Dictionary:
 	var copy := {"schema_version": 1, "id": id, "name": name.strip_edges(), "assets": {}, "labels": pack.labels.duplicate(true)}
 	for key in pack.assets:
 		var old: String = pack.assets[key]
-		var target := "Games/%s/themes/%s/media/%s" % [game_id, id, old.get_file()]
+		var target := relative_folder.path_join("themes/%s/media/%s" % [id, old.get_file()])
 		if not _safe(target): return _error("Theme destination contains a linked folder.")
 		DirAccess.make_dir_recursive_absolute(RuntimeAssets.root_folder().path_join(target).get_base_dir())
 		var current := RuntimeAssets.root_folder().path_join(old)
@@ -114,7 +125,7 @@ func duplicate_pack(source: String, name: String) -> Dictionary:
 func save_pack(pack: Dictionary) -> Dictionary:
 	var id := str(pack.get("id", ""))
 	if not valid_id(id) or id == "default": return _error("Duplicate Default before editing.")
-	var relative := "Games/%s/themes/%s/theme.json" % [game_id, id]
+	var relative := relative_folder.path_join("themes/%s/theme.json" % id)
 	if not _safe(relative): return _error("Theme destination contains a linked folder.")
 	var path := RuntimeAssets.root_folder().path_join(relative)
 	var previous := FileAccess.get_file_as_string(path) if FileAccess.file_exists(path) else ""
@@ -147,7 +158,7 @@ func stage_media(pack: Dictionary, slot_id: String, source_path: String) -> Dict
 	if not result.ok: return result
 	if result.kind != slot.kind and not (slot.kind == "background" and result.kind in ["image", "video"]): return _error("Choose media matching this asset group.")
 	var signature := FileAccess.get_sha256(source_path)
-	var relative := "Games/%s/themes/%s/media/%s-%s.%s" % [game_id, pack.id, slot_id, signature.substr(0, 24), source_path.get_extension().to_lower()]
+	var relative := relative_folder.path_join("themes/%s/media/%s-%s.%s" % [pack.id, slot_id, signature.substr(0, 24), source_path.get_extension().to_lower()])
 	if not _safe(relative): return _error("Theme destination contains a linked folder.")
 	var target := RuntimeAssets.root_folder().path_join(relative)
 	DirAccess.make_dir_recursive_absolute(target.get_base_dir())
@@ -166,7 +177,7 @@ func pin(id: String) -> Dictionary:
 	var mapping := {}
 	for slot in slots:
 		if pack.get("assets", {}).has(slot.id): mapping[slot.path] = pack.assets[slot.id]
-	active[game_id] = {"pack": pack.duplicate(true), "mapping": mapping}
+	active[game_id] = {"pack": pack.duplicate(true), "mapping": mapping, "folder": relative_folder}
 	RuntimeAssets.textures.clear()
 	return pack
 
@@ -189,6 +200,12 @@ func display_name(slot: String, fallback: String, pack: Dictionary) -> String:
 
 static func resolve(relative: String) -> String:
 	var id := relative.get_slice("/", 1)
+	var longest := 0
+	for owner in active:
+		var prefix := str(active[owner].get("folder", "Games/" + str(owner))) + "/"
+		if relative.begins_with(prefix) and prefix.length() > longest:
+			id = owner
+			longest = prefix.length()
 	# A variant may use another module's art while retaining its own pack/settings.
 	for owner in active:
 		if owner != id and active[owner].get("mapping", {}).has(relative): return str(active[owner].mapping[relative])

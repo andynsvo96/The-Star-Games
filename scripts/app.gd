@@ -572,10 +572,10 @@ func _can_launch(game: Dictionary) -> bool:
 
 
 func _can_launch_for_count(game: Dictionary, party_count: int) -> bool:
+	if game.is_empty(): return false
 	if game.has("game_choices"):
-		return game.game_choices.any(func(id: String) -> bool:
-			var child := game_catalog.find_game(id)
-			return not child.is_empty() and _can_launch_for_count(child, party_count))
+		return game_catalog.choices_for(game).any(func(choice: Dictionary) -> bool:
+			return choice.available and _can_launch_for_count(choice, party_count))
 	return (game["modes"].has("multiplayer") and party_count >= int(game["min_players"]) and party_count <= int(game["max_players"])) or (party_count == 0 and game["modes"].has("singleplayer"))
 
 
@@ -591,8 +591,8 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 	# each mode's validated module also preserves its IDs, media and preferences.
 	if not debug and game.get("settings_variants", false):
 		var saved := game_settings_store.load_settings(str(game.id), {"gamemode": ""})
-		var eligible: Array = game.game_choices.filter(func(id: String) -> bool:
-			return _can_launch_for_count(game_catalog.find_game(id), roster.size()))
+		var eligible: Array = game_catalog.choices_for(game).filter(func(choice: Dictionary) -> bool:
+			return choice.available and _can_launch_for_count(choice, roster.size())).map(func(choice: Dictionary) -> String: return choice.id)
 		var id: String = saved.gamemode if eligible.has(saved.gamemode) else eligible[0]
 		collection_state = {}
 		_launch_game(game_catalog.find_game(id), str(game.id), roster)
@@ -606,8 +606,7 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 		ThemePacks.unpin(active_game_id)
 		active_game.queue_free()
 	# Pin before instantiation: module member initializers and _ready load art.
-	var module_folder := str(game.get("folder", str(game.host_scene_path).get_base_dir().get_base_dir()))
-	var skins := ThemePacks.new(str(game.id), module_folder.get_base_dir())
+	var skins := ThemePacks.new(str(game.id), game_catalog.games_root)
 	var skin_settings := game_settings_store.load_settings(str(game.id), {"theme": "default"})
 	skins.pin(str(skin_settings.theme))
 	var instance := packed.instantiate()
@@ -635,9 +634,8 @@ func _launch_game(game: Dictionary, collection_id := "", party_roster: Array = [
 	var settings_variants: bool = collection.get("settings_variants", false)
 	if collection_id.is_empty(): collection_state = {}
 	if settings_variants: context.collection_state = collection_state
-	for id in collection.game_choices if settings_variants else game.get("game_choices", []):
-		var choice := game_catalog.find_game(id).duplicate(true)
-		choice["can_launch"] = _can_launch_for_count(choice, count)
+	for choice in game_catalog.choices_for(collection if settings_variants else game):
+		choice["can_launch"] = choice.available and _can_launch_for_count(choice, count)
 		context.game_choices.append(choice)
 	current_state = "debug_game" if debug else "game"
 	_replace_screen()
@@ -676,7 +674,8 @@ func _on_collection_choice(id: String) -> void:
 		if parent.get("settings_variants", false): collection = parent
 	if not collection.get("game_choices", []).has(id): return
 	if id == active_game_id: return
-	var child := game_catalog.find_game(id)
+	var options := game_catalog.choices_for(collection).filter(func(choice: Dictionary) -> bool: return choice.id == id and choice.available)
+	var child: Dictionary = options[0] if not options.is_empty() else {}
 	if child.is_empty() or not _can_launch_for_count(child, collection_roster.size()): return
 	var connected_ids := lan_server.get_players().map(func(player: Dictionary) -> String: return str(player.id))
 	if connected_ids.size() != collection_roster.size() or not collection_roster.all(func(player: Dictionary) -> bool: return connected_ids.has(str(player.id))): return

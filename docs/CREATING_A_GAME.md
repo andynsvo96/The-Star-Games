@@ -1,6 +1,6 @@
 # Creating a Game for The Star Games
 
-Every game is a trusted Godot module inside `Games`. The launcher discovers direct child folders at startup and whenever the host selects **Scan for Games**. Modules present in the local project are compiled into each release; scanning does not install files onto an already-built app.
+Every game is a trusted Godot module inside `Games`. The launcher discovers direct child folders and their declared mode subfolders at startup and whenever the host selects **Scan for Games**. Modules present in the local project are compiled into each release; scanning does not install files onto an already-built app.
 
 The public repository includes `Games/_Template` and shared framework code, but no playable games. Other module folders, game-specific source media/menu icons, and module-dependent test suites stay local under the [publishing policy](GITHUB_SYNC.md#public-repository-scope). References to existing games and their tests throughout this guide describe the local development installation. Use the template's hidden host/controller examples for the reusable patterns available in a fresh clone.
 
@@ -76,14 +76,44 @@ Invalid modules are skipped. The host lobby lists each rejected folder and the e
 
 ### Optional game collections
 
-A manifest may include `game_choices: ["child-one", "child-two"]`. Choices must
-be distinct safe game IDs, refer to existing validated standalone modules, and
-must not reference the collection itself. Nested collections are rejected.
+A collection keeps its separately packaged modes in direct subfolders matching
+the game's menu organization. Declare each mode's stable ID, visible title and
+folder in the parent's `game.json`:
+
+```json
+"game_choices": [
+  {"id": "my-game-classic", "title": "Classic", "folder": "classic"},
+  {"id": "my-game-variant", "title": "Variant", "folder": "variant"}
+]
+```
+
+Each child contains its own ordinary `game.json`, `host/`, and `controller/`.
+Its manifest ID must match the declaration; folder names may differ from IDs.
+Folders must be distinct safe direct subfolders, without slashes, traversal or
+an underscore prefix. Only declared folders are discovered below a parent;
+artwork, archives, themes and arbitrary nested manifests are never scanned as
+games. Put code/media shared by several modes in the parent (for example,
+`shared/`), so deleting any one mode cannot break the others. Declare the
+parent's stable ID in a child's trusted skin `asset_sources` for borrowed media.
+
+Removing or invalidating a child disables only that declared choice after a
+restart or **Scan for Games**. `GameCatalog.choices_for(parent)` retains its ID
+and title with `available: false`; it is absent from `GameCatalog.games` and has
+no LAN route. The shared Settings dropdown and chooser buttons retain disabled
+choices. A parent with no eligible installed modes stays listed under Show All
+and cannot launch. Restoring the folder and scanning re-enables it. A missing
+remembered mode falls back to the first installed eligible mode without changing
+the saved preference. Keep declarations when removing optional modes.
+
+Legacy `game_choices: ["child-one", "child-two"]` remains supported for existing
+flat installations. Choices must be distinct safe game IDs and must not
+reference the collection itself. Collections inside collections are rejected;
+nesting standalone modes in a collection's folder is supported.
 `GameCatalog.menu_games()` hides those child tiles in the menu while retaining
 every child in `GameCatalog.games` for LAN routes, validation and stable settings.
 Both list and icon views use that same presented catalog.
 
-The launcher provides validated child metadata and eligibility through
+The launcher provides declared child metadata, availability and eligibility through
 `GameSessionContext.game_choices`. A host chooser emits the additive
 `BaseGame.game_selected(game_id)` signal; only a declared, eligible child can
 launch. Never rewrite a child's ID, manifest, sockets, saved settings or profile
@@ -93,6 +123,15 @@ routes phones directly through the SDK's authoritative screen messages. An
 offline member must reconnect before another variant is selected. A chooser's
 ordinary return signal leaves for game selection; a child's return opens its
 parent chooser. `Games/monopoly` is the reference implementation.
+
+Resolve physical module paths with `GameCatalog.module_folder(game_id)` (pass a
+custom games root for fixtures). Never build a resource path from a stable ID.
+Use `GameCatalog.controller_asset_url(resource_path)` for a native resource's
+stable-ID browser URL, or `controller_resources(value)` for nested public
+illustration descriptors. Controller URLs remain `/game/<id>/` regardless of
+folder nesting. Parent URLs cannot access child folders or bypass child
+`private_paths`. Skin definitions, immutable pack media, editor discovery,
+backgrounds and private session-media roots follow the actual module folder.
 
 `GameChoiceCard` is a shared native illustrated button with an optional texture
 or semantic card-face preview, a caption and accent, keyboard focus, and a finite
@@ -1780,7 +1819,7 @@ theme variables supply their own artwork. Hidden template examples show both.
 
 ### Checkers example
 
-`Games/checkers` keeps legal moves, capture chains, promotion, automatic draws
+`Games/checkers/regular` keeps legal moves, capture chains, promotion, automatic draws
 and bounded AI search in its rules module. Its host and phones use shared centered
 boards, current-game ledger cards, settings forms, illustrated references and
 round results. The Default board uses offline wood squares and raised checker
@@ -1910,7 +1949,7 @@ two-player modes stay visible and disabled. One/two-phone parties use their
 remembered mode. Automatic selection does not overwrite the saved preference.
 An offline admitted member must reconnect before switching modes.
 
-`Games/draughts` implements International Draughts: 100 squares, twenty men per
+`Games/checkers/draughts` implements International Draughts: 100 squares, twenty men per
 side, backward captures by men, compulsory maximum captures, end-of-turn promotion
 and captured pieces that remain blocking until the chain finishes. Flying Kings
 defaults on; disabling it is an explicit short-king house rule. That accepted,
@@ -1919,7 +1958,7 @@ Threefold repetition, the 25-move king-only limit and reduced king-endgame limit
 draw automatically. Its emerald/ivory board and tournament salon use shared royal
 chrome. Rule details and the FMJD reference are in its local README.
 
-`Games/alquerque` uses twelve pieces per side on twenty-five connected points.
+`Games/checkers/alquerque` uses twelve pieces per side on twenty-five connected points.
 The modern all-direction rules require captures and complete jump chains, permit
 either capture route and have no kings. It wins by capture or blockade; repetition
 and a documented no-capture limit draw. Its stone board, ivory/terracotta pieces
@@ -1940,7 +1979,7 @@ Local checks are `tests/checkers_variants.gd`, `checkers_variants_motion.gd`,
 `checkers_variants_network.gd`, `checkers_variants_autoplay.gd`, rendered
 `checkers_variants_visual.gd`, then `node tests/checkers_variants_controller.mjs`.
 
-`Games/chinese-checkers` separates its 121-hole star rules, board presentation
+`Games/checkers/chinese-checkers` separates its 121-hole star rules, board presentation
 and session/controller integration. It supports 2-6 seats, ten marbles each,
 one adjacent step or a host-validated chain of jumps without captures. Choosing
 a highlighted endpoint completes the whole route. Two/three/four/six-seat
@@ -1994,7 +2033,7 @@ Regular Checkers remains covered by `tests/checkers.gd` and
 
 ### Chess example
 
-`Games/chess` follows the shared template and session modes, keeping rules in
+`Games/chess/classic` follows the shared template and session modes, keeping rules in
 `host/rules.gd`, bounded computer search on an isolated worker, and piece
 movement in module-owned host/browser scripts. Signed piece codes represent
 White (positive) and Black (negative). Authoritative indexes are always a8..h1;

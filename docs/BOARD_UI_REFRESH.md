@@ -4,8 +4,8 @@ Chess, Checkers, Battleship and Four in a Row now use the approved concept direc
 
 | Game | Presentation | Background stem | Current title |
 | --- | --- | --- | --- |
-| CHESS | Royal walnut and ivory | `Games/chess/art/royal-study` | `Games/chess/art/title-v2.png` |
-| CHECKERS | Royal walnut and ivory | `Games/checkers/art/tournament-hall` | `Games/checkers/art/title-v2.png` |
+| CHESS | Royal walnut and ivory | `Games/chess/classic/art/royal-study` | `Games/chess/classic/art/title-v2.png` |
+| CHECKERS | Royal walnut and ivory | `Games/checkers/regular/art/tournament-hall` | `Games/checkers/regular/art/title-v2.png` |
 | BATTLESHIP | Admiral navy and brass | `Games/battleship/art/command-bridge` | `Games/battleship/art/title-v2.png` |
 | 4 IN A ROW | Vintage arcade | `Games/four-in-a-row/art/vintage-arcade` | `Games/four-in-a-row/art/title-v2.png` |
 
@@ -36,7 +36,7 @@ Generated with the built-in image_gen.imagegen tool through the imagegen skill. 
 
 ### CHESS background
 
-Saved: `Games/chess/art/royal-study.png`
+Saved: `Games/chess/classic/art/royal-study.png`
 
 ```text
 Reference is the approved concept for STYLE AND SCENERY ONLY. Generate a separate production asset that the app will place behind live UI; never bake the interface into the asset. Preserve visual art direction of the reference, but output ONLY the requested asset. No watermark.
@@ -47,7 +47,7 @@ Warm cinematic painterly royal chess study. Honey sandstone arches and tall wind
 
 ### CHESS title
 
-Saved: `Games/chess/art/title-v2.png`
+Saved: `Games/chess/classic/art/title-v2.png`
 
 ```text
 Use case: stylized-concept. Asset type: transparent production game-title PNG. Reference is approved full-screen concept only; isolate/recreate its title design as a separate transparent cutout. Create ONLY an elegant compact carved dark-walnut plaque with a thin aged-brass/gold edge, softly shaped ends, a tiny gold crown centered above it, exact text CHESS in large readable engraved gold serif capitals. Match the reference title at the top. Premium royal study material with subtle wood grain and restrained gold relief. Wide approximately 3.8:1 logo, fill the canvas with minimal transparent margins. No hanging chains, background scene, board, pieces, buttons, UI, extra text or rectangle backdrop. Genuine alpha transparency outside plaque and crown.
@@ -55,7 +55,7 @@ Use case: stylized-concept. Asset type: transparent production game-title PNG. R
 
 ### CHECKERS background
 
-Saved: `Games/checkers/art/tournament-hall.png`
+Saved: `Games/checkers/regular/art/tournament-hall.png`
 
 ```text
 Reference is the approved concept for STYLE AND SCENERY ONLY. Generate a separate production asset that the app will place behind live UI; never bake the interface into the asset. Preserve visual art direction of the reference, but output ONLY the requested asset. No watermark.
@@ -66,7 +66,7 @@ Warm royal checkers tournament hall, cinematic painterly illustration. Dark waln
 
 ### CHECKERS title
 
-Saved: `Games/checkers/art/title-v2.png`
+Saved: `Games/checkers/regular/art/title-v2.png`
 
 ```text
 Use case: stylized-concept. Asset type: transparent production game-title PNG. Reference is approved full-screen concept only; isolate/recreate its title design as a separate transparent cutout. Create ONLY the elegant title at the top of the reference concept: carved dark walnut plaque with curved decorative ends and restrained aged-gold trim, a tiny gold crown centered above it, exact text CHECKERS in large readable engraved gold serif capitals. All eight letters evenly sized, C H E C K E R S. Fine natural wood grain, refined royal tournament style, no candy bubble letters. Wide approximately5:1 title, minimal transparent margins, all crown and edges in canvas. No scenery, board, checker pieces, UI, buttons, captions or extra text. True alpha transparency outside plaque and crown.

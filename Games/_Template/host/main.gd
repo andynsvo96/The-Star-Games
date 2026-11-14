@@ -2,6 +2,11 @@ extends BaseGame
 
 # game.json protects host/ with private_paths. Store host-only rule data and
 # hidden answer banks here, and send only each player's permitted snapshot.
+# For separately packaged modes, place copies in the menu parent's subfolders
+# and declare {id, title, folder} entries in the parent's game_choices. Keep
+# shared code/media in that parent. Missing folders remain disabled choices;
+# configure_game_mode_choice handles their availability automatically. Use
+# GameCatalog.module_folder(id) and controller_asset_url(path) for nested paths.
 
 var screen: GameScreen
 var phase_dialog: Dictionary

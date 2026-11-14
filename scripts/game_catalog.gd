@@ -30,19 +30,117 @@ func scan() -> Array:
 	for folder_name in folders:
 		if folder_name.begins_with("_"):
 			continue
-		var result := _read_game(folder_name)
-		if not result["ok"]:
-			diagnostics.append({"folder": folder_name, "message": result["error"]})
-			continue
-		var game: Dictionary = result["game"]
-		if used_ids.has(game["id"]):
-			diagnostics.append({"folder": folder_name, "message": "Duplicate game ID: %s" % game["id"]})
-			continue
-		used_ids[game["id"]] = true
-		games.append(game)
+		_scan_folder(folder_name, used_ids)
 	_validate_collections()
 	scan_completed.emit(games, diagnostics)
 	return games
+
+
+func _scan_folder(relative: String, used_ids: Dictionary, expected_id := "", child := false) -> void:
+	# Declared modes are optional installations. An absent folder is a disabled
+	# choice; a present but malformed module still deserves a scan diagnostic.
+	if child and not DirAccess.dir_exists_absolute(games_root.path_join(relative)): return
+	var result := _read_game(relative)
+	if not result.ok:
+		diagnostics.append({"folder": relative, "message": result.error})
+		return
+	var game: Dictionary = result.game
+	if not expected_id.is_empty() and game.id != expected_id:
+		diagnostics.append({"folder": relative, "message": "Mode ID must match its declaration: %s" % expected_id})
+		return
+	if child and game.has("game_choices"):
+		diagnostics.append({"folder": relative, "message": "Nested collections are not supported."})
+		return
+	if used_ids.has(game.id):
+		diagnostics.append({"folder": relative, "message": "Duplicate game ID: %s" % game.id})
+		return
+	used_ids[game.id] = true
+	games.append(game)
+	for choice in game.get("choice_definitions", []):
+		if choice.has("folder"):
+			_scan_folder(relative.path_join(choice.folder), used_ids, choice.id, true)
+
+
+# Keep declared choices even when their optional folder is absent or invalid.
+# Only validated modules enter games, LAN routing, or launch eligibility.
+func choices_for(collection: Dictionary) -> Array:
+	var result: Array = []
+	var definitions: Array = collection.get("choice_definitions", [])
+	if definitions.is_empty():
+		for id in collection.get("game_choices", []): definitions.append({"id": id, "title": str(id).capitalize()})
+	for definition in definitions:
+		var installed := find_game(str(definition.id))
+		if definition.has("folder") and installed.get("folder", "") != str(collection.folder).path_join(definition.folder):
+			installed = {}
+		var choice := installed.duplicate(true)
+		if choice.is_empty():
+			choice = {"id": definition.id, "title": definition.title}
+		choice["available"] = not installed.is_empty()
+		result.append(choice)
+	return result
+
+
+# Lightweight manifest inventory for skin/editor paths. Do not recursively scan
+# artwork, source archives or arbitrary subfolders looking for modules.
+static func module_folders(root := "res://Games") -> Dictionary:
+	var result: Dictionary = {}
+	var folders := DirAccess.get_directories_at(root)
+	folders.sort()
+	for name in folders:
+		if name.begins_with("_") or AssetStore._is_link(root.path_join(name)): continue
+		var folder := root.path_join(name)
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(folder.path_join("game.json"))) if FileAccess.file_exists(folder.path_join("game.json")) else null
+		# Theme fixtures and legacy definitions may have slots without a manifest.
+		var id := str(parsed.get("id", name)) if parsed is Dictionary else str(name)
+		if not _is_valid_id(id): continue
+		if not result.has(id): result[id] = folder
+		if not parsed is Dictionary or not parsed.get("game_choices") is Array: continue
+		for choice in parsed.game_choices:
+			if not choice is Dictionary or not choice.get("id") is String or not choice.get("folder") is String: continue
+			if not _is_valid_id(choice.id) or not _is_safe_relative_path(choice.folder) or choice.folder.contains("/") or choice.folder.begins_with("_"): continue
+			var nested := folder.path_join(choice.folder)
+			if AssetStore._is_link(nested) or not FileAccess.file_exists(nested.path_join("game.json")): continue
+			var manifest: Variant = JSON.parse_string(FileAccess.get_file_as_string(nested.path_join("game.json")))
+			if manifest is Dictionary and manifest.get("id") == choice.id and not manifest.has("game_choices") and not result.has(choice.id): result[choice.id] = nested
+	return result
+
+
+static func module_folder(id: String, root := "res://Games") -> String:
+	return str(module_folders(root).get(id, root.path_join(id)))
+
+
+static func path_owner(relative: String, folders: Dictionary) -> String:
+	var owner := ""
+	var longest := 0
+	for id in folders:
+		var prefix := str(folders[id]).trim_prefix("res://").trim_suffix("/") + "/"
+		if relative.begins_with(prefix) and prefix.length() > longest:
+			owner = id
+			longest = prefix.length()
+	return owner
+
+
+static func controller_asset_url(resource: String) -> String:
+	return _controller_resource(resource, module_folders())
+
+
+static func controller_resources(value: Variant) -> Variant:
+	return _controller_resource(value, module_folders())
+
+
+static func _controller_resource(value: Variant, folders: Dictionary) -> Variant:
+	if value is Array:
+		return value.map(func(item: Variant) -> Variant: return _controller_resource(item, folders))
+	if value is Dictionary:
+		var result: Dictionary = {}
+		for key in value: result[key] = _controller_resource(value[key], folders)
+		return result
+	if not value is String or not value.begins_with("res://Games/"): return value
+	var resource: String = value
+	var relative := resource.trim_prefix("res://")
+	var id := path_owner(relative, folders)
+	if id.is_empty(): return resource
+	return "/game/%s/%s" % [id, relative.trim_prefix(str(folders[id]).trim_prefix("res://") + "/")]
 
 
 # Collections change menu presentation only. Children retain their stable IDs,
@@ -66,8 +164,8 @@ func _validate_collections() -> void:
 	for game in games:
 		for id in game.get("game_choices", []):
 			var child := find_game(id)
-			if child.is_empty() or child.has("game_choices"):
-				diagnostics.append({"folder": game.id, "message": "Collection choice must reference an existing standalone game: %s" % id})
+			if not child.is_empty() and child.has("game_choices"):
+				diagnostics.append({"folder": game.id, "message": "Collection choice must reference a standalone game: %s" % id})
 				rejected.append(game)
 				break
 	for game in rejected: games.erase(game)
@@ -75,6 +173,8 @@ func _validate_collections() -> void:
 
 func _read_game(folder_name: String) -> Dictionary:
 	var folder := games_root.path_join(folder_name)
+	if AssetStore._is_link(folder):
+		return {"ok": false, "error": "Game folders must not be linked directories."}
 	var manifest_path := folder.path_join("game.json")
 	if not FileAccess.file_exists(manifest_path):
 		return {"ok": false, "error": "Missing game.json."}
@@ -84,6 +184,7 @@ func _read_game(folder_name: String) -> Dictionary:
 	var parsed: Variant = JSON.parse_string(file.get_as_text())
 	if not parsed is Dictionary:
 		return {"ok": false, "error": "game.json is not valid JSON object."}
+	parsed.erase("choice_definitions")
 	var required := ["schema_version", "id", "title", "description", "version", "thumbnail", "host_scene", "controller_entry", "min_players", "max_players", "modes"]
 	for field in required:
 		if not parsed.has(field):
@@ -106,10 +207,26 @@ func _read_game(folder_name: String) -> Dictionary:
 		if not parsed.game_choices is Array or parsed.game_choices.is_empty():
 			return {"ok": false, "error": "game_choices must be a non-empty array of game IDs."}
 		var seen: Array = []
-		for id in parsed.game_choices:
+		var definitions: Array = []
+		var choice_folders: Array = []
+		for entry in parsed.game_choices:
+			var id: Variant = entry.get("id") if entry is Dictionary else entry
 			if not id is String or not _is_valid_id(id) or id == game_id or seen.has(id):
 				return {"ok": false, "error": "game_choices must contain distinct, safe child game IDs."}
+			var definition := {"id": id, "title": id.capitalize()}
+			if entry is Dictionary:
+				if not entry.get("title") is String or entry.title.strip_edges().is_empty() or entry.title.length() > 100:
+					return {"ok": false, "error": "Each mode needs a non-empty title of at most 100 characters."}
+				var nested: Variant = entry.get("folder")
+				if not nested is String or not _is_safe_relative_path(nested) or nested.contains("/") or nested.begins_with("_") or choice_folders.has(nested.to_lower()):
+					return {"ok": false, "error": "Each mode needs a distinct, safe direct subfolder."}
+				definition.title = entry.title
+				definition["folder"] = nested
+				choice_folders.append(nested.to_lower())
+			definitions.append(definition)
 			seen.append(id)
+		parsed.game_choices = seen
+		parsed["choice_definitions"] = definitions
 	if parsed.has("settings_variants"):
 		if not parsed.settings_variants is bool or not parsed.has("game_choices"):
 			return {"ok": false, "error": "settings_variants requires game_choices and a boolean value."}
@@ -162,7 +279,7 @@ func _read_game(folder_name: String) -> Dictionary:
 	return {"ok": true, "game": game}
 
 
-func _is_valid_id(value: String) -> bool:
+static func _is_valid_id(value: String) -> bool:
 	if value.is_empty() or value.begins_with("-") or value.ends_with("-"):
 		return false
 	for character in value:
@@ -171,7 +288,7 @@ func _is_valid_id(value: String) -> bool:
 	return true
 
 
-func _is_safe_relative_path(value: String) -> bool:
+static func _is_safe_relative_path(value: String) -> bool:
 	if value.is_empty() or value.is_absolute_path() or value.contains("\\"):
 		return false
 	for segment in value.split("/"):

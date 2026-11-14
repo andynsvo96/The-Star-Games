@@ -209,7 +209,8 @@ func _append_entry(entry: Dictionary) -> void:
 	var parent: TreeItem = folders[category]
 	var parts := str(entry.path).split("/")
 	var key := category
-	var start := 2 if str(entry.path).begins_with(category + "/") else 0
+	var category_prefix := str(entry.get("category_folder", category))
+	var start := category_prefix.split("/").size() if str(entry.path).begins_with(category_prefix + "/") else 0
 	for index in range(start, parts.size() - 1):
 		key += "/" + parts[index]
 		if not folders.has(key):

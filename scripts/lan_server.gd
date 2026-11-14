@@ -184,7 +184,8 @@ func set_game_media(game_id: String, resources: Dictionary) -> void:
 		var source: Variant = resources[token]
 		if not token is String or token.length() != 48 or not token.is_valid_hex_number() or not source is String: continue
 		if source != source.simplify_path() or source.contains("\\"): continue
-		var roots := ["res://Games/%s/" % game_id, "user://%s/content/" % game_id, RuntimeAssets.root_folder().path_join("Games/%s/" % game_id)]
+		var module := str(game_catalog.find_game(game_id).folder).trim_suffix("/") + "/"
+		var roots := [module, "user://%s/content/" % game_id, RuntimeAssets.root_folder().path_join(module.trim_prefix("res://"))]
 		if not roots.any(func(folder: String) -> bool: return source.begins_with(folder)): continue
 		if not source.get_extension().to_lower() in ["png", "jpg", "jpeg", "webp", "bmp", "ogv", "mp4", "webm"]: continue
 		if not FileAccess.file_exists(source): continue
@@ -390,7 +391,7 @@ func _background_stem_sources(game: Dictionary, relative_stem: String) -> Dictio
 	var result := {"videos": [], "image": ""}
 	for source in BackgroundMedia.candidates(str(game.folder).path_join(relative_stem)):
 		var relative := relative_stem.get_base_dir().path_join(source.get_file())
-		for base in [RuntimeAssets.root_folder().path_join("Games/%s/" % game.id), "res://Games/%s/" % game.id]:
+		for base in [RuntimeAssets.root_folder().path_join(str(game.folder).trim_prefix("res://") + "/"), str(game.folder).trim_suffix("/") + "/"]:
 			if source.begins_with(base): relative = source.trim_prefix(base)
 		var url := "/game/%s/%s" % [game.id, relative]
 		if source.get_extension().to_lower() in BackgroundMedia.VIDEO_EXTENSIONS:
@@ -424,7 +425,7 @@ func _resolve_game_web_path(path: String) -> String:
 						if relative == str(stem).get_base_dir().path_join(candidate.get_file()):
 							return candidate
 			var direct := str(game["folder"]).path_join(relative)
-			var external_relative := "Games/%s/%s" % [game_id, relative]
+			var external_relative := str(game.folder).trim_prefix("res://").path_join(relative)
 			if RuntimeAssets.safe_media_path(external_relative) and ThemePacks._safe(external_relative):
 				var external := RuntimeAssets.root_folder().path_join(external_relative)
 				if FileAccess.file_exists(external): return external
@@ -442,6 +443,12 @@ func _game_path_is_private(game: Dictionary, relative: String) -> bool:
 	# Windows source folders are case insensitive; keep the same boundary on all
 	# hosts and on both direct URLs and controller-relative asset aliases.
 	var candidate := relative.simplify_path().to_lower()
+	# Child modules are served only through their own stable-ID routes. A parent
+	# URL must not bypass a child's private_paths or expose an invalid module.
+	for choice in game.get("choice_definitions", []):
+		if not choice.has("folder"): continue
+		var folder := str(choice.folder).to_lower()
+		if candidate == folder or candidate.begins_with(folder + "/"): return true
 	for path in game.get("private_paths", []):
 		var prefix := str(path).to_lower()
 		if candidate == prefix or candidate.begins_with(prefix + "/"):

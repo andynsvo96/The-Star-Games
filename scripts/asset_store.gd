@@ -8,7 +8,7 @@ var definitions_root := "res://Games"
 
 
 func scan() -> Array[Dictionary]:
-	return _scan(["asset", "Games", "ui", "web"], Array(DirAccess.get_directories_at(definitions_root)))
+	return _scan(["asset", "Games", "ui", "web"], GameCatalog.module_folders(definitions_root).keys())
 
 
 # Category discovery reads only directory names and small game manifests, never
@@ -17,10 +17,9 @@ func categories() -> Array[Dictionary]:
 	var result: Array[Dictionary] = [{"id": "Launcher", "label": "Launcher"}]
 	var games: Dictionary = {}
 	for directory: String in [definitions_root, RuntimeAssets.root_folder().path_join("Games")]:
-		for id: String in DirAccess.get_directories_at(directory):
-			if not ThemePacks.valid_id(id) or _is_link(directory.path_join(id)):
-				continue
-			var manifest := directory.path_join(id).path_join("game.json")
+		var folders := GameCatalog.module_folders(directory)
+		for id: String in folders:
+			var manifest := str(folders[id]).path_join("game.json")
 			if not FileAccess.file_exists(manifest):
 				continue
 			var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(manifest))
@@ -50,7 +49,13 @@ func scan_category(category: String) -> Array[Dictionary]:
 		return _scan(["asset", "ui", "web"], [], category, excluded)
 	if category.begins_with("Games/") and ThemePacks.valid_id(category.trim_prefix("Games/")):
 		var id := category.trim_prefix("Games/")
-		return _scan([category, "asset/" + id], [id], category)
+		var manager := ThemePacks.new(id, definitions_root)
+		var excluded: Array[String] = []
+		var folders := GameCatalog.module_folders(definitions_root)
+		for other in folders:
+			var relative := "Games/" + str(folders[other]).trim_prefix(definitions_root.trim_suffix("/") + "/")
+			if other != id and relative.begins_with(manager.relative_folder + "/"): excluded.append(relative)
+		return _scan([manager.relative_folder, "asset/" + id], [id], category, excluded)
 	entries.clear()
 	background_stems.clear()
 	return entries
@@ -59,6 +64,9 @@ func scan_category(category: String) -> Array[Dictionary]:
 func _scan(bases: Array, game_ids: Array, category := "", excluded: Array[String] = []) -> Array[Dictionary]:
 	entries.clear()
 	background_stems.clear()
+	var category_folder := category
+	if category.begins_with("Games/"):
+		category_folder = "Games/" + GameCatalog.module_folder(category.trim_prefix("Games/"), definitions_root).trim_prefix(definitions_root.trim_suffix("/") + "/")
 	var paths: Dictionary = {}
 	for base: String in bases:
 		_collect("res://" + base, base, paths, excluded)
@@ -74,20 +82,21 @@ func _scan(bases: Array, game_ids: Array, category := "", excluded: Array[String
 	var skin_slots: Dictionary = {}
 	var skin_backgrounds: Dictionary = {}
 	for id: String in game_ids:
-		if FileAccess.file_exists(definitions_root.path_join(id).path_join("theme-slots.json")) and not id.begins_with("_"):
-			for slot in ThemePacks.new(id, definitions_root).slots:
+		var manager := ThemePacks.new(id, definitions_root)
+		if not manager.slots.is_empty():
+			for slot in manager.slots:
 				var skin := {"game_id": id, "slot_id": slot.id, "protected": true}
 				# A shared source can belong to multiple variants; retain its owner.
-				if not skin_slots.has(slot.path) or str(slot.path).begins_with("Games/%s/" % id):
+				if not skin_slots.has(slot.path) or str(slot.path).begins_with(manager.relative_folder + "/"):
 					skin_slots[slot.path] = skin
 				if slot.kind == "background":
-					if not skin_backgrounds.has(str(slot.path).get_basename()) or str(slot.path).begins_with("Games/%s/" % id):
+					if not skin_backgrounds.has(str(slot.path).get_basename()) or str(slot.path).begins_with(manager.relative_folder + "/"):
 						skin_backgrounds[str(slot.path).get_basename()] = skin
 					if not background_stems.has(str(slot.path).get_basename()):
 						background_stems.append(str(slot.path).get_basename())
 				# A variant can use declared shared artwork without scanning the
 				# rest of the source game's library.
-				if not category.is_empty() and not str(slot.path).begins_with(category + "/"):
+				if not category.is_empty() and not str(slot.path).begins_with(manager.relative_folder + "/"):
 					var candidates: Array = [slot.path]
 					if slot.kind == "background":
 						for extension: String in BackgroundMedia.IMAGE_EXTENSIONS + BackgroundMedia.VIDEO_EXTENSIONS:
@@ -98,6 +107,11 @@ func _scan(bases: Array, game_ids: Array, category := "", excluded: Array[String
 						if FileAccess.file_exists(source): paths[candidate] = source
 	var sorted := paths.keys()
 	sorted.sort()
+	var module_folders: Dictionary = {}
+	for directory: String in [definitions_root, RuntimeAssets.root_folder().path_join("Games")]:
+		var inventory := GameCatalog.module_folders(directory)
+		for id in inventory:
+			module_folders[id] = "res://Games/" + str(inventory[id]).trim_prefix(directory.trim_suffix("/") + "/")
 	for relative: String in sorted:
 		if not RuntimeAssets.safe_media_path(relative) or relative.get_file().contains(".replacement."):
 			continue
@@ -105,12 +119,17 @@ func _scan(bases: Array, game_ids: Array, category := "", excluded: Array[String
 		var source := RuntimeAssets.source("res://" + relative)
 		var music := relative.begins_with("asset/lobby_songs/") or relative.begins_with("asset/music/")
 		var entry := {"path": relative, "background": background or relative.begins_with("asset/splash_background/"), "source": source, "kind": "audio" if music else kind(source), "skin": "Default"}
-		if not category.is_empty(): entry["category"] = category
+		if not category.is_empty():
+			entry["category"] = category
+			entry["category_folder"] = category_folder
 		entry.merge(skin_slots.get(relative, skin_backgrounds.get(relative.get_basename(), {})), true)
 		# Content-addressed skin media is visible too, but must remain immutable.
-		var parts := relative.split("/")
-		if parts.size() > 5 and parts[0] == "Games" and parts[2] == "themes":
-			entry.merge({"game_id": parts[1], "skin": parts[3].capitalize(), "protected": true}, true)
+		var owner := GameCatalog.path_owner(relative, module_folders)
+		if not owner.is_empty():
+			var local := relative.trim_prefix(str(module_folders[owner]).trim_prefix("res://") + "/")
+			var parts := local.split("/")
+			if parts.size() > 3 and parts[0] == "themes":
+				entry.merge({"game_id": owner, "skin": parts[1].capitalize(), "protected": true}, true)
 		entries.append(entry)
 	return entries
 
