@@ -120,6 +120,14 @@ Free for All has four army palettes. Each mode retains its existing scenery,
 board, title and rules; reduced motion places pieces immediately. Fantasy media
 and its dependent tests remain local with the playable modules.
 
+**Chibi Adventures** is the third local Chess skin in that same selector across
+all five modes. Original MapleStory-inspired 2D characters have oversized heads,
+expressive faces and distinct outfits for all six pieces. White/Black and four-army
+palettes also appear in counters, promotions, reserves and tutorials. The skin
+uses the existing board, scenery and standard movement, with live switching,
+reconnection and reduced motion supported. Its media, prompts and dependent tests
+remain local with the playable modules.
+
 Chess opens its remembered eligible mode through a single collection entry.
 Host **Settings > Game mode** selects Classic Chess, Chess960 (Fischer Random),
 Crazyhouse, Bughouse or Free for All. Every mode has independent scenery,
