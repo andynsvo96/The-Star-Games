@@ -14,7 +14,7 @@ var elapsed := 0.0
 var playing := true
 var reduced_motion := false
 var stage: Button
-var focus_frame: StyleBoxFlat
+var pause_frame: StyleBoxFlat
 
 
 func _ready() -> void:
@@ -23,9 +23,9 @@ func _ready() -> void:
 	stage.flat = true
 	stage.toggle_mode = true
 	stage.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	focus_frame = GameLook.box(Color.TRANSPARENT, GameLook.GOLD, 4, 2)
-	focus_frame.shadow_size = 0
-	focus_frame.draw_center = false
+	pause_frame = GameLook.box(Color.TRANSPARENT, GameLook.RED, 4, 2)
+	pause_frame.shadow_size = 0
+	pause_frame.draw_center = false
 	for state in ["normal", "hover", "pressed", "hover_pressed", "focus"]: stage.add_theme_stylebox_override(state, StyleBoxEmpty.new())
 	stage.custom_minimum_size = Vector2(0, 220)
 	stage.draw.connect(_paint)
@@ -142,7 +142,7 @@ func _paint() -> void:
 	if playing:
 		for x in [-2.5, 2.5]: stage.draw_line(badge + Vector2(x,-3), badge + Vector2(x,3), Color.WHITE, 2, true)
 	else: stage.draw_colored_polygon(PackedVector2Array([badge+Vector2(-2,-4),badge+Vector2(4,0),badge+Vector2(-2,4)]), Color.WHITE)
-	if stage.has_focus(): stage.draw_style_box(focus_frame, Rect2(Vector2.ONE, stage.size - Vector2.ONE * 2))
+	if not playing: stage.draw_style_box(pause_frame, Rect2(Vector2.ONE, stage.size - Vector2.ONE * 2))
 
 
 func _draw_paths(area: Rect2) -> void:

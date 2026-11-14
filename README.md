@@ -99,7 +99,8 @@ uses compact illustrated pages grouped into Piece Moves, Rules & Tactics and
 Playing, with **Tutorial Mode: On/Off** at the top right for solo/computer coaching
 and an adjacent **×** to close. All guide illustrations demonstrate moves with
 origin ghosts, movement paths and destination rings. Tap the picture to pause or
-resume its loop; lesson text stays fixed. Reduced motion keeps an annotated static
+resume its loop; a red border marks a paused image and lesson text stays fixed.
+Reduced motion keeps an annotated static
 diagram. Bughouse and Crazyhouse share
 an always-visible reserve tray for the playing host and phones, replacing the
 solo Bughouse reserve popup.

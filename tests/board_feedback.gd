@@ -194,12 +194,18 @@ func _run() -> void:
 		for frame in 4: await process_frame
 		await RenderingServer.frame_post_draw
 		var paused := viewport.get_texture().get_image()
-		check(reference.stage.has_focus() and not reference.playing and samples.all(func(point: Vector2i) -> bool: return paused.get_pixelv(point).is_equal_approx(original.get_pixelv(point))), "Focused paused illustrations retain their original brightness")
+		var border_point := Vector2i(128,2)
+		check(reference.stage.has_focus() and not reference.playing and paused.get_pixelv(border_point).is_equal_approx(GameLook.RED) and samples.all(func(point: Vector2i) -> bool: return paused.get_pixelv(point).is_equal_approx(original.get_pixelv(point))), "Paused illustrations show a red border without changing artwork brightness")
+		reference.stage.release_focus()
+		for frame in 2: await process_frame
+		await RenderingServer.frame_post_draw
+		check(viewport.get_texture().get_image().get_pixelv(border_point).is_equal_approx(GameLook.RED), "The paused border follows playback state when focus moves elsewhere")
+		reference.stage.grab_focus()
 		reference.stage.pressed.emit()
 		for frame in 4: await process_frame
 		await RenderingServer.frame_post_draw
 		var resumed := viewport.get_texture().get_image()
-		check(reference.stage.has_focus() and reference.playing and samples.all(func(point: Vector2i) -> bool: return resumed.get_pixelv(point).is_equal_approx(original.get_pixelv(point))), "Resumed illustrations retain their brightness while keyboard focus stays visible")
+		check(reference.stage.has_focus() and reference.playing and resumed.get_pixelv(border_point).is_equal_approx(original.get_pixelv(border_point)) and samples.all(func(point: Vector2i) -> bool: return resumed.get_pixelv(point).is_equal_approx(original.get_pixelv(point))), "Resuming removes the border and preserves brightness while keeping keyboard focus")
 		DirAccess.make_dir_recursive_absolute("res://.test_data/board-feedback/")
 		paused.save_png("res://.test_data/board-feedback/tutorial-paused.png")
 		resumed.save_png("res://.test_data/board-feedback/tutorial-resumed.png")

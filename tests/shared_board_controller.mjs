@@ -73,8 +73,8 @@ const assertions = `
 		const demo=demoGuide.demonstration;demo.advance(.95);const moved=parseFloat(demo.actors[0].style.left);demoGuide.setItems(demoItems);
 		check(moved>10&&moved<60&&demoGuide.demonstration===demo&&demo.overlay.querySelector('path'),'Demonstration moves artwork along its visible route and survives duplicate state');
 		const guideSize=demoGuide.dialog.getBoundingClientRect(),guideText=demoGuide.lesson.textContent;
-		demo.stage.click();const elapsed=demo.elapsed;await settle();check(demo.elapsed===elapsed,'Clicking the illustration pauses without changing phase');
-		demo.stage.click();check(demo.elapsed===elapsed&&demo.playing,'Clicking again resumes the same phase');demo.restart();
+		demo.stage.focus();demo.stage.click();const elapsed=demo.elapsed;await settle();const pausedStyle=getComputedStyle(demo.stage);check(demo.elapsed===elapsed&&pausedStyle.outlineColor==='rgb(255, 66, 98)'&&pausedStyle.outlineWidth==='2px','Pausing preserves the phase and shows a red border');
+		demo.stage.click();check(demo.elapsed===elapsed&&demo.playing&&getComputedStyle(demo.stage).outlineStyle==='none','Resuming keeps the phase and hides the border even while focused');demo.restart();
 		demo.advance(1.6);demo.advance(1);check(parseFloat(demo.actors[0].style.left)>59.9&&parseFloat(demo.actors[0].style.top)===20,'Sequential examples retain the previous move instead of resetting their board');
 		demo.advance(.95);check(parseFloat(demo.actors[0].style.left)>59.9&&parseFloat(demo.actors[0].style.top)>20,'The next move continues from that retained position');
 		await settle();const stableSize=demoGuide.dialog.getBoundingClientRect();check(Math.abs(stableSize.height-guideSize.height)<1&&Math.abs(stableSize.width-guideSize.width)<1&&demoGuide.lesson.textContent===guideText&&!demoGuide.dialog.querySelector('.game-guide-demo-caption,.game-guide-demonstration .game-action-row'),'Instructions and guide geometry stay fixed across animation steps');
