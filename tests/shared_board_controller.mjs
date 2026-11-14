@@ -42,6 +42,11 @@ const assertions = `
 	const count = Number(new URLSearchParams(location.search).get('seats'));
 	const presentation = new URLSearchParams(location.search).get('cards');
 	const run = Number(new URLSearchParams(location.search).get('run'));
+	const captureCue = document.createElement('span'); captureCue.className = 'game-capture-ring'; captureCue.setAttribute('aria-hidden','true'); captureCue.hidden = true; board.append(captureCue);
+	check(getComputedStyle(captureCue).display === 'none', 'Capture cues can be hidden without changing the board');
+	captureCue.hidden = false;
+	check(getComputedStyle(captureCue).pointerEvents === 'none' && getComputedStyle(captureCue).animationName === 'none' && getComputedStyle(captureCue,'::after').backgroundImage.includes('svg'), 'Shared capture cues use static crossed blades and never intercept input');
+	captureCue.remove();
 	const measure = () => ({board:board.getBoundingClientRect().toJSON(), footer:footer.getBoundingClientRect().toJSON()});
 	const layout = caption => {
 		const {board:b, footer:f} = measure();

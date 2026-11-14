@@ -788,6 +788,9 @@ body.playful-game { isolation: isolate; }
 .game-stat-item span { white-space: nowrap; }
 .game-selection-ring { position: relative; }
 .game-selection-ring::before { content: ''; position: absolute; inset: 8%; border: 3px solid #ffde55; border-radius: 50%; box-shadow: 0 0 0 4px #ffde5533, inset 0 0 0 1px #fff4cf; pointer-events: none; z-index: 3; }
+.game-capture-ring { position:absolute; inset:0; pointer-events:none; z-index:3; }
+.game-capture-ring::before { content:''; position:absolute; inset:4%; border:3px solid #ff9d7d; border-radius:50%; box-shadow:0 0 0 4px #ff9d7d33,inset 0 0 0 1px #ffe5d7; }
+.game-capture-ring::after { content:''; position:absolute; width:28%; aspect-ratio:1; min-width:10px; right:4%; top:4%; border:1px solid #ff9d7d; border-radius:50%; background:#70332b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='m4.5 15 11-11m0 11-11-11' stroke='%23fff4df' stroke-width='2'/%3E%3Cpath d='m4.5 10 5 5m1 0 5-5' stroke='%23ff9d7d' stroke-width='1.6'/%3E%3C/svg%3E") center/100% 100% no-repeat; }
 @media (max-width: 600px) {
   .game-score-card.game-ledger.game-compact-stats { border-width: 10px; border-image-width: 10px; padding: .15rem .25rem; }
   .game-score-card.game-ledger.game-compact-stats > p { font-size: .75rem; line-height: 1.15; }

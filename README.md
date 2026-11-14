@@ -94,7 +94,9 @@ Chess now uses a larger centered wood board, compact current-game player panels,
 turn glows, drag/tap controls and illustrated help/promotion choices on host and
 phones. Results show round statistics with View Board and one Play Again.
 Grouped Settings pauses play and offers clock presets and one Guided gameplay
-switch for move guides, coordinates and last-move highlights. **Tutorial**
+switch for move guides, coordinates and last-move highlights. Coral crossed-swords
+cues identify pieces with a legal optional capture; selecting one marks the
+opposing pieces it can take. **Tutorial**
 uses compact illustrated pages grouped into Piece Moves, Rules & Tactics and
 Playing, with **Tutorial Mode: On/Off** at the top right for solo/computer coaching
 and an adjacent **×** to close. All guide illustrations demonstrate moves with

@@ -36,6 +36,9 @@
      game-stat-grid containing game-stat-item pairs (icon plus count).
      Circular selected pieces add game-selection-ring; remove it during pause,
      movement and results. The static ring never captures controller input.
+     For optional captures, overlay an aria-hidden span.game-capture-ring inside
+     a positioned cell. Toggle hidden from legal host moves, and describe capture
+     availability on the cell's aria-label. The coral crossed-blades cue is static.
      Add game-naval to body for shared navy/steel controls and panels.
      Add game-covert for midnight/cyan chrome. Results use game-result plus
      game-result-danger for red; omit danger for teal. A full-screen result adds
@@ -122,6 +125,8 @@
        the board itself at screen center and moves stats beside short landscapes.
        For a pannable board, use StarGamesBoardCamera with an inner art surface;
        its drags/pinches are view-only. Keep tap/keyboard moves host-validated. -->
+  <!-- Overlay this static capture cue inside a positioned board cell. -->
+  <template id="example-capture-cue"><span class="game-capture-ring" aria-hidden="true" hidden></span></template>
   <!-- Dense public counters keep six current-game metrics in two rows. Tight
        identities omit empty feedback; show the status row for check or a clock.
        --game-score-art accepts a canonical, revisioned module frame URL. -->

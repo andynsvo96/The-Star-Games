@@ -35,6 +35,15 @@ func _run() -> void:
 	rules.fit(220, 240, true)
 	for frame in 12: await process_frame
 	var before: Rect2 = card.panel.get_global_rect()
+	var capture_cue := GameSelectionRing.new()
+	holder.add_child(capture_cue)
+	capture_cue.size = Vector2(48,48)
+	var cue_bounds := capture_cue.get_rect()
+	check(not capture_cue.capture, "Ordinary selection rings retain their default appearance")
+	capture_cue.capture = true
+	for frame in 2: await process_frame
+	check(capture_cue.capture and capture_cue.mouse_filter == Control.MOUSE_FILTER_IGNORE and capture_cue.get_rect() == cue_bounds and not capture_cue.is_processing(), "Capture rings are static and preserve input targets and geometry")
+	capture_cue.hide()
 	check(card.seat_token.seat == 4 and card.seat_token.identity == Color("171717") and card.player.text == "Literal <player> [name]", "Numbered tokens preserve literal names and identity colors")
 	check(card.turn_glow.active and card.turn_glow.age > 0 and card.turn_glow.mouse_filter == Control.MOUSE_FILTER_IGNORE, "Turn feedback breathes without intercepting input")
 	screen.set_score_card_turn_glow(card, true, true)

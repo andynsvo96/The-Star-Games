@@ -3477,6 +3477,16 @@ Circular selected pieces use the shared `GameSelectionRing` control on the host
 and `game-selection-ring` class in browsers. The cue is static and ignores input;
 show it only while the piece is selected and placement is available. Module-owned
 coordinate frames ignore input and preserve square indexes under rotation.
+For capture opportunities, set `GameSelectionRing.capture=true`, or overlay an
+`aria-hidden` `span.game-capture-ring` inside a positioned browser cell. The shared
+coral ring and crossed-blades badge remain static with reduced motion and do not
+change input targets. Mark pieces with a legal capture before selection, then the
+selected piece's actual victims, using host-issued legal moves (including a
+separate en-passant victim square). Describe availability in the cell's accessible
+name. Clear cues on pause, movement, disconnect and results, and when guidance is
+off. Modules retain their compulsory/optional capture rules; a cue does not
+promise a favorable trade. Hidden
+host/browser template examples demonstrate the hook.
 Column landing previews ignore input and disappear while play is paused or locked.
 Four in a Row derives its ghost landing slot from the current host board. Preview
 events never send or queue a move; clicks during any fall or bounce stay discarded.

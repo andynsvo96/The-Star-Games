@@ -519,6 +519,13 @@ func _ready() -> void:
 	add_child(ring_example)
 	ring_example.size = Vector2(48, 48)
 	ring_example.hide()
+	# Optional capture cue: a coral ring with a static crossed-blades badge.
+	# Derive source/victim eligibility from legal host moves; captures stay optional.
+	var capture_example := GameSelectionRing.new()
+	capture_example.capture = true
+	add_child(capture_example)
+	capture_example.size = Vector2(48, 48)
+	capture_example.hide()
 	screen.add_sidebar_text(layout.sidebar, "SESSION SCOREBOARD")
 	# Use plain totals when illustrated score cards do not suit the playfield.
 	var plain_score := screen.add_session_score(layout.sidebar)
