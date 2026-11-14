@@ -1696,7 +1696,10 @@ destination rings show each move, including intermediate `via` positions.
 Keep instructions in the lesson's fixed `detail` and a stable accessible
 `description`; per-step caption metadata does not change the displayed text.
 The picture and its small play/pause indicator retain their dimensions across
-steps. These are independent public illustrations, never live game snapshots.
+steps. Keyboard focus adds a border without dimming the illustration during
+pause or playback. These are independent public illustrations, never live game snapshots.
+Run `tests/board_feedback.gd` with a rendered Godot window to check illustration
+brightness while focused, paused and resumed.
 
 Call native `guide.set_reduced_motion(context.reduced_motion)` or browser
 `guide.setReducedMotion(host_reduced_motion)` when state updates. Reduced motion

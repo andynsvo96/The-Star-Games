@@ -177,5 +177,32 @@ func _run() -> void:
 	for frame in 8: await process_frame
 	check(is_equal_approx(fitted.board_height_limit(),reserved_limit), "Hidden replay retains its space in an expanded board composition")
 	fit_holder.queue_free(); await process_frame
+	if DisplayServer.get_name() != "headless":
+		var viewport := SubViewport.new()
+		viewport.size = Vector2i(256,256)
+		viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+		root.add_child(viewport)
+		var reference := GameGuideDemonstration.new()
+		viewport.add_child(reference)
+		reference.size = Vector2(256,256)
+		reference.set_demonstration({"background":"res://ui/playful/score-ledger.svg", "sprites":[], "steps":[]})
+		for frame in 4: await process_frame
+		await RenderingServer.frame_post_draw
+		var original := viewport.get_texture().get_image()
+		var samples := [Vector2i(64,64),Vector2i(128,64),Vector2i(128,128),Vector2i(192,160)]
+		reference.stage.grab_focus(); reference.stage.pressed.emit()
+		for frame in 4: await process_frame
+		await RenderingServer.frame_post_draw
+		var paused := viewport.get_texture().get_image()
+		check(reference.stage.has_focus() and not reference.playing and samples.all(func(point: Vector2i) -> bool: return paused.get_pixelv(point).is_equal_approx(original.get_pixelv(point))), "Focused paused illustrations retain their original brightness")
+		reference.stage.pressed.emit()
+		for frame in 4: await process_frame
+		await RenderingServer.frame_post_draw
+		var resumed := viewport.get_texture().get_image()
+		check(reference.stage.has_focus() and reference.playing and samples.all(func(point: Vector2i) -> bool: return resumed.get_pixelv(point).is_equal_approx(original.get_pixelv(point))), "Resumed illustrations retain their brightness while keyboard focus stays visible")
+		DirAccess.make_dir_recursive_absolute("res://.test_data/board-feedback/")
+		paused.save_png("res://.test_data/board-feedback/tutorial-paused.png")
+		resumed.save_png("res://.test_data/board-feedback/tutorial-resumed.png")
+		viewport.queue_free(); await process_frame
 	print("Board feedback: %d checks, %d failures" % [checks, failures])
 	quit(0 if failures == 0 else 1)

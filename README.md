@@ -127,7 +127,9 @@ the four-player expansion automatically, defaulting to Bughouse when the saved
 choice does not fit. Three humans receive a computer fourth seat; computer games
 are practice and do not change saved standings. Bughouse runs two
 simultaneous team boards with captures transferred to the partner's reserve.
-Matching ivory/charcoal player cards identify partners and show reserve icons.
+Ivory/charcoal player cards follow each army's current piece color, including
+after replay swaps, and show reserve icons with compact board labels. Solo
+Bughouse boards face the host and partner with their pieces at the bottom.
 Bughouse's saved computer difficulty also controls pacing: Easy 4.5 seconds,
 Medium 3 seconds and Hard 2 seconds, measured after settled movement.
 Free for All uses a four-sided cross board and last king standing. Mode changes
