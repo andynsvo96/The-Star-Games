@@ -119,10 +119,11 @@ back to Default. Chibi uses the original ivory adventurers, gothic black army,
 red warriors and blue frost elves, including their counters and tutorials.
 Both skins use White, Black, Red and Blue in Free for All, with matching shape
 markers. Gold and Green armies have been removed. Chibi retains its original
-512px character cells; its SVG wrappers contain bitmap artwork, while Default
-pieces and board frames are vectors. The host rerasterizes vectors and lettering
-for the zoomed size, and phones paint at the actual zoomed dimensions. Equal
-frame insets keep the cross board centered inside its border. All artwork and
+512px character cells as direct PNG textures, with pre-rendered illustrated
+guides that avoid duplicating sprites inside SVGs. Default pieces and board
+frames remain vectors. The host prepares artwork for the supported zoom range
+once and reuses it during gestures; phones paint at the actual zoomed dimensions.
+Equal frame insets keep the cross board centered inside its border. All artwork and
 dependent tests remain local with the playable modules.
 
 Chess opens its remembered eligible mode through a single collection entry.

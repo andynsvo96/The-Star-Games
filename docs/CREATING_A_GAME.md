@@ -2162,9 +2162,13 @@ extensionless background and title.
 Two-seat Chess variants and Bughouse keep Classic's ivory/ebony sculptures.
 Free for All uses White, Black, Red and Blue pieces with distinct base shapes in
 both Default and Chibi; Fantasy is retired. Default adds red/blue vector finishes,
-and Chibi retains the original 512px bitmap cells in its SVG wrappers. Native
-zoom uses `RuntimeAssets.scalable_texture` for vector artwork and paints glyphs
-at their displayed size. Browser artwork uses actual zoomed layout dimensions
+and Chibi keeps original 512px PNG cells with pre-rendered static guides. Avoid
+repeating full-size bitmaps in SVG compositions: this multiplies decoding and
+validation work. Native zoom prepares `RuntimeAssets.scalable_texture` vectors
+for the supported zoom range once per fitted size/skin, retains those references,
+and paints glyphs at their displayed size. Reuse square styles and index legal
+feedback once per snapshot instead of rebuilding every control style. Browser
+artwork uses actual zoomed layout dimensions
 with the existing camera callback; fixed-size input targets remain independent.
 Distinct material boards and player frames match each mode's scenery:
 astronomical inlays, alchemist details, linked brass or kingdom
