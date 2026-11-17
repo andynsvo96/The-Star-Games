@@ -2159,10 +2159,15 @@ The worker cycles eligible computers fairly across both Bughouse boards and chec
 each reply against its own board, so another board's new turn cannot cancel it.
 Disconnected humans keep their seats. Each child owns its protected Default skin,
 extensionless background and title.
-Chess variants keep Classic's untinted ivory/ebony sculptures, including stat
-icons and movement. Free for All identifies armies with separate colored shape
-markers at the bases. Distinct material boards and player frames match each
-mode's scenery: astronomical inlays, alchemist details, linked brass or kingdom
+Two-seat Chess variants and Bughouse keep Classic's ivory/ebony sculptures.
+Free for All uses White, Black, Red and Blue pieces with distinct base shapes in
+both Default and Chibi; Fantasy is retired. Default adds red/blue vector finishes,
+and Chibi retains the original 512px bitmap cells in its SVG wrappers. Native
+zoom uses `RuntimeAssets.scalable_texture` for vector artwork and paints glyphs
+at their displayed size. Browser artwork uses actual zoomed layout dimensions
+with the existing camera callback; fixed-size input targets remain independent.
+Distinct material boards and player frames match each mode's scenery:
+astronomical inlays, alchemist details, linked brass or kingdom
 crests. Tight name/side rows lead directly into current-board counts; turn glows
 replace routine turn text on host and phones.
 Two-seat children reuse Chess's presentation and variant-aware rules; the

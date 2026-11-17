@@ -113,22 +113,17 @@ Host white ghost suggestions guide phone players
 without moving their pieces. Coaching is limited to one human against the computer;
 two-phone scoring, replay color swaps and offline reconnection remain supported.
 
-The local **Fantasy** skin is available in every Chess mode under
-**Settings > Appearance > Skin**. It adds chibi humanoid pieces and matching
-icons, role-specific movement/capture effects, and host-only sound effects.
-Free for All has four army palettes. Each mode retains its existing scenery,
-board, title and rules; reduced motion places pieces immediately. Fantasy media
-and its dependent tests remain local with the playable modules.
-
-**Chibi** is the third local Chess skin in that same selector across
-all five modes. Original MapleStory-inspired 2D characters have oversized heads,
-expressive faces and distinct outfits for all six pieces. Each faction has its
-own character designs: cheerful ivory adventurers, angry gothic villains, fiery
-red warriors, blue frost elves, golden desert beastfolk and green woodland fae.
-Their characters also appear in counters, promotions, reserves and tutorials.
-The skin uses the existing board, scenery and standard movement, with live switching,
-reconnection and reduced motion supported. Its media, prompts and dependent tests
-remain local with the playable modules.
+Chess offers **Default** and **Chibi** under **Settings > Appearance > Skin**
+in all five modes. Fantasy has been removed; earlier saved Fantasy choices fall
+back to Default. Chibi uses the original ivory adventurers, gothic black army,
+red warriors and blue frost elves, including their counters and tutorials.
+Both skins use White, Black, Red and Blue in Free for All, with matching shape
+markers. Gold and Green armies have been removed. Chibi retains its original
+512px character cells; its SVG wrappers contain bitmap artwork, while Default
+pieces and board frames are vectors. The host rerasterizes vectors and lettering
+for the zoomed size, and phones paint at the actual zoomed dimensions. Equal
+frame insets keep the cross board centered inside its border. All artwork and
+dependent tests remain local with the playable modules.
 
 Chess opens its remembered eligible mode through a single collection entry.
 Host **Settings > Game mode** selects Classic Chess, Chess960 (Fischer Random),
@@ -137,9 +132,10 @@ board artwork, matching player panels, title and gameplay preferences. Choosing 
 skin applies across all five Chess modes and is remembered across launches.
 The skin menu reuses validation for unchanged media, and live switching reuses
 already loaded artwork to reduce pauses.
-Default pieces and stat icons retain Classic's ivory/ebony finish; Free for All
-adds small colored shape markers for its four armies. Player names/side labels
-lead directly into counters, with turn glows replacing routine turn text.
+Two-seat and Bughouse Default pieces keep Classic's ivory/ebony finish; Free
+for All adds red and blue vector finishes and distinct markers for all four armies.
+Player names/side labels lead directly into counters, with turn glows replacing
+routine turn text.
 Classic, Chess960 and Free for All use more of the available board area.
 Guided gameplay includes flat coordinate lettering in each board's frame,
 including both Bughouse boards, without separate coordinate or last-move settings.
